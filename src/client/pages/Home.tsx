@@ -6,7 +6,7 @@ import { Message } from './Message'
 import { Setting } from './Setting'
 
 
-export const Home = () =>  {
+export const Home = () => {
     return <div>
         <div className="menu-list">
             <li>

@@ -1,0 +1,33 @@
+.login {
+    padding: 50px;
+    display: flex;
+    justify-content: space-between;
+
+    &--about, &--context {
+        width: 300px;
+        // height: 400px;
+    }
+
+    &--context {
+        padding: 70px 22px 70px 22px;
+        .customize-tab-bar {
+            margin-bottom: 5px;
+            padding: 0;
+            &.is-active {
+                color:#006eff
+            }
+        }
+        &__title {
+            margin-bottom: 20px;
+        }
+    }
+
+    &--input {
+        width: 100%;
+        margin-bottom: 18px;
+    }
+
+    &--button {
+        width: 100%;
+    }
+}

@@ -11,6 +11,9 @@ import store from './store'
 
 import { Login } from './pages/Login';
 import { Home } from './pages/Home';
+import timRenderInstance from './utils/timRenderInstance';
+
+timRenderInstance.TIMInit();
 
 const App = () => (
     <Router>

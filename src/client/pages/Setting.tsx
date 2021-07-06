@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
 import { RouteComponentProps } from "react-router-dom";
 
-interface Props extends RouteComponentProps {
-}
+type Props = RouteComponentProps
 
 export const Setting: FC<Props> = ({ history }) => {
     return (
