@@ -13,7 +13,8 @@
     "jsx": "react",
     "paths": {
       "*": ["node_modules/*"]
-    }
+    },
+    "types": ["im_electron_sdk"]
   },
   "include": [
     "src/**/*"

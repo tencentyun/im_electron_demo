@@ -1,8 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import TimRender from "im_electron_sdk/dist/renderer";
+import TimRender from "im_electron_sdk/dist/timRender";
 
-let timRenderInstance: any;
+let timRenderInstance: TimRender;
 
 const getInstance = () => {
     if(!timRenderInstance) {
@@ -10,7 +8,6 @@ const getInstance = () => {
     }
     return timRenderInstance;
 }
-
 export default getInstance();
 
 
