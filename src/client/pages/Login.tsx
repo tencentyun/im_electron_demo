@@ -8,6 +8,7 @@ import timRenderInstance from '../utils/timRenderInstance';
 
 
 import './login.scss';
+import { loginParam } from 'im_electron_sdk/dist/interface';
 
 type Props = RouteComponentProps
 const defaultUserId = "3708";
@@ -22,11 +23,12 @@ export const Login: FC<Props> = ({ history }) => {
     const number = useSelector(state => state);
 
     const handleLoginClick = async () => {
-        const params = {
+        const params:loginParam = {
             userID: sdkAppid,
             userSig: usersig
         }
-        const {data: {code}} = await timRenderInstance.TIMLogin(params);
+        const { data: { code,data,desc,json_param }} = await timRenderInstance.TIMLogin(params);
+        console.log(code,data,desc,json_param)
         if(code === 0) {
             history.replace('/home')
         }

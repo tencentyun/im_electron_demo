@@ -13,7 +13,11 @@ import { Login } from './pages/Login';
 import { Home } from './pages/home/Home';
 import timRenderInstance from './utils/timRenderInstance';
 
-timRenderInstance.TIMInit();
+timRenderInstance.TIMInit().then(({data})=>{
+    if(data === 0){
+        console.log("初始化成功")
+    }
+})
 
 const App = () => (
     <Router>
