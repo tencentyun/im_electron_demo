@@ -10,7 +10,7 @@ import {  Provider } from "react-redux";
 import store from './store'
 
 import { Login } from './pages/Login';
-import { Home } from './pages/Home';
+import { Home } from './pages/home/Home';
 import timRenderInstance from './utils/timRenderInstance';
 
 timRenderInstance.TIMInit();

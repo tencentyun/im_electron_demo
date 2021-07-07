@@ -14,8 +14,6 @@ const defaultUserId = "3708";
 
 const defaultUserSig= "eJyrVgrxCdYrSy1SslIy0jNQ0gHzM1NS80oy0zLBwsbmBhZQ8eKU7MSCgswUJStDEwMDQwtzY1MjiExqRUFmUSpQ3NTU1MjAwAAiWpKZCxIzMzKxNDU3NjGDmpKZDjQ2LKnAz6Q0J9s3LdQsSrvA28kvKinY1LvIOdE9yDk13DEp0SIi2zWtND*53FapFgB-kjCC";
 
-
-
 export const Login: FC<Props> = ({ history }) => {
     const dispatch = useDispatch();
     const [sdkAppid, setSdkAppid] = useState(defaultUserId);

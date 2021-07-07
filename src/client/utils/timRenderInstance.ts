@@ -12,6 +12,4 @@ const getInstance = () => {
 }
 
 export default getInstance();
-
-
  
