@@ -18,6 +18,7 @@
   },
   "include": [
     "src/**/*",
-    "index.d.ts",
+    "png.d.ts",
+    "node_modules/im_electron_sdk/dist/interface/index.d.ts"
   ]
 }

@@ -8,6 +8,7 @@ import timRenderInstance from '../utils/timRenderInstance';
 
 
 import './login.scss';
+// eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
 
 type Props = RouteComponentProps
