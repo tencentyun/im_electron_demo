@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron';
-import TimMain from 'im_electron_sdk/dist/timMain';
+import TimMain from 'im_electron_sdk/dist/main';
 
 new TimMain({
   sdkappid: 1400187352 

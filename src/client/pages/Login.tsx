@@ -29,7 +29,8 @@ export const Login: FC<Props> = ({ history }) => {
             userID: sdkAppid,
             userSig: usersig
         }
-        const {code,user_data,json_param,desc} = await timRenderInstance.TIMLogin(params);
+        const { data: { code,data,desc,json_param }} = await timRenderInstance.TIMLogin(params);
+        console.log(code,data,desc,json_param)
         if(code === 0) {
             history.replace('/home')
         }

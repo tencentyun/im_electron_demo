@@ -1,8 +1,8 @@
-import TimRender from "im_electron_sdk/dist/timRender";
+import TimRender from "im_electron_sdk/dist/renderer";
 
 let timRenderInstance: TimRender;
 
-const getInstance = () => {
+const getInstance = ():TimRender => {
     if(!timRenderInstance) {
         timRenderInstance = new TimRender();
     }
