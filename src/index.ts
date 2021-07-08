@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import TimMain from 'im_electron_sdk/dist/main';
-
+import IPC from './ipc';
+let ipc;
 new TimMain({
   sdkappid: 1400187352 
 });
@@ -21,6 +22,9 @@ const createWindow = (): void => {
     width: 960,
     minWidth: 830,
     minHeight: 600,
+    show:false,
+    frame:false,
+    backgroundColor:"#DADADA",
     webPreferences: {
       webSecurity: true,
       nodeIntegration: true,
@@ -29,6 +33,14 @@ const createWindow = (): void => {
       contextIsolation: false,
     }
   });
+
+  mainWindow.on('ready-to-show',() => {
+    console.log('mainwindow ready to show')
+    mainWindow.show();
+
+    if(!ipc) ipc = new IPC(mainWindow);
+
+  })
 
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
