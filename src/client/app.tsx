@@ -12,6 +12,9 @@ import store from './store'
 import { Login } from './pages/Login';
 import { Home } from './pages/home/Home';
 import timRenderInstance from './utils/timRenderInstance';
+import { ToolsBar } from './components/toolsBar/toolsBar';
+
+import './app.scss'
 
 timRenderInstance.TIMInit().then(({data})=>{
     if(data === 0){
@@ -20,13 +23,16 @@ timRenderInstance.TIMInit().then(({data})=>{
 })
 
 const App = () => (
-    <Router>
-        <Switch>
-            <Route path='/home' component={Home} >
-            </Route>
-            <Route path='/' component={Login} />
-        </Switch>
-    </Router>
+    <div id="app-container">
+        <ToolsBar></ToolsBar>
+        <Router>
+            <Switch>
+                <Route path='/home' component={Home} >
+                </Route>
+                <Route path='/' component={Login} />
+            </Switch>
+        </Router>
+    </div>
 )
 
 ReactDOM.render(<Provider store={store}>

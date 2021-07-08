@@ -1,0 +1,12 @@
+.windows {
+    height: 24px;
+    background-color: #F5F5F5;
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
+    .min-size,.max-size,.close {
+        font-size: 12px;
+        padding: 0 4px;
+        cursor: pointer;
+    }
+}
