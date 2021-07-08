@@ -2,9 +2,9 @@ import React, { FC, useState } from 'react';
 import { RouteComponentProps } from "react-router-dom";
 
 import { Tabs, TabPanel, Input, Button, Card } from "@tencent/tea-component";
-import timRenderInstance from '../utils/timRenderInstance';
+import timRenderInstance from '../../utils/timRenderInstance';
 
-import { DEFAULT_UID, DEFAULT_USER_SIG} from '../constants'
+import { DEFAULT_UID, DEFAULT_USER_SIG} from '../../constants'
 import './login.scss';
 // eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';

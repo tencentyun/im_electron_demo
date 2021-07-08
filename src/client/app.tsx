@@ -9,8 +9,8 @@ import {  Provider } from "react-redux";
 
 import store from './store'
 
-import { Login } from './pages/Login';
-import { Home } from './pages/home/Home';
+import { Login } from './pages/login';
+import { Home } from './pages/home';
 import timRenderInstance from './utils/timRenderInstance';
 
 timRenderInstance.TIMInit().then(({data})=>{
