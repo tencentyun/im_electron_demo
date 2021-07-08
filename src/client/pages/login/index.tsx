@@ -1,5 +1,6 @@
 import React, { FC, useState } from 'react';
 import { RouteComponentProps } from "react-router-dom";
+import { useDispatch } from 'react-redux';
 
 import { Tabs, TabPanel, Input, Button, Checkbox } from "@tencent/tea-component";
 import timRenderInstance from '../../utils/timRenderInstance';
@@ -10,11 +11,14 @@ import './login.scss';
 // eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
 
+import { setIsLogInAction } from '../../store/actions/login';
+
 type Props = RouteComponentProps
 
 export const Login: FC<Props> = ({ history }) => {
     const [sdkAppid, setSdkAppid] = useState(DEFAULT_UID);
     const [usersig, setUserSig] = useState(DEFAULT_USER_SIG);
+    const dispatch = useDispatch();
 
     const handleLoginClick = async () => {
         const params:loginParam = {
@@ -24,7 +28,8 @@ export const Login: FC<Props> = ({ history }) => {
         const { data: { code,data,desc,json_param }} = await timRenderInstance.TIMLogin(params);
         console.log(code,data,desc,json_param)
         if(code === 0) {
-            history.replace('/home/message')
+            dispatch(setIsLogInAction(true));
+            history.replace('/home/message');
         }
     }
 

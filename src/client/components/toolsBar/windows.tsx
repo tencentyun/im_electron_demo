@@ -1,6 +1,6 @@
 import React from "react"
 import { closeWin, maxSizeWin, minSizeWin } from "../../utils/tools"
-import './toolsBar.scss'
+import './toolsbar.scss'
 export const Windows = (): JSX.Element=>{
 
     return (

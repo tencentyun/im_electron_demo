@@ -16,30 +16,30 @@ const settingsConfig = [
     {
         id: 'accountSetting',
         name: '账号设置',
-        component: AccountSetting()
     },
     {
         id: 'commonSetting',
         name: '通用设置',
-        component: CommonSetting()
     },
     {
         id: 'fileManager',
         name: '文件管理',
-        component: FileManager()
     },
     {
         id: 'connectUs',
         name: '联系我们',
-        component: ConnectUs()
     }
 ]
 
 export const Setting: FC<Props> = () => {
     const [activedId,  setActiveId] = useState('accountSetting');
 
-
-    const getDisplayComponent = () => settingsConfig.find((item) => item.id === activedId)?.component;
+    const DisplayComponent = {
+        accountSetting: AccountSetting,
+        commonSetting: CommonSetting,
+        fileManager: FileManager,
+        connectUs: ConnectUs
+    }[activedId]
 
     const handleNavClick = (id: string): void => setActiveId(id);
 
@@ -63,9 +63,7 @@ export const Setting: FC<Props> = () => {
                 }
             </div>
             <div className="settings-content">
-                {
-                    getDisplayComponent()
-                }
+                <DisplayComponent />         
             </div>
         </div>
     )
