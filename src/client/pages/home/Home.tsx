@@ -38,10 +38,8 @@ export const Home = (): JSX.Element => {
             {
                 navList.map(({id, address}) => {
                     return (
-                        <li className='nav--item' id={id}>
-                            <Link to={address} className={`nav--link ${id} ${addActiveClass(id)}`} onClick={() => handleLinkClick(id)}>
-                                {/* <img src={icon}></img> */}
-                            </Link>
+                        <li className='nav--item' key={id}>
+                            <Link to={address} className={`nav--link ${id} ${addActiveClass(id)}`} onClick={() => handleLinkClick(id)} />
                         </li>
                     )
                 })

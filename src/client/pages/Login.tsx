@@ -31,7 +31,7 @@ export const Login: FC<Props> = ({ history }) => {
         const { data: { code,data,desc,json_param }} = await timRenderInstance.TIMLogin(params);
         console.log(code,data,desc,json_param)
         if(code === 0) {
-            history.replace('/home')
+            history.replace('/home/message')
         }
     }
 
