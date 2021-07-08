@@ -1,9 +1,20 @@
 import React from 'react';
+import { shell } from 'electron';
 import { Button } from '@tencent/tea-component';
+import { PURCHASE_LINK, CONTACT_LINK} from '../../constants';
 
 import './connectUs.scss';
 
-export const ConnectUs = () => {
+export const ConnectUs = (): JSX.Element => {
+    const handlePurchaseClick = () => {
+        shell.openExternal(PURCHASE_LINK);
+    };
+
+    const handleContactClick = () => {
+        shell.openExternal(CONTACT_LINK);
+    }
+
+
     return (
         <div className="connect">
             <header className="connect-header">
@@ -26,8 +37,8 @@ export const ConnectUs = () => {
                 </div>
                 <div className="im-logo"></div>
                 <div className="connect-us-button">
-                    <Button type="primary" className="connect-us-button--purchase">立即选购</Button>
-                    <Button type="weak" className="connect-us-button--contact">联系我们</Button>
+                    <Button type="primary" onClick={handlePurchaseClick}  className="connect-us-button--purchase">立即选购</Button>
+                    <Button type="weak" onClick={handleContactClick} className="connect-us-button--contact">联系我们</Button>
                 </div>
             </section>
         </div>

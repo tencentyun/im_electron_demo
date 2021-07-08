@@ -1,27 +1,19 @@
 import React, { FC, useState } from 'react';
 import { RouteComponentProps } from "react-router-dom";
-import { useSelector, useDispatch } from 'react-redux';
 
 import { Tabs, TabPanel, Input, Button, Card } from "@tencent/tea-component";
-import {incrementAction, decrementAction} from '../store/actions';
-import timRenderInstance from '../utils/timRenderInstance';
+import timRenderInstance from '../../utils/timRenderInstance';
 
-
+import { DEFAULT_UID, DEFAULT_USER_SIG} from '../../constants'
 import './login.scss';
 // eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
 
 type Props = RouteComponentProps
-const defaultUserId = "3708";
-
-const defaultUserSig= "eJyrVgrxCdYrSy1SslIy0jNQ0gHzM1NS80oy0zLBwsbmBhZQ8eKU7MSCgswUJStDEwMDQwtzY1MjiExqRUFmUSpQ3NTU1MjAwAAiWpKZCxIzMzKxNDU3NjGDmpKZDjQ2LKnAz6Q0J9s3LdQsSrvA28kvKinY1LvIOdE9yDk13DEp0SIi2zWtND*53FapFgB-kjCC";
 
 export const Login: FC<Props> = ({ history }) => {
-    const dispatch = useDispatch();
-    const [sdkAppid, setSdkAppid] = useState(defaultUserId);
-    const [usersig, setUserSig] = useState(defaultUserSig);
-
-    const number = useSelector(state => state);
+    const [sdkAppid, setSdkAppid] = useState(DEFAULT_UID);
+    const [usersig, setUserSig] = useState(DEFAULT_USER_SIG);
 
     const handleLoginClick = async () => {
         const params:loginParam = {
@@ -31,17 +23,9 @@ export const Login: FC<Props> = ({ history }) => {
         const { data: { code,data,desc,json_param }} = await timRenderInstance.TIMLogin(params);
         console.log(code,data,desc,json_param)
         if(code === 0) {
-            history.replace('/home')
+            history.replace('/home/message')
         }
     }
-
-    const handleIncrement = () => {
-        dispatch(incrementAction);
-    };
-
-    const handleDecrement = () => {
-        dispatch(decrementAction);
-    };
 
     const tabs = [
         {id: 'verifyCodeLogin', label: '验证码登陆'},
@@ -64,12 +48,12 @@ export const Login: FC<Props> = ({ history }) => {
                     <h2 className="login--context__title">登陆IM</h2>
                     <Tabs tabs={tabs} placement="top" tabBarRender={customizeTabBarRender}>
                         <TabPanel id="verifyCodeLogin">
-                            <Input placeholder="请输入用户名" className="login--input"></Input>
-                            <Input placeholder="请输入密码" className="login--input"></Input>
+                            <Input placeholder="请输入用户名" className="login--input" />
+                            <Input placeholder="请输入密码" className="login--input" />
                         </TabPanel>
                         <TabPanel id="passwordLogin">
-                            <Input placeholder="请输入userid" value={sdkAppid} className="login--input" onChange={(val) => { setSdkAppid(val)}}></Input>
-                            <Input placeholder="请输入usersig"  value={usersig} className="login--input" onChange={(val) => setUserSig(val)}></Input>
+                            <Input placeholder="请输入userid" value={sdkAppid} className="login--input" onChange={(val) => { setSdkAppid(val)}} />
+                            <Input placeholder="请输入usersig"  value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />
                         </TabPanel>
                     </Tabs>
                     <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}> 登陆</Button>

@@ -26,7 +26,6 @@
  * ```
  */
 
-import './index.css';
 import "@tencent/tea-component/dist/tea.css";
 import './client/app';
 
