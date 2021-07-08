@@ -14,7 +14,6 @@ export const ConnectUs = (): JSX.Element => {
         shell.openExternal(CONTACT_LINK);
     }
 
-
     return (
         <div className="connect">
             <header className="connect-header">

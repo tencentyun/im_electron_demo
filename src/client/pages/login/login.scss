@@ -1,33 +1,42 @@
+// @import url('../../assets/_basic.scss');
+
+@function toRem($value) {
+    $remValue: ($value / 16) + rem; 
+    @return $remValue;
+}
+
 .login {
-    padding: 50px;
+    padding: toRem(103) toRem(80);
     display: flex;
     justify-content: space-between;
 
-    &--about, &--context {
-        width: 300px;
-        // height: 400px;
-    }
-
     &--context {
-        padding: 70px 22px 70px 22px;
+        box-shadow: 0px 1px 16px 0px rgba(0, 50, 150, 0.08);
+        border-radius: 8px;
+        padding: toRem(70) toRem(22);
         .customize-tab-bar {
-            margin-bottom: 5px;
+            margin-bottom: toRem(5);
             padding: 0;
             &.is-active {
                 color:#006eff
             }
         }
         &__title {
-            margin-bottom: 20px;
+            margin-bottom: toRem(30);
         }
     }
 
     &--input {
         width: 100%;
-        margin-bottom: 18px;
+        margin-bottom: toRem(10);
     }
 
     &--button {
         width: 100%;
+    }
+
+    &--auto {
+        color: #888888;
+        margin-bottom: toRem(30);
     }
 }

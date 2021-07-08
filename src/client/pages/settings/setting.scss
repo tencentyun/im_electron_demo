@@ -28,19 +28,15 @@
                 height: 36px;
 
                 &.accountSetting {
-                    background-color: #006EFF;
-                    background-image: url('../../assets/icon/accountSetting.png');
-                    background-repeat: no-repeat;
-                    background-position: center;
-                    border-radius: 50%;
+                    background-image: url('../../assets/icon/account-setting.svg');
                 }
 
                 &.commonSetting {
-                    background: url('../../assets/icon/commonSetting.png');
+                    background: url('../../assets/icon/common-setting.svg');
                 }
 
                 &.fileManager {
-                    background: url('../../assets/icon/file-manager.png');
+                    background: url('../../assets/icon/file-manager.svg');
                 }
 
                 &.connectUs {

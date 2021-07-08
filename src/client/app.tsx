@@ -11,6 +11,7 @@ import store from './store'
 
 import { Login } from './pages/login';
 import { Home } from './pages/home';
+import './assets/_basic.scss';
 import timRenderInstance from './utils/timRenderInstance';
 
 timRenderInstance.TIMInit().then(({data})=>{

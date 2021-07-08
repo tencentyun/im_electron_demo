@@ -31,23 +31,23 @@
             display: block;
 
             &.message {
-                background: url('../../assets/icon/message.png');
+                background: url('../../assets/icon/message.svg');
                 &.is-active {
-                    background:  url('../../assets/icon/message-active.png');
+                    background:  url('../../assets/icon/message-active.svg');
                 }
             }
 
             &.contacts {
-                background: url('../../assets/icon/contacts.png');
+                background: url('../../assets/icon/contacts.svg');
                 &.is-active {
-                    background:  url('../../assets/icon/contacts-active.png');
+                    background:  url('../../assets/icon/contacts-active.svg');
                 }
             }
 
             &.settings {
-                background: url('../../assets/icon/settings.png');
+                background: url('../../assets/icon/settings.svg');
                 &.is-active {
-                    background:  url('../../assets/icon/settings-active.png');
+                    background:  url('../../assets/icon/settings-active.svg');
                 }
             }
            
