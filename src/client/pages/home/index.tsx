@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import { Link, Switch, Route } from 'react-router-dom';
+import { Avatar } from '../../components/avatar/avatar';
 
 import { Connection } from '../Connection';
 import { Message } from '../Message';
@@ -19,13 +20,13 @@ const navList = [
         address: '/home/connection',
 
     },
-    {
-        id: 'settings',
-        title: '设置',
-        address: '/home/setting',
-    }
+    // {
+    //     id: 'settings',
+    //     title: '设置',
+    //     address: '/home/setting',
+    // }
 ]
-
+const defautUrl = "https://upload-dianshi-1255598498.file.myqcloud.com/sll-6f612b72f856eb5be01bce048f55032222d3d0f8.jpg";
 export const Home = (): JSX.Element => {
     const [activedId, setActiveId] = useState('message')
 
@@ -34,16 +35,27 @@ export const Home = (): JSX.Element => {
     const handleLinkClick = (id: string): void => setActiveId(id);
 
     return <div className="home">
+        
         <div className="nav">
+            {/* 头像 */}
+            <Avatar
+                url={ defautUrl }
+                extralClass="userinfo-avatar"
+            />
+            {/* 菜单 */}
             {
                 navList.map(({id, address}) => {
                     return (
-                        <li className='nav--item' key={id}>
+                        <div className='nav--item' key={id}>
                             <Link to={address} className={`nav--link ${id} ${addActiveClass(id)}`} onClick={() => handleLinkClick(id)} />
-                        </li>
+                        </div>
                     )
                 })
             }
+            {/* 设置 */}
+            <div className='nav--item'>
+                <Link to="/home/setting" className={`nav--link settings ${addActiveClass('settings')}`} onClick={() => handleLinkClick('settings')}/>
+            </div>
         </div>
         <div className="content">
             <Switch>

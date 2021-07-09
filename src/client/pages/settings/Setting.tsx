@@ -5,9 +5,9 @@ import { AccountSetting } from './AccountSetting';
 import { CommonSetting } from './CommonSetting';
 import { FileManager } from './FileManager';
 import { ConnectUs } from './ConnectUs';
-import { SearchBox } from '../../components/SearchBox';
 
 import './setting.scss';
+import { SearchBox } from '../../components/searchBox/SearchBox';
 
 
 type Props = RouteComponentProps
