@@ -34,6 +34,8 @@ const createWindow = (): void => {
     }
   });
 
+  global.WIN = mainWindow;
+
   mainWindow.on('ready-to-show',() => {
     console.log('mainwindow ready to show')
     mainWindow.show();

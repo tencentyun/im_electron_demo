@@ -1,6 +1,10 @@
 import { CLOSE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL } from "../../const/const";
 
-const { ipcRenderer } = require('electron')
+import  { ipcRenderer, remote } from 'electron';
+
+const dialog = remote.dialog;
+const WIN = remote.getCurrentWindow();
+
 const isWin = () => {
     return process.platform === 'win32';
 }
@@ -19,9 +23,13 @@ const closeWin = () => {
         type:CLOSE
     })
 }
+
+const openDialog = (options) => dialog.showOpenDialog(WIN, options);
+
 export {
     isWin,
     minSizeWin,
     maxSizeWin,
-    closeWin
+    closeWin,
+    openDialog
 }
