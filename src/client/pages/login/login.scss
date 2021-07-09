@@ -1,5 +1,3 @@
-// @import url('../../assets/_basic.scss');
-
 @function toRem($value) {
     $remValue: ($value / 16) + rem; 
     @return $remValue;

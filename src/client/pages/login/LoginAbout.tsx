@@ -6,7 +6,7 @@ import './login-about.scss';
 import loginBg from '../../assets/icon/login-bg.png';
 import { PURCHASE_LINK, CONTACT_LINK } from '../../constants';
 
-export const LoginAbout = () => {
+export const LoginAbout = (): JSX.Element => {
     const handlePurchaseClick = () => {
         shell.openExternal(PURCHASE_LINK);
     };
