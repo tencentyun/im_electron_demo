@@ -2,8 +2,8 @@ import React, {useState} from 'react';
 import { Link, Switch, Route } from 'react-router-dom';
 import { Avatar } from '../../components/avatar/avatar';
 
-import { Connection } from '../Connection';
 import { Message } from '../Message';
+import { RelationShip } from '../relationship/relationship';
 import { Setting } from '../settings/Setting';
 
 import './home.scss';
@@ -60,7 +60,7 @@ export const Home = (): JSX.Element => {
         <div className="content">
             <Switch>
                 <Route path="/home/message" component={Message}></Route>
-                <Route path="/home/connection" component={Connection}></Route>
+                <Route path="/home/connection" component={RelationShip}></Route>
                 <Route path="/home/setting" component={Setting}></Route>
             </Switch>
         </div>
