@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Link, Switch, Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Avatar } from '../../components/avatar/avatar';
 
 import { Message } from '../Message';
@@ -26,9 +27,10 @@ const navList = [
     //     address: '/home/setting',
     // }
 ]
-const defautUrl = "https://upload-dianshi-1255598498.file.myqcloud.com/sll-6f612b72f856eb5be01bce048f55032222d3d0f8.jpg";
+
 export const Home = (): JSX.Element => {
-    const [activedId, setActiveId] = useState('message')
+    const [activedId, setActiveId] = useState('message');
+    const { faceUrl } = useSelector((state: State.RootState) => state.userInfo);
 
     const addActiveClass = (id: string) : string => activedId === id ? 'is-active' : '';
 
@@ -39,7 +41,7 @@ export const Home = (): JSX.Element => {
         <div className="nav">
             {/* 头像 */}
             <Avatar
-                url={ defautUrl }
+                url={ faceUrl }
                 extralClass="userinfo-avatar"
             />
             {/* 菜单 */}
