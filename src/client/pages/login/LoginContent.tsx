@@ -40,7 +40,7 @@ export const LoginContent = (): JSX.Element => {
                     friendship_getprofilelist_param_identifier_array: [sdkAppid]
                 },
             });
-
+            console.log(code,json_param)
             const {
                 user_profile_role: role, 
                 user_profile_face_url: faceUrl, 

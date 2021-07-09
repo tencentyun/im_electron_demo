@@ -16,12 +16,23 @@ import timRenderInstance from './utils/timRenderInstance';
 import { ToolsBar } from './components/toolsBar/toolsBar';
 
 import './app.scss'
+import initListeners from './imLiseners';
+let inited = false
 
-timRenderInstance.TIMInit().then(({data})=>{
-    if(data === 0){
-        console.log("初始化成功")
-    }
-})
+// 热更新导致每次都初始化，所以这里做下处理，在生产环境也是没问题的
+
+if(!inited){
+    timRenderInstance.TIMInit().then(({data})=>{
+        if(data === 0){
+            inited = true;
+            console.log("初始化成功")
+            initListeners(function(callback){
+                const { data,type } = callback;
+                console.log(data , type)
+            });
+        }
+    })
+}
 
 const App = () => (
     <div id="app-container">
