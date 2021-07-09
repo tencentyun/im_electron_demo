@@ -1,0 +1,12 @@
+.avatar{
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+}
+.avatar.default {
+    width: 40px;
+    height: 40px;
+    background-size: 40px 40px;
+}
