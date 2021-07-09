@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Tabs, TabPanel, Input, Button, Checkbox } from "@tencent/tea-component";
 import { DEFAULT_UID, DEFAULT_USER_SIG} from '../../constants';
 import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
+import { setUserInfo } from '../../store/actions/user';
 // eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
 
@@ -31,10 +32,30 @@ export const LoginContent = (): JSX.Element => {
             userSig: usersig
         }
         const { data: { code,data,desc,json_param }} = await timRenderInstance.TIMLogin(params);
-        console.log(code,data,desc,json_param)
+        console.log(code,data,desc,json_param);
         if(code === 0) {
             dispatch(setIsLogInAction(true));
-            history.replace('/home/message');
+            const {data: {code, json_param}} = await timRenderInstance.TIMProfileGetUserProfileList({
+                json_get_user_profile_list_param: {
+                    friendship_getprofilelist_param_identifier_array: [sdkAppid]
+                },
+            });
+
+            const {
+                user_profile_role: role, 
+                user_profile_face_url: faceUrl, 
+                user_profile_nick_name: nickName, 
+                user_profile_identifier: userId
+            } = JSON.parse(json_param)[0];
+            if(code === 0) {
+                dispatch(setUserInfo({
+                    userId,
+                    faceUrl,
+                    nickName,
+                    role
+                }));
+                history.replace('/home/message');
+            } 
         }
     }
 
