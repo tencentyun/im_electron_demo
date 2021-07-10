@@ -3,9 +3,13 @@ declare namespace State {
         login: {
             isLogin: boolean;
         },
-        userInfo: userInfo
+        userInfo: userInfo,
+        conversation: conversation
     }
 
+    export type conversation = {
+        unreadCount: number
+    }
     export type userInfo = {
         userId: string,
         faceUrl: string,
