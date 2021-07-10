@@ -2,7 +2,7 @@
     display: flex;
     height: 100%;
     .settings-nav {
-        width: 200px;
+        width: 256px;
         border-right: 1px solid rgba(238, 238, 238, 1);
 
         &--item {
@@ -52,6 +52,6 @@
     }
 
     .settings-content {
-        width: 100%;
+        flex: 1;
     }
 }

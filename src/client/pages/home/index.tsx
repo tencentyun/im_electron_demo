@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Link, Switch, Route } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { Avatar } from '../../components/avatar/avatar';
+
 
 import { Message } from '../Message';
 import { RelationShip } from '../relationship/relationship';
 import { Setting } from '../settings/Setting';
 
 import './home.scss';
+import { UnreadCount } from './unreadCount';
+import { Profile } from './profile';
 
 const navList = [
     {
@@ -30,7 +31,6 @@ const navList = [
 
 export const Home = (): JSX.Element => {
     const [activedId, setActiveId] = useState('message');
-    const { faceUrl } = useSelector((state: State.RootState) => state.userInfo);
 
     const addActiveClass = (id: string) : string => activedId === id ? 'is-active' : '';
 
@@ -39,16 +39,17 @@ export const Home = (): JSX.Element => {
     return <div className="home">
         
         <div className="nav">
-            {/* 头像 */}
-            <Avatar
-                url={ faceUrl }
-                extralClass="userinfo-avatar"
-            />
+            {/* 头像以及个人信心 */}
+            <Profile />
             {/* 菜单 */}
             {
                 navList.map(({id, address}) => {
                     return (
                         <div className='nav--item' key={id}>
+                            {/* 会话未读的小红点 */}
+                            {
+                                id === 'message' ? <UnreadCount /> : null
+                            }
                             <Link to={address} className={`nav--link ${id} ${addActiveClass(id)}`} onClick={() => handleLinkClick(id)} />
                         </div>
                     )
