@@ -32,7 +32,7 @@ export const Profile = (): JSX.Element => {
     useEffect(()=>{
         getSelfInfo()
     },[])
-    console.log(faceUrl,nickName,userId,'个人信息从新渲染')
+
     return (
         <div className="userinfo-avatar">
             <Avatar

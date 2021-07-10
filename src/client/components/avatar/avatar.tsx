@@ -16,7 +16,7 @@ interface AvatarProps  {
 
 
 
-export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass,nickName:nick,userID:uid,groupID:gid } ): JSX.Element => {
+export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass = '',nickName:nick,userID:uid,groupID:gid } ): JSX.Element => {
     const [nickName,setNickName] = useState(nick)
     const [url,setUrl] = useState(avatar)
     const [userID,setUserID] = useState(uid)

@@ -25,7 +25,7 @@ export const UnreadCount =  (): JSX.Element => {
             unreadCount === 0 ? null : (
                 <div className="unread" >
                     {
-                        unreadCount > 9 ? '...': unreadCount
+                        unreadCount > 9 ? '···': unreadCount
                     }
                 </div>
             )

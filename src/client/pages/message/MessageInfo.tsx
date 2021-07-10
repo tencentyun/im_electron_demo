@@ -14,12 +14,12 @@ type Props = {
 };
 
 export const MessageInfo = (props: Props): JSX.Element => {
-    const { convProfile: {faceUrl, name} } = props;
+    const { convProfile: {faceUrl, name}, convId } = props;
     return (
         <div className="message-info">
             <header className="message-info__header">
-                <Avatar url={faceUrl} />
-                <span className="message-info__header--name">{name}</span>
+                <Avatar url={faceUrl} size="small" nickName = {name} userID = {convId} groupID = {convId}/>
+                <span className="message-info__header--name">{name || convId}</span>
             </header>
             <section className="message-info__content">
                 <div className="message-info__content--view">

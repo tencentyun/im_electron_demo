@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, Switch, Route } from 'react-router-dom';
 
 
-import { Message } from '../message';
+import { Message } from '../message/index';
 import { RelationShip } from '../relationship/relationship';
 import { Setting } from '../settings/Setting';
 

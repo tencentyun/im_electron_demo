@@ -4,8 +4,8 @@
 
 .home {
     flex: 1;
+    overflow:hidden;
     display: flex;
-    max-height: 100vh;
     .nav {
         display: flex;
         flex-direction: column;
@@ -35,6 +35,8 @@
                 top: 0;
                 border-radius: 6px;
                 font-size: 10px;
+                transform: scale(10 / 12);
+                transform-origin: left center;
                 line-height: 12px;
                 text-align: center;
                 color: #fff;
@@ -71,7 +73,8 @@
         }
     }
     .content {
-        flex: 1
+        flex: 1;
+        overflow:hidden;
     }
     .userinfo-avatar{
         margin-top: 24px;

@@ -17,25 +17,28 @@ import { ToolsBar } from './components/toolsBar/toolsBar';
 
 import './app.scss'
 import initListeners from './imLiseners';
-
+let isInited = false
 
 const App = () => {
-    const [isInited,setIsInited] = useState(false);
+    
 
 
     const initIMSDK = () => {
         if(!isInited){
             timRenderInstance.TIMInit().then(({data})=>{
                 if(data === 0){
-                    setIsInited(true)
+                    isInited = true
                     console.log("初始化成功")
-                    initListeners(function(callback){
+                    initListeners((callback) => {
                         const { data,type } = callback;
                         console.info('======================== 接收到IM事件 start ==============================')
                         console.log("类型：", type)
                         console.log('数据：', data)
                         console.info('======================== 接收到IM事件 end ==============================')
                         switch (type) {
+                            /**
+                             * 处理收到消息逻辑
+                             */
                             case "TIMAddRecvNewMsgCallback":
                                 _handeMessage(data);
                                 break;
@@ -46,7 +49,7 @@ const App = () => {
         }
     }
     const _handeMessage = (messages:[]) => {
-
+        console.log(messages)
     }
     useEffect(()=>{
         initIMSDK()

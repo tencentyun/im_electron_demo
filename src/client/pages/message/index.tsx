@@ -41,37 +41,39 @@ export const Message = (): JSX.Element => {
     const handleConvListClick = convInfo => setActiveConvInfo(convInfo);
 
     const getLastMsgInfo = lastMsg => {
-        const {message_elem_array,  message_is_read} = lastMsg;
+        const {message_elem_array,  message_is_peer_read} = lastMsg;
         const firstMsg = message_elem_array[0];
         const displayLastMsg = {
             '0': firstMsg.text_elem_content,
             '1': '[图片]',
             '2': '[声音]',
-            '3': '[自定义元素]',
-            '4': '[文件元素]',
-            '5': '[群组系统消息元素]',
-            '6': '[表情元素]',
-            '7': '[位置元素]',
-            '8': '[群组系统通知元素]',
-            '9': '[视频元素]',
+            '3': '[自定义消息]',
+            '4': '[文件消息]',
+            '5': '[群组系统消息]',
+            '6': '[表情消息]',
+            '7': '[位置消息]',
+            '8': '[群组系统通知]',
+            '9': '[视频消息]',
             '10': '[关系]',
             '11': '[资料]',
-            '12': '[合并消息元素]',
+            '12': '[合并消息]',
         }[firstMsg.elem_type];
 
         return <React.Fragment>
-            <span className={`icon ${message_is_read ? 'is-read' : ''}` } />
+            <span className={`icon ${message_is_peer_read ? 'is-read' : ''}` } />
             <span className="text">{displayLastMsg}</span>
         </React.Fragment>;
     }
-
+    const getDisplayUnread = (count) => {
+        return count > 9 ? '···' : count
+    }
     return (
         <div className="message-content">
             <div className="message-list">
-                <SearchBox/>
+                <div className="search-wrap"><SearchBox/></div>
                 <div className="conversion-list">
                     {
-                        conversionList.map(({conv_profile, conv_id, conv_type, conv_last_msg}) => {
+                        conversionList.map(({conv_profile, conv_id, conv_type, conv_last_msg, conv_unread_num }) => {
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
                             return (
@@ -83,9 +85,14 @@ export const Message = (): JSX.Element => {
                                         name: nickName
                                     }
                                 })}>
-                                    <Avatar url={faceUrl || defautUrl}/>
+                                    <div className="conversion-list__item--profile">
+                                        {
+                                            conv_unread_num > 0 ? <div className="conversion-list__item--profile___unread">{ getDisplayUnread(conv_unread_num) }</div> : null
+                                        }
+                                        <Avatar url={faceUrl} nickName={nickName} userID={conv_id} groupID={conv_id} size='small'/>
+                                    </div>
                                     <div className="conversion-list__item--info">
-                                        <div className="conversion-list__item--nick-name">{nickName || '默认昵称'}</div>
+                                        <div className="conversion-list__item--nick-name">{nickName || conv_id }</div>
                                         <div className="conversion-list__item--last-message">{getLastMsgInfo(conv_last_msg)}</div>
                                     </div>
                                 </div>
