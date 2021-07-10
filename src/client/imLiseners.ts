@@ -22,10 +22,10 @@ export default function initListeners(callback:InitListenersCallback){
     * 在用户登录之后，ImSDK会拉取离线消息，为了不漏掉消息通知，需要在登录之前注册新消息通知。
     */
     timRenderInstance.TIMAddRecvNewMsgCallback({
-        callback:(...args)=>{
+        callback:(args)=>{
             callback({
                 type: 'TIMAddRecvNewMsgCallback',
-                data: args
+                data: JSON.parse(args[0])
             })
         }
     })

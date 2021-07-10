@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import {
     HashRouter as Router,
@@ -17,35 +17,53 @@ import { ToolsBar } from './components/toolsBar/toolsBar';
 
 import './app.scss'
 import initListeners from './imLiseners';
-let inited = false
 
-// 热更新导致每次都初始化，所以这里做下处理，在生产环境也是没问题的
 
-if(!inited){
-    timRenderInstance.TIMInit().then(({data})=>{
-        if(data === 0){
-            inited = true;
-            console.log("初始化成功")
-            initListeners(function(callback){
-                const { data,type } = callback;
-                console.log(data , type)
-            });
+const App = () => {
+    const [isInited,setIsInited] = useState(false);
+
+
+    const initIMSDK = () => {
+        if(!isInited){
+            timRenderInstance.TIMInit().then(({data})=>{
+                if(data === 0){
+                    setIsInited(true)
+                    console.log("初始化成功")
+                    initListeners(function(callback){
+                        const { data,type } = callback;
+                        console.info('======================== 接收到IM事件 start ==============================')
+                        console.log("类型：", type)
+                        console.log('数据：', data)
+                        console.info('======================== 接收到IM事件 end ==============================')
+                        switch (type) {
+                            case "TIMAddRecvNewMsgCallback":
+                                _handeMessage(data);
+                                break;
+                        }
+                    });
+                }
+            })
         }
-    })
-}
+    }
+    const _handeMessage = (messages:[]) => {
 
-const App = () => (
-    <div id="app-container">
-        <ToolsBar></ToolsBar>
-        <Router>
-            <Switch>
-                <Route path='/home' component={Home} >
-                </Route>
-                <Route path='/' component={Login} />
-            </Switch>
-        </Router>
-    </div>
-)
+    }
+    useEffect(()=>{
+        initIMSDK()
+    },[])
+    return (
+        <div id="app-container">
+            <ToolsBar></ToolsBar>
+            <Router>
+                <Switch>
+                    <Route path='/home' component={Home} >
+                    </Route>
+                    <Route path='/' component={Login} />
+                </Switch>
+            </Router>
+        </div>
+    )
+}
 
 ReactDOM.render(<Provider store={store}>
     <App/>
