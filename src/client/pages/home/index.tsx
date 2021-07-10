@@ -3,7 +3,7 @@ import { Link, Switch, Route } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Avatar } from '../../components/avatar/avatar';
 
-import { Message } from '../Message';
+import { Message } from '../message';
 import { RelationShip } from '../relationship/relationship';
 import { Setting } from '../settings/Setting';
 

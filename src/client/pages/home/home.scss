@@ -5,6 +5,7 @@
 .home {
     flex: 1;
     display: flex;
+    max-height: 100vh;
     .nav {
         display: flex;
         flex-direction: column;
@@ -22,7 +23,7 @@
             //单独对设置按钮设置样式
             &:last-child {
                 position: absolute;
-                bottom: 20px;
+                bottom: 30px;
             }
         }
 
