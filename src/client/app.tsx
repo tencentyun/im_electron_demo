@@ -17,6 +17,7 @@ import { ToolsBar } from './components/toolsBar/toolsBar';
 
 import './app.scss'
 import initListeners from './imLiseners';
+// eslint-disable-next-line import/no-unresolved
 let isInited = false
 
 const App = () => {
@@ -42,6 +43,12 @@ const App = () => {
                             case "TIMAddRecvNewMsgCallback":
                                 _handeMessage(data);
                                 break;
+                            /**
+                             * 会话改变
+                             */
+                            case "TIMSetConvEventCallback":
+                                _handleConversaion(data);
+                                break;
                         }
                     });
                 }
@@ -49,7 +56,41 @@ const App = () => {
         }
     }
     const _handeMessage = (messages:[]) => {
-        console.log(messages)
+    }
+    const _handleConversaion = (conv) => {
+        const { type, data} = conv;
+        switch(type){
+            /**
+             * 新增会话
+             */
+            case 0:
+                console.log('新增会话')
+                break;
+            /**
+             * 删除会话
+             */
+            case 1:
+                console.log('删除会话')
+                break;
+            /**
+             * 会话同步完成
+             */
+            case 2:
+                console.log('同步会话完成')
+                break;
+            /**
+             * 会话开始同步
+             */
+            case 3:
+                console.log('开始同步会话')
+                break;
+            /**
+             * 会话更新
+             */
+            case 4:
+                console.log('会话更新')
+                break;
+        }
     }
     useEffect(()=>{
         initIMSDK()
