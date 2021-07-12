@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { Avatar } from '../../components/avatar/avatar';
-import { getMsgList } from './api';
+import { getMsgList, markMessageAsRead } from './api';
 import { MessageInput } from './MessageInput';
 import { MessageView } from './MessageView';
 
@@ -18,8 +18,8 @@ type Info = {
 
 export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
-    const { conv_id, conv_type  } = props;
-
+    const { conv_id, conv_type, conv_last_msg  } = props;
+    const { message_msg_id } = conv_last_msg;
     const { historyMessageList } = useSelector((state: State.RootState) => state.historyMessage);
 
     const getDisplayConvInfo = ()=> {
@@ -38,6 +38,20 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
         }
         return info
     }
+    const setMessageRead = ()=>{
+        // 个人会话且未读数大于0才设置已读
+        if(props.conv_unread_num > 0) {
+            markMessageAsRead(conv_id,conv_type,message_msg_id).then(({ code,...res })=>{
+                if(code === 0){
+                    console.log("设置会话已读成功")
+                }else{
+                    console.log("设置会话已读失败",code, res)
+                }
+            }).catch(err=>{
+                console.log("设置会话已读失败", err)
+            })
+        }
+    }
     const { faceUrl,nickName } = getDisplayConvInfo();
     const dispatch = useDispatch();
 
@@ -46,7 +60,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
             const messageResponse = await getMsgList(conv_id, conv_type);
             const msgMap = new Map()
             msgMap.set(conv_id,messageResponse)
-            
+            setMessageRead()
             dispatch(addMessage(msgMap))
         }
         if(conv_id){

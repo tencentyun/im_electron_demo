@@ -3,7 +3,6 @@ export const UPDATE_CONVERSATIONLIST = 'UPDATE_CONVERSATIONLIST'
 export const UPDATE_CURRENT_SELECTED_CONVERSATION = 'UPDATE_CURRENT_SELECTED_CONVERSATION'
 
 
-
 export const setUnreadCount = (payload: number) : State.actcionType<number> => ({
     type: SET_UNREAD_COUNT,
     payload
@@ -18,3 +17,4 @@ export const updateCurrentSelectedConversation = (payload :State.conversationIte
     type: UPDATE_CURRENT_SELECTED_CONVERSATION,
     payload
 })
+

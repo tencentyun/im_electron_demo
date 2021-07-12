@@ -149,8 +149,11 @@ export default function initListeners(callback:InitListenersCallback){
     * 
     */
     timRenderInstance.TIMSetConvTotalUnreadMessageCountChangedCallback({
-        callback:()=>{
-
+        callback:(...args)=>{
+            callback({
+                type: 'TIMSetConvTotalUnreadMessageCountChangedCallback',
+                data: args[0][0]
+            })
         }
     })
 
