@@ -9,8 +9,6 @@ import './message-info.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { addMessage } from '../../store/actions/message';
 
-import "./message-info.scss";
-
 import { AddUserPopover } from "./AddUserPopover";
 
 type Info = {
@@ -53,19 +51,20 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     const { faceUrl,nickName } = getDisplayConvInfo();
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        const getMessageList = async () => {
-            const messageResponse = await getMsgList(conv_id, conv_type);
-            const msgMap = new Map()
-            msgMap.set(conv_id,messageResponse)
-            setMessageRead()
-            dispatch(addMessage(msgMap))
-        }
-        if(conv_id){
-            getMessageList();
-        }
-    }, [conv_id]);
-
+  useEffect(() => {
+    const getMessageList = async () => {
+      const messageResponse = await getMsgList(conv_id, conv_type);
+      const payload = {
+          convId: conv_id,
+          message: messageResponse
+      }
+      setMessageRead()
+      dispatch(addMessage(payload));
+    };
+    if (conv_id) {
+      getMessageList();
+    }
+  }, [conv_id]);
 
   return (
     <div className="message-info">

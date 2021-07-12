@@ -45,7 +45,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
             userId,
         });
 
-        console.log('===response====', code, desc, json_params);
+        console.log('===response====', code, desc, JSON.parse(json_params));
 
         if(code === 0) {
             setText("");

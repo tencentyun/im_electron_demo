@@ -141,3 +141,16 @@ export const getConversionList = async () => {
     return conversitionListProfile;
 }
 
+export const msgReported = async ({convId, convType, msgId}) => {
+    const res =  await timRenderInstance.TIMMsgReportReaded(
+        {
+            conv_id: convId,
+            conv_type: convType,
+            message_id: msgId,
+            user_data: "123"
+        }
+    )
+
+    return res;
+}
+

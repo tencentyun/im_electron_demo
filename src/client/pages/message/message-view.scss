@@ -62,4 +62,20 @@
             background: #ECEEF2;
         }
     }
+
+    .right-menu {
+        box-shadow: 0px 1px 8px 0px rgba(0, 50, 150, 0.1);
+        border-radius: 2px;
+        background: #fff;
+    }
+
+    .right-click__item {
+        cursor: pointer;
+        padding: 10px 20px;
+        font-size: 14px;
+
+        &:hover {
+            background: #E8F2FF;
+        }
+    }
 }
