@@ -65,10 +65,10 @@ const getIds = conversionList => conversionList.reduce((acc, cur) => {
 }, { userIds: [], groupIds: [] });
 
 
-const addProfileForConversition = async conversitionList => {
+export const addProfileForConversition = async conversitionList => {
     const { userIds, groupIds } = getIds(conversitionList);
-    const userInfoList = await getUserInfoList(userIds);
-    const groupInfoList = await getGroupInfoList(groupIds);
+    const userInfoList = userIds.length ? await getUserInfoList(userIds) : [];
+    const groupInfoList = groupIds.length ? await getGroupInfoList(groupIds) : groupIds;
 
     return conversitionList.map(item => {
         const { conv_type, conv_id } = item;
@@ -98,7 +98,8 @@ export const getMsgList = async (convId, convType) => {
         },
         user_data: "123"
     });
-    console.log(JSON.parse(json_params));
+
+    return JSON.parse(json_params);
 }
 
 

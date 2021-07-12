@@ -1,6 +1,7 @@
 import { Button, PopConfirm } from "@tencent/tea-component";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { Avatar } from "../../../../components/avatar/avatar";
 import { deleteGroup, GroupList, quitGroup } from "../api";
 import "./group-item.scss";
 
@@ -48,7 +49,7 @@ export const GroupItem = (props: {
   return (
     <div className="group-item">
       <div className="group-item--left">
-        <img src={groupAvatar} className="group-item--left__avatar" alt="" />
+        <Avatar url={ groupAvatar }  nickName={groupName} groupID={ groupId }/>
         <span className="group-item--left__name">{groupName}</span>
       </div>
       <div className="group-item--right">

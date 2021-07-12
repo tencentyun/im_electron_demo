@@ -5,7 +5,7 @@ import {
     Switch,
     Route,
 } from 'react-router-dom';
-import {  Provider } from "react-redux";
+import {  Provider, useDispatch } from "react-redux";
 
 import store from './store'
 
@@ -17,11 +17,13 @@ import { ToolsBar } from './components/toolsBar/toolsBar';
 
 import './app.scss'
 import initListeners from './imLiseners';
+import { updateConversationList } from './store/actions/conversation';
+import { addProfileForConversition } from './pages/message/api';
 // eslint-disable-next-line import/no-unresolved
 let isInited = false
 
 const App = () => {
-    
+    const dispatch = useDispatch()
 
 
     const initIMSDK = () => {
@@ -77,6 +79,7 @@ const App = () => {
              */
             case 2:
                 console.log('同步会话完成')
+                _updateConversation(data)
                 break;
             /**
              * 会话开始同步
@@ -90,6 +93,13 @@ const App = () => {
             case 4:
                 console.log('会话更新')
                 break;
+        }
+    }
+    const _updateConversation =async (conversationList:Array<State.conversationItem>)=>{
+        if(conversationList.length){
+            const convList = await addProfileForConversition(conversationList);
+            console.log(convList)
+            dispatch(updateConversationList(convList))
         }
     }
     useEffect(()=>{

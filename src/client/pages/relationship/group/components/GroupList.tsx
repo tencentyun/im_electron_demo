@@ -1,5 +1,5 @@
 import React from "react";
-import useAsyncRetryFunc from "../../../../utils/useAsyncRetryFunc";
+import useAsyncRetryFunc from "../../../../utils/react-use/useAsyncRetryFunc";
 import { getJoinedGroupList } from "../api";
 import { GroupItem } from "./GroupItem";
 
