@@ -56,8 +56,12 @@ const App = () => {
                             case "TIMSetConvEventCallback":
                                 _handleConversaion(data);
                                 break;
+                            /**
+                             * 未读数改变
+                             */
                             case "TIMSetConvTotalUnreadMessageCountChangedCallback":
-                                _handleUnreadChange(data)
+                                _handleUnreadChange(data);
+                                break;
                         }
                     });
                 }

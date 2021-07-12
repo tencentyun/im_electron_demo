@@ -23,7 +23,9 @@ export const Message = (): JSX.Element => {
             dispatch(updateConversationList(response))
             console.log(response,'response')
             if(response.length){
-                dispatch(updateCurrentSelectedConversation(response[0]))
+                if(currentSelectedConversation === null){
+                    dispatch(updateCurrentSelectedConversation(response[0]))
+                }
             }
         }
         getData();
