@@ -1,0 +1,60 @@
+.message-view {
+    display: flex;
+    flex-direction: column-reverse;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 0 20px;
+    &:hover {
+        &::-webkit-scrollbar {
+            width:8px;
+            background-color:#fff;
+        }
+    } 
+    &::-webkit-scrollbar {
+        width:0px;
+        background-color:#fff;
+    }
+   
+    &::-webkit-scrollbar-track {
+        background-color:#fff;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        border-radius:8px;
+        box-shadow:inset 0 0 2px rgba(0,0,0,.3);
+        background-color:#d1d1d1;
+    }
+
+    &__item {
+        display: flex;
+        flex-direction: row;
+        margin-top: 20px;
+        
+
+        &.is-self {
+            flex-direction: row-reverse;
+
+            .face-url {
+                margin-right: 0;
+                margin-left: 8px;
+            }
+
+            .text {
+                background: #CCE0FE;
+            }
+        }
+
+        &--avatar {
+            margin-left: 0;
+            margin-right: 8px;
+        }
+
+        &--text {
+            padding: 12px;
+            font-size: 14px;
+            border-radius: 2px 8px 8px 8px;
+            background: #ECEEF2;
+        }
+    }
+}

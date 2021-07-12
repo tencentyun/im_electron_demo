@@ -98,7 +98,8 @@ export const getMsgList = async (convId, convType) => {
         },
         user_data: "123"
     });
-    console.log(JSON.parse(json_params));
+
+    return JSON.parse(json_params);
 }
 
 

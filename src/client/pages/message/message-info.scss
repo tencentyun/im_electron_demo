@@ -25,6 +25,7 @@
         max-height: 100vh;
 
         &--view {
+            max-height: calc(100vh - 250px);
             flex: 1;
             border-bottom: 1px solid #eee;
         }
