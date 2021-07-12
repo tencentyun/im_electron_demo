@@ -44,10 +44,12 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   useEffect(() => {
     const getMessageList = async () => {
       const messageResponse = await getMsgList(conv_id, conv_type);
-      const msgMap = new Map();
-      msgMap.set(conv_id, messageResponse);
+      const payload = {
+          convId: conv_id,
+          message: messageResponse
+      }
 
-      dispatch(addMessage(msgMap));
+      dispatch(addMessage(payload));
     };
     if (conv_id) {
       getMessageList();
