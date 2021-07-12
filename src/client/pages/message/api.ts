@@ -1,5 +1,34 @@
 import timRenderInstance from '../../utils/timRenderInstance';
 
+type SendMsgParams<T> = {
+    convId: string,
+    convType: number,
+    messageElementArray: [T]
+    userData?: string
+    userId: string
+}
+
+type TextMsg = {
+    elem_type: number,
+    text_elem_content: string,
+}
+
+type FaceMsg = {
+    elem_type: number,
+    face_elem_index: number,
+    face_elem_buf: string,
+}
+
+type MsgResponse = {
+    data: {
+        code: number,
+        desc: string,
+        json_params: string,
+        user_data: string,
+    }
+}
+
+
 const getUserInfoList = async (userIdList: Array<string>) => {
     const { data: { code, json_param } } = await timRenderInstance.TIMProfileGetUserProfileList({
         json_get_user_profile_list_param: {
@@ -37,16 +66,16 @@ const getIds = conversionList => conversionList.reduce((acc, cur) => {
 
 
 const addProfileForConversition = async conversitionList => {
-    const { userIds, groupIds} = getIds(conversitionList);
+    const { userIds, groupIds } = getIds(conversitionList);
     const userInfoList = await getUserInfoList(userIds);
     const groupInfoList = await getGroupInfoList(groupIds);
 
     return conversitionList.map(item => {
-        const {conv_type, conv_id } = item;
+        const { conv_type, conv_id } = item;
         let profile;
-        if(conv_type === 2) {
+        if (conv_type === 2) {
             profile = groupInfoList.find(group => {
-                const { group_detial_info_group_id} = group;
+                const { group_detial_info_group_id } = group;
                 return group_detial_info_group_id === conv_id;
             });
         } else if (conv_type === 1) {
@@ -58,6 +87,42 @@ const addProfileForConversition = async conversitionList => {
         }
     });
 }
+
+export const getMsgList = async (convId, convType) => {
+    const { data: { json_params } } = await timRenderInstance.TIMMsgGetMsgList({
+        conv_id: convId,
+        conv_type: convType,
+        params: {
+            msg_getmsglist_param_last_msg: null,
+            msg_getmsglist_param_count: 100
+        },
+        user_data: "123"
+    });
+    console.log(JSON.parse(json_params));
+}
+
+
+
+const sendMsg = async ({
+    convId,
+    convType,
+    messageElementArray,
+    userData,
+    userId
+} : SendMsgParams<TextMsg | FaceMsg>): Promise<MsgResponse> => {
+    const res = await timRenderInstance.TIMMsgSendMessage({
+        conv_id: convId,
+        conv_type: convType,
+        params: {
+            message_elem_array: messageElementArray,
+            message_sender: userId,
+        },
+        user_data: userData
+    });
+    return res;
+};
+
+export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 
 export const getConversionList = async () => {
     const { data: { json_param } } = await timRenderInstance.TIMConvGetConvList({ userData: '' });

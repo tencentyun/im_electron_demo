@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Avatar } from '../../components/avatar/avatar';
+import { getMsgList } from './api';
+import { MessageInput } from './MessageInput';
+
 import './message-info.scss';
 
 
@@ -14,7 +17,11 @@ type Props = {
 };
 
 export const MessageInfo = (props: Props): JSX.Element => {
-    const { convProfile: {faceUrl, name}, convId } = props;
+    const { convProfile: {faceUrl, name}, convId, convType  } = props;
+    useEffect(() => {
+        getMsgList(convId, convType);
+    }, [convId, convType]);
+
     return (
         <div className="message-info">
             <header className="message-info__header">
@@ -26,7 +33,7 @@ export const MessageInfo = (props: Props): JSX.Element => {
                     message view
                 </div>
                 <div className="message-info__content--input">
-                    message input
+                    <MessageInput convId={convId} convType={convType}/>
                 </div>
             </section>
         </div>
