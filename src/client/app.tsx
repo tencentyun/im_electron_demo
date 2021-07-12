@@ -18,7 +18,8 @@ import { ToolsBar } from './components/toolsBar/toolsBar';
 import './app.scss'
 import initListeners from './imLiseners';
 import { setUnreadCount, updateConversationList } from './store/actions/conversation';
-import { addProfileForConversition, markMessageAsRead } from './pages/message/api';
+import { addProfileForConversition } from './pages/message/api';
+import { reciMessage } from './store/actions/message';
 // eslint-disable-next-line import/no-unresolved
 let isInited = false
 
@@ -73,12 +74,20 @@ const App = () => {
     }
     const _handeMessage = (messages:State.message[]) => {
         // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
-        console.log(function_tab,currentSelectedConversation,213213)
-        if(function_tab === 'message' && currentSelectedConversation != null){
-            console.log("直接显示上去")
-            const { conv_id,conv_type } = currentSelectedConversation;
-            markMessageAsRead(conv_id,conv_type,messages[messages.length-1].message_msg_id)
+        const obj = {};
+        for(let i  = 0;i<messages.length;i++){
+            if(!obj[messages[i].message_conv_id]){
+                obj[messages[i].message_conv_id] = []
+            }
+            obj[messages[i].message_conv_id].push(messages[i])
         }
+        for(let i in obj){
+            dispatch(reciMessage({
+                convId: i,
+                messages: obj[i]
+            }))
+        }
+        
     }
     const _handleConversaion = (conv) => {
         const { type, data} = conv;

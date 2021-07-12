@@ -71,7 +71,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       getMessageList();
     }
   }, [conv_id]);
-
+  
   return (
     <div className="message-info">
       <header className="message-info__header">
