@@ -1,38 +1,43 @@
 .message-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    height: 36px;
+    border-bottom: 1px solid #eee;
+
+    &--avatar {
+      display: flex;
+      align-items: center;
+    }
+
+    &--name {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 24px;
+      margin-left: 12px;
+    }
+  }
+
+  &__content {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    flex: 1;
+    max-height: 100vh;
 
-    &__header {
-        display: flex;
-        align-items: center;
-        padding: 20px;
-        height: 36px;
-        border-bottom: 1px solid #eee;
-
-        &--name {
-            font-size: 16px;
-            font-weight: 500;
-            line-height: 24px;
-            margin-left: 12px;
-        }
+    &--view {
+      max-height: calc(100vh - 250px);
+      flex: 1;
+      border-bottom: 1px solid #eee;
     }
 
-    &__content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        max-height: 100vh;
-
-        &--view {
-            max-height: calc(100vh - 250px);
-            flex: 1;
-            border-bottom: 1px solid #eee;
-        }
-
-        &--input {
-            height: 173px;
-        }
-
+    &--input {
+      height: 173px;
     }
+  }
 }
