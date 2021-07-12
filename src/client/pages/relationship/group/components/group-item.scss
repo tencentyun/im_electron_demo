@@ -1,0 +1,42 @@
+.group-item {
+  padding: 0 30px 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 62px;
+
+  &--left {
+    display: flex;
+    align-items: center;
+
+    &__avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 36px;
+    }
+
+    &__name {
+      margin-left: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #000000;
+      line-height: 24px;
+    }
+  }
+
+  &--right {
+    &__button {
+      font-size: 14px;
+      font-weight: 400;
+      color: #d0021b;
+      cursor: pointer;
+
+      &:focus,
+      &:active,
+      &:hover {
+        background-color: #ffffff;
+        color: #d0021b;
+      }
+    }
+  }
+}

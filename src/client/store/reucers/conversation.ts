@@ -4,7 +4,11 @@ const initState = {
     unreadCount: 0,
     conversationList:[]
 }
-
+const sortByPindAndTime = (conversationList:Array<State.conversationItem>) :Array<State.conversationItem>=>{
+    return  conversationList.sort((pre,next)=>{
+        return next.conv_active_time - pre.conv_active_time
+    })
+}
 const conversationReducer = (state = initState, action: { type: any; payload: any }) => {
     switch (action.type) {
         case SET_UNREAD_COUNT:
@@ -13,9 +17,22 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
               unreadCount: action.payload
           }
         case UPDATE_CONVERSATIONLIST:
+            // 会话按是否置顶、时间排序
+            const listCopy = [...state.conversationList]
+            for(let i = 0;i<action.payload.length;i++){
+                const { conv_id } = action.payload[i];
+                const conv_index = listCopy.findIndex((item)=>{return item.conv_id === conv_id})
+                if(conv_index>-1){
+                    // 存在，直接更新
+                    listCopy[conv_index] = action.payload[i]
+                } else {
+                    // 不存在，添加
+                    listCopy.unshift(action.payload[i])
+                }
+            }
             return {
                 ...state,
-                conversationList: action.payload
+                conversationList: sortByPindAndTime(listCopy) 
             }
         default:
           return state;
