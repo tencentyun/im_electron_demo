@@ -107,7 +107,9 @@ export const Message = (): JSX.Element => {
                 </div>
 
             </div>
-            <MessageInfo {...activeConvInfo} />
+            {
+                activeConvInfo && activeConvInfo.convId ? <MessageInfo {...activeConvInfo} /> : null
+            }
         </div>
     )
 };

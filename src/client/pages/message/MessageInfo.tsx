@@ -6,6 +6,8 @@ import { MessageInput } from './MessageInput';
 import { MessageView } from './MessageView';
 
 import './message-info.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { addMessage } from '../../store/actions/message';
 
 
 type Props = {
@@ -18,15 +20,24 @@ type Props = {
 };
 
 export const MessageInfo = (props: Props): JSX.Element => {
-    const [messageList, setMessageList ] = useState([]);
+
     const { convProfile: {faceUrl, name}, convId, convType  } = props;
+
+    const { historyMessageList } = useSelector((state: State.RootState) => state.historyMessage);
+    const dispatch = useDispatch();
+
     useEffect(() => {
         const getMessageList = async () => {
             const messageResponse = await getMsgList(convId, convType);
-            setMessageList(messageResponse);
+            // 更新store
+            const msgMap = new Map()
+            msgMap.set(convId,messageResponse)
+            dispatch(addMessage(msgMap))
         }
-        getMessageList();
-    }, [convId, convType]);
+        if(convId){
+            getMessageList();
+        }
+    }, [convId]);
 
     return (
         <div className="message-info">
@@ -36,7 +47,7 @@ export const MessageInfo = (props: Props): JSX.Element => {
             </header>
             <section className="message-info__content">
                 <div className="message-info__content--view">
-                   <MessageView messageList={messageList} />
+                   <MessageView messageList={historyMessageList.get(convId)||[]} />
                 </div>
                 <div className="message-info__content--input">
                     <MessageInput convId={convId} convType={convType}/>

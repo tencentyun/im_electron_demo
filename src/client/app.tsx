@@ -98,7 +98,6 @@ const App = () => {
     const _updateConversation =async (conversationList:Array<State.conversationItem>)=>{
         if(conversationList.length){
             const convList = await addProfileForConversition(conversationList);
-            console.log(convList)
             dispatch(updateConversationList(convList))
         }
     }
