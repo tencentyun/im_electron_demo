@@ -11,6 +11,12 @@ interface InitListenersCallback {
 }
 
 export default function initListeners(callback:InitListenersCallback){
+
+
+    /**
+     * 注销消息监听事件
+     */
+    timRenderInstance.TIMRemoveRecvNewMsgCallback()
     /**
     * @brief 增加接收新消息回调
     * @param cb 新消息回调函数，请参考[TIMRecvNewMsgCallback](TIMCloudCallback.h)
