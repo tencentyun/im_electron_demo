@@ -9,8 +9,6 @@ import './message-info.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { addMessage } from '../../store/actions/message';
 
-import "./message-info.scss";
-
 import { AddUserPopover } from "./AddUserPopover";
 
 type Info = {
