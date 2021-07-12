@@ -1,9 +1,10 @@
-// @ts-check
 import { Form, Input, Button, RadioGroup, Radio } from "@tencent/tea-component";
 import React from "react";
 import { Form as FinalForm, Field } from "react-final-form";
 import { getStatus } from "../../../../utils/getStatus";
 import { GroupTypeSelect } from "./GroupTypeSelect";
+
+import "./create-group-form.scss";
 
 const validateOldPassword = async (value: string) => {
   if (!value) {
@@ -44,7 +45,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
       onSubmit={_handlerSubmit}
       initialValuesEqual={() => true}
       initialValues={{
-        groupType: "0",
+        groupType: "1",
         joinGroupMode: "2",
       }}
     >
@@ -182,10 +183,25 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
               </Field>
             </Form>
             <Form.Action>
-              <Button type="primary" htmlType="submit" loading={submitting}>
+              <Button
+                className="btn"
+                type="primary"
+                htmlType="submit"
+                loading={submitting}
+              >
                 添加
               </Button>
-              <Button loading={submitting} onClick={onClose}>取消</Button>
+              <Button
+                className="btn"
+                loading={submitting}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onClose();
+                }}
+              >
+                取消
+              </Button>
             </Form.Action>
           </form>
         );

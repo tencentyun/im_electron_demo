@@ -54,7 +54,7 @@ export const createGroup = async (params: createGroupParams): Promise<any> => {
     create_group_param_add_option: Number(joinGroupMode),
     create_group_param_group_member_array: [
       {
-        group_member_info_member_role: "admin",
+        group_member_info_member_role: 1,
         group_member_info_identifier: groupMember,
       },
     ],
