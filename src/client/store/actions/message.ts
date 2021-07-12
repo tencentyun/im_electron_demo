@@ -6,8 +6,16 @@ type Payload = {
     convId: string;
     message: State.message
 }
-
+type ReciMessagePayload  = {
+    convId: string;
+    messages: State.message[]
+}
 export const addMessage = (payload: Payload) : State.actcionType<Payload> => ({
     type: ADD_MESSAGE,
+    payload
+});
+
+export const reciMessage = (payload: ReciMessagePayload) : State.actcionType<ReciMessagePayload> => ({
+    type: RECI_MESSAGE,
     payload
 });
