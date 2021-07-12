@@ -3,7 +3,8 @@ import login from './reucers/login';
 import userInfo from './reucers/user';
 import conversation from './reucers/conversation'
 import historyMessage from './reucers/historyMessage'
-const combinedReducer = combineReducers({login, userInfo ,conversation, historyMessage});
+import ui from './reucers/ui'
+const combinedReducer = combineReducers({login, userInfo ,conversation, historyMessage,ui});
 
 const store = createStore(combinedReducer);
 

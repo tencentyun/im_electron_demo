@@ -10,47 +10,62 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addMessage } from '../../store/actions/message';
 
 
-type Props = {
-    convId: string,
-    convType: number,
-    convProfile: {
-        faceUrl: string,
-        name: string,
-    },
-};
+type Info = {
+    faceUrl:string,
+    nickName:string,
+ 
+}
 
-export const MessageInfo = (props: Props): JSX.Element => {
+export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
-    const { convProfile: {faceUrl, name}, convId, convType  } = props;
+    const { conv_id, conv_type  } = props;
 
     const { historyMessageList } = useSelector((state: State.RootState) => state.historyMessage);
+
+    const getDisplayConvInfo = ()=> {
+        const info:Info = {
+            faceUrl:'',
+            nickName:''
+        }
+
+        if(conv_type === 1){
+            info.faceUrl = props.conv_profile.user_profile_face_url
+            info.nickName = props.conv_profile.user_profile_nick_name
+        }
+        if(conv_type === 2){
+            info.faceUrl = props.conv_profile.group_detial_info_face_url
+            info.nickName = props.conv_profile.group_detial_info_group_name
+        }
+        return info
+    }
+    const { faceUrl,nickName } = getDisplayConvInfo();
     const dispatch = useDispatch();
 
     useEffect(() => {
         const getMessageList = async () => {
-            const messageResponse = await getMsgList(convId, convType);
-            // 更新store
+            const messageResponse = await getMsgList(conv_id, conv_type);
             const msgMap = new Map()
-            msgMap.set(convId,messageResponse)
+            msgMap.set(conv_id,messageResponse)
+            
             dispatch(addMessage(msgMap))
         }
-        if(convId){
+        if(conv_id){
             getMessageList();
         }
-    }, [convId]);
+    }, [conv_id]);
 
     return (
         <div className="message-info">
             <header className="message-info__header">
-                <Avatar url={faceUrl} size="small" nickName = {name} userID = {convId} groupID = {convId}/>
-                <span className="message-info__header--name">{name || convId}</span>
+                <Avatar url={faceUrl} size="small" nickName = {nickName} userID = {conv_id} groupID = {conv_id}/>
+                <span className="message-info__header--name">{nickName || conv_id}</span>
             </header>
             <section className="message-info__content">
                 <div className="message-info__content--view">
-                   <MessageView messageList={historyMessageList.get(convId)||[]} />
+                   <MessageView messageList={historyMessageList.get(conv_id)||[]} />
                 </div>
                 <div className="message-info__content--input">
-                    <MessageInput convId={convId} convType={convType}/>
+                    <MessageInput convId={conv_id} convType={conv_type}/>
                 </div>
             </section>
         </div>

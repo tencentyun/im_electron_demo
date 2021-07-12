@@ -5,15 +5,20 @@ declare namespace State {
         },
         userInfo: userInfo,
         conversation: conversation,
-        historyMessage: historyMessage
+        historyMessage: historyMessage,
+        ui: ui
     }
-    
+    export type functionTab = 'message' | 'relationship'
+    export type ui = {
+        function_tab: functionTab
+    }
     export type historyMessage = {
         historyMessageList:Map<string, Array<message>>
     }
     export type conversation = {
         unreadCount: number,
-        conversationList: Array<conversationItem>
+        conversationList: Array<conversationItem>,
+        currentSelectedConversation: conversationItem
     }
     export type messageElemTypeText  = {
         elem_type: number
