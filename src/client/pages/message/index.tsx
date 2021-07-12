@@ -19,9 +19,7 @@ export const Message = (): JSX.Element => {
     useEffect(() => {
         const getData = async () => {
             const response = await getConversionList();
-            console.log('response', response)
             dispatch(updateConversationList(response))
-            console.log(response,'response')
             if(response.length){
                 if(currentSelectedConversation === null){
                     dispatch(updateCurrentSelectedConversation(response[0]))
