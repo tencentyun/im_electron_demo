@@ -6,7 +6,8 @@ const dialog = remote.dialog;
 const WIN = remote.getCurrentWindow();
 
 const isWin = () => {
-    return process.platform === 'win32';
+    const platform = process.platform;
+    return platform === 'win32' || platform === 'linux';
 }
 const minSizeWin = () => {
     ipcRenderer.send(RENDERPROCESSCALL,{
