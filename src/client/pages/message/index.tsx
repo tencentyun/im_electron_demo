@@ -1,4 +1,6 @@
 import React, { useState, useEffect} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateConversationList } from '../../store/actions/conversation';
 import { Avatar } from '../../components/avatar/avatar';
 
 import { SearchBox } from '../../components/searchBox/SearchBox';
@@ -17,13 +19,16 @@ export const Message = (): JSX.Element => {
             faceUrl: ''
         }
     });
-    const [ conversionList, setConversionList ] = useState([]);
-    console.log('conversionList', conversionList);
+    // const [ conversionList, setConversionList ] = useState([]);
+
+    // console.log('conversionList', conversionList);
+    const { conversationList } = useSelector((state: State.RootState) => state.conversation);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const getData = async () => {
             const response = await getConversionList();
-            setConversionList(response);
+            dispatch(updateConversationList(response))
             const {conv_id, conv_type, conv_profile} = response[0];
             const defaultActiveInfo = {
                 convId: conv_id,
@@ -73,7 +78,7 @@ export const Message = (): JSX.Element => {
                 <div className="search-wrap"><SearchBox/></div>
                 <div className="conversion-list">
                     {
-                        conversionList.map(({conv_profile, conv_id, conv_type, conv_last_msg, conv_unread_num }) => {
+                        conversationList.map(({conv_profile, conv_id, conv_type, conv_last_msg, conv_unread_num }) => {
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
                             return (

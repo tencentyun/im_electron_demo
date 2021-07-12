@@ -124,9 +124,16 @@ export default function initListeners(callback:InitListenersCallback){
     * 调用接口[TIMConvDelete]()删除会话成功时会触发会话删除事件。
     */
     timRenderInstance.TIMSetConvEventCallback({
-        callback:()=>{
-
-        }
+        callback:(...args)=>{
+            callback({
+                type: 'TIMSetConvEventCallback',
+                data: {
+                    type:args[0][0],
+                    data:args[0][1]!=="" ? JSON.parse(args[0][1]) : []
+                }
+            })
+        },
+        user_data:"TIMSetConvEventCallback"
     })
 
     /**
