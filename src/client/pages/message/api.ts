@@ -102,7 +102,14 @@ export const getMsgList = async (convId, convType) => {
     return JSON.parse(json_params);
 }
 
-
+export const markMessageAsRead = async (conv_id,conv_type,last_message_id)=>{
+    const {data:{code,json_params,desc}} = await timRenderInstance.TIMMsgReportReaded({
+        conv_type:conv_type,
+        conv_id:conv_id,
+        message_id: last_message_id
+    })
+    return {code,desc,json_params}
+}
 
 const sendMsg = async ({
     convId,

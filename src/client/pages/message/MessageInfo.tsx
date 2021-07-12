@@ -1,13 +1,16 @@
 import React, { useEffect } from "react";
 
-import { Avatar } from "../../components/avatar/avatar";
-import { getMsgList } from "./api";
-import { MessageInput } from "./MessageInput";
-import { MessageView } from "./MessageView";
+import { Avatar } from '../../components/avatar/avatar';
+import { getMsgList, markMessageAsRead } from './api';
+import { MessageInput } from './MessageInput';
+import { MessageView } from './MessageView';
+
+import './message-info.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { addMessage } from '../../store/actions/message';
 
 import "./message-info.scss";
-import { useDispatch, useSelector } from "react-redux";
-import { addMessage } from "../../store/actions/message";
+
 import { AddUserPopover } from "./AddUserPopover";
 
 type Info = {
@@ -16,30 +19,39 @@ type Info = {
 };
 
 export const MessageInfo = (props: State.conversationItem): JSX.Element => {
-  const { conv_id, conv_type } = props;
 
-  const { historyMessageList } = useSelector(
-    (state: State.RootState) => state.historyMessage
-  );
+    const { conv_id, conv_type, conv_last_msg  } = props;
+    const { message_msg_id } = conv_last_msg;
+    const { historyMessageList } = useSelector((state: State.RootState) => state.historyMessage);
 
-  const getDisplayConvInfo = () => {
-    const info: Info = {
-      faceUrl: "",
-      nickName: "",
-    };
+    const getDisplayConvInfo = () => {
+        const info: Info = {
+        faceUrl: "",
+        nickName: "",
+        };
 
-    if (conv_type === 1) {
-      info.faceUrl = props.conv_profile.user_profile_face_url;
-      info.nickName = props.conv_profile.user_profile_nick_name;
+        if (conv_type === 1) {
+            info.faceUrl = props.conv_profile.user_profile_face_url;
+            info.nickName = props.conv_profile.user_profile_nick_name;
+        }
+        return info;
     }
-    if (conv_type === 2) {
-      info.faceUrl = props.conv_profile.group_detial_info_face_url;
-      info.nickName = props.conv_profile.group_detial_info_group_name;
+    const setMessageRead = ()=>{
+        // 个人会话且未读数大于0才设置已读
+        if(props.conv_unread_num > 0) {
+            markMessageAsRead(conv_id,conv_type,message_msg_id).then(({ code,...res })=>{
+                if(code === 0){
+                    console.log("设置会话已读成功")
+                }else{
+                    console.log("设置会话已读失败",code, res)
+                }
+            }).catch(err=>{
+                console.log("设置会话已读失败", err)
+            })
+        }
     }
-    return info;
-  };
-  const { faceUrl, nickName } = getDisplayConvInfo();
-  const dispatch = useDispatch();
+    const { faceUrl,nickName } = getDisplayConvInfo();
+    const dispatch = useDispatch();
 
   useEffect(() => {
     const getMessageList = async () => {
@@ -48,7 +60,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
           convId: conv_id,
           message: messageResponse
       }
-
+      setMessageRead()
       dispatch(addMessage(payload));
     };
     if (conv_id) {

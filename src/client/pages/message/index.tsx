@@ -8,14 +8,12 @@ import { getConversionList } from './api';
 import './message.scss';
 import { MessageInfo } from './MessageInfo';
 
-const defautUrl = "https://upload-dianshi-1255598498.file.myqcloud.com/sll-6f612b72f856eb5be01bce048f55032222d3d0f8.jpg";
 
 export const Message = (): JSX.Element => {
     
     
     const { conversationList,currentSelectedConversation  } = useSelector((state: State.RootState) => state.conversation);
 
-    console.log('ceshi1',conversationList,currentSelectedConversation)
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -23,7 +21,7 @@ export const Message = (): JSX.Element => {
             const response = await getConversionList();
             console.log('response', response)
             dispatch(updateConversationList(response))
-            console.log(response)
+            console.log(response,'response')
             if(response.length){
                 dispatch(updateCurrentSelectedConversation(response[0]))
             }
