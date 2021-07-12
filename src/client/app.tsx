@@ -18,7 +18,7 @@ import { ToolsBar } from './components/toolsBar/toolsBar';
 import './app.scss'
 import initListeners from './imLiseners';
 import { setUnreadCount, updateConversationList } from './store/actions/conversation';
-import { addProfileForConversition, markMessageAsRead } from './pages/message/api';
+import { addProfileForConversition } from './pages/message/api';
 import { reciMessage } from './store/actions/message';
 // eslint-disable-next-line import/no-unresolved
 let isInited = false
