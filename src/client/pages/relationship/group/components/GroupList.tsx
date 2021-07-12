@@ -22,6 +22,7 @@ export const GroupList = (props: {
           groupAvatar={v.group_base_info_face_url}
           groupName={v.group_base_info_group_name}
           groupOwner={v.group_detial_info_owener_identifier}
+          groupType={v.group_base_info_group_type}
           onRefresh={onRefresh}
         />
       ))}

@@ -5,6 +5,7 @@ export type GroupList = {
   group_base_info_group_id: string;
   group_base_info_group_name: string;
   group_detial_info_owener_identifier: string;
+  group_base_info_group_type: number;
 }[];
 
 interface createGroupParams {
