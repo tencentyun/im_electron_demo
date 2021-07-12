@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import { Avatar } from '../../components/avatar/avatar';
 import RightClickMenu from '../../components/RightClickMenu';
+import { revokeMsg } from './api';
 
 import './message-view.scss';
 
@@ -80,38 +81,72 @@ const RIGHT_CLICK_MENU_LIST = [{
     text: '多选'
 }];
 
-const TextElementItem = ({text_elem_content}) => <span className="message-view__item--text text right-menu-item">{text_elem_content}</span>;
+const TextElementItem = ({text_elem_content}) => <span className="message-view__item--text text">{text_elem_content}</span>;
 
 export  const MessageView = (props: Props): JSX.Element => {
     const { messageList } = props;
+    const [selectedMsg, setSelectedMsg ] = useState<{
+        convId?: string,
+        convType?: number,
+        msgId?: string
+    }>({});
+
+    const handleContextMenuClick = (msgId, convId, convType) => {
+        setSelectedMsg({
+            msgId,
+            convId,
+            convType
+        });
+    }
+
+    const handleRevokeMsg = async () => {
+        const { convId, msgId, convType } = selectedMsg;
+        revokeMsg({
+            convId,
+            convType,
+            msgId
+        })
+
+    };
+
+    const handlRightClick = id => {
+        switch(id) {
+            case 'revoke':
+                handleRevokeMsg()
+        }
+            
+    }
 
     return (
         <div className="message-view">
             {
                 messageList.length > 0 &&
                 messageList.map(item => {
-                    const { message_elem_array, message_sender_profile,  message_is_from_self } = item;
+                    const { message_elem_array, message_sender_profile,  message_is_from_self, message_msg_id, message_conv_id, message_conv_type } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
-                    return <div className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={item.message_msg_id}>
+                    return <div className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
                         <div className="message-view__item--avatar face-url">
                             <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                         </div>
                         {
                             message_elem_array.map((elment,index) => {
                                 const { elem_type, ...res } = elment;
-                                if(elem_type === 0 ){
-                                    return <TextElementItem key={ index } {...res} />
-                                }
+                                return <div key={ index } className="right-menu-item" onContextMenu={() => handleContextMenuClick(message_msg_id, message_conv_id, message_conv_type)} >
+                                    {
+                                        elem_type === 0 &&  <TextElementItem {...res} />
+                                    }
+                                </div>
+                                
                             })
                         }
                     </div>
                 })
             }
-            <RightClickMenu>
+            <RightClickMenu >
                 {
                     RIGHT_CLICK_MENU_LIST.map(({id, text}) => {
                         return (
-                            <div className="right-click__item" key={id}>
+                            <div className="right-click__item" key={id} onClick={(id) => handlRightClick(id)}>
                                 <span>{text}</span>
                             </div>
                         )

@@ -141,3 +141,17 @@ export const getConversionList = async () => {
     return conversitionListProfile;
 }
 
+export const revokeMsg = async ({
+    convId,
+    convType,
+    msgId
+}) => {
+    const res = await timRenderInstance.TIMMsgRevoke({
+        conv_id: convId,
+        conv_type: convType,
+        message_id: msgId,
+    });
+
+    console.log(res);
+}
+
