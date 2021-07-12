@@ -36,16 +36,22 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     }
     const setMessageRead = ()=>{
         // 个人会话且未读数大于0才设置已读
-        if(props.conv_unread_num > 0) {
-            markMessageAsRead(conv_id,conv_type,message_msg_id).then(({ code,...res })=>{
-                if(code === 0){
-                    console.log("设置会话已读成功")
-                }else{
-                    console.log("设置会话已读失败",code, res)
+        const handleMsgReaded = async () => {
+            try {
+                const { code, ...res } = await markMessageAsRead(conv_id, conv_type, message_msg_id);
+                if (code === 0) {
+                    console.log("设置会话已读成功");
+                } else {
+                    console.log("设置会话已读失败",code, res);
                 }
-            }).catch(err=>{
-                console.log("设置会话已读失败", err)
-            })
+            } catch (err) {
+                console.log("设置会话已读失败", err);
+            }
+            
+        }
+        
+        if(props.conv_unread_num > 0) {
+            handleMsgReaded();
         }
     }
     const { faceUrl,nickName } = getDisplayConvInfo();
@@ -58,7 +64,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
           convId: conv_id,
           message: messageResponse
       }
-      setMessageRead()
+      setMessageRead();
       dispatch(addMessage(payload));
     };
     if (conv_id) {
