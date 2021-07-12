@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { Avatar } from '../../components/avatar/avatar';
-import { msgReported } from './api';
 import RightClickMenu from '../../components/RightClickMenu';
 
 import './message-view.scss';
@@ -85,23 +84,6 @@ const TextElementItem = ({text_elem_content}) => <span className="message-view__
 
 export  const MessageView = (props: Props): JSX.Element => {
     const { messageList } = props;
-
-    useEffect(() => {
-        const latestMsg = messageList[0];
-        const handleMsgReaded = async () => {
-            const {message_conv_id, message_conv_type, message_msg_id} = latestMsg;
-            const params = {
-                convId: message_conv_id,
-                convType: message_conv_type,
-                msgId: message_msg_id
-            };
-            const res = await msgReported(params);
-
-            console.log('readed response ',  res);
-        }
-
-        latestMsg && handleMsgReaded();
-    }, [messageList])
 
     return (
         <div className="message-view">
