@@ -128,7 +128,7 @@ export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse
 export const getConversionList = async () => {
     const { data: { json_param } } = await timRenderInstance.TIMConvGetConvList({});
     const conversitionList = JSON.parse(json_param);
-    const hasLastMessageList = conversitionList.filter(item => item.conv_is_has_lastmsg);
+    const hasLastMessageList = conversitionList.filter(item => item.conv_is_has_lastmsg && item.conv_type!=0);
     const conversitionListProfile = addProfileForConversition(hasLastMessageList);
 
     return conversitionListProfile;

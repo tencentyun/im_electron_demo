@@ -61,7 +61,7 @@ type MessageList<T> = {
 }
 
 type Props = {
-    messageList: Array<MessageList<TextElement>>
+    messageList: Array<State.message>
 }
 
 const RIGHT_CLICK_MENU_LIST = [{
@@ -110,15 +110,15 @@ export  const MessageView = (props: Props): JSX.Element => {
                 messageList.map(item => {
                     const { message_elem_array, message_sender_profile,  message_is_from_self } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
-                    return <div className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`}>
+                    return <div className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={item.message_msg_id}>
                         <div className="message-view__item--avatar face-url">
                             <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                         </div>
                         {
-                            message_elem_array.map(elment => {
+                            message_elem_array.map((elment,index) => {
                                 const { elem_type, ...res } = elment;
                                 if(elem_type === 0 ){
-                                    return <TextElementItem {...res} />
+                                    return <TextElementItem key={ index } {...res} />
                                 }
                             })
                         }

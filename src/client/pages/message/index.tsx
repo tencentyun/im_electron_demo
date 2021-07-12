@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateConversationList } from '../../store/actions/conversation';
+import { updateConversationList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
 import { Avatar } from '../../components/avatar/avatar';
 
 import { SearchBox } from '../../components/searchBox/SearchBox';
@@ -11,39 +11,27 @@ import { MessageInfo } from './MessageInfo';
 const defautUrl = "https://upload-dianshi-1255598498.file.myqcloud.com/sll-6f612b72f856eb5be01bce048f55032222d3d0f8.jpg";
 
 export const Message = (): JSX.Element => {
-    const [activeConvInfo, setActiveConvInfo ] = useState({
-        convId: '',
-        convType: 1,
-        convProfile: {
-            name: '',
-            faceUrl: ''
-        }
-    });
-    // const [ conversionList, setConversionList ] = useState([]);
+    
+    
+    const { conversationList,currentSelectedConversation  } = useSelector((state: State.RootState) => state.conversation);
 
-    // console.log('conversionList', conversionList);
-    const { conversationList } = useSelector((state: State.RootState) => state.conversation);
+    console.log('ceshi1',conversationList,currentSelectedConversation)
     const dispatch = useDispatch();
 
     useEffect(() => {
         const getData = async () => {
             const response = await getConversionList();
+            console.log('response', response)
             dispatch(updateConversationList(response))
-            const {conv_id, conv_type, conv_profile} = response[0];
-            const defaultActiveInfo = {
-                convId: conv_id,
-                convType: conv_type,
-                convProfile: {
-                    name: conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name,
-                    faceUrl: conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url
-                }
+            console.log(response)
+            if(response.length){
+                dispatch(updateCurrentSelectedConversation(response[0]))
             }
-            setActiveConvInfo(defaultActiveInfo);
         }
         getData();
     }, []);
 
-    const handleConvListClick = convInfo => setActiveConvInfo(convInfo);
+    const handleConvListClick = convInfo => dispatch(updateCurrentSelectedConversation(convInfo));
 
     const getLastMsgInfo = lastMsg => {
         const {message_elem_array,  message_is_peer_read} = lastMsg;
@@ -72,24 +60,22 @@ export const Message = (): JSX.Element => {
     const getDisplayUnread = (count) => {
         return count > 9 ? '···' : count
     }
+    if(currentSelectedConversation === null){
+        return null
+    }
     return (
         <div className="message-content">
             <div className="message-list">
                 <div className="search-wrap"><SearchBox/></div>
                 <div className="conversion-list">
                     {
-                        conversationList.map(({conv_profile, conv_id, conv_type, conv_last_msg, conv_unread_num }) => {
+                        conversationList.map((item) => {
+
+                            const {conv_profile, conv_id, conv_last_msg, conv_unread_num } = item;
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
                             return (
-                                <div className={`conversion-list__item ${conv_id === activeConvInfo.convId ? 'is-active' : ''}`} key={conv_id} onClick={() => handleConvListClick({
-                                    convId: conv_id,
-                                    convType: conv_type,
-                                    convProfile: {
-                                        faceUrl,
-                                        name: nickName
-                                    }
-                                })}>
+                                <div className={`conversion-list__item ${conv_id === currentSelectedConversation.conv_id ? 'is-active' : ''}`} key={conv_id} onClick={() => handleConvListClick(item)}>
                                     <div className="conversion-list__item--profile">
                                         {
                                             conv_unread_num > 0 ? <div className="conversion-list__item--profile___unread">{ getDisplayUnread(conv_unread_num) }</div> : null
@@ -107,7 +93,9 @@ export const Message = (): JSX.Element => {
                 </div>
 
             </div>
-            <MessageInfo {...activeConvInfo} />
+            {
+                currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : null
+            }
         </div>
     )
 };

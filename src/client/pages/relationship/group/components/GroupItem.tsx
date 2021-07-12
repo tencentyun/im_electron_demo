@@ -10,32 +10,33 @@ export const GroupItem = (props: {
   groupAvatar: string;
   groupId: string;
   groupOwner: string;
+  groupType: number;
   onRefresh: () => Promise<GroupList>;
 }): JSX.Element => {
-  const { groupId, groupAvatar, groupName, groupOwner, onRefresh } = props;
+  const { groupId, groupAvatar, groupName, groupOwner, groupType, onRefresh } =
+    props;
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [quitLoading, setQuitLoading] = useState(false);
 
+  const canDeleteGroup = groupOwner === userId && groupType !== 1; // 是群主并且非私有群可以解散
+  const canQuitGroup = groupOwner !== userId || groupType === 1; // 不是群主或者该群为私有群
 
-  const isOwner = groupOwner === userId;
+  const handleDeleteGroup = async () => {
+    try {
+      setDeleteLoading(true);
+      await deleteGroup(groupId);
+      onRefresh();
+    } catch (e) {
+      console.log(e.message);
+    }
+    setDeleteLoading(false);
+  };
 
-  const handleDeleteGroup= async () => {
-      try {
-        setDeleteLoading(true);
-        await deleteGroup(groupId);
-        onRefresh();
-      } catch (e) {
-        console.log(e.message);
-      }
-      setDeleteLoading(false);
-
-    };
-
-  const  handleQuitGroup = async () => {
-    setQuitLoading(true)
+  const handleQuitGroup = async () => {
+    setQuitLoading(true);
     try {
       await quitGroup(groupId);
       onRefresh();
@@ -43,17 +44,16 @@ export const GroupItem = (props: {
       console.log(e.message);
     }
     setQuitLoading(false);
-
   };
 
   return (
     <div className="group-item">
       <div className="group-item--left">
-        <Avatar url={ groupAvatar }  nickName={groupName} groupID={ groupId }/>
+        <Avatar url={groupAvatar} nickName={groupName} groupID={groupId} />
         <span className="group-item--left__name">{groupName}</span>
       </div>
       <div className="group-item--right">
-        {isOwner ? (
+        {canDeleteGroup && (
           <PopConfirm
             title="确认要解散群聊吗?"
             footer={(close) => (
@@ -61,7 +61,10 @@ export const GroupItem = (props: {
                 <Button
                   type="link"
                   loading={deleteLoading}
-                  onClick={() => {handleDeleteGroup(); close()}}
+                  onClick={() => {
+                    handleDeleteGroup();
+                    close();
+                  }}
                 >
                   确认
                 </Button>
@@ -75,7 +78,8 @@ export const GroupItem = (props: {
               解散群聊
             </Button>
           </PopConfirm>
-        ) : (
+        )}
+        {canQuitGroup && (
           <PopConfirm
             title="确认要退出群聊吗?"
             footer={(close) => (
@@ -83,7 +87,10 @@ export const GroupItem = (props: {
                 <Button
                   type="link"
                   loading={quitLoading}
-                  onClick={() => {handleQuitGroup();close();}}
+                  onClick={() => {
+                    handleQuitGroup();
+                    close();
+                  }}
                 >
                   确认
                 </Button>
