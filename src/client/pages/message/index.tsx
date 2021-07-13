@@ -8,14 +8,15 @@ import { getConversionList } from './api';
 import './message.scss';
 import { MessageInfo } from './MessageInfo';
 import { GroupToolBar } from './GroupToolBar';
+import { SearchMessageModal } from './SearchMesssageModal';
+import { useDialogRef } from "../../utils/react-use/useDialog";
 
 
 export const Message = (): JSX.Element => {
-    
-    
     const { conversationList,currentSelectedConversation  } = useSelector((state: State.RootState) => state.conversation);
 
     const dispatch = useDispatch();
+    const dialogRef = useDialogRef();
 
     useEffect(() => {
         const getData = async () => {
@@ -31,6 +32,8 @@ export const Message = (): JSX.Element => {
     }, []);
 
     const handleConvListClick = convInfo => dispatch(updateCurrentSelectedConversation(convInfo));
+
+    const handleSearchBoxClick = () => dialogRef.current.open();
 
     const getLastMsgInfo = lastMsg => {
         const {message_elem_array,  message_is_peer_read} = lastMsg;
@@ -65,11 +68,10 @@ export const Message = (): JSX.Element => {
     return (
         <div className="message-content">
             <div className="message-list">
-                <div className="search-wrap"><SearchBox/></div>
+                <div className="search-wrap" onClick={handleSearchBoxClick}><SearchBox/></div>
                 <div className="conversion-list">
                     {
                         conversationList.map((item) => {
-
                             const {conv_profile, conv_id, conv_last_msg, conv_unread_num } = item;
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
@@ -92,6 +94,7 @@ export const Message = (): JSX.Element => {
                 </div>
 
             </div>
+            <SearchMessageModal dialogRef={dialogRef} />
             {
                 currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : null
             }
