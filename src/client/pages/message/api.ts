@@ -56,6 +56,10 @@ type MsgResponse = {
   };
 };
 
+type MemberList = {
+ 
+}
+
 const getUserInfoList = async (userIdList: Array<string>) => {
   const {
     data: { code, json_param },
@@ -249,3 +253,18 @@ export const inviteMemberGroup = async (params: {
   }
   throw new Error(desc);
 };
+
+
+export const getGroupMemberList = async (params: {
+    groupId: string;
+}) :Promise<MemberList[]> => {
+    const {groupId} = params;
+const {data} = await timRenderInstance.TIMGroupGetMemberInfoList({params: {
+    }});
+    console.log('data', data)
+    const {code, json_param} = data;
+    if(code === 0) {
+        return JSON.parse(json_param)
+    }
+    return [];
+}
