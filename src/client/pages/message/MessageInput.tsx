@@ -32,6 +32,8 @@ const FEATURE_LIST = [{
 export const MessageInput = (props: Props) : JSX.Element => {
     const { convId, convType } = props;
     const [ activeFeature, setActiveFeature ] = useState('');
+    const [ isShownAtPopup, setShownAtPopup ] = useState(false);
+    const [ atList, setAtList ] = useState([]);
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
     const [text, setText] = useState("");
@@ -156,7 +158,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
     }
 
     const handleSendAtMessage = async() => {
-        
+        setShownAtPopup(true)
     }
 
     const handleFeatureClick = (featureId) => {
@@ -213,6 +215,9 @@ export const MessageInput = (props: Props) : JSX.Element => {
             </div>
             <div className="message-input__button-area">
                 <Button type="primary" onClick={handleSendTextMsg} disabled={text === ''}>发送</Button>
+            </div>
+            <div>
+
             </div>
             <input ref={filePicker} onChange={sendFileMessage} type="file" style={{ display:'none'}} />
             <input ref={imagePicker} onChange={sendImageMessage} type="file" style={{ display:'none'}} />
