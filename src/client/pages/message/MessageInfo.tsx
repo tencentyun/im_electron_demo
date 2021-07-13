@@ -49,6 +49,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const setMessageRead = () => {
     // 个人会话且未读数大于0才设置已读
     const handleMsgReaded = async () => {
+      if(!msgList){
+        return
+      }
       try {
         const { message_msg_id } = msgList[0];
         const { code, ...res } = await markMessageAsRead(
@@ -97,7 +100,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   }, [conv_id]);
 
   return (
-    <div className="message-info">
+    <div className="message-info" id="messageInfo">
       <header className="message-info__header">
         <div className="message-info__header--avatar">
           <Avatar

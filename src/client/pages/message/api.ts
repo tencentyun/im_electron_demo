@@ -56,6 +56,10 @@ type MsgResponse = {
   };
 };
 
+type MemberList = {
+ 
+}
+
 const getUserInfoList = async (userIdList: Array<string>) => {
   const {
     data: { code, json_param },
@@ -126,6 +130,21 @@ export const addProfileForConversition = async (conversitionList) => {
   });
 };
 
+/**
+ * 置顶会话
+ */
+export const TIMConvPinConversation = async (convId,convType,isPinned)=>{
+  const res = await timRenderInstance.TIMConvPinConversation({
+    convId,convType,isPinned
+  })
+  return res;
+}
+
+export const TIMConvDelete = async (convId,convType) =>{ 
+  return await timRenderInstance.TIMConvDelete({
+    convId,convType
+  })
+}
 export const getMsgList = async (convId, convType) => {
   const {
     data: { json_params },
@@ -208,9 +227,28 @@ export const revokeMsg = async ({
         conv_id: convId,
         conv_type: convType,
         message_id: msgId,
+        user_data: '123',
     });
 
     console.log(res);
+}
+
+export const deleteMsg = async ({
+  convId,
+  convType,
+  msgId
+}) => {
+  const res = await timRenderInstance.TIMMsgDelete({
+      conv_id: convId,
+      conv_type: convType,
+      params: {
+        msg_delete_param_msg: msgId,
+        msg_delete_param_is_remble: true
+      },
+      user_data: "123"
+  });
+
+  console.log(res);
 }
 
 export const inviteMemberGroup = async (params: {
@@ -230,3 +268,59 @@ export const inviteMemberGroup = async (params: {
   }
   throw new Error(desc);
 };
+
+export const searchTextMessage = async (params: {
+  keyWords: string,
+}):Promise<any> => {
+  const { data: {json_params} } = await timRenderInstance.TIMMsgSearchLocalMessages({
+    params: {
+          msg_search_param_keyword_array: [params.keyWords],
+          msg_search_param_message_type_array: [0],
+      },
+      user_data: "123"
+  });
+
+  console.log("======text result msg ========", JSON.parse(json_params));
+}
+
+
+export const searchGroup = async (params: {
+  keyWords: string,
+}): Promise<any> => {
+  const { data: {json_param } } = await timRenderInstance.TIMGroupSearchGroups({
+    searchParams: {
+      group_search_params_keyword_list: [params.keyWords],
+      group_search_params_field_list: [2]
+  }});
+
+  console.log("======group search result ========", JSON.parse(json_param));
+}
+
+
+export const searchFriends = async (params: {
+  keyWords: string,
+}): Promise<any> => {
+  const { data: {json_params } } = await timRenderInstance.TIMFriendshipSearchFriends({ 
+    params: {
+        friendship_search_param_keyword_list: [params.keyWords],
+        friendship_search_param_search_field_list: [1, 2, 4]    
+    },
+    user_data: "1234"
+  });
+
+  console.log("======group search result ========", JSON.parse(json_params));
+}
+
+export const getGroupMemberList = async (params: {
+    groupId: string;
+}) :Promise<MemberList[]> => {
+    const {groupId} = params;
+const {data} = await timRenderInstance.TIMGroupGetMemberInfoList({params: {
+    }});
+    console.log('data', data)
+    const {code, json_param} = data;
+    if(code === 0) {
+        return JSON.parse(json_param)
+    }
+    return [];
+}

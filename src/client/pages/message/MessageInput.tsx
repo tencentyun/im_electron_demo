@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addMessage } from '../../store/actions/message';
 
@@ -187,6 +187,13 @@ export const MessageInput = (props: Props) : JSX.Element => {
         console.log(featureId);
     }
 
+    const handleOnkeyPress = (e) => {
+        if(e.keyCode == 13 || e.charCode ===13) {
+            e.preventDefault();
+            handleSendTextMsg();
+        }
+    }
+
 
     return (
         <div className="message-input">
@@ -201,14 +208,13 @@ export const MessageInput = (props: Props) : JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area">
+            <div className="message-input__text-area" onKeyPress={handleOnkeyPress}>
                 <TextArea
                     showCount={false}
                     size='full'
                     value={text}
                     onChange={(value, context) => {
                         setText(value);
-                        console.log(value, context);
                     }}
                     placeholder="请输入消息"
                 />
