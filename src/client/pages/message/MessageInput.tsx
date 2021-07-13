@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addMessage } from '../../store/actions/message';
 
@@ -37,6 +37,9 @@ export const MessageInput = (props: Props) : JSX.Element => {
     const [text, setText] = useState("");
     const dispatch = useDispatch();
     const filePicker = React.useRef(null);
+    const imagePicker = React.useRef(null);
+    const videoPicker = React.useRef(null);
+    const soundPicker = React.useRef(null);
 
     const handleSendTextMsg = async () => {
         const { data: { code, json_params } } = await sendTextMsg({
@@ -61,16 +64,16 @@ export const MessageInput = (props: Props) : JSX.Element => {
     }
 
     const handleSendPhotoMessage = () => {
-        filePicker.current.click();
+        imagePicker.current.click();
     }
     const handleSendSoundMessage = () => {
-        filePicker.current.click();
+        soundPicker.current.click();
     }
     const handleSendFileMessage = () => {
         filePicker.current.click();
     }
     const handleSendVideoMessage = () => {
-        filePicker.current.click();
+        videoPicker.current.click();
     }
 
     const sendImageMessage = async(e) => {
@@ -83,17 +86,17 @@ export const MessageInput = (props: Props) : JSX.Element => {
             //     fileReader.result
             // }
 
-            const { data: { code, json_params } } = await sendImageMsg({
+            const { data: { code, desc, json_params } } = await sendImageMsg({
                 convId,
                 convType,
                 messageElementArray: [{
-                    elem_type: 0,
-                    image_elem_orig_path: image.value,
+                    elem_type: 1,
+                    image_elem_orig_path: image.path,
                     image_elem_level: 0
                 }],
                 userId,
             });
-
+            console.log(code, desc, json_params, image.path)
             if(code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -106,17 +109,19 @@ export const MessageInput = (props: Props) : JSX.Element => {
 
     const sendFileMessage = async(e) => {
         const file = e.target.files[0]
-        const { data: { code, json_params } } = await sendFileMsg({
+        const { data: { code, desc, json_params } } = await sendFileMsg({
             convId,
             convType,
             messageElementArray: [{
-                elem_type: 0,
-                file_elem_file_path: file.value,
+                elem_type: 4,
+                file_elem_file_path: file.path,
                 file_elem_file_name: file.name,
                 file_elem_file_size: file.size
             }],
             userId,
         });
+
+        console.log(code, desc, json_params, file.path)
     }
 
     const sendVideoMessage = async(e) => {
@@ -125,7 +130,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
             convId,
             convType,
             messageElementArray: [{
-                elem_type: 0,
+                elem_type: 9,
                 video_elem_video_type: "MP4",
                 video_elem_video_size: video.size,
                 video_elem_video_duration: 10,
@@ -141,7 +146,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
             convId,
             convType,
             messageElementArray: [{
-                elem_type: 0,
+                elem_type: 2,
                 sound_elem_file_path: sound.value,
                 sound_elem_file_size: sound.size,
                 sound_elem_file_time: 10
@@ -160,12 +165,16 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 // handleSendFaceMessage()
             case "at":
                 handleSendAtMessage()
+                break;
             case "photo":
                 handleSendPhotoMessage()
+                break;
             case "file":
                 handleSendFileMessage()
+                break;
             case "voice":
                 handleSendSoundMessage()
+                break;
             case "phone":
                 // handleSendPhoneMessage()
             case "more":
@@ -174,6 +183,13 @@ export const MessageInput = (props: Props) : JSX.Element => {
         }
         setActiveFeature(featureId);
         console.log(featureId);
+    }
+
+    const handleOnkeyPress = (e) => {
+        if(e.keyCode == 13 || e.charCode ===13) {
+            e.preventDefault();
+            handleSendTextMsg();
+        }
     }
 
 
@@ -190,14 +206,13 @@ export const MessageInput = (props: Props) : JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area">
+            <div className="message-input__text-area" onKeyPress={handleOnkeyPress}>
                 <TextArea
                     showCount={false}
                     size='full'
                     value={text}
                     onChange={(value, context) => {
                         setText(value);
-                        console.log(value, context);
                     }}
                     placeholder="请输入消息"
                 />
@@ -206,9 +221,9 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 <Button type="primary" onClick={handleSendTextMsg} disabled={text === ''}>发送</Button>
             </div>
             <input ref={filePicker} onChange={sendFileMessage} type="file" style={{ display:'none'}} />
-            <input ref={filePicker} onChange={sendImageMessage} type="file" style={{ display:'none'}} />
-            <input ref={filePicker} onChange={sendVideoMessage} type="file" style={{ display:'none'}} />
-            <input ref={filePicker} onChange={sendSoundMessage} type="file" style={{ display:'none'}} />
+            <input ref={imagePicker} onChange={sendImageMessage} type="file" style={{ display:'none'}} />
+            <input ref={videoPicker} onChange={sendVideoMessage} type="file" style={{ display:'none'}} />
+            <input ref={soundPicker} onChange={sendSoundMessage} type="file" style={{ display:'none'}} />
         </div>
     )
 

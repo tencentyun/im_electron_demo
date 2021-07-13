@@ -1,0 +1,23 @@
+.tool-drawer {
+  position: absolute;
+  top: 0;
+  left: auto;
+  right: 0;
+  bottom: 0;
+  box-shadow: -2px 0px 8px 0px rgba(0, 50, 150, 0.1);
+  border-radius: 8px 0px 0px 8px;
+
+  & .tea-drawer__header {
+    height: 77px;
+    padding: 20px;
+  }
+
+  &--title {
+    height: 55px;
+    &__sub {
+      font-size: 12px;
+      font-weight: 400;
+      color: #999999;
+    }
+  }
+}

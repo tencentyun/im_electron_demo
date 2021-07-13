@@ -56,6 +56,10 @@ type MsgResponse = {
   };
 };
 
+type MemberList = {
+ 
+}
+
 const getUserInfoList = async (userIdList: Array<string>) => {
   const {
     data: { code, json_param },
@@ -223,9 +227,28 @@ export const revokeMsg = async ({
         conv_id: convId,
         conv_type: convType,
         message_id: msgId,
+        user_data: '123',
     });
 
     console.log(res);
+}
+
+export const deleteMsg = async ({
+  convId,
+  convType,
+  msgId
+}) => {
+  const res = await timRenderInstance.TIMMsgDelete({
+      conv_id: convId,
+      conv_type: convType,
+      params: {
+        msg_delete_param_msg: msgId,
+        msg_delete_param_is_remble: true
+      },
+      user_data: "123"
+  });
+
+  console.log(res);
 }
 
 export const inviteMemberGroup = async (params: {
@@ -245,3 +268,18 @@ export const inviteMemberGroup = async (params: {
   }
   throw new Error(desc);
 };
+
+
+export const getGroupMemberList = async (params: {
+    groupId: string;
+}) :Promise<MemberList[]> => {
+    const {groupId} = params;
+const {data} = await timRenderInstance.TIMGroupGetMemberInfoList({params: {
+    }});
+    console.log('data', data)
+    const {code, json_param} = data;
+    if(code === 0) {
+        return JSON.parse(json_param)
+    }
+    return [];
+}
