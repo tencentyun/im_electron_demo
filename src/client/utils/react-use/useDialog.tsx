@@ -1,24 +1,36 @@
-import { useEffect, useState, useRef } from 'react';
+import {
+  useEffect,
+  useState,
+  useRef,
+  Dispatch,
+  SetStateAction,
+  MutableRefObject,
+} from "react";
 
 export type DialogRef<S extends any = any> = React.MutableRefObject<{
   open: (arg?: Partial<S>) => void;
 }>;
 
-export function useDialogRef<S extends any = any>() {
+export function useDialogRef<S extends any = any>(): MutableRefObject<{
+  open: (arg?: Partial<S>) => void;
+}> {
   const dialogRef = useRef<{
     open: (arg?: Partial<S>) => void;
   }>({
-        // 默认值
-        open: () => {},
-      });
+    // 默认值
+    /* eslint-disable */
+    open: () => {}
+  });
   return dialogRef;
 }
 
-export function useDialog<S extends {}>(
+type RecordType = { [k: string]: any };
+
+export function useDialog<S extends RecordType>(
   dialogRef: DialogRef,
   initDialogData?: Partial<S>,
-  mergeFn?: (defaultVal: Partial<S>, initVal: Partial<S>) => Partial<S>,
-) {
+  mergeFn?: (defaultVal: Partial<S>, initVal: Partial<S>) => Partial<S>
+): [boolean, Dispatch<SetStateAction<boolean>>, S] {
   const [visible, setShowState] = useState(false);
 
   const [defaultVal, setDefaultVal] = useState<S>(initDialogData as S);
@@ -39,5 +51,5 @@ export function useDialog<S extends {}>(
     };
   }, [defaultVal, dialogRef, mergeFn, setDefaultVal]);
 
-  return [visible, setShowState, defaultVal] as const;
+  return [visible, setShowState, defaultVal];
 }

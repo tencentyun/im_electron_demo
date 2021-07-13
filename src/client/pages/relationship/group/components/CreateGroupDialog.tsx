@@ -1,39 +1,33 @@
-import { DialogRef, useDialog } from '../../../../utils/react-use/useDialog';
-import { Modal, Button } from '@tencent/tea-component';
-import React,{ useState } from 'react';
+import { DialogRef, useDialog } from "../../../../utils/react-use/useDialog";
+import { Modal } from "@tencent/tea-component";
+import React from "react";
+import { CreateGroupForm, FormValue } from "./CreateGroupForm";
+import { createGroup } from "../api";
 
-
-export const ExportAllDataModal = (props: {
-  onSuccess?: (value: { [k: string]: any }) => void;
+export const CreateGroupDialog = (props: {
+  onSuccess?: () => void;
   dialogRef: DialogRef;
 }): JSX.Element => {
-const { onSuccess, dialogRef } = props;
+  const { onSuccess, dialogRef } = props;
 
-const [
-  visible,
-  setShowState,
-] = useDialog(dialogRef, {});
+  const [visible, setShowState] = useDialog(dialogRef, {});
 
-const [loading, setLoading] = useState(false);
+  const onClose = () => setShowState(false);
 
-const onClose = () => setShowState(false);
+  const success = () => {
+    onSuccess();
+    onClose();
+  };
 
-const onOk = async () => {};
-return (
-  <Modal disableEscape visible={visible} onClose={onClose}>
-    <Modal.Body>
-      <Modal.Message
-        icon='infoblue'
-        message=''
-        description=''
-      />
-    </Modal.Body>
-    <Modal.Footer>
-      <Button onClick={onClose}>取消</Button>
-      <Button type='primary' onClick={onOk} loading={loading}>
-        确认
-      </Button>
-    </Modal.Footer>
-  </Modal>
-);
+  const onSubmit = async (formData: FormValue) => {
+    await createGroup(formData);
+  };
+
+  return (
+    <Modal disableEscape visible={visible} onClose={onClose} caption="创建群聊">
+      <Modal.Body>
+        <CreateGroupForm onSubmit={onSubmit} onSuccess={success} onClose={onClose} />
+      </Modal.Body>
+    </Modal>
+  );
 };

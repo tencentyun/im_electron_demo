@@ -5,7 +5,7 @@ import {
     Switch,
     Route,
 } from 'react-router-dom';
-import {  Provider, useDispatch } from "react-redux";
+import {  Provider, useDispatch, useSelector } from "react-redux";
 
 import store from './store'
 
@@ -17,8 +17,9 @@ import { ToolsBar } from './components/toolsBar/toolsBar';
 
 import './app.scss'
 import initListeners from './imLiseners';
-import { updateConversationList } from './store/actions/conversation';
+import { setUnreadCount, updateConversationList } from './store/actions/conversation';
 import { addProfileForConversition } from './pages/message/api';
+import { reciMessage } from './store/actions/message';
 // eslint-disable-next-line import/no-unresolved
 let isInited = false
 
@@ -26,18 +27,23 @@ const App = () => {
     const dispatch = useDispatch()
 
 
+    const { currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
+
+    const { function_tab } = useSelector((state: State.RootState) => state.ui);
+
     const initIMSDK = () => {
         if(!isInited){
             timRenderInstance.TIMInit().then(({data})=>{
                 if(data === 0){
                     isInited = true
                     console.log("初始化成功")
-                    initListeners((callback) => {
+                    initListeners.bind(this)((callback) => {
                         const { data,type } = callback;
                         console.info('======================== 接收到IM事件 start ==============================')
                         console.log("类型：", type)
                         console.log('数据：', data)
                         console.info('======================== 接收到IM事件 end ==============================')
+                        console.log(currentSelectedConversation)
                         switch (type) {
                             /**
                              * 处理收到消息逻辑
@@ -51,13 +57,37 @@ const App = () => {
                             case "TIMSetConvEventCallback":
                                 _handleConversaion(data);
                                 break;
+                            /**
+                             * 未读数改变
+                             */
+                            case "TIMSetConvTotalUnreadMessageCountChangedCallback":
+                                _handleUnreadChange(data);
+                                break;
                         }
                     });
                 }
             })
         }
     }
-    const _handeMessage = (messages:[]) => {
+    const _handleUnreadChange = (unreadCount)=>{
+        dispatch(setUnreadCount(unreadCount))
+    }
+    const _handeMessage = (messages:State.message[]) => {
+        // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
+        const obj = {};
+        for(let i  = 0;i<messages.length;i++){
+            if(!obj[messages[i].message_conv_id]){
+                obj[messages[i].message_conv_id] = []
+            }
+            obj[messages[i].message_conv_id].push(messages[i])
+        }
+        for(let i in obj){
+            dispatch(reciMessage({
+                convId: i,
+                messages: obj[i]
+            }))
+        }
+        
     }
     const _handleConversaion = (conv) => {
         const { type, data} = conv;
@@ -98,7 +128,6 @@ const App = () => {
     const _updateConversation =async (conversationList:Array<State.conversationItem>)=>{
         if(conversationList.length){
             const convList = await addProfileForConversition(conversationList);
-            console.log(convList)
             dispatch(updateConversationList(convList))
         }
     }

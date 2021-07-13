@@ -1,6 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import { Avatar } from '../../components/avatar/avatar';
+import RightClickMenu from '../../components/RightClickMenu';
+import { revokeMsg } from './api';
 
 import './message-view.scss';
 
@@ -48,6 +50,8 @@ type PhotoElement = {
 type MessageList<T> = {
     message_elem_array: Array<T>,
     message_is_from_self: boolean,
+    message_conv_id: string,
+    message_conv_type: number;
     message_msg_id: string,
     message_sender_profile: {
         user_profile_identifier: string;
@@ -57,36 +61,98 @@ type MessageList<T> = {
 }
 
 type Props = {
-    messageList: Array<MessageList<TextElement>>
+    messageList: Array<State.message>
 }
 
-const TextElementItem = ({text_elem_content}) => <span className="message-view__item--text text">{text_elem_content}</span>;
+const RIGHT_CLICK_MENU_LIST = [{
+    id: 'revoke',
+    text: '撤回'
+},
+{
+    id: 'transimit',
+    text: '转发'
+},
+{
+    id: 'reply',
+    text: '回复'
+},
+{
+    id: 'multiSelect',
+    text: '多选'
+}];
+
+const TextElementItem = ({text_elem_content}) => <span className="message-view__item--text text right-menu-item">{text_elem_content}</span>;
 
 export  const MessageView = (props: Props): JSX.Element => {
     const { messageList } = props;
+    const [selectedMsg, setSelectedMsg ] = useState<{
+        convId?: string,
+        convType?: number,
+        msgId?: string
+    }>({});
+
+    const handleContextMenuClick = (msgId, convId, convType) => {
+        setSelectedMsg({
+            msgId,
+            convId,
+            convType
+        });
+    }
+
+    const handleRevokeMsg = async () => {
+        const { convId, msgId, convType } = selectedMsg;
+        revokeMsg({
+            convId,
+            convType,
+            msgId
+        })
+
+    };
+
+    const handlRightClick = id => {
+        switch(id) {
+            case 'revoke':
+                handleRevokeMsg()
+        }
+            
+    }
 
     return (
         <div className="message-view">
             {
                 messageList.length > 0 &&
                 messageList.map(item => {
-                    const { message_elem_array, message_sender_profile,  message_is_from_self } = item;
+                    const { message_elem_array, message_sender_profile,  message_is_from_self, message_msg_id, message_conv_id, message_conv_type } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
-                    return <div className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`}>
+                    return <div className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
                         <div className="message-view__item--avatar face-url">
                             <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                         </div>
                         {
-                            message_elem_array.map(elment => {
+                            message_elem_array.map((elment,index) => {
                                 const { elem_type, ...res } = elment;
-                                if(elem_type === 0 ){
-                                    return <TextElementItem {...res} />
-                                }
+                                return <div key={ index } className="right-menu-item" onContextMenu={() => handleContextMenuClick(message_msg_id, message_conv_id, message_conv_type)} >
+                                    {
+                                        elem_type === 0 &&  <TextElementItem {...res} />
+                                    }
+                                </div>
+                                
                             })
                         }
                     </div>
                 })
             }
+            <RightClickMenu >
+                {
+                    RIGHT_CLICK_MENU_LIST.map(({id, text}) => {
+                        return (
+                            <div className="right-click__item" key={id} onClick={(id) => handlRightClick(id)}>
+                                <span>{text}</span>
+                            </div>
+                        )
+                    })
+                }
+            </RightClickMenu>
         </div>
     )
 };

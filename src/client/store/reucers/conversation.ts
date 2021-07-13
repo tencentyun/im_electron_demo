@@ -1,8 +1,9 @@
-import { SET_UNREAD_COUNT, UPDATE_CONVERSATIONLIST } from '../actions/conversation';
+import { SET_UNREAD_COUNT, UPDATE_CONVERSATIONLIST, UPDATE_CURRENT_SELECTED_CONVERSATION } from '../actions/conversation';
 
 const initState = {
     unreadCount: 0,
-    conversationList:[]
+    conversationList:[],
+    currentSelectedConversation: null
 }
 const sortByPindAndTime = (conversationList:Array<State.conversationItem>) :Array<State.conversationItem>=>{
     return  conversationList.sort((pre,next)=>{
@@ -33,6 +34,11 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
             return {
                 ...state,
                 conversationList: sortByPindAndTime(listCopy) 
+            }
+        case UPDATE_CURRENT_SELECTED_CONVERSATION:
+            return {
+                ...state,
+                currentSelectedConversation: action.payload
             }
         default:
           return state;

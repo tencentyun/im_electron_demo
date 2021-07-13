@@ -1,16 +1,17 @@
 import React from "react";
-import useAsyncRetryFunc from "../../../../utils/react-use/useAsyncRetryFunc";
-import { getJoinedGroupList } from "../api";
+
+import { GroupList as GroupListType } from "../api";
 import { GroupItem } from "./GroupItem";
 
 import "./group-list.scss";
 
-export const GroupList = (): JSX.Element => {
-  const { value, loading, retry } = useAsyncRetryFunc(async () => {
-    return await getJoinedGroupList();
-  }, []);
+export const GroupList = (props: {
+  value: GroupListType;
+  onRefresh: () => Promise<GroupListType>;
+}): JSX.Element => {
+  const { value, onRefresh } = props;
 
-  console.log('value', value)
+  console.log("value", value);
 
   return (
     <div className="group-list">
@@ -21,7 +22,8 @@ export const GroupList = (): JSX.Element => {
           groupAvatar={v.group_base_info_face_url}
           groupName={v.group_base_info_group_name}
           groupOwner={v.group_detial_info_owener_identifier}
-          onRefresh={retry}
+          groupType={v.group_base_info_group_type}
+          onRefresh={onRefresh}
         />
       ))}
     </div>

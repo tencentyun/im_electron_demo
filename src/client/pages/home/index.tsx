@@ -9,6 +9,8 @@ import { Setting } from '../settings/Setting';
 import './home.scss';
 import { UnreadCount } from './unreadCount';
 import { Profile } from './profile';
+import { useDispatch, useSelector } from 'react-redux';
+import { changeFunctionTab } from '../../store/actions/ui';
 
 const navList = [
     {
@@ -30,11 +32,13 @@ const navList = [
 ]
 
 export const Home = (): JSX.Element => {
-    const [activedId, setActiveId] = useState('message');
+    const { function_tab } = useSelector((state: State.RootState) => state.ui);
 
-    const addActiveClass = (id: string) : string => activedId === id ? 'is-active' : '';
+    const dispatch = useDispatch();
+    
+    const addActiveClass = (id: string) : string => function_tab === id ? 'is-active' : '';
 
-    const handleLinkClick = (id: string): void => setActiveId(id);
+    const handleLinkClick = (id: string) => dispatch(changeFunctionTab(id));
 
     return <div className="home">
         

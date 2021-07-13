@@ -4,12 +4,21 @@ declare namespace State {
             isLogin: boolean;
         },
         userInfo: userInfo,
-        conversation: conversation
+        conversation: conversation,
+        historyMessage: historyMessage,
+        ui: ui
     }
-
+    export type functionTab = 'message' | 'relationship'
+    export type ui = {
+        function_tab: functionTab
+    }
+    export type historyMessage = {
+        historyMessageList:Map<string, Array<message>>
+    }
     export type conversation = {
         unreadCount: number,
-        conversationList: Array<conversationItem>
+        conversationList: Array<conversationItem>,
+        currentSelectedConversation: conversationItem
     }
     export type messageElemTypeText  = {
         elem_type: number
@@ -43,7 +52,7 @@ declare namespace State {
         user_profile_custom_string_info_key: string
         user_profile_custom_string_info_value: string
     }
-    export type groupProfile = {
+    export type userProfile = {
         user_profile_add_permission: number
         user_profile_birthday: number
         user_profile_custom_string_array: Array<userProfileCustom>
@@ -61,7 +70,7 @@ declare namespace State {
         group_info_custom_string_info_key: string
         group_info_custom_string_info_value: string
     }
-    export type userProfile = {
+    export type  groupProfile = {
         group_detial_info_add_option: number
         group_detial_info_create_time: number
         group_detial_info_custom_info: Array<groupProfileCunstom>

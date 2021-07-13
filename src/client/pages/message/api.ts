@@ -102,7 +102,14 @@ export const getMsgList = async (convId, convType) => {
     return JSON.parse(json_params);
 }
 
-
+export const markMessageAsRead = async (conv_id,conv_type,last_message_id)=>{
+    const {data:{code,json_params,desc}} = await timRenderInstance.TIMMsgReportReaded({
+        conv_type:conv_type,
+        conv_id:conv_id,
+        message_id: last_message_id
+    })
+    return {code,desc,json_params}
+}
 
 const sendMsg = async ({
     convId,
@@ -128,9 +135,23 @@ export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse
 export const getConversionList = async () => {
     const { data: { json_param } } = await timRenderInstance.TIMConvGetConvList({});
     const conversitionList = JSON.parse(json_param);
-    const hasLastMessageList = conversitionList.filter(item => item.conv_is_has_lastmsg);
+    const hasLastMessageList = conversitionList.filter(item => item.conv_is_has_lastmsg && item.conv_type!=0);
     const conversitionListProfile = addProfileForConversition(hasLastMessageList);
 
     return conversitionListProfile;
+}
+
+export const revokeMsg = async ({
+    convId,
+    convType,
+    msgId
+}) => {
+    const res = await timRenderInstance.TIMMsgRevoke({
+        conv_id: convId,
+        conv_type: convType,
+        message_id: msgId,
+    });
+
+    console.log(res);
 }
 

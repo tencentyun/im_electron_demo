@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { TextArea, Button } from '@tencent/tea-component';
 import { sendTextMsg } from './api'
+import { reciMessage } from '../../store/actions/message'
 
 import './message-input.scss';
 
@@ -33,9 +34,10 @@ export const MessageInput = (props: Props) : JSX.Element => {
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
     const [text, setText] = useState("");
+    const dispatch = useDispatch();
 
     const handleSendTextMsg = async () => {
-        const { data: { code, desc, json_params } } = await sendTextMsg({
+        const { data: { code, json_params } } = await sendTextMsg({
             convId,
             convType,
             messageElementArray: [{
@@ -45,9 +47,13 @@ export const MessageInput = (props: Props) : JSX.Element => {
             userId,
         });
 
-        console.log('===response====', code, desc, json_params);
+        const sendedMsg = JSON.parse(json_params);
 
         if(code === 0) {
+            dispatch(reciMessage({
+                convId,
+                messages: [sendedMsg]
+            }))
             setText("");
         }
     }
