@@ -5,7 +5,7 @@ import './atPopup.scss'
 
 interface AtPopupProps {
     callback: Function,
-    group_id?: string
+    group_id: string
 }
 
 export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element => {
@@ -30,7 +30,7 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element =
 
     return (
         <div>
-            <List split="divide">
+            <List className="at-popup" split="divide">
                 {
                     list.map((v, i) => <List.Item onClick={() => callback(v)}>v.name</List.Item>)
                 } 

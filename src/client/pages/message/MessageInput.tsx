@@ -7,6 +7,7 @@ import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } fr
 import { reciMessage } from '../../store/actions/message'
 import { emojiMap, emojiName, emojiUrl } from './emoji-map'
 import { AtPopup } from './components/atPopup'
+import { EmojiPopup } from './components/emojiPopup'
 
 import './message-input.scss';
 
@@ -38,7 +39,6 @@ export const MessageInput = (props: Props) : JSX.Element => {
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ atList, setAtList ] = useState([]);
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
-
     const [text, setText] = useState("");
     const dispatch = useDispatch();
     const filePicker = React.useRef(null);
@@ -67,7 +67,6 @@ export const MessageInput = (props: Props) : JSX.Element => {
             setText("");
         }
     }
-
     const handleSendPhotoMessage = () => {
         imagePicker.current.click();
     }
@@ -80,7 +79,6 @@ export const MessageInput = (props: Props) : JSX.Element => {
     const handleSendVideoMessage = () => {
         videoPicker.current.click();
     }
-
     const sendImageMessage = async(e) => {
         const image = e.target.files[0]
 
@@ -184,7 +182,6 @@ export const MessageInput = (props: Props) : JSX.Element => {
 
         }
         setActiveFeature(featureId);
-        console.log(featureId);
     }
 
     const handleOnkeyPress = (e) => {
@@ -195,7 +192,13 @@ export const MessageInput = (props: Props) : JSX.Element => {
     }
 
     const onAtPopupCallback = (user) => {
+        setAtPopup(false)
         console.log(user)
+    }
+
+    const onEmojiPopupCallback = (id) => {
+        setEmojiPopup(false)
+        console.log(id)
     }
 
     return (
@@ -229,18 +232,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 isAtPopup && <AtPopup callback={onAtPopupCallback} group_id={convId}  />
             }
             {
-                isEmojiPopup && 
-                <div className="message-input__emoji-popup">
-                    {
-                        emojiMap.forEach(({id}) => (
-                            <span 
-                                key={id} 
-                                className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`} 
-                                onClick={() => handleFeatureClick(id)}
-                            />
-                        ))
-                    }
-                </div>
+                isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
             }
             <input ref={filePicker} onChange={sendFileMessage} type="file" style={{ display:'none'}} />
             <input ref={imagePicker} onChange={sendImageMessage} type="file" style={{ display:'none'}} />
