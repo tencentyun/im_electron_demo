@@ -1,0 +1,21 @@
+.group-member {
+  padding: 12px 0;
+
+  &--title {
+    font-size: 14px;
+    font-weight: 400;
+    color: #333333;
+    margin-bottom: 8px;
+  }
+
+  &--avatar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    div {
+      margin-right: 12px;
+      margin-bottom: 12px;
+    }
+  }
+}

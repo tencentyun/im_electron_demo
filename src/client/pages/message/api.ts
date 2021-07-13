@@ -14,32 +14,32 @@ type TextMsg = {
 };
 
 type ImageMsg = {
-    elem_type: number,
-    image_elem_orig_path: string,
-    image_elem_level: number
-}
+  elem_type: number;
+  image_elem_orig_path: string;
+  image_elem_level: number;
+};
 
 type FileMsg = {
-    elem_type: number,
-    file_elem_file_path: string,
-    file_elem_file_name: string,
-    file_elem_file_size: number
-}
+  elem_type: number;
+  file_elem_file_path: string;
+  file_elem_file_name: string;
+  file_elem_file_size: number;
+};
 
 type SoundMsg = {
-    elem_type: number,
-    sound_elem_file_path: string,
-    sound_elem_file_size: number,
-    sound_elem_file_time: number
-}
+  elem_type: number;
+  sound_elem_file_path: string;
+  sound_elem_file_size: number;
+  sound_elem_file_time: number;
+};
 
 type VideoMsg = {
-    elem_type: number,
-    video_elem_video_type: string,
-    video_elem_video_size: number,
-    video_elem_video_duration: number,
-    video_elem_video_path: string
-}
+  elem_type: number;
+  video_elem_video_type: string;
+  video_elem_video_size: number;
+  video_elem_video_duration: number;
+  video_elem_video_path: string;
+};
 
 type FaceMsg = {
   elem_type: number;
@@ -56,9 +56,11 @@ type MsgResponse = {
   };
 };
 
-type MemberList = {
- 
-}
+type MemberInfo = {
+  group_get_memeber_info_list_result_info_array: {
+    group_member_info_identifier: string;
+  }[];
+};
 
 const getUserInfoList = async (userIdList: Array<string>) => {
   const {
@@ -177,29 +179,41 @@ export const markMessageAsRead = async (
 };
 
 const sendMsg = async ({
-    convId,
-    convType,
-    messageElementArray,
-    userData,
-    userId
-} : SendMsgParams<TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg>): Promise<MsgResponse> => {
-    const res = await timRenderInstance.TIMMsgSendMessage({
-        conv_id: convId,
-        conv_type: convType,
-        params: {
-            message_elem_array: messageElementArray,
-            message_sender: userId,
-        },
-        user_data: userData
-    });
-    return res;
+  convId,
+  convType,
+  messageElementArray,
+  userData,
+  userId,
+}: SendMsgParams<
+  TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg
+>): Promise<MsgResponse> => {
+  const res = await timRenderInstance.TIMMsgSendMessage({
+    conv_id: convId,
+    conv_type: convType,
+    params: {
+      message_elem_array: messageElementArray,
+      message_sender: userId,
+    },
+    user_data: userData,
+  });
+  return res;
 };
 
-export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
-export const sendImageMsg = (params: SendMsgParams<ImageMsg>): Promise<MsgResponse> => sendMsg(params);
-export const sendFileMsg = (params: SendMsgParams<FileMsg>): Promise<MsgResponse> => sendMsg(params);
-export const sendSoundMsg = (params: SendMsgParams<SoundMsg>): Promise<MsgResponse> => sendMsg(params);
-export const sendVideoMsg = (params: SendMsgParams<VideoMsg>): Promise<MsgResponse> => sendMsg(params);
+export const sendTextMsg = (
+  params: SendMsgParams<TextMsg>
+): Promise<MsgResponse> => sendMsg(params);
+export const sendImageMsg = (
+  params: SendMsgParams<ImageMsg>
+): Promise<MsgResponse> => sendMsg(params);
+export const sendFileMsg = (
+  params: SendMsgParams<FileMsg>
+): Promise<MsgResponse> => sendMsg(params);
+export const sendSoundMsg = (
+  params: SendMsgParams<SoundMsg>
+): Promise<MsgResponse> => sendMsg(params);
+export const sendVideoMsg = (
+  params: SendMsgParams<VideoMsg>
+): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
@@ -218,50 +232,44 @@ export const getConversionList = async () => {
   return conversitionListProfile;
 };
 
-export const revokeMsg = async ({
-    convId,
-    convType,
-    msgId
-}) => {
-    const res = await timRenderInstance.TIMMsgRevoke({
-        conv_id: convId,
-        conv_type: convType,
-        message_id: msgId,
-        user_data: '123',
-    });
-
-    console.log(res);
-}
-
-export const deleteMsg = async ({
-  convId,
-  convType,
-  msgId
-}) => {
-  const res = await timRenderInstance.TIMMsgDelete({
-      conv_id: convId,
-      conv_type: convType,
-      params: {
-        msg_delete_param_msg: msgId,
-        msg_delete_param_is_remble: true
-      },
-      user_data: "123"
+export const revokeMsg = async ({ convId, convType, msgId }) => {
+  const res = await timRenderInstance.TIMMsgRevoke({
+    conv_id: convId,
+    conv_type: convType,
+    message_id: msgId,
+    user_data: "123",
   });
 
   console.log(res);
-}
+};
+
+export const deleteMsg = async ({ convId, convType, msgId }) => {
+  const res = await timRenderInstance.TIMMsgDelete({
+    conv_id: convId,
+    conv_type: convType,
+    params: {
+      msg_delete_param_msg: msgId,
+      msg_delete_param_is_remble: true,
+    },
+    user_data: "123",
+  });
+
+  console.log(res);
+};
 
 export const inviteMemberGroup = async (params: {
   UID: string;
   groupId: string;
-}):Promise<any> => {
+}): Promise<any> => {
   const { UID, groupId } = params;
   const inviteParams = {
     group_invite_member_param_group_id: groupId,
     group_invite_member_param_identifier_array: [UID],
   };
-  const { data } = await timRenderInstance.TIMGroupInviteMember({params: inviteParams});
-  console.log('inviteMemberGroup', data)
+  const { data } = await timRenderInstance.TIMGroupInviteMember({
+    params: inviteParams,
+  });
+  console.log("inviteMemberGroup", data);
   const { code, desc } = data;
   if (code === 0) {
     return {};
@@ -312,15 +320,34 @@ export const searchFriends = async (params: {
 }
 
 export const getGroupMemberList = async (params: {
-    groupId: string;
-}) :Promise<MemberList[]> => {
-    const {groupId} = params;
-const {data} = await timRenderInstance.TIMGroupGetMemberInfoList({params: {
-    }});
-    console.log('data', data)
-    const {code, json_param} = data;
-    if(code === 0) {
-        return JSON.parse(json_param)
-    }
-    return [];
-}
+  groupId: string;
+}): Promise<MemberInfo> => {
+  const { groupId } = params;
+  const { data } = await timRenderInstance.TIMGroupGetMemberInfoList({
+    params: {
+      group_get_members_info_list_param_group_id: groupId,
+    },
+  });
+  console.log("data", data);
+  const { code, json_param } = data;
+  if (code === 0) {
+    const result = JSON.parse(json_param);
+    return result;
+  }
+  return [] as any;
+};
+
+export const getGroupMemberInfoList = async (params: {
+  groupId: string;
+}): Promise<any> => {
+  const { groupId } = params;
+  const res = await getGroupMemberList({ groupId });
+  const { group_get_memeber_info_list_result_info_array: memberList } = res;
+  const userIdList = memberList.map((v) => v.group_member_info_identifier);
+  const result = await getUserInfoList(userIdList);
+  const userList = result.map(v => {
+      const member = memberList.find(item => item.group_member_info_identifier === v.user_profile_identifier) || {};
+      return {...v, ...member};
+  })
+  return userList;
+};
