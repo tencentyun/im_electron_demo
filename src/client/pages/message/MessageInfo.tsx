@@ -24,8 +24,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
     const getDisplayConvInfo = () => {
         const info: Info = {
-        faceUrl: "",
-        nickName: "",
+            faceUrl: "",
+            nickName: "",
         };
 
         if (conv_type === 1) {
@@ -50,10 +50,12 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 console.log("设置会话已读失败", err);
             }
         }
+
+        handleMsgReaded();
         
-        if(props.conv_unread_num > 0) {
-            handleMsgReaded();
-        }
+        // if(props.conv_unread_num > 0) {
+        //     handleMsgReaded();
+        // }
     }
 
     const { faceUrl,nickName } = getDisplayConvInfo();

@@ -52,7 +52,7 @@ const PublicRightClick = ({ children }) => {
   
   useEffect(() => {
     document.addEventListener('contextmenu', handleContextMenu);
-    document.addEventListener('click', handleClick,true);
+    document.addEventListener('click', handleClick, true);
     document.addEventListener('scroll', setShowFalse, true);
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu);
