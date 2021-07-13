@@ -5,6 +5,8 @@ import { addMessage } from '../../store/actions/message';
 import { TextArea, Button } from '@tencent/tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
 import { reciMessage } from '../../store/actions/message'
+import { emojiMap, emojiName, emojiUrl } from './emoji-map'
+import { AtPopup } from './components/atPopup'
 
 import './message-input.scss';
 
@@ -32,7 +34,8 @@ const FEATURE_LIST = [{
 export const MessageInput = (props: Props) : JSX.Element => {
     const { convId, convType } = props;
     const [ activeFeature, setActiveFeature ] = useState('');
-    const [ isShownAtPopup, setShownAtPopup ] = useState(false);
+    const [ isAtPopup, setAtPopup ] = useState(false);
+    const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ atList, setAtList ] = useState([]);
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
@@ -82,12 +85,6 @@ export const MessageInput = (props: Props) : JSX.Element => {
         const image = e.target.files[0]
 
         if(image) {
-            // const fileReader = new FileReader();
-            // fileReader.readAsDataURL(image);
-            // fileReader.onload = () => {
-            //     fileReader.result
-            // }
-
             const { data: { code, desc, json_params } } = await sendImageMsg({
                 convId,
                 convType,
@@ -106,7 +103,6 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 }))
             }
         }
-        
     }
 
     const sendFileMessage = async(e) => {
@@ -158,13 +154,17 @@ export const MessageInput = (props: Props) : JSX.Element => {
     }
 
     const handleSendAtMessage = async() => {
-        setShownAtPopup(true)
+        setAtPopup(true)
+    }
+
+    const handleSendFaceMessage = async() => {
+        setEmojiPopup(true)
     }
 
     const handleFeatureClick = (featureId) => {
         switch(featureId) {
             case "face":
-                // handleSendFaceMessage()
+                handleSendFaceMessage()
             case "at":
                 handleSendAtMessage()
                 break;
@@ -194,6 +194,9 @@ export const MessageInput = (props: Props) : JSX.Element => {
         }
     }
 
+    const onAtPopupCallback = (user) => {
+        console.log(user)
+    }
 
     return (
         <div className="message-input">
@@ -222,15 +225,27 @@ export const MessageInput = (props: Props) : JSX.Element => {
             <div className="message-input__button-area">
                 <Button type="primary" onClick={handleSendTextMsg} disabled={text === ''}>发送</Button>
             </div>
-            <div>
-
-            </div>
+            {
+                isAtPopup && <AtPopup callback={onAtPopupCallback} group_id={convId}  />
+            }
+            {
+                isEmojiPopup && 
+                <div className="message-input__emoji-popup">
+                    {
+                        emojiMap.forEach(({id}) => (
+                            <span 
+                                key={id} 
+                                className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`} 
+                                onClick={() => handleFeatureClick(id)}
+                            />
+                        ))
+                    }
+                </div>
+            }
             <input ref={filePicker} onChange={sendFileMessage} type="file" style={{ display:'none'}} />
             <input ref={imagePicker} onChange={sendImageMessage} type="file" style={{ display:'none'}} />
             <input ref={videoPicker} onChange={sendVideoMessage} type="file" style={{ display:'none'}} />
             <input ref={soundPicker} onChange={sendSoundMessage} type="file" style={{ display:'none'}} />
         </div>
     )
-
-
 }
