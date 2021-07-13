@@ -127,7 +127,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
             messageElementArray: [{
                 elem_type: 0,
                 video_elem_video_type: "MP4",
-                video_elem_video_size: 100000,
+                video_elem_video_size: video.size,
                 video_elem_video_duration: 10,
                 video_elem_video_path: video.value
             }],
@@ -143,7 +143,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
             messageElementArray: [{
                 elem_type: 0,
                 sound_elem_file_path: sound.value,
-                sound_elem_file_size: 100000,
+                sound_elem_file_size: sound.size,
                 sound_elem_file_time: 10
             }],
             userId,
@@ -151,7 +151,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
     }
 
     const handleSendAtMessage = async() => {
-
+        
     }
 
     const handleFeatureClick = (featureId) => {
