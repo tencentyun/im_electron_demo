@@ -1,9 +1,25 @@
 import { Input, Popover } from "@tencent/tea-component";
 import React, { useState } from "react";
-import './add-user-popover.scss'
+import "./add-user-popover.scss";
+import { inviteMemberGroup } from "./api";
 
-export const AddUserPopover = (): JSX.Element => {
+export const AddUserPopover = (props: {groupId: string}): JSX.Element => {
+  const {groupId} = props;
   const [visible, setVisible] = useState(false);
+
+  const [value, setValue] = useState("");
+
+  const handleAdd = async () => {
+    try{
+      if(value.length){
+        await inviteMemberGroup({groupId, UID: value})
+        setVisible(false);
+      }
+    }catch(e){
+      console.log(e.message);
+    }
+   
+  }
 
   return (
     <Popover
@@ -13,11 +29,22 @@ export const AddUserPopover = (): JSX.Element => {
       trigger="click"
       overlay={
         <div className="overlay-content">
-          <Input className="overlay-content--input" placeholder="输入UID后，回车添加成员" />
+          <Input
+            className="overlay-content--input"
+            placeholder="输入UID后，回车添加成员"
+            value={value}
+            onChange={(value) => setValue(value)}
+            onKeyDown={(e) => {
+              console.log(e);
+             if(e.which === 13) {
+               handleAdd();
+             }
+            }}
+          />
         </div>
       }
     >
-     <span className={`add-icon ${visible ? 'is-active': ''}`} />
+      <span className={`add-icon ${visible ? "is-active" : ""}`} />
     </Popover>
   );
 };
