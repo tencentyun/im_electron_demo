@@ -18,13 +18,12 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    height: 1080,
+    height: 640,
     width: 960,
     minWidth: 830,
     minHeight: 600,
     show:false,
     frame:false,
-    // backgroundColor:"#DADADA",
     webPreferences: {
       webSecurity: true,
       nodeIntegration: true,
@@ -37,7 +36,6 @@ const createWindow = (): void => {
   global.WIN = mainWindow;
 
   mainWindow.on('ready-to-show',() => {
-    console.log('mainwindow ready to show')
     mainWindow.show();
 
     if(!ipc) ipc = new IPC(mainWindow);
