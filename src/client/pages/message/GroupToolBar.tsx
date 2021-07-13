@@ -34,6 +34,7 @@ export const GroupToolBar = (props: { conversationInfo: State.conversationItem }
       <div className="tool-bar" id="toolBar">
         {tools.map(({ id, title }) => (
           <div
+            key={id}
             className="tool-bar--item"
             onClick={() => {
               if(active !== id) {
