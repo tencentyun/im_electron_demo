@@ -13,6 +13,7 @@ export const AddUserPopover = (props: {groupId: string}): JSX.Element => {
     try{
       if(value.length){
         await inviteMemberGroup({groupId, UID: value})
+        setValue('');
         setVisible(false);
       }
     }catch(e){
