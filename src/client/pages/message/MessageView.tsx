@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Avatar } from '../../components/avatar/avatar';
-import { revokeMsg } from './api';
+import { revokeMsg, deleteMsg } from './api';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 
 import './message-view.scss';
@@ -69,6 +69,10 @@ const RIGHT_CLICK_MENU_LIST = [{
     text: '撤回'
 },
 {
+    id: 'delete',
+    text: '删除'
+},
+{
     id: 'transimit',
     text: '转发'
 },
@@ -96,6 +100,15 @@ export  const MessageView = (props: Props): JSX.Element => {
 
     };
 
+    const handleDeleteMsg = async (params) => {
+        const { convId, msgId, convType } = params;
+        deleteMsg({
+            convId,
+            convType,
+            msgId
+        })
+    };
+
     const handlRightClick = (e, {id, msgId, convId, convType}) => {
         switch(id) {
             case 'revoke':
@@ -103,9 +116,16 @@ export  const MessageView = (props: Props): JSX.Element => {
                     msgId,
                     convId,
                     convType
-                })
+                });
+                break;
+            case 'delete':
+                handleDeleteMsg({
+                    msgId,
+                    convId,
+                    convType
+                });
+                break;
         }
-            
     }
 
     return (
@@ -123,8 +143,8 @@ export  const MessageView = (props: Props): JSX.Element => {
                             message_elem_array.map((elment,index) => {
                                 const { elem_type, ...res } = elment;
                                 return (
-                                    <div className="message-view__item--element">
-                                        <ContextMenuTrigger id={`same_unique_identifier_${index}`} key={ index } >
+                                    <div className="message-view__item--element" key={ index }>
+                                        <ContextMenuTrigger id={`same_unique_identifier_${index}`}  >
                                             {
                                                 elem_type === 0 &&  <TextElementItem {...res} />
                                             }
