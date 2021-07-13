@@ -28,11 +28,11 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   );
   const msgList = historyMessageList.get(conv_id);
 
-  const getDisplayConvInfo = () => {
-    const info: Info = {
-      faceUrl: "",
-      nickName: "",
-    };
+    const getDisplayConvInfo = () => {
+        const info: Info = {
+            faceUrl: "",
+            nickName: "",
+        };
 
     if (conv_type === 1) {
       info.faceUrl = props.conv_profile.user_profile_face_url;
@@ -66,9 +66,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       }
     };
 
-    if (props.conv_unread_num > 0) {
+    // if (props.conv_unread_num > 0) {
       handleMsgReaded();
-    }
+    // }
   };
 
   const { faceUrl, nickName } = getDisplayConvInfo();
