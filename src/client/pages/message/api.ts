@@ -13,6 +13,12 @@ type TextMsg = {
     text_elem_content: string,
 }
 
+type ImageMsg = {
+    elem_type: number,
+    image_elem_orig_path: string,
+    image_elem_level: number
+}
+
 type FaceMsg = {
     elem_type: number,
     face_elem_index: number,
@@ -131,6 +137,14 @@ const sendMsg = async ({
 };
 
 export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
+export const sendImageMsg = (params: SendMsgParams<ImageMsg>): Promise<MsgResponse> => sendMsg(params);
+// export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
+// export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
+// export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
+// export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
+// export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
+// export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
+// export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 
 export const getConversionList = async () => {
     const { data: { json_param } } = await timRenderInstance.TIMConvGetConvList({});
