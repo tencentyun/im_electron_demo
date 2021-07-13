@@ -126,6 +126,21 @@ export const addProfileForConversition = async (conversitionList) => {
   });
 };
 
+/**
+ * 置顶会话
+ */
+export const TIMConvPinConversation = async (convId,convType,isPinned)=>{
+  const res = await timRenderInstance.TIMConvPinConversation({
+    convId,convType,isPinned
+  })
+  return res;
+}
+
+export const TIMConvDelete = async (convId,convType) =>{ 
+  return await timRenderInstance.TIMConvDelete({
+    convId,convType
+  })
+}
 export const getMsgList = async (convId, convType) => {
   const {
     data: { json_params },
