@@ -1,5 +1,5 @@
 import { Select } from "@tencent/tea-component";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./group-flag-message.scss";
 
 const flagMsgOptions = [
@@ -11,6 +11,19 @@ const flagMsgOptions = [
 export const GroupFlagMessage = (props: { flagMsg: string }): JSX.Element => {
   const { flagMsg } = props;
 
+  const [value, setValue] = useState(flagMsg);
+
+  console.log("value", value);
+
+  const handleChange = (value: string) => {
+    setValue(value);
+    console.log("GroupFlagMessage", value);
+  };
+
+  useEffect(() => {
+    setValue(flagMsg);
+  }, [flagMsg]);
+
   return (
     <div className="group-flag-message">
       <div className="group-flag-message--title">
@@ -20,7 +33,8 @@ export const GroupFlagMessage = (props: { flagMsg: string }): JSX.Element => {
         size="full"
         type="simulate"
         appearance="button"
-        value={'' + flagMsg}
+        value={value}
+        onChange={(value) => handleChange(value)}
         options={flagMsgOptions}
       />
     </div>

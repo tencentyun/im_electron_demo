@@ -4,11 +4,13 @@ import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
 import { getGroupMemberInfoList } from "../api";
 import { Divider } from "./Divider";
 import { GroupAccountecment } from "./GroupAccountecment";
+import { GroupAllMute } from "./groupAllMute";
 import { GroupBaseInfo } from "./GroupBaseInfo";
 import { GroupFlagMessage } from "./GroupFlagMessage";
 import { GroupIntroduction } from "./GroupIntroduction";
 import { GroupMember } from "./GroupMember";
 import { GroupNameCard } from "./GroupNameCard";
+import { GroupOperator } from "./GroupOperator";
 
 export const GroupSetting = (props: {
   conversationInfo: State.conversationItem;
@@ -61,6 +63,9 @@ export const GroupSetting = (props: {
       <Divider />
       <GroupNameCard nameCard={currentUserSetting.group_member_info_name_card} />
       <Divider />
+      <GroupAllMute  muteFlag={groupDeatil.group_detial_info_is_shutup_all}/>
+      <Divider />
+      <GroupOperator />
     </div>
   );
 };
