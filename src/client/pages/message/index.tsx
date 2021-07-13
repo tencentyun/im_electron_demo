@@ -96,7 +96,7 @@ export const Message = (): JSX.Element => {
                 currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : null
             }
             {
-                currentSelectedConversation && currentSelectedConversation.conv_type === 2 ? <GroupToolBar groupId={currentSelectedConversation.conv_id} /> : <></>
+                currentSelectedConversation && currentSelectedConversation.conv_type === 2 ? <GroupToolBar conversationInfo={currentSelectedConversation} /> : <></>
             }
         </div>
     )
