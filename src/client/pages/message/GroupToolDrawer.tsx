@@ -3,6 +3,7 @@ import { Drawer, H3, H5 } from "@tencent/tea-component";
 import React from "react";
 
 import "./group-tool-drawer.scss";
+import { GroupSetting } from "./groupSetting/GroupSetting";
 
 export interface GroupToolRecordsType {
   conversationInfo: State.conversationItem;
@@ -57,6 +58,7 @@ export const GroupToolDrawer = (props: {
 
   const { title, subTitle } = getTitle();
 
+
   return (
     <Drawer
       disableAnimation={true}
@@ -72,7 +74,7 @@ export const GroupToolDrawer = (props: {
       popupContainer={popupContainer}
       onClose={close}
     >
-      测试
+    {defaultForm.toolId === 'setting' && <GroupSetting conversationInfo={defaultForm.conversationInfo} />}
     </Drawer>
   );
 };

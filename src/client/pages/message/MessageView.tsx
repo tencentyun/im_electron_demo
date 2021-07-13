@@ -133,6 +133,7 @@ export  const MessageView = (props: Props): JSX.Element => {
             {
                 messageList.length > 0 &&
                 messageList.map(item => {
+                    
                     const { message_elem_array, message_sender_profile,  message_is_from_self, message_msg_id, message_conv_id, message_conv_type } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                     return <div className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
@@ -140,7 +141,7 @@ export  const MessageView = (props: Props): JSX.Element => {
                             <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                         </div>
                         {
-                            message_elem_array.map((elment,index) => {
+                            message_elem_array && message_elem_array.length && message_elem_array.map((elment,index) => {
                                 const { elem_type, ...res } = elment;
                                 return (
                                     <div className="message-view__item--element" key={ index }>
