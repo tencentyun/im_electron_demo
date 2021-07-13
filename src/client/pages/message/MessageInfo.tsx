@@ -18,9 +18,9 @@ type Info = {
 
 export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
-    const { conv_id, conv_type, conv_last_msg  } = props;
-    const { message_msg_id } = conv_last_msg;
+    const { conv_id, conv_type } = props;
     const { historyMessageList } = useSelector((state: State.RootState) => state.historyMessage);
+    const msgList = historyMessageList.get(conv_id);
 
     const getDisplayConvInfo = () => {
         const info: Info = {
@@ -34,10 +34,12 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
         }
         return info;
     }
-    const setMessageRead = ()=>{
+
+    const setMessageRead = () => {
         // 个人会话且未读数大于0才设置已读
         const handleMsgReaded = async () => {
             try {
+                const { message_msg_id } = msgList[0];
                 const { code, ...res } = await markMessageAsRead(conv_id, conv_type, message_msg_id);
                 if (code === 0) {
                     console.log("设置会话已读成功");
@@ -47,15 +49,19 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
             } catch (err) {
                 console.log("设置会话已读失败", err);
             }
-            
         }
         
         if(props.conv_unread_num > 0) {
             handleMsgReaded();
         }
     }
+
     const { faceUrl,nickName } = getDisplayConvInfo();
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        setMessageRead();
+    }, [msgList]);
 
   useEffect(() => {
     const getMessageList = async () => {
@@ -64,10 +70,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
           convId: conv_id,
           message: messageResponse
       }
-      setMessageRead();
       dispatch(addMessage(payload));
     };
-    if (conv_id) {
+    if (conv_id && !msgList) {
       getMessageList();
     }
   }, [conv_id]);
@@ -91,7 +96,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       </header>
       <section className="message-info__content">
         <div className="message-info__content--view">
-          <MessageView messageList={historyMessageList.get(conv_id) || []} />
+          <MessageView messageList={msgList || []} />
         </div>
         <div className="message-info__content--input">
           <MessageInput convId={conv_id} convType={conv_type} />

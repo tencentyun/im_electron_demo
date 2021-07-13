@@ -81,7 +81,7 @@ const RIGHT_CLICK_MENU_LIST = [{
     text: '多选'
 }];
 
-const TextElementItem = ({text_elem_content}) => <span className="message-view__item--text text">{text_elem_content}</span>;
+const TextElementItem = ({text_elem_content}) => <span className="message-view__item--text text right-menu-item">{text_elem_content}</span>;
 
 export  const MessageView = (props: Props): JSX.Element => {
     const { messageList } = props;
