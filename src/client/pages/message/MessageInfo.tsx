@@ -97,7 +97,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   }, [conv_id]);
 
   return (
-    <div className="message-info">
+    <div className="message-info" id="messageInfo">
       <header className="message-info__header">
         <div className="message-info__header--avatar">
           <Avatar

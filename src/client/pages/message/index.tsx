@@ -7,6 +7,7 @@ import { SearchBox } from '../../components/searchBox/SearchBox';
 import { getConversionList } from './api';
 import './message.scss';
 import { MessageInfo } from './MessageInfo';
+import { GroupToolBar } from './GroupToolBar';
 
 
 export const Message = (): JSX.Element => {
@@ -93,6 +94,9 @@ export const Message = (): JSX.Element => {
             </div>
             {
                 currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : null
+            }
+            {
+                currentSelectedConversation && currentSelectedConversation.conv_type === 2 ? <GroupToolBar conversationInfo={currentSelectedConversation} /> : <></>
             }
         </div>
     )
