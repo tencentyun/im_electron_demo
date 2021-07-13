@@ -19,6 +19,28 @@ type ImageMsg = {
     image_elem_level: number
 }
 
+type FileMsg = {
+    elem_type: number,
+    file_elem_file_path: string,
+    file_elem_file_name: string,
+    file_elem_file_size: number
+}
+
+type SoundMsg = {
+    elem_type: number,
+    sound_elem_file_path: string,
+    sound_elem_file_size: number,
+    sound_elem_file_time: number
+}
+
+type VideoMsg = {
+    elem_type: number,
+    video_elem_video_type: string,
+    video_elem_video_size: number,
+    video_elem_video_duration: number,
+    video_elem_video_path: string
+}
+
 type FaceMsg = {
     elem_type: number,
     face_elem_index: number,
@@ -123,7 +145,7 @@ const sendMsg = async ({
     messageElementArray,
     userData,
     userId
-} : SendMsgParams<TextMsg | FaceMsg>): Promise<MsgResponse> => {
+} : SendMsgParams<TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg>): Promise<MsgResponse> => {
     const res = await timRenderInstance.TIMMsgSendMessage({
         conv_id: convId,
         conv_type: convType,
@@ -138,9 +160,9 @@ const sendMsg = async ({
 
 export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 export const sendImageMsg = (params: SendMsgParams<ImageMsg>): Promise<MsgResponse> => sendMsg(params);
-// export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
-// export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
-// export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
+export const sendFileMsg = (params: SendMsgParams<FileMsg>): Promise<MsgResponse> => sendMsg(params);
+export const sendSoundMsg = (params: SendMsgParams<SoundMsg>): Promise<MsgResponse> => sendMsg(params);
+export const sendVideoMsg = (params: SendMsgParams<VideoMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
