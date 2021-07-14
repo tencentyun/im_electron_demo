@@ -6,6 +6,11 @@ import { Avatar } from "../../../../components/avatar/avatar";
 import { deleteGroup, GroupList, quitGroup } from "../api";
 import "./group-item.scss";
 
+const wait = (time) =>
+  new Promise((reslove) => {
+    setTimeout(() => reslove(true), time);
+  });
+
 export const GroupItem = (props: {
   groupName: string;
   groupAvatar: string;
@@ -15,8 +20,15 @@ export const GroupItem = (props: {
   profile: any;
   onRefresh: () => Promise<GroupList>;
 }): JSX.Element => {
-  const { groupId, groupAvatar, groupName, groupOwner, groupType, onRefresh, profile } =
-    props;
+  const {
+    groupId,
+    groupAvatar,
+    groupName,
+    groupOwner,
+    groupType,
+    onRefresh,
+    profile,
+  } = props;
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
@@ -32,8 +44,8 @@ export const GroupItem = (props: {
     directToMsgPage({
       convType: 2,
       profile,
-    })
-  }
+    });
+  };
 
   const handleDeleteGroup = async () => {
     try {
@@ -50,6 +62,7 @@ export const GroupItem = (props: {
     setQuitLoading(true);
     try {
       await quitGroup(groupId);
+      await wait(1000)
       onRefresh();
     } catch (e) {
       console.log(e.message);

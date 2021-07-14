@@ -11,12 +11,22 @@ import {
 export const GroupOperator = (props: {
   groupId: string;
   userId: string;
+  groupOwner: string;
+  groupType: number;
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
-  const { groupId, userId, onRefresh } = props;
+  const { groupId, userId, groupType, groupOwner, onRefresh } = props;
   const [quitLoading, setQuitLoading] = useState(false);
 
   const transferDialogRef = useDialogRef<TRansferGroupRecordsType>();
+
+  const isOwner = groupOwner === userId;
+
+  // 私有群全员可退出群聊 其他群只有非群主可以退出
+  const canQuitGroup = groupType === 1 || !isOwner;
+
+  // 只有群主可以进行群转让 直播群不可以转让
+  const canTransferGroup = isOwner && groupType !== 3;
 
   const handleQuitGroup = async () => {
     setQuitLoading(true);
@@ -32,7 +42,7 @@ export const GroupOperator = (props: {
   return (
     <>
       <div className="group-operator">
-        <PopConfirm
+      {canQuitGroup &&  <PopConfirm
           title="确认要退出群聊吗?"
           footer={(close) => (
             <>
@@ -55,14 +65,14 @@ export const GroupOperator = (props: {
           <Button type="error" className="group-operator--btn">
             退出群组
           </Button>
-        </PopConfirm>
+        </PopConfirm>}
         <div className="group-operator--divider" />
-        <Button
+      {canTransferGroup &&  <Button
           className="group-operator--btn"
           onClick={() => transferDialogRef.current.open({ groupId })}
         >
           转让群组
-        </Button>
+        </Button>}
       </div>
       <TransferGroupDialog
         dialogRef={transferDialogRef}

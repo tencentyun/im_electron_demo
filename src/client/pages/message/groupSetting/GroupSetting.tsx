@@ -87,6 +87,8 @@ export const GroupSetting = (props: {
         userId={userId}
         groupId={groupDetail.group_detial_info_group_id}
         onRefresh={retry}
+        groupOwner={groupDetail.group_detial_info_owener_identifier}
+        groupType={groupDetail.group_detial_info_group_type}
       />
     </div>
   );
