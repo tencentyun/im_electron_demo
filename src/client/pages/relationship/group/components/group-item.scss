@@ -4,8 +4,14 @@
   justify-content: space-between;
   align-items: center;
   height: 62px;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(232, 242, 255, 1);
+  }
 
   &--left {
+    flex: 1;
     display: flex;
     align-items: center;
 
@@ -32,9 +38,13 @@
       cursor: pointer;
 
       &:focus,
-      &:active,
-      &:hover {
+      &:active {
         background-color: #ffffff;
+        color: #d0021b;
+      }
+
+      &:hover {
+        background: rgba(232, 242, 255, 1);
         color: #d0021b;
       }
     }

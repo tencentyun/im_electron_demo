@@ -1,9 +1,15 @@
 import { Button, PopConfirm } from "@tencent/tea-component";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { useMessageDirect } from "../../../../utils/react-use/useDirectMsgPage";
 import { Avatar } from "../../../../components/avatar/avatar";
 import { deleteGroup, GroupList, quitGroup } from "../api";
 import "./group-item.scss";
+
+const wait = (time) =>
+  new Promise((reslove) => {
+    setTimeout(() => reslove(true), time);
+  });
 
 export const GroupItem = (props: {
   groupName: string;
@@ -11,18 +17,35 @@ export const GroupItem = (props: {
   groupId: string;
   groupOwner: string;
   groupType: number;
+  profile: any;
   onRefresh: () => Promise<GroupList>;
 }): JSX.Element => {
-  const { groupId, groupAvatar, groupName, groupOwner, groupType, onRefresh } =
-    props;
+  const {
+    groupId,
+    groupAvatar,
+    groupName,
+    groupOwner,
+    groupType,
+    onRefresh,
+    profile,
+  } = props;
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [quitLoading, setQuitLoading] = useState(false);
 
+  const directToMsgPage = useMessageDirect();
+
   const canDeleteGroup = groupOwner === userId && groupType !== 1; // 是群主并且非私有群可以解散
   const canQuitGroup = groupOwner !== userId || groupType === 1; // 不是群主或者该群为私有群
+
+  const handleItemClick = () => {
+    directToMsgPage({
+      convType: 2,
+      profile,
+    });
+  };
 
   const handleDeleteGroup = async () => {
     try {
@@ -39,6 +62,7 @@ export const GroupItem = (props: {
     setQuitLoading(true);
     try {
       await quitGroup(groupId);
+      await wait(1000)
       onRefresh();
     } catch (e) {
       console.log(e.message);
@@ -48,7 +72,7 @@ export const GroupItem = (props: {
 
   return (
     <div className="group-item">
-      <div className="group-item--left">
+      <div className="group-item--left" onClick={handleItemClick}>
         <Avatar url={groupAvatar} nickName={groupName} groupID={groupId} />
         <span className="group-item--left__name">{groupName}</span>
       </div>

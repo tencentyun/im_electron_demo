@@ -10,7 +10,7 @@ export const GroupAccountecment = (props: {
   return (
     <div className="group-accountecment">
       <div className="group-accountecment--title">
-        <span className="group-accountecment--title__text">群介绍</span>
+        <span className="group-accountecment--title__text">群公告</span>
         <EditIcon />
       </div>
       <div className="group-accountecment--info">{accountecment || ''}</div>

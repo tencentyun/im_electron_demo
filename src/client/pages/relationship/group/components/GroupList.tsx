@@ -23,6 +23,7 @@ export const GroupList = (props: {
           groupName={v.group_base_info_group_name}
           groupOwner={v.group_detial_info_owener_identifier}
           groupType={v.group_base_info_group_type}
+          profile={v}
           onRefresh={onRefresh}
         />
       ))}
