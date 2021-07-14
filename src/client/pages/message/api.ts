@@ -288,7 +288,7 @@ export const searchTextMessage = async (params: {
       user_data: "123"
   });
 
-  console.log("======text result msg ========", JSON.parse(json_params));
+  return JSON.parse(json_params);
 }
 
 
@@ -301,7 +301,7 @@ export const searchGroup = async (params: {
       group_search_params_field_list: [2]
   }});
 
-  console.log("======group search result ========", JSON.parse(json_param));
+  return JSON.parse(json_param)
 }
 
 
@@ -316,7 +316,7 @@ export const searchFriends = async (params: {
     user_data: "1234"
   });
 
-  console.log("======group search result ========", JSON.parse(json_params));
+  return JSON.parse(json_params)
 }
 
 export const getGroupMemberList = async (params: {

@@ -16,7 +16,7 @@ import {
     animation
 } from 'react-contexify';
 import 'react-contexify/dist/ReactContexify.min.css';
-import { SearchMessageModal } from './SearchMesssageModal';
+import { SearchMessageModal } from './searchMessage';
 import { useDialogRef } from "../../utils/react-use/useDialog";
 
 export const Message = (): JSX.Element => {
@@ -87,9 +87,11 @@ export const Message = (): JSX.Element => {
             <span className="text">{displayLastMsg}</span>
         </React.Fragment>;
     }
+
     const getDisplayUnread = (count) => {
         return count > 9 ? '···' : count
     }
+
     const handleContextMenuEvent = (e, conv: State.conversationItem) => {
         e.preventDefault()
         contextMenu.show({
@@ -100,6 +102,7 @@ export const Message = (): JSX.Element => {
             }
         })
     }
+
     const pingConv = (conv: State.conversationItem,isPinned:boolean)=>{
         const { conv_id,conv_type,conv_is_pinned } = conv
         if(conv_is_pinned === isPinned){
@@ -121,6 +124,7 @@ export const Message = (): JSX.Element => {
 
         })
     }
+    
     const removeConv = (conv: State.conversationItem)=>{
         const { conv_id,conv_type } = conv
         TIMConvDelete(conv_id,conv_type).then(data=>{
@@ -133,6 +137,7 @@ export const Message = (): JSX.Element => {
 
         })
     }
+
     const handleClickMenuItem = (e,id) => {
         const { data }  = e.props;
         switch (id){
@@ -148,9 +153,11 @@ export const Message = (): JSX.Element => {
 
         }
     }
+
     if (currentSelectedConversation === null) {
         return null
     }
+
     return (
         <div className="message-content">
             <div className="message-list">
