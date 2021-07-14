@@ -86,13 +86,13 @@ export const SearchMessage = (props) => {
             <section className="search-message__tab">
                 <Tabs tabs={generateTabList()} >
                     <TabPanel id="contacter">
-                        <ContacterResult result={searchResult.friendsResult}/>
+                        <ContacterResult result={searchResult.friendsResult} onClose={handleModalClose}/>
                     </TabPanel>
                     <TabPanel id="group">
-                        <GroupResult result={searchResult.groupResult}/>
+                        <GroupResult result={searchResult.groupResult} onClose={handleModalClose} />
                     </TabPanel>
                     <TabPanel id="message">
-                        <MessageResult result={searchResult.messageResult}/>
+                        <MessageResult result={searchResult.messageResult} onClose={handleModalClose} />
                     </TabPanel>
                 </Tabs>
             </section>
