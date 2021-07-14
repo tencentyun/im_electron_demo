@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
-import { getGroupMemberInfoList } from "../api";
+import { getGroupInfoList, getGroupMemberInfoList } from "../api";
 import { Divider } from "./Divider";
 import { GroupAccountecment } from "./GroupAccountecment";
 import { GroupAllMute } from "./groupAllMute";
@@ -16,56 +16,78 @@ export const GroupSetting = (props: {
   conversationInfo: State.conversationItem;
 }): JSX.Element => {
   const { conversationInfo } = props;
-  const groupDeatil = conversationInfo.conv_profile;
+  const groupId = conversationInfo.conv_id;
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
-  const {
-    value = [],
-    loading,
-    retry,
-  } = useAsyncRetryFunc(async () => {
-    return await getGroupMemberInfoList({
-      groupId: groupDeatil.group_detial_info_group_id,
-    });
-  }, [groupDeatil]);
+  const { value, loading, retry } = useAsyncRetryFunc(async () => {
+    const [r1, r2] = await Promise.all([
+      getGroupMemberInfoList({
+        groupId,
+      }),
+      getGroupInfoList([groupId]),
+    ]);
+
+    return { memberList: r1, groupDetail: r2[0] || [] };
+  }, [groupId]);
+
+  const memberList = value?.memberList || [];
+  const groupDetail = value?.groupDetail || {};
+
+  console.log("groupDetail", groupDetail);
 
   const currentUserSetting =
-    value.find((v) => v.user_profile_identifier === userId) || {};
+    memberList.find((v) => v.user_profile_identifier === userId) || {};
 
-  console.log("value", value);
-  console.log('currentUserSetting', currentUserSetting)
+  console.log("currentUserSetting", currentUserSetting);
 
   return (
     <div>
       <GroupBaseInfo
-        groupAvatar={groupDeatil.group_detial_info_face_url}
-        groupId={groupDeatil.group_detial_info_group_id}
-        groupName={groupDeatil.group_detial_info_group_name}
-        groupType={groupDeatil.group_detial_info_group_type}
+        groupAvatar={groupDetail.group_detial_info_face_url}
+        groupId={groupDetail.group_detial_info_group_id}
+        groupName={groupDetail.group_detial_info_group_name}
+        groupType={groupDetail.group_detial_info_group_type}
       />
       <Divider />
       <GroupIntroduction
-        introduction={groupDeatil.group_detial_info_introduction}
-        groupId={groupDeatil.group_detial_info_group_id}
+        introduction={groupDetail.group_detial_info_introduction}
+        groupId={groupDetail.group_detial_info_group_id}
+        onRefresh={retry}
       />
       <Divider />
       <GroupAccountecment
-        accountecment={groupDeatil.group_detial_info_notification}
-        groupId={groupDeatil.group_detial_info_group_id}
+        accountecment={groupDetail.group_detial_info_notification}
+        groupId={groupDetail.group_detial_info_group_id}
       />
       <Divider />
-      <GroupMember userList={value} />
+      <GroupMember userList={memberList} />
       <Divider />
       <GroupFlagMessage
         flagMsg={currentUserSetting.group_member_info_msg_flag}
+        groupId={groupDetail.group_detial_info_group_id}
+        userId={userId}
+        onRefresh={retry}
       />
       <Divider />
-      <GroupNameCard nameCard={currentUserSetting.group_member_info_name_card} />
+      <GroupNameCard
+        nameCard={currentUserSetting.group_member_info_name_card}
+        groupId={groupDetail.group_detial_info_group_id}
+        userId={userId}
+        onRefresh={retry}
+      />
       <Divider />
-      <GroupAllMute  muteFlag={groupDeatil.group_detial_info_is_shutup_all}/>
+      <GroupAllMute
+        muteFlag={groupDetail.group_detial_info_is_shutup_all}
+        groupId={groupDetail.group_detial_info_group_id}
+        onRefresh={retry}
+      />
       <Divider />
-      <GroupOperator />
+      <GroupOperator
+        userId={userId}
+        groupId={groupDetail.group_detial_info_group_id}
+        onRefresh={retry}
+      />
     </div>
   );
 };
