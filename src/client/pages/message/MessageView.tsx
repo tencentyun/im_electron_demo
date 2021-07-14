@@ -185,7 +185,7 @@ export const MessageView = (props: Props): JSX.Element => {
     return (
         <div className="message-view">
             {
-                messageList.length > 0 &&
+               messageList && messageList.length > 0 &&
                 messageList.map(item => {
 
                     const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_conv_id, message_conv_type } = item;
