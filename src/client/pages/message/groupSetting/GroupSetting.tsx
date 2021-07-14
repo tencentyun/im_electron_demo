@@ -60,6 +60,7 @@ export const GroupSetting = (props: {
       <GroupAccountecment
         accountecment={groupDetail.group_detial_info_notification}
         groupId={groupDetail.group_detial_info_group_id}
+        onRefresh={retry}
       />
       <Divider />
       <GroupMember userList={memberList} />

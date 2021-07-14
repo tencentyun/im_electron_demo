@@ -20,7 +20,7 @@ export const GroupIntroduction = (props: {
       await modifyGroupInfo({
         groupId,
         modifyParams: {
-          group_modify_info_param_notification: input,
+          group_modify_info_param_introduction: input,
         },
       });
       await onRefresh();
@@ -42,7 +42,7 @@ export const GroupIntroduction = (props: {
       </div>
       {isEdit ? (
         <Input
-          className="group-name-card--input"
+          className="group-introduction--input"
           size="full"
           placeholder="输入后群介绍后按回车进行设置"
           value={input}
