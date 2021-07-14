@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateConversationList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
+import { replaceConversaionList, updateConversationList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
 import { Avatar } from '../../components/avatar/avatar';
 
 import { SearchBox } from '../../components/searchBox/SearchBox';
-import { getConversionList, TIMConvDelete, TIMConvPinConversation } from './api';
+import { getConversionList, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage } from './api';
 import './message.scss';
 import { MessageInfo } from './MessageInfo';
 import { GroupToolBar } from './GroupToolBar';
@@ -18,6 +18,7 @@ import {
 import 'react-contexify/dist/ReactContexify.min.css';
 import { SearchMessageModal } from './searchMessage';
 import { useDialogRef } from "../../utils/react-use/useDialog";
+import { addMessage } from '../../store/actions/message';
 
 export const Message = (): JSX.Element => {
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
@@ -41,13 +42,16 @@ export const Message = (): JSX.Element => {
         {
             id: "remove",
             text: "移除会话"
+        },
+        {
+            id: "clean",
+            text: "清除消息"
         }
     ]
     const dispatch = useDispatch();
     const getData = async () => {
         const response = await getConversionList();
-        console.log(response,'asd')
-        dispatch(updateConversationList(response))
+        dispatch(replaceConversaionList(response))
         if (response.length) {
             if (currentSelectedConversation === null) {
                 dispatch(updateCurrentSelectedConversation(response[0]))
@@ -137,7 +141,23 @@ export const Message = (): JSX.Element => {
 
         })
     }
+    const cleanMessage = (conv: State.conversationItem)=>{
+        const { conv_id,conv_type } = conv
+        TIMMsgClearHistoryMessage(conv_id,conv_type).then(data=>{
+            const { code } = data.data||{}
+            if(code === 0){
+                console.log('删除消息成功')
+                getData()
+                // 清空消息
+                dispatch(addMessage({
+                    convId: conv_id,
+                    messages: []
+                }))
+            }
+        }).catch(err=>{
 
+        })
+    }
     const handleClickMenuItem = (e,id) => {
         const { data }  = e.props;
         switch (id){
@@ -150,6 +170,9 @@ export const Message = (): JSX.Element => {
             case 'remove':
                 removeConv(data);
                 break;
+            case 'clean':
+                cleanMessage(data);
+                break
 
         }
     }
@@ -179,7 +202,9 @@ export const Message = (): JSX.Element => {
                                     </div>
                                     <div className="conversion-list__item--info">
                                         <div className="conversion-list__item--nick-name">{nickName || conv_id}</div>
-                                        <div className="conversion-list__item--last-message">{getLastMsgInfo(conv_last_msg)}</div>
+                                        {
+                                            conv_last_msg ? <div className="conversion-list__item--last-message">{getLastMsgInfo(conv_last_msg)}</div> : null
+                                        }
                                     </div>
                                 </div>
                             )

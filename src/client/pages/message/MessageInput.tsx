@@ -151,11 +151,13 @@ export const MessageInput = (props: Props) : JSX.Element => {
         });
     }
 
-    const handleSendAtMessage = async() => {
-        setAtPopup(true)
+    const handleSendAtMessage = () => {
+        // resetState()
+        convType === 2 && setAtPopup(true)
     }
 
-    const handleSendFaceMessage = async() => {
+    const handleSendFaceMessage = () => {
+        // resetState()
         setEmojiPopup(true)
     }
 
@@ -191,14 +193,26 @@ export const MessageInput = (props: Props) : JSX.Element => {
         }
     }
 
-    const onAtPopupCallback = (user) => {
-        setAtPopup(false)
-        console.log(user)
+    const onAtPopupCallback = (userName) => {
+        resetState()
+        if(userName) {
+            console.log(userName)
+        }
+        
     }
 
     const onEmojiPopupCallback = (id) => {
+        resetState()
+        if(id) {
+            console.log(id)
+        }
+        
+    }
+
+    const resetState = () => {
+        setAtPopup(false)
         setEmojiPopup(false)
-        console.log(id)
+        setActiveFeature("")
     }
 
     return (
