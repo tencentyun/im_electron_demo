@@ -188,7 +188,6 @@ export const Message = (): JSX.Element => {
                 <div className="conversion-list">
                     {
                         conversationList.map((item) => {
-
                             const { conv_profile, conv_id, conv_last_msg, conv_unread_num } = item;
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
