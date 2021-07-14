@@ -49,7 +49,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const setMessageRead = () => {
     // 个人会话且未读数大于0才设置已读
     const handleMsgReaded = async () => {
-      if(!msgList){
+      if(!msgList||msgList.length === 0){
         return
       }
       try {
@@ -90,7 +90,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       const messageResponse = await getMsgList(conv_id, conv_type);
       const payload = {
         convId: conv_id,
-        message: messageResponse,
+        messages: messageResponse,
       };
       dispatch(addMessage(payload));
     };

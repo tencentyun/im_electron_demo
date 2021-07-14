@@ -10,7 +10,7 @@ const messageReducer = (state = initState, action: { type: any; payload: any }) 
         case ADD_MESSAGE:
           return {
               ...state,
-              historyMessageList: state.historyMessageList.set(payload.convId, payload.message)
+              historyMessageList: state.historyMessageList.set(payload.convId, payload.messages)
         }
         case RECI_MESSAGE:
           const history = state.historyMessageList.get(payload.convId);

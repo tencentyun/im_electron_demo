@@ -133,7 +133,11 @@ export const addProfileForConversition = async (conversitionList) => {
 };
 
 /**
- * 置顶会话
+ * 会话（取消）置顶
+ * @param convId 
+ * @param convType 
+ * @param isPinned 
+ * @returns 
  */
 export const TIMConvPinConversation = async (convId,convType,isPinned)=>{
   const res = await timRenderInstance.TIMConvPinConversation({
@@ -141,10 +145,27 @@ export const TIMConvPinConversation = async (convId,convType,isPinned)=>{
   })
   return res;
 }
-
+/**
+ * 会话删除
+ * @param convId 
+ * @param convType 
+ * @returns 
+ */
 export const TIMConvDelete = async (convId,convType) =>{ 
   return await timRenderInstance.TIMConvDelete({
     convId,convType
+  })
+}
+/**
+ * 历史消息删除
+ * @param convId 
+ * @param convType 
+ * @returns 
+ */
+export const TIMMsgClearHistoryMessage  = async (conv_id,conv_type) =>{ 
+  return await timRenderInstance.TIMMsgClearHistoryMessage({
+    conv_id,
+    conv_type
   })
 }
 export const getMsgList = async (convId, convType) => {
@@ -225,7 +246,7 @@ export const getConversionList = async () => {
   } = await timRenderInstance.TIMConvGetConvList({});
   const conversitionList = JSON.parse(json_param);
   const hasLastMessageList = conversitionList.filter(
-    (item) => item.conv_is_has_lastmsg && item.conv_type != 0
+    (item) => item.conv_type != 0
   );
   const conversitionListProfile = addProfileForConversition(hasLastMessageList);
 
