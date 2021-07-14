@@ -20,6 +20,7 @@ export const VideoElem = (props: any): JSX.Element => {
                     url: video_elem_video_url,
                     pic: video_elem_image_url,
                     thumbnails: video_elem_image_url,
+                    type: 'auto',
                 },
                 autoplay:false
             }))

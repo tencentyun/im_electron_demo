@@ -170,7 +170,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                     const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
                     return (
-                        <React.Fragment>
+                        <React.Fragment key={message_msg_id}>
                             {
                                 message_status === 6 ? (
                                     <div className="message-view__item is-revoked" >

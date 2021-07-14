@@ -82,7 +82,7 @@ export const GroupTipsElemItem = (props: any): JSX.Element => {
     const item = () => <span className="message-view__item--text text right-menu-item">
         {
             getChangeType().map((item,index)=>{
-                return <div>{item}</div>
+                return <div key={index}>{item}</div>
             })
         }
     </span>;
