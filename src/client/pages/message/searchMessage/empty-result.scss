@@ -1,0 +1,18 @@
+.empty-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 70px;
+
+    &__img {
+        width: 65px;
+        height: 50px;
+    }
+
+    &__text {
+        font-size: 12px;
+        margin-top: 30px;
+        color: #888888;
+        line-height: 18px;
+    }
+}
