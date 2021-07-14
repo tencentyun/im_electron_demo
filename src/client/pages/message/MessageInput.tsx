@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addMessage } from '../../store/actions/message';
 
-import { TextArea, Button } from '@tencent/tea-component';
+import { TextArea, Button, message } from '@tencent/tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
 import { reciMessage } from '../../store/actions/message'
 import { emojiMap, emojiName, emojiUrl } from './emoji-map'
@@ -54,24 +54,26 @@ export const MessageInput = (props: Props) : JSX.Element => {
     let editorInstance;
 
     const handleSendTextMsg = async () => {
-        const { data: { code, json_params } } = await sendTextMsg({
-            convId,
-            convType,
-            messageElementArray: [{
-                elem_type: 0,
-                text_elem_content: editorState.toText(),
-            }],
-            userId,
-        });
-
-        const sendedMsg = JSON.parse(json_params);
-
-        if(code === 0) {
-            dispatch(reciMessage({
+        try {
+            const { data: { code, json_params } } = await sendTextMsg({
                 convId,
-                messages: [sendedMsg]
-            }))
-            setEditorState(ContentUtils.clear(editorState))
+                convType,
+                messageElementArray: [{
+                    elem_type: 0,
+                    text_elem_content: editorState.toText(),
+                }],
+                userId,
+            });
+    
+            if(code === 0) {
+                dispatch(reciMessage({
+                    convId,
+                    messages: [JSON.parse(json_params)]
+                }))
+                setEditorState(ContentUtils.clear(editorState))
+            }
+        } catch(e) {
+            message.error({ content: `出错了: ${e.message}`})
         }
     }
     const handleSendPhotoMessage = () => {
@@ -232,6 +234,10 @@ export const MessageInput = (props: Props) : JSX.Element => {
     const editorChange = (editorState) => {
         setEditorState(editorState)
     }
+
+    useEffect(() => {
+        setEditorState(ContentUtils.clear(editorState))
+    }, [convId, convType])
 
     return (
         <div className="message-input">

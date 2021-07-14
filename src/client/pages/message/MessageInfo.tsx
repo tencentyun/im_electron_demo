@@ -79,7 +79,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   // 可拉人进群条件为 当前选中聊天类型为群且群类型不为直播群且当前群没有设置禁止加入
   const canInviteMember =
-    conv_type === 2 && [0, 1, 2].includes(groupType) && addOption !== 2;
+    conv_type === 2 && [0, 1, 2].includes(groupType) && addOption !== 0;
 
   useEffect(() => {
     setMessageRead();
