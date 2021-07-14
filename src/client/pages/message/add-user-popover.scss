@@ -16,8 +16,8 @@
   width: 24px;
   height: 24px;
   background-image: url("../../assets/icon/add-user-join-group.svg");
-}
 
-.is-active {
-  background-image: url("../../assets/icon/add-user-join-group__light.svg");
+  &.is-active {
+    background-image: url("../../assets/icon/add-user-join-group__light.svg");
+  }
 }
