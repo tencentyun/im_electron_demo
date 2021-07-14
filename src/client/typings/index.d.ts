@@ -98,7 +98,7 @@ declare namespace State {
         conv_is_has_draft: boolean
         conv_is_has_lastmsg: boolean
         conv_is_pinned: boolean
-        conv_last_msg: message
+        conv_last_msg?: message
         conv_profile: groupProfile & userProfile
         conv_recv_opt: number
         conv_type: number

@@ -3,7 +3,7 @@
         display: flex;
         padding: 20px;
         border-bottom: 1px solid #eee;
-        align-items: center;
+        align-items: center;.tea-tabs__tabitem
 
         &--icon {
             margin-right: 10px;
@@ -22,12 +22,18 @@
 
         .tea-tabs__tabitem {
             margin-top: 20px;
+            height: auto;
         }
 
-        .tea-tabs__tab.is-active {
-            color: #006eff;
+        .tea-tabs__tab  {
+            font-size: 16px;
+            font-weight: 500;
+            padding-bottom: 10px;
+            &.is-active {
+                color: #006eff;
+                font-weight: 500;
+            }
         }
-
     }
 }
 

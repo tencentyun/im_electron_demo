@@ -17,12 +17,11 @@ export const SearchMessageModal = (props) => {
             className="search-message-modal" 
             disableEscape 
             visible={visible} 
-            onClose={onClose} 
             size="85%"
             disableCloseIcon
         >
             <Modal.Body>
-                <SearchMessage />
+                <SearchMessage  close={onClose}/>
             </Modal.Body>
         </Modal>
     )

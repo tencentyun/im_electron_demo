@@ -1,7 +1,7 @@
 import { BrowserWindow } from "electron";
-import { CLOSE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL } from "./const/const";
-
-const {ipcMain} = require('electron')
+import { CLOSE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG } from "./const/const";
+const { dialog } = require('electron')
+const { ipcMain } = require('electron')
 
 export default class IPC {
     win:BrowserWindow = null;
@@ -20,6 +20,8 @@ export default class IPC {
                 case CLOSE:
                     this.close();
                     break;
+                case SHOWDIALOG:
+                    this.showDialog()
             }
         })
     }
@@ -31,5 +33,9 @@ export default class IPC {
     }
     close(){
         this.win.close()
+    }
+    showDialog(){
+        dialog.showErrorBox("error","some error occur,please check")
+        // dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'] })
     }
 }

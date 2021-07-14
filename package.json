@@ -93,6 +93,7 @@
     "file-loader": "^6.2.0",
     "final-form": "^4.20.2",
     "im_electron_sdk": "^1.0.19",
+    "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-contexify": "^5.0.0",
     "react-contextmenu": "^2.14.0",

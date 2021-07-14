@@ -1,4 +1,4 @@
-import { SET_UNREAD_COUNT, UPDATE_CONVERSATIONLIST, UPDATE_CURRENT_SELECTED_CONVERSATION } from '../actions/conversation';
+import { REPLACE_CONV_LIST, SET_UNREAD_COUNT, UPDATE_CONVERSATIONLIST, UPDATE_CURRENT_SELECTED_CONVERSATION } from '../actions/conversation';
 
 const initState = {
     unreadCount: 0,
@@ -39,6 +39,11 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
             return {
                 ...state,
                 currentSelectedConversation: action.payload
+            }
+        case REPLACE_CONV_LIST:
+            return {
+                ...state,
+                conversationList: action.payload
             }
         default:
           return state;
