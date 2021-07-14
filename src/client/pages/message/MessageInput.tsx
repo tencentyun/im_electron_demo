@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addMessage } from '../../store/actions/message';
 
-import { TextArea, Button } from '@tencent/tea-component';
+import { TextArea, Button, message } from '@tencent/tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
 import { reciMessage } from '../../store/actions/message'
 import { emojiMap, emojiName, emojiUrl } from './emoji-map'
@@ -10,6 +10,11 @@ import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
 
 import './message-input.scss';
+import ReactDOM from 'react-dom';
+import { RecordPopup } from './components/recordPopup';
+import BraftEditor, { ControlType, EditorState } from 'braft-editor'
+import { ContentUtils } from 'braft-utils'
+import 'braft-editor/dist/index.css'
 
 type Props = {
     convId: string,
@@ -37,41 +42,46 @@ export const MessageInput = (props: Props) : JSX.Element => {
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ isAtPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
+    const [ isRecordPopup, setRecordPopup ] = useState(false);
+    const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const [ atList, setAtList ] = useState([]);
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
-    const [text, setText] = useState("");
-    const dispatch = useDispatch();
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
     const videoPicker = React.useRef(null);
     const soundPicker = React.useRef(null);
+    const dispatch = useDispatch();
+    let editorInstance;
 
     const handleSendTextMsg = async () => {
-        const { data: { code, json_params } } = await sendTextMsg({
-            convId,
-            convType,
-            messageElementArray: [{
-                elem_type: 0,
-                text_elem_content: text,
-            }],
-            userId,
-        });
-
-        const sendedMsg = JSON.parse(json_params);
-
-        if(code === 0) {
-            dispatch(reciMessage({
+        try {
+            const { data: { code, json_params } } = await sendTextMsg({
                 convId,
-                messages: [sendedMsg]
-            }))
-            setText("");
+                convType,
+                messageElementArray: [{
+                    elem_type: 0,
+                    text_elem_content: editorState.toText(),
+                }],
+                userId,
+            });
+    
+            if(code === 0) {
+                dispatch(reciMessage({
+                    convId,
+                    messages: [JSON.parse(json_params)]
+                }))
+                setEditorState(ContentUtils.clear(editorState))
+            }
+        } catch(e) {
+            message.error({ content: `出错了: ${e.message}`})
         }
     }
     const handleSendPhotoMessage = () => {
         imagePicker.current.click();
     }
     const handleSendSoundMessage = () => {
-        soundPicker.current.click();
+        // soundPicker.current.click();
+        setRecordPopup(true)
     }
     const handleSendFileMessage = () => {
         filePicker.current.click();
@@ -166,7 +176,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
             case "face":
                 handleSendFaceMessage()
             case "at":
-                handleSendAtMessage()
+                if(convType === 2) handleSendAtMessage()
                 break;
             case "photo":
                 handleSendPhotoMessage()
@@ -196,24 +206,38 @@ export const MessageInput = (props: Props) : JSX.Element => {
     const onAtPopupCallback = (userName) => {
         resetState()
         if(userName) {
-            console.log(userName)
+            setEditorState(ContentUtils.insertText(editorState, `@${userName} `))
         }
-        
     }
 
     const onEmojiPopupCallback = (id) => {
         resetState()
         if(id) {
-            console.log(id)
+            setEditorState(ContentUtils.insertText(editorState, id))
         }
-        
+    }
+
+    const handleRecordPopupCallback = (path) => {
+        resetState()
+        if(path) {
+            console.log(path)
+        }
     }
 
     const resetState = () => {
         setAtPopup(false)
         setEmojiPopup(false)
+        setRecordPopup(false)
         setActiveFeature("")
     }
+
+    const editorChange = (editorState) => {
+        setEditorState(editorState)
+    }
+
+    useEffect(() => {
+        setEditorState(ContentUtils.clear(editorState))
+    }, [convId, convType])
 
     return (
         <div className="message-input">
@@ -229,7 +253,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 }
             </div>
             <div className="message-input__text-area" onKeyPress={handleOnkeyPress}>
-                <TextArea
+                {/* <TextArea
                     showCount={false}
                     size='full'
                     value={text}
@@ -237,16 +261,26 @@ export const MessageInput = (props: Props) : JSX.Element => {
                         setText(value);
                     }}
                     placeholder="请输入消息"
+                /> */}
+                <BraftEditor
+                    onChange={editorChange}
+                    value={editorState}
+                    controls={[]}
+                    ref={instance => editorInstance = instance}
+                    contentStyle={{height: '100%', fontSize: 14}}
                 />
             </div>
             <div className="message-input__button-area">
-                <Button type="primary" onClick={handleSendTextMsg} disabled={text === ''}>发送</Button>
+                <Button type="primary" onClick={handleSendTextMsg} disabled={editorState.toText() === ''}>发送</Button>
             </div>
             {
                 isAtPopup && <AtPopup callback={onAtPopupCallback} group_id={convId}  />
             }
             {
                 isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
+            }
+            {
+                isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }
             <input ref={filePicker} onChange={sendFileMessage} type="file" style={{ display:'none'}} />
             <input ref={imagePicker} onChange={sendImageMessage} type="file" style={{ display:'none'}} />

@@ -67,13 +67,56 @@
             margin-left: 0;
             margin-right: 8px;
         }
-
+        &--blank {
+            width: 40%;
+        }
         &--text {
             display: inline-block;
             padding: 12px;
             font-size: 14px;
             border-radius: 2px 8px 8px 8px;
             background: #ECEEF2;
+            vertical-align: middle;
+        }
+        &--file {
+            width: 236px;
+            height: 70px;
+            background: #FFFFFF;
+            border-radius: 2px 8px 8px 8px;
+            border: 1px solid #EEEEEE;
+            display: flex;
+            cursor: pointer;
+            &___ext{
+                width: 50px;
+                height: 70px;
+                line-height: 70px;
+                text-align: center;
+                font-size: 14px;
+                font-weight: bold;
+                color: #000;
+            }
+            &___content {
+               width: 146px;
+               display: flex;
+               flex-direction: column;
+               justify-content: center;
+               &____name {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    font-weight: 400;
+                    color: #000000;
+                    line-height: 16px;
+                    font-size: 12px;
+               }
+
+               &____size {
+                    font-weight: 400;
+                    color: #999999;
+                    line-height: 18px;
+                    font-size: 12px;
+                }
+            }
         }
     }
 

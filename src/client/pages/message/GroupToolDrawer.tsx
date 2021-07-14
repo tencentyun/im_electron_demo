@@ -16,7 +16,7 @@ export const GroupToolDrawer = (props: {
   popupContainer?: HTMLElement;
   dialogRef: DialogRef<GroupToolRecordsType>;
 }): JSX.Element => {
-  const { onSuccess, onClose, dialogRef, popupContainer } = props;
+  const { onClose, dialogRef, popupContainer } = props;
 
   const [visible, setShowState, defaultForm] = useDialog<GroupToolRecordsType>(
     dialogRef,
@@ -62,7 +62,6 @@ export const GroupToolDrawer = (props: {
   return (
     <Drawer
       disableAnimation={true}
-      outerClickClosable={false}
       visible={visible}
       title={
         <div className="tool-drawer--title">

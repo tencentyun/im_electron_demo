@@ -15,6 +15,9 @@ import './message-view.scss';
 import { TextElemItem } from './messageElemTyps/textElemItem';
 import { PicElemItem } from './messageElemTyps/picElemItem';
 import { markeMessageAsRevoke, deleteMessage } from '../../store/actions/message';
+import { CustomElem } from './messageElemTyps/customElem';
+import { VoiceElem } from './messageElemTyps/voiceElem';
+import { FileElem } from './messageElemTyps/fileElem';
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -115,13 +118,13 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <PicElemItem { ...res }/>
                 break;
             case 2:
-                resp = <div>声音消息</div>
+                resp = <VoiceElem { ...res }/>
                 break;
             case 3:
-                resp = <div>自定义消息</div>
+                resp = <CustomElem { ...res }/>
                 break;
             case 4:
-                resp = <div>文件消息</div>
+                resp = <FileElem { ...res }/>
                 break;
             case 5:
                 resp = <div>群组系统消息</div>
@@ -156,7 +159,7 @@ export const MessageView = (props: Props): JSX.Element => {
     return (
         <div className="message-view">
             {
-                messageList.length > 0 &&
+               messageList && messageList.length > 0 &&
                 messageList.map(item => {
                     const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
@@ -186,6 +189,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                     }
                                 </div>
                             }
+                            <div className="message-view__item--blank"></div>
                         </React.Fragment>
                     )
                 })
