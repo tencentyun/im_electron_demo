@@ -1,4 +1,4 @@
-import { CLOSE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG } from "../../const/const";
+import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG } from "../../const/const";
 
 import  { ipcRenderer, remote } from 'electron';
 
@@ -30,11 +30,17 @@ const showDialog = ()=>{
         type:SHOWDIALOG
     })
 }
-
+const downloadFilesByUrl = (url)=>{
+    ipcRenderer.send(RENDERPROCESSCALL,{
+        type:DOWNLOADFILE,
+        params:url
+    })
+}
 export {
     isWin,
     minSizeWin,
     maxSizeWin,
     closeWin,
-    showDialog
+    showDialog,
+    downloadFilesByUrl
 }
