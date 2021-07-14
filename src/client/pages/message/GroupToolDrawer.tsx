@@ -73,7 +73,7 @@ export const GroupToolDrawer = (props: {
       popupContainer={popupContainer}
       onClose={close}
     >
-    {defaultForm.toolId === 'setting' && <GroupSetting conversationInfo={defaultForm.conversationInfo} />}
+    {defaultForm.toolId === 'setting' && <GroupSetting close={close} conversationInfo={defaultForm.conversationInfo} />}
     </Drawer>
   );
 };

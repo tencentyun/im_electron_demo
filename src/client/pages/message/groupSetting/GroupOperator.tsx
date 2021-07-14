@@ -1,5 +1,8 @@
 import { Button, PopConfirm } from "@tencent/tea-component";
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateCurrentSelectedConversation,  replaceConversaionList } from "../../../store/actions/conversation";
+
 import { useDialogRef } from "../../../utils/react-use/useDialog";
 import { quitGroup } from "../../relationship/group/api";
 import "./group-operator.scss";
@@ -13,10 +16,14 @@ export const GroupOperator = (props: {
   userId: string;
   groupOwner: string;
   groupType: number;
+  close: () => void;
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
-  const { groupId, userId, groupType, groupOwner, onRefresh } = props;
+  const { groupId, userId, groupType, groupOwner, close, onRefresh } = props;
   const [quitLoading, setQuitLoading] = useState(false);
+
+  const {conversationList} = useSelector((state:State.RootState) => state.conversation)
+  const dispatch = useDispatch();
 
   const transferDialogRef = useDialogRef<TRansferGroupRecordsType>();
 
@@ -28,11 +35,23 @@ export const GroupOperator = (props: {
   // 只有群主可以进行群转让 直播群不可以转让
   const canTransferGroup = isOwner && groupType !== 3;
 
+  const updateConversationListAndCurrentSelectConveration = () => {
+    const afterModifyConversationList = conversationList.filter(item => item.conv_id !== groupId);
+    const matchedConversation = afterModifyConversationList[0];
+    const hasConversation = !!matchedConversation;
+    dispatch(replaceConversaionList(afterModifyConversationList));
+    if(hasConversation) {
+      dispatch(updateCurrentSelectedConversation(matchedConversation));
+
+    }
+  }
+
   const handleQuitGroup = async () => {
     setQuitLoading(true);
     try {
       await quitGroup(groupId);
-      onRefresh();
+      close();
+      updateConversationListAndCurrentSelectConveration();
     } catch (e) {
       console.log(e.message);
     }
