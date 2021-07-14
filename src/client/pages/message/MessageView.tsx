@@ -10,6 +10,8 @@ import { PicElemItem } from './messageElemTyps/picElemItem';
 import { CustomElem } from './messageElemTyps/customElem';
 import { VoiceElem } from './messageElemTyps/voiceElem';
 import { FileElem } from './messageElemTyps/fileElem';
+import { GroupTipsElemItem } from './messageElemTyps/grouptipsElem';
+import { VideoElem } from './messageElemTyps/videoElem';
 
 type TextElement = {
     elem_type: number;
@@ -153,7 +155,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <FileElem { ...res }/>
                 break;
             case 5:
-                resp = <div>群组系统消息</div>
+                resp = <GroupTipsElemItem { ...res }/> 
                 break;
             case 6:
                 resp = <div>表情消息</div>
@@ -165,7 +167,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <div>群组系统通知</div>
                 break;
             case 9:
-                resp = <div>视频消息</div>
+                resp =  <VideoElem { ...res }/>
                 break;
             case 10:
                 resp = <div>关系消息</div>
@@ -187,7 +189,9 @@ export const MessageView = (props: Props): JSX.Element => {
             {
                messageList && messageList.length > 0 &&
                 messageList.map(item => {
-
+                    if(!item){
+                        return null
+                    }
                     const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_conv_id, message_conv_type } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                     return <div className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>

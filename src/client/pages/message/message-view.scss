@@ -64,6 +64,12 @@
             border-radius: 2px 8px 8px 8px;
             background: #ECEEF2;
             vertical-align: middle;
+            word-wrap: normal;
+            word-break: break-all;
+            span {
+                display: inline-block;
+                vertical-align: middle;
+            }
         }
         &--file {
             width: 236px;
