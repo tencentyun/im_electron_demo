@@ -1,0 +1,14 @@
+.group-result {
+    height: calc(80vh - 125px);
+
+    &__item {
+        display: flex;
+        align-items: center;
+        padding: 14px 20px;
+        border-bottom: 1px solid #eee;
+
+        &--nick-name {
+            margin-left: 8px;
+        }
+    }
+}

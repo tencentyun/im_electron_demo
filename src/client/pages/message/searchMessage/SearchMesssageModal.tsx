@@ -1,10 +1,8 @@
 import React from 'react';
 
 import { Modal } from '@tencent/tea-component';
-import { useDialog } from "../../utils/react-use/useDialog";
-
+import { useDialog } from "../../../utils/react-use/useDialog";
 import { SearchMessage } from './SearchMessage';
-
 
 export const SearchMessageModal = (props) => {
 
@@ -15,7 +13,14 @@ export const SearchMessageModal = (props) => {
   const onClose = () => setShowState(false);
 
     return (
-        <Modal disableEscape visible={visible} onClose={onClose} >
+        <Modal 
+            className="search-message-modal" 
+            disableEscape 
+            visible={visible} 
+            onClose={onClose} 
+            size="85%"
+            disableCloseIcon
+        >
             <Modal.Body>
                 <SearchMessage />
             </Modal.Body>
