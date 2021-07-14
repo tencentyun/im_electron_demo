@@ -254,18 +254,18 @@ export const getConversionList = async () => {
 };
 
 export const revokeMsg = async ({ convId, convType, msgId }) => {
-  const res = await timRenderInstance.TIMMsgRevoke({
+  const { data: { code } } = await timRenderInstance.TIMMsgRevoke({
     conv_id: convId,
     conv_type: convType,
     message_id: msgId,
     user_data: "123",
   });
 
-  console.log(res);
+  return code;
 };
 
 export const deleteMsg = async ({ convId, convType, msgId }) => {
-  const res = await timRenderInstance.TIMMsgDelete({
+  const { data: { code } } = await timRenderInstance.TIMMsgDelete({
     conv_id: convId,
     conv_type: convType,
     params: {
@@ -275,7 +275,7 @@ export const deleteMsg = async ({ convId, convType, msgId }) => {
     user_data: "123",
   });
 
-  console.log(res);
+  return code;
 };
 
 export const inviteMemberGroup = async (params: {
