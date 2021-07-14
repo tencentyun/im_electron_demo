@@ -1,4 +1,4 @@
-import { CLOSE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL } from "../../const/const";
+import { CLOSE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG } from "../../const/const";
 
 import  { ipcRenderer, remote } from 'electron';
 
@@ -25,12 +25,16 @@ const closeWin = () => {
     })
 }
 
-const openDialog = (options) => dialog.showOpenDialog(WIN, options);
+const showDialog = ()=>{
+    ipcRenderer.send(RENDERPROCESSCALL,{
+        type:SHOWDIALOG
+    })
+}
 
 export {
     isWin,
     minSizeWin,
     maxSizeWin,
     closeWin,
-    openDialog
+    showDialog
 }

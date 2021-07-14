@@ -5,6 +5,8 @@ import { revokeMsg, deleteMsg } from './api';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 
 import './message-view.scss';
+import { TextElemItem } from './messageElemTyps/textElemItem';
+import { PicElemItem } from './messageElemTyps/picElemItem';
 
 type TextElement = {
     elem_type: number;
@@ -85,9 +87,9 @@ const RIGHT_CLICK_MENU_LIST = [{
     text: '多选'
 }];
 
-const TextElementItem = ({text_elem_content}) => <span className="message-view__item--text text right-menu-item">{text_elem_content}</span>;
 
-export  const MessageView = (props: Props): JSX.Element => {
+
+export const MessageView = (props: Props): JSX.Element => {
     const { messageList } = props;
 
     const handleRevokeMsg = async (params) => {
@@ -109,8 +111,8 @@ export  const MessageView = (props: Props): JSX.Element => {
         })
     };
 
-    const handlRightClick = (e, {id, msgId, convId, convType}) => {
-        switch(id) {
+    const handlRightClick = (e, { id, msgId, convId, convType }) => {
+        switch (id) {
             case 'revoke':
                 handleRevokeMsg({
                     msgId,
@@ -127,34 +129,82 @@ export  const MessageView = (props: Props): JSX.Element => {
                 break;
         }
     }
-
+    const displayDiffMessage = (element) => {
+      
+        const { elem_type, ...res } = element;
+        let resp
+        switch (elem_type) {
+            case 0:
+                resp = <TextElemItem {...res} />
+                break;
+            case 1:
+                resp = <PicElemItem { ...res }/>
+                break;
+            case 2:
+                resp = <div>声音消息</div>
+                break;
+            case 3:
+                resp = <div>自定义消息</div>
+                break;
+            case 4:
+                resp = <div>文件消息</div>
+                break;
+            case 5:
+                resp = <div>群组系统消息</div>
+                break;
+            case 6:
+                resp = <div>表情消息</div>
+                break;
+            case 7:
+                resp = <div>位置消息</div>
+                break;
+            case 8:
+                resp = <div>群组系统通知</div>
+                break;
+            case 9:
+                resp = <div>视频消息</div>
+                break;
+            case 10:
+                resp = <div>关系消息</div>
+                break;
+            case 11:
+                resp = <div>资料消息</div>
+                break;
+            case 12:
+                resp = <div>合并消息</div>
+                break;
+            default:
+                resp = null;
+                break;
+        }
+        return resp;
+    }
     return (
         <div className="message-view">
             {
                 messageList.length > 0 &&
                 messageList.map(item => {
-                    
-                    const { message_elem_array, message_sender_profile,  message_is_from_self, message_msg_id, message_conv_id, message_conv_type } = item;
+
+                    const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_conv_id, message_conv_type } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                     return <div className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
                         <div className="message-view__item--avatar face-url">
                             <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                         </div>
                         {
-                            message_elem_array && message_elem_array.length && message_elem_array.map((elment,index) => {
-                                const { elem_type, ...res } = elment;
+                            message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                 return (
-                                    <div className="message-view__item--element" key={ index }>
+                                    <div className="message-view__item--element" key={index}>
                                         <ContextMenuTrigger id={`same_unique_identifier_${index}`}  >
                                             {
-                                                elem_type === 0 &&  <TextElementItem {...res} />
+                                                displayDiffMessage(elment)
                                             }
                                         </ContextMenuTrigger>
                                         <ContextMenu id={`same_unique_identifier_${index}`} className="right-menu ">
                                             {
-                                                RIGHT_CLICK_MENU_LIST.map(({id, text}) => {
+                                                RIGHT_CLICK_MENU_LIST.map(({ id, text }) => {
                                                     return (
-                                                        <MenuItem className="right-click__item" key={id} data={{id, msgId: message_msg_id, convId: message_conv_id, convType: message_conv_type}} onClick={handlRightClick}>
+                                                        <MenuItem className="right-click__item" key={id} data={{ id, msgId: message_msg_id, convId: message_conv_id, convType: message_conv_type }} onClick={handlRightClick}>
                                                             {text}
                                                         </MenuItem>
                                                     )
