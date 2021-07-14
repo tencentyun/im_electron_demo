@@ -36,7 +36,6 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element =
     }, []);
 
     const handlePopupClick = (e) => {
-        console.log(11111)
         if(!refPopup.current) return
         if (!refPopup.current.contains(e.target as Node) && refPopup.current !== e.target) {
             callback("")
