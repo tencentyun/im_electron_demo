@@ -1,6 +1,17 @@
-.at-popup{
+.emoji-popup{
     position: absolute;
+    border: 1px solid #eee;
+    padding: 5px;
     left: 0;
-    top: 0;
-    width: 100px;
+    bottom: 173px;
+    width: 300px;
+}
+.emoji-popup span {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+}
+.emoji-popup img {
+    width: 20px;
+    height: 20px;
 }
