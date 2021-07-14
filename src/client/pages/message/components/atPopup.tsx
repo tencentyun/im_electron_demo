@@ -1,5 +1,5 @@
 import { List } from "@tencent/tea-component"
-import React, { FC, useEffect, useState } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 import timRenderInstance from "../../../utils/timRenderInstance"
 import './atPopup.scss'
 
@@ -10,30 +10,45 @@ interface AtPopupProps {
 
 export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element => {
     const [list, setList] = useState([])
+    const refPopup = useRef(null)
 
-    const getList = async ()=>{
-        const {data: { code, json_params }} = await timRenderInstance.TIMProfileGetUserProfileList({
+    const getList = async () => {
+        const { data: { code, json_param } } = await timRenderInstance.TIMGroupGetMemberInfoList({
             params: {
-                group_get_members_info_list_param_group_id: group_id,
-                msg_getmsglist_param_count: 100,
+                group_get_members_info_list_param_group_id: group_id
             },
-            data: "test",
+            data: "test data",
         });
-        if(code === 0){
-            const list = JSON.parse(json_params)
+        if (code === 0) { 
+            const list = JSON.parse(json_param).group_get_memeber_info_list_result_info_array
             setList(list)
         }
     }
     useEffect(() => {
         getList()
-    },[])
+    }, [group_id])
+
+    useEffect(() => {
+        document.addEventListener('click', handlePopupClick);
+        return () => {
+            document.removeEventListener('click', handlePopupClick);
+        }
+    }, []);
+
+    const handlePopupClick = (e) => {
+        console.log(11111)
+        if(!refPopup.current) return
+        if (!refPopup.current.contains(e.target as Node) && refPopup.current !== e.target) {
+            callback("")
+        } 
+    }
 
     return (
         <div>
-            <List className="at-popup" split="divide">
+            <List ref={refPopup} className="at-popup" split="divide">
                 {
-                    list.map((v, i) => <List.Item onClick={() => callback(v)}>v.name</List.Item>)
-                } 
+                    list.map((v, i) => <List.Item key={i} onClick={() => callback(v.group_member_info_identifier)}>{v.group_member_info_identifier}</List.Item>)
+                }
             </List>
         </div>
     )
