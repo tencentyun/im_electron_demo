@@ -140,10 +140,10 @@ export const addProfileForConversition = async (conversitionList) => {
 
 /**
  * 会话（取消）置顶
- * @param convId 
- * @param convType 
- * @param isPinned 
- * @returns 
+ * @param convId
+ * @param convType
+ * @param isPinned
+ * @returns
  */
 export const TIMConvPinConversation = async (convId, convType, isPinned) => {
   const res = await timRenderInstance.TIMConvPinConversation({
@@ -152,30 +152,31 @@ export const TIMConvPinConversation = async (convId, convType, isPinned) => {
     isPinned,
   });
   return res;
-}
+};
 /**
  * 会话删除
- * @param convId 
- * @param convType 
- * @returns 
+ * @param convId
+ * @param convType
+ * @returns
  */
-export const TIMConvDelete = async (convId,convType) =>{ 
+export const TIMConvDelete = async (convId, convType) => {
   return await timRenderInstance.TIMConvDelete({
-    convId,convType
-  })
-}
+    convId,
+    convType,
+  });
+};
 /**
  * 历史消息删除
- * @param convId 
- * @param convType 
- * @returns 
+ * @param convId
+ * @param convType
+ * @returns
  */
-export const TIMMsgClearHistoryMessage  = async (conv_id,conv_type) =>{ 
+export const TIMMsgClearHistoryMessage = async (conv_id, conv_type) => {
   return await timRenderInstance.TIMMsgClearHistoryMessage({
     conv_id,
-    conv_type
-  })
-}
+    conv_type,
+  });
+};
 export const getMsgList = async (convId, convType) => {
   const {
     data: { json_params },
@@ -223,7 +224,7 @@ const sendMsg = async ({
     params: {
       message_elem_array: messageElementArray,
       message_sender: userId,
-      message_group_at_user_array: messageAtArray
+      message_group_at_user_array: messageAtArray,
     },
     user_data: "test",
   });
@@ -264,7 +265,9 @@ export const getConversionList = async () => {
 };
 
 export const revokeMsg = async ({ convId, convType, msgId }) => {
-  const { data: { code } } = await timRenderInstance.TIMMsgRevoke({
+  const {
+    data: { code },
+  } = await timRenderInstance.TIMMsgRevoke({
     conv_id: convId,
     conv_type: convType,
     message_id: msgId,
@@ -275,7 +278,9 @@ export const revokeMsg = async ({ convId, convType, msgId }) => {
 };
 
 export const deleteMsg = async ({ convId, convType, msgId }) => {
-  const { data: { code } } = await timRenderInstance.TIMMsgDelete({
+  const {
+    data: { code },
+  } = await timRenderInstance.TIMMsgDelete({
     conv_id: convId,
     conv_type: convType,
     params: {
@@ -322,8 +327,7 @@ export const searchTextMessage = async (params: {
   });
 
   return JSON.parse(json_params);
-}
-
+};
 
 export const searchGroup = async (params: {
   keyWords: string;
@@ -337,9 +341,8 @@ export const searchGroup = async (params: {
     },
   });
 
-  return JSON.parse(json_param)
-}
-
+  return JSON.parse(json_param);
+};
 
 export const searchFriends = async (params: {
   keyWords: string;
@@ -354,8 +357,8 @@ export const searchFriends = async (params: {
     user_data: "1234",
   });
 
-  return JSON.parse(json_params)
-}
+  return JSON.parse(json_params);
+};
 
 export const getGroupMemberList = async (params: {
   groupId: string;
@@ -380,9 +383,11 @@ export const getGroupMemberInfoList = async (params: {
 }): Promise<any> => {
   const { groupId } = params;
   const res = await getGroupMemberList({ groupId });
+  console.log("getGroupMemberList", res);
   const { group_get_memeber_info_list_result_info_array: memberList } = res;
   const userIdList = memberList.map((v) => v.group_member_info_identifier);
   const result = await getUserInfoList(userIdList);
+  console.log("getUserInfoList", result);
   const userList = result.map((v) => {
     const member =
       memberList.find(
@@ -426,24 +431,25 @@ export const modifyGroupInfo = async (params: {
 }): Promise<any> => {
   const { groupId, modifyParams } = params;
 
-  const modifyFlags = Object.keys(modifyParams).map((key) => modifyFlagMap[key]);
+  const modifyFlags = Object.keys(modifyParams).map(
+    (key) => modifyFlagMap[key]
+  );
 
-  let modifyFlag = 0;
-  modifyFlags.forEach((currentFlag) => modifyFlag = modifyFlag | currentFlag );
-
-  const { data } = await timRenderInstance.TIMGroupModifyGroupInfo({
+  const fetchList = modifyFlags.map((currentFlag) => timRenderInstance.TIMGroupModifyGroupInfo({
     params: {
       group_modify_info_param_group_id: groupId,
-      group_modify_info_param_modify_flag: modifyFlag,
+      group_modify_info_param_modify_flag: currentFlag,
       ...modifyParams,
-    },
-  });
-  const { code, desc } = data;
-  if (code === 0) {
+    }
+  }));
+
+  const results = await Promise.all(fetchList);
+  console.log("data", results);
+  if (!results.find(item => item?.data?.code !== 0)) {
     return {};
   }
 
-  throw new Error(desc);
+  throw new Error(JSON.stringify(results));
 };
 
 const modifyGroupMemberMap = {
@@ -466,22 +472,26 @@ export const modifyGroupMemberInfo = async (params: {
   };
 }): Promise<any> => {
   const { groupId, userId, modifyGroupMemberParams } = params;
-  const modifyGroupMemberFlags = Object.keys(modifyGroupMemberParams).map((key) => modifyGroupMemberMap[key]);
+  const modifyGroupMemberFlags = Object.keys(modifyGroupMemberParams).map(
+    (key) => modifyGroupMemberMap[key]
+  );
 
   let modifyFlag = 0;
-  modifyGroupMemberFlags.forEach((currentFlag) => modifyFlag = modifyFlag | currentFlag );
+  modifyGroupMemberFlags.forEach(
+    (currentFlag) => (modifyFlag = modifyFlag | currentFlag)
+  );
 
   const { data } = await timRenderInstance.TIMGroupModifyMemberInfo({
     params: {
       group_modify_member_info_group_id: groupId,
       group_modify_member_info_identifier: userId,
       group_modify_member_info_modify_flag: modifyFlag,
-      ...modifyGroupMemberParams
+      ...modifyGroupMemberParams,
     },
   });
   const { code, desc } = data;
 
-  console.log('data', data);
+  console.log("data", data);
   if (code === 0) {
     return {};
   }
