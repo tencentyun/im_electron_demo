@@ -67,7 +67,7 @@ export const Message = (): JSX.Element => {
     const handleSearchBoxClick = () => dialogRef.current.open();
 
     const getLastMsgInfo = lastMsg => {
-        const { message_elem_array, message_is_peer_read, message_status, message_is_from_self, message_sender_profile } = lastMsg;
+        const { message_elem_array, message_is_peer_read, message_status, message_is_from_self, message_sender_profile, message_is_read } = lastMsg;
         const { user_profile_nick_name } = message_sender_profile;
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
         const firstMsg = message_elem_array[0];
@@ -89,7 +89,7 @@ export const Message = (): JSX.Element => {
         }[firstMsg.elem_type];
 
         return <React.Fragment>
-            <span className={`icon ${message_is_peer_read ? 'is-read' : ''}`} />
+            <span className={`icon ${message_is_read ? 'is-read' : ''}`} />
             <span className="text">{displayLastMsg}</span>
         </React.Fragment>;
     }
