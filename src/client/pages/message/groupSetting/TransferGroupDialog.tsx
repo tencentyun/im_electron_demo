@@ -36,7 +36,7 @@ export const TransferGroupDialog = (props: {
   };
 
   return (
-    <Modal size="m" disableEscape visible={visible} onClose={onClose}>
+    <Modal className="dialog" disableEscape visible={visible} onClose={onClose}>
       <Modal.Body>
         <TransferGroupForm onSubmit={onOk} onSuccess={success} />
       </Modal.Body>
