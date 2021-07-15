@@ -36,7 +36,7 @@ export const GroupOperator = (props: {
   const canQuitGroup = groupType === 1 || !isOwner;
 
   // 只有群主可以进行群转让 直播群不可以转让
-  const canTransferGroup = isOwner && groupType !== 3;
+  const canTransferGroup = isOwner && ![3,4].includes(groupType);
 
   const updateConversation = async () => {
     const response = await getConversionList();

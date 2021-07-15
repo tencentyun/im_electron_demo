@@ -1,11 +1,13 @@
 .group-result {
     padding-left: 8px;
-    height: calc(80vh - 135px);
+    height: calc(80vh - 123px);
+    overflow: hidden;
+    box-sizing: border-box;
 
     &__item {
         display: flex;
         align-items: center;
-        padding: 14px 20px;
+        padding: 14px 0;
         border-bottom: 1px solid #eee;
         cursor: pointer;
 
@@ -16,5 +18,9 @@
         &:hover {
             background-color: #E8F2FF;
         }
+    }
+
+    &__content {
+        height: 100%;
     }
 }

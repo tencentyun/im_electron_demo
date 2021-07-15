@@ -49,12 +49,15 @@ export const GroupSetting = (props: {
         groupId={groupDetail.group_detial_info_group_id}
         groupName={groupDetail.group_detial_info_group_name}
         groupType={groupDetail.group_detial_info_group_type}
+        onRefresh={retry}
       />
       <Divider />
       <GroupIntroduction
         introduction={groupDetail.group_detial_info_introduction}
         groupId={groupDetail.group_detial_info_group_id}
         onRefresh={retry}
+        userIdentity={currentUserSetting.group_member_info_member_role}
+        groupType={groupDetail.group_detial_info_group_type}
       />
       <Divider />
       <GroupAccountecment

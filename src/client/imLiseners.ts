@@ -64,7 +64,10 @@ export default function initListeners(callback:InitListenersCallback){
     */
     timRenderInstance.TIMSetMsgRevokeCallback({
         callback:(args)=>{
-            console.log("=============", args);
+            callback({
+                type: 'TIMSetMsgRevokeCallback',
+                data: JSON.parse(args[0])
+            });
         },
         user_data: "test"
     })

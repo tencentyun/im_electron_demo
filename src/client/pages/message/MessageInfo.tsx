@@ -10,29 +10,40 @@ import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "../../store/actions/message";
 
 import { AddUserPopover } from "./AddUserPopover";
+import { useDialogRef } from "../../utils/react-use/useDialog";
+import {
+  GroupSettingDrawer,
+  GroupSettingRecordsType,
+} from "./GroupSettingDrawer";
 
 type Info = {
   faceUrl: string;
   nickName: string;
 };
 
-export const MessageInfo = (props: State.conversationItem): JSX.Element => {
+export const MessageInfo = (
+  props: State.conversationItem
+): JSX.Element => {
   const { conv_id, conv_type, conv_profile } = props;
   const {
     group_detial_info_group_type: groupType,
     group_detial_info_add_option: addOption,
   } = conv_profile;
 
+  const groupSettingRef = useDialogRef<GroupSettingRecordsType>();
+
+  const popupContainer = document.getElementById("messageInfo");
+
   const { historyMessageList } = useSelector(
     (state: State.RootState) => state.historyMessage
   );
   const msgList = historyMessageList.get(conv_id);
 
-    const getDisplayConvInfo = () => {
-        const info: Info = {
-            faceUrl: "",
-            nickName: "",
-        };
+  const getDisplayConvInfo = () => {
+    const info: Info = {
+      faceUrl: "",
+      nickName: "",
+    };
 
     if (conv_type === 1) {
       info.faceUrl = props.conv_profile.user_profile_face_url;
@@ -49,8 +60,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const setMessageRead = () => {
     // 个人会话且未读数大于0才设置已读
     const handleMsgReaded = async () => {
-      if(!msgList||msgList.length === 0){
-        return
+      if (!msgList || msgList.length === 0) {
+        return;
       }
       try {
         const { message_msg_id } = msgList[0];
@@ -70,7 +81,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     };
 
     // if (props.conv_unread_num > 0) {
-      handleMsgReaded();
+    handleMsgReaded();
     // }
   };
 
@@ -100,30 +111,43 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   }, [conv_id]);
 
   return (
-    <div className="message-info" id="messageInfo">
-      <header className="message-info__header">
-        <div className="message-info__header--avatar">
-          <Avatar
-            url={faceUrl}
-            size="small"
-            nickName={nickName}
-            userID={conv_id}
-            groupID={conv_id}
-          />
-          <span className="message-info__header--name">
-            {nickName || conv_id}
-          </span>
-        </div>
-        {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
-      </header>
-      <section className="message-info__content">
-        <div className="message-info__content--view">
-          <MessageView messageList={msgList || []} />
-        </div>
-        <div className="message-info__content--input">
-          <MessageInput convId={conv_id} convType={conv_type} />
-        </div>
-      </section>
-    </div>
+    <>
+      <div className="message-info" id="messageInfo">
+        <header className="message-info__header">
+          <div
+            className="message-info__header--avatar"
+            onClick={() => {
+              if (conv_type === 2) {
+                groupSettingRef.current.open({ conversationInfo: props });
+              }
+            }}
+          >
+            <Avatar
+              url={faceUrl}
+              size="small"
+              nickName={nickName}
+              userID={conv_id}
+              groupID={conv_id}
+            />
+            <span className="message-info__header--name">
+              {nickName || conv_id}
+            </span>
+          </div>
+          {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
+        </header>
+        <section className="message-info__content">
+          <div className="message-info__content--view">
+            <MessageView messageList={msgList || []} />
+          </div>
+          <div className="message-info__content--input">
+            <MessageInput convId={conv_id} convType={conv_type} />
+          </div>
+        </section>
+      </div>
+      <GroupSettingDrawer
+        popupContainer={popupContainer}
+        dialogRef={groupSettingRef}
+      />
+    </>
   );
 };

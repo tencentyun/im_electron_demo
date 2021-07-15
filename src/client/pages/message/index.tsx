@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { replaceConversaionList, updateConversationList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
+import { replaceConversaionList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
 import { Avatar } from '../../components/avatar/avatar';
 
 import { SearchBox } from '../../components/searchBox/SearchBox';
@@ -19,6 +19,7 @@ import 'react-contexify/dist/ReactContexify.min.css';
 import { SearchMessageModal } from './searchMessage';
 import { useDialogRef } from "../../utils/react-use/useDialog";
 import { addMessage } from '../../store/actions/message';
+import timeFormat from '../../utils/timeFormat';
 
 export const Message = (): JSX.Element => {
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
@@ -67,7 +68,7 @@ export const Message = (): JSX.Element => {
     const handleSearchBoxClick = () => dialogRef.current.open();
 
     const getLastMsgInfo = lastMsg => {
-        const { message_elem_array, message_is_peer_read, message_status, message_is_from_self, message_sender_profile } = lastMsg;
+        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_read } = lastMsg;
         const { user_profile_nick_name } = message_sender_profile;
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
         const firstMsg = message_elem_array[0];
@@ -89,7 +90,7 @@ export const Message = (): JSX.Element => {
         }[firstMsg.elem_type];
 
         return <React.Fragment>
-            <span className={`icon ${message_is_peer_read ? 'is-read' : ''}`} />
+            <span className={`icon ${message_is_read ? 'is-read' : ''}`} />
             <span className="text">{displayLastMsg}</span>
         </React.Fragment>;
     }
@@ -202,7 +203,12 @@ export const Message = (): JSX.Element => {
                                         <Avatar url={faceUrl} nickName={nickName} userID={conv_id} groupID={conv_id} size='small' />
                                     </div>
                                     <div className="conversion-list__item--info">
-                                        <div className="conversion-list__item--nick-name">{nickName || conv_id}</div>
+                                        <div className="conversion-list__item--time-wrapper">
+                                            <span className="conversion-list__item--nick-name">{nickName || conv_id}</span>
+                                            {
+                                                conv_last_msg && <span className="conversion-list__item--format-time">{timeFormat(conv_last_msg.message_client_time * 1000, false)}</span>
+                                            }
+                                        </div>
                                         {
                                             conv_last_msg ? <div className="conversion-list__item--last-message">{getLastMsgInfo(conv_last_msg)}</div> : null
                                         }

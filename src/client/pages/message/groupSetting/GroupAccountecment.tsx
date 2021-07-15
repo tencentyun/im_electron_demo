@@ -55,7 +55,7 @@ export const GroupAccountecment = (props: {
           }}
         />
       ) : (
-      <div className="group-accountecment--info">{accountecment || ''}</div>
+      <div className="group-accountecment--info">{input || ''}</div>
       )}
     </div>
   );

@@ -24,7 +24,7 @@ export const CreateGroupDialog = (props: {
   };
 
   return (
-    <Modal disableEscape visible={visible} onClose={onClose} caption="创建群聊">
+    <Modal className="dialog"  disableEscape visible={visible} onClose={onClose} caption="创建群聊">
       <Modal.Body>
         <CreateGroupForm onSubmit={onSubmit} onSuccess={success} onClose={onClose} />
       </Modal.Body>

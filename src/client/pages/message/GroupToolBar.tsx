@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import { useDialogRef } from "../../utils/react-use/useDialog";
 import "./group-tool-bar.scss";
-import { GroupToolDrawer, GroupToolRecordsType } from "./GroupToolDrawer";
+import {
+  GroupAccountecmentSettingDrawer,
+  GroupAccountecmentSettingRecordsType,
+} from "./GroupAccountecmentSettingDrawer";
+import {
+  GroupSettingDrawer,
+  GroupSettingRecordsType,
+} from "./GroupSettingDrawer";
 
 const tools = [
   // {
@@ -18,17 +25,26 @@ const tools = [
   },
 ];
 
-export const GroupToolBar = (props: { conversationInfo: State.conversationItem }): JSX.Element => {
+export const GroupToolBar = (props: {
+  conversationInfo: State.conversationItem;
+}): JSX.Element => {
   const { conversationInfo } = props;
+
   const [active, setActive] = useState("");
 
   const addActiveClass = (id: string): string =>
     active === id ? "is-active" : "";
 
-  const groupToolRef = useDialogRef<GroupToolRecordsType>();
+  const groupSettingRef = useDialogRef<GroupSettingRecordsType>();
+  const groupAccountecmentSettingRef =
+    useDialogRef<GroupAccountecmentSettingRecordsType>();
 
   const popupContainer = document.getElementById("messageInfo");
 
+  const refMap = {
+    announcement: groupAccountecmentSettingRef,
+    setting: groupSettingRef,
+  };
 
   return (
     <>
@@ -38,9 +54,10 @@ export const GroupToolBar = (props: { conversationInfo: State.conversationItem }
             key={id}
             className="tool-bar--item"
             onClick={() => {
-              if(active !== id) {
+              if (active !== id) {
                 setActive(id);
-                groupToolRef.current.open({conversationInfo, toolId: id})
+                const ref = refMap[id];
+                ref.current.open({ conversationInfo });
               }
             }}
           >
@@ -50,7 +67,16 @@ export const GroupToolBar = (props: { conversationInfo: State.conversationItem }
           </div>
         ))}
       </div>
-      <GroupToolDrawer dialogRef={groupToolRef}  popupContainer={popupContainer} onClose={() => setActive("")} />
+      <GroupSettingDrawer
+        dialogRef={groupSettingRef}
+        popupContainer={popupContainer}
+        onClose={() => setActive("")}
+      />
+      <GroupAccountecmentSettingDrawer
+        dialogRef={groupAccountecmentSettingRef}
+        popupContainer={popupContainer}
+        onClose={() => setActive("")}
+      />
     </>
   );
 };

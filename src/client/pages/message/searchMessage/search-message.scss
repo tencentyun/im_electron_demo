@@ -34,6 +34,10 @@
                 font-weight: 500;
             }
         }
+
+        .tea-tabs__tabpanel {
+            padding: 0;
+        }
     }
 }
 
@@ -53,16 +57,16 @@
         }
     } 
     &::-webkit-scrollbar {
-        width:8px;
-        background-color:transparent;
+        width:0px;
+        background-color:#fff;
     }
    
     &::-webkit-scrollbar-track {
-        background-color:transparent;
+        background-color:#fff;
     }
     
     &::-webkit-scrollbar-thumb {
         width: 8px;
-        background-color:transparent;
+        background-color: transparent;
     }
 }
