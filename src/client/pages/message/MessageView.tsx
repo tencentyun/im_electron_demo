@@ -20,6 +20,7 @@ import { VoiceElem } from './messageElemTyps/voiceElem';
 import { FileElem } from './messageElemTyps/fileElem';
 import { GroupTipsElemItem } from './messageElemTyps/grouptipsElem';
 import { VideoElem } from './messageElemTyps/videoElem';
+import { ForwardPopup } from './components/forwardPopup';
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -215,6 +216,9 @@ export const MessageView = (props: Props): JSX.Element => {
                     })
                 }
             </Menu>
+            {
+                // <ForwardPopup callback={() => {}} conv_id={"11"} conv_type={1} />
+            }
         </div>
     )
 };

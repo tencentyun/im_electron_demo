@@ -265,7 +265,6 @@ export const MessageInput = (props: Props) : JSX.Element => {
                     isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
                 }
                 {
-                    
                     FEATURE_LIST.map(({id}) => (
                         <span 
                             key={id} 

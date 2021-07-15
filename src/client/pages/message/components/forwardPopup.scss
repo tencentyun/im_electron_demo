@@ -1,0 +1,92 @@
+.forward-popup{
+    .tea-dialog {
+        &__inner {
+            border-radius: 5px;
+            padding: 25px 0;
+            width: 820px;
+            height: 520px;
+        }
+        &__header {
+            border-bottom: 1px solid #eee;
+            padding: 0 25px 5px;
+            margin-bottom: 0;
+            .tea-btn--icon {
+                right: 14px;
+            }
+        }
+        &__body {
+            border-bottom: 1px solid #eee;
+            height: 350px;
+            display: flex;
+            justify-content: stretch;
+        }
+        &__footer {
+            padding-right: 37px;
+            .tea-btn {
+                border-radius: 3px;
+            }
+        }
+        &__btnwrap {
+            text-align: right;
+        }
+        
+    }
+    &__search-list {
+        width: 470px;
+        border-right: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+        &__search {
+            padding: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+        }
+        &__icon {
+            margin-right: 10px;
+        }
+
+        &__input {
+            flex: 1;
+            height: 22px;
+            border: 1px solid #eee;
+            border-radius: 15px;
+            height: 30px;
+        }
+        &__list {
+            padding: 20px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            flex: 1;
+            &__item {
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                line-height: 24px;
+                padding: 8px 0;
+                .tea-icon {
+                    margin-right: 5px;
+                }
+                .avatar {
+                    margin-right: 5px;
+                }
+                &__icon-normal {
+                    margin-right: 5px;
+                    box-sizing: border-box;
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 7px;
+                    border: 2px solid #ddd;
+                }
+                &__name {
+                    flex: 1;
+                }
+            }
+        }
+    }
+    &__seleted-list {
+        flex: 1
+    }
+    
+}
