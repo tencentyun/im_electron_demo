@@ -8,6 +8,12 @@
     margin-bottom: 8px;
     display: flex;
     justify-content: space-between;
+
+    &__right {
+      font-size: 12px;
+      font-weight: 400;
+      color: #999999;
+    }
   }
 
   &--avatar {
