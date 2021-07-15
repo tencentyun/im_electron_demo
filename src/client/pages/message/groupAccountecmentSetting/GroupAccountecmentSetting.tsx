@@ -1,19 +1,32 @@
 import { Button, TextArea } from "@tencent/tea-component";
-import React, { useState } from "react";
-import { modifyGroupInfo } from "../api";
+import React, { useState , useEffect } from "react";
+import { useDispatch } from "react-redux";
+import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
+import {
+  replaceConversaionList,
+  updateCurrentSelectedConversation,
+} from "../../../store/actions/conversation";
+import { getConversionList, getGroupInfoList, modifyGroupInfo } from "../api";
 import "./group-accountecment-setting.scss";
+
 
 export const GroupAccountecmentSetting = (props: {
   conversationInfo: State.conversationItem;
   close: () => void;
 }): JSX.Element => {
   const { close, conversationInfo } = props;
-
+  const dispatch = useDispatch();
   const groupId = conversationInfo?.conv_id || "";
-  const accountecment =
-    conversationInfo?.conv_profile?.group_detial_info_notification || "";
 
-    const [input, setInput] = useState(accountecment);
+  const { value, loading, retry } = useAsyncRetryFunc(async () => {
+    const result = await getGroupInfoList([groupId]);
+
+    return result[0] || {};
+  }, [groupId]);
+
+  const accountecment = value?.group_detial_info_notification || "";
+
+  const [input, setInput] = useState(accountecment);
   const [settingLoading, setSettingloading] = useState(false);
 
   const handleModify = async () => {
@@ -26,12 +39,15 @@ export const GroupAccountecmentSetting = (props: {
         },
       });
       close();
-      // await onRefresh();
     } catch (e) {
       console.log(e.message);
     }
     setSettingloading(false);
   };
+
+  useEffect(() => {
+    setInput(accountecment);
+  }, [accountecment])
 
   return (
     <div className="group-accountecment-setting">

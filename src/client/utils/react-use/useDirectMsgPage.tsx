@@ -2,6 +2,7 @@
 import { useLocation, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateCurrentSelectedConversation, updateConversationList } from '../../store/actions/conversation';
+import { changeFunctionTab } from '../../store/actions/ui';
 
 type Params = {
     profile: State.userProfile & State.groupProfile,
@@ -32,11 +33,16 @@ export const useMessageDirect = () => {
             conv_unread_num: 0,
         }
 
+        // 切换function_atb
+
+        dispatch(changeFunctionTab('message'))
+
         if(hasConversation) {
             dispatch(updateCurrentSelectedConversation(matchedConversation));
         } else {
-            dispatch(updateCurrentSelectedConversation(emptyConv));
             dispatch(updateConversationList([emptyConv]));
+            dispatch(updateCurrentSelectedConversation(emptyConv));
+            
         }
 
         beforeDirect && beforeDirect();
