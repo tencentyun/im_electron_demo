@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { debounce } from 'lodash';
 
 import { Tabs, TabPanel, Input, Icon } from '@tencent/tea-component';
-import { searchTextMessage,  searchGroup, searchFriends } from '../api';
+import { searchTextMessage,  searchGroup, searchFriends, addProfileForConversition } from '../api';
 import { GroupResult } from './GroupResult';
 import { ContacterResult } from './ContacterResult';
 import { MessageResult } from './MessageResult';
@@ -12,9 +12,7 @@ import './search-message.scss';
 export const SearchMessage = (props) => {
     const [ inputValue, setInputValue] = useState("");
     const [ searchResult, setSearchResult ] = useState({
-        messageResult: {
-            msg_search_result_total_count: 0
-        },
+        messageResult: [],
         groupResult: [],
         friendsResult: []
     });
@@ -28,12 +26,30 @@ export const SearchMessage = (props) => {
             const groupResult = searchGroup({
                 keyWords: inputValue
             });
-            
+
             const friendsResult = searchFriends({
                 keyWords: inputValue
             });
+
+            const addProfileForMessageResult = async () => {
+                const msgResult = await messageResult;
+                const { msg_search_result_total_count,  msg_search_result_item_array } = msgResult;
+                const formatedData = msg_search_result_total_count > 0 ? msg_search_result_item_array
+                .filter(item => item.msg_search_result_item_message_array)
+                .map(item => {
+                    return {
+                        conv_id: item.msg_search_result_item_conv_id,
+                        conv_type: item.msg_search_result_item_conv_type,
+                        messageArray: item.msg_search_result_item_message_array,
+                        messageCount: item.msg_search_result_item_total_message_count
+                    }
+                }) : [];
+
+                const response = await addProfileForConversition(formatedData);
+                return response;
+            }
     
-            Promise.all([messageResult, groupResult, friendsResult]).then(searchResult => {
+            Promise.all([addProfileForMessageResult(), groupResult, friendsResult]).then(searchResult => {
                 const [messageResult, groupResult, friendsResult] = searchResult;
                 setSearchResult({
                     messageResult,
@@ -43,9 +59,7 @@ export const SearchMessage = (props) => {
             });
         } else {
             setSearchResult({
-                messageResult: {
-                    msg_search_result_total_count: 0
-                },
+                messageResult: [],
                 groupResult: [],
                 friendsResult: []
             })
@@ -70,7 +84,7 @@ export const SearchMessage = (props) => {
             label: `群组(${groupResult.length})`
         },{
             id: 'message',
-            label: `消息(${messageResult.msg_search_result_total_count})`
+            label: `消息(${messageResult.length})`
         }];
 
         return tabList;
@@ -92,7 +106,7 @@ export const SearchMessage = (props) => {
                         <GroupResult result={searchResult.groupResult} onClose={handleModalClose} />
                     </TabPanel>
                     <TabPanel id="message">
-                        <MessageResult result={searchResult.messageResult} onClose={handleModalClose} />
+                        <MessageResult result={searchResult.messageResult} keyWords={inputValue} onClose={handleModalClose} />
                     </TabPanel>
                 </Tabs>
             </section>

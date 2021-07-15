@@ -70,7 +70,6 @@ const getUserInfoList = async (userIdList: Array<string>) => {
       friendship_getprofilelist_param_identifier_array: userIdList,
     },
   });
-  console.log("userListInfo", JSON.parse(json_param));
   return JSON.parse(json_param);
 };
 
@@ -81,7 +80,6 @@ export const getGroupInfoList = async (groupIdList: Array<string>) => {
     groupIds: groupIdList,
   });
   const groupInfoList = JSON.parse(json_param);
-  console.log("groupInfo", groupInfoList);
 
   return groupInfoList.map((item) => item.get_groups_info_result_info);
 };

@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { Avatar } from '../../../components/avatar/avatar';
 import { EmptyResult } from './EmptyResult';
 import { useMessageDirect } from '../../../utils/react-use/useDirectMsgPage';
+import { ResultItem } from './ResultItem';
 
 
 import './group-result.scss';
@@ -20,17 +20,25 @@ export const GroupResult = (props) => {
     }
 
     return (
-        <div className="group-result customize-scroll-style">
+        <div className="group-result">
             {
-                result.length > 0 ? result.map((item, index) => {
-                    const { group_detial_info_face_url,  group_detial_info_group_name } = item;
-                    return (
-                        <div className="group-result__item" key={index} onClick={() => handleItemClick(item)}>
-                            <Avatar url={group_detial_info_face_url} />
-                            <span className="group-result__item--nick-name">{group_detial_info_group_name}</span>
-                        </div>
-                    )
-                }):
+                result.length > 0 ? 
+                <div className="group-result__content customize-scroll-style">
+                    {
+                         result.map((item, index) => {
+                            const { group_detial_info_face_url,  group_detial_info_group_name } = item;
+                            return (
+                                <ResultItem 
+                                    key={index}
+                                    faceUrl={group_detial_info_face_url}
+                                    nickName={group_detial_info_group_name}
+                                    onClick={() => handleItemClick(item)}
+                                />
+                            )
+                        })
+                    }
+                </div>
+               :
                 <EmptyResult />
             }
         </div>
