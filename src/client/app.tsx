@@ -19,7 +19,7 @@ import './app.scss'
 import initListeners from './imLiseners';
 import { setUnreadCount, updateConversationList } from './store/actions/conversation';
 import { addProfileForConversition } from './pages/message/api';
-import { reciMessage } from './store/actions/message';
+import { reciMessage, markeMessageAsRevoke } from './store/actions/message';
 // eslint-disable-next-line import/no-unresolved
 let isInited = false
 
@@ -62,6 +62,12 @@ const App = () => {
                              */
                             case "TIMSetConvTotalUnreadMessageCountChangedCallback":
                                 _handleUnreadChange(data);
+                                break;
+                            /**
+                             * 消息撤回
+                             */
+                            case "TIMSetMsgRevokeCallback":
+                                _handleMessageRevoked(data);
                                 break;
                         }
                     });
@@ -131,6 +137,17 @@ const App = () => {
             dispatch(updateConversationList(convList))
         }
     }
+
+    const _handleMessageRevoked = (data) => {
+        data.forEach(item => {
+            const { message_locator_conv_id: convId,  message_locator_unique_id: messageId} = item;
+            dispatch(markeMessageAsRevoke({
+                convId,
+                messageId
+            }))
+        });
+    }
+
     useEffect(()=>{
         initIMSDK()
     },[])
