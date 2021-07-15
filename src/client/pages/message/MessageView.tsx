@@ -1,69 +1,27 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 
 import { Avatar } from '../../components/avatar/avatar';
 import { revokeMsg, deleteMsg } from './api';
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+import {
+    Menu,
+    Item,
+    contextMenu,
+    theme,
+    animation
+} from 'react-contexify';
 
 import './message-view.scss';
 import { TextElemItem } from './messageElemTyps/textElemItem';
 import { PicElemItem } from './messageElemTyps/picElemItem';
+import { markeMessageAsRevoke, deleteMessage } from '../../store/actions/message';
 import { CustomElem } from './messageElemTyps/customElem';
 import { VoiceElem } from './messageElemTyps/voiceElem';
 import { FileElem } from './messageElemTyps/fileElem';
+import { GroupTipsElemItem } from './messageElemTyps/grouptipsElem';
+import { VideoElem } from './messageElemTyps/videoElem';
 
-type TextElement = {
-    elem_type: number;
-    text_elem_content: string;
-}
-
-type FaceElement = {
-    elem_type: number;
-    face_elem_index: number;
-    face_elem_buf: string;
-}
-
-type LocationElement = {
-    elem_type: number;
-    location_elem_desc: string;
-    location_elem_longitude: number;
-    location_elem_latitude: number;
-}
-
-type PhotoElement = {
-    elem_type: number;
-    image_elem_orig_path: string;
-    image_elem_level: number;
-    image_elem_format: number;
-    image_elem_orig_id: string;
-    image_elem_orig_pic_height: number;
-    image_elem_orig_pic_width: number;
-    image_elem_orig_pic_size: number;
-    image_elem_thumb_id: string;
-    image_elem_thumb_pic_height: number;
-    image_elem_thumb_pic_width: number;
-    image_elem_thumb_pic_size: number;
-    image_elem_large_id: string;
-    image_elem_large_pic_height: number;
-    image_elem_large_pic_size: number;
-    image_elem_large_pic_width: number;
-    image_elem_orig_url: string;
-    image_elem_thumb_url: number;
-    image_elem_large_url: number;
-
-}
-
-type MessageList<T> = {
-    message_elem_array: Array<T>,
-    message_is_from_self: boolean,
-    message_conv_id: string,
-    message_conv_type: number;
-    message_msg_id: string,
-    message_sender_profile: {
-        user_profile_identifier: string;
-        user_profile_nick_name: string;
-        user_profile_face_url: string
-    }
-}
+const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
 type Props = {
     messageList: Array<State.message>
@@ -94,44 +52,62 @@ const RIGHT_CLICK_MENU_LIST = [{
 
 export const MessageView = (props: Props): JSX.Element => {
     const { messageList } = props;
+    const dispatch = useDispatch();
 
     const handleRevokeMsg = async (params) => {
         const { convId, msgId, convType } = params;
-        revokeMsg({
+        const code = await revokeMsg({
             convId,
             convType,
             msgId
-        })
+        });
+        code === 0 && dispatch(markeMessageAsRevoke({
+            convId,
+            messageId: msgId
+        }));
 
     };
 
     const handleDeleteMsg = async (params) => {
         const { convId, msgId, convType } = params;
-        deleteMsg({
+        const code = await deleteMsg({
             convId,
             convType,
             msgId
-        })
+        });
+        code === 0 && dispatch(deleteMessage({
+            convId,
+            messageId: msgId
+        }));
     };
 
-    const handlRightClick = (e, { id, msgId, convId, convType }) => {
+    const handlRightClick = (e, id) => {
+        const { data } = e.props;
         switch (id) {
             case 'revoke':
-                handleRevokeMsg({
-                    msgId,
-                    convId,
-                    convType
-                });
+                handleRevokeMsg(data);
                 break;
             case 'delete':
-                handleDeleteMsg({
-                    msgId,
-                    convId,
-                    convType
-                });
+                handleDeleteMsg(data);
                 break;
         }
     }
+
+    const handleContextMenuEvent = (e, message: State.message) => {
+        e.preventDefault();
+        contextMenu.show({
+            id: MESSAGE_MENU_ID,
+            event: e,
+            props: {
+                data: {
+                    convId: message.message_conv_id,
+                    msgId: message.message_msg_id,
+                    convType: message.message_conv_type
+                }
+            }
+        })
+    }
+
     const displayDiffMessage = (element) => {
       
         const { elem_type, ...res } = element;
@@ -153,7 +129,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <FileElem { ...res }/>
                 break;
             case 5:
-                resp = <div>群组系统消息</div>
+                resp = <GroupTipsElemItem { ...res }/> 
                 break;
             case 6:
                 resp = <div>表情消息</div>
@@ -165,7 +141,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <div>群组系统通知</div>
                 break;
             case 9:
-                resp = <div>视频消息</div>
+                resp =  <VideoElem { ...res }/>
                 break;
             case 10:
                 resp = <div>关系消息</div>
@@ -187,41 +163,58 @@ export const MessageView = (props: Props): JSX.Element => {
             {
                messageList && messageList.length > 0 &&
                 messageList.map(item => {
-
-                    const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_conv_id, message_conv_type } = item;
+                    if(!item){
+                        return null
+                    }
+                    const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
-                    return <div className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
-                        <div className="message-view__item--avatar face-url">
-                            <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
-                        </div>
-                        {
-                            message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
-                                return (
-                                    <div className="message-view__item--element" key={index}>
-                                        <ContextMenuTrigger id={`same_unique_identifier_${index}`}  >
-                                            {
-                                                displayDiffMessage(elment)
-                                            }
-                                        </ContextMenuTrigger>
-                                        <ContextMenu id={`same_unique_identifier_${index}`} className="right-menu ">
-                                            {
-                                                RIGHT_CLICK_MENU_LIST.map(({ id, text }) => {
-                                                    return (
-                                                        <MenuItem className="right-click__item" key={id} data={{ id, msgId: message_msg_id, convId: message_conv_id, convType: message_conv_type }} onClick={handlRightClick}>
-                                                            {text}
-                                                        </MenuItem>
-                                                    )
-                                                })
-                                            }
-                                        </ContextMenu>
+                    const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
+                    return (
+                        <React.Fragment key={message_msg_id}>
+                            {
+                                message_status === 6 ? (
+                                    <div className="message-view__item is-revoked" >
+                                        { `${revokedPerson} 撤回了一条消息` }
                                     </div>
-                                )
-                            })
-                        }
-                        <div className="message-view__item--blank"></div>
-                    </div>
+                                ) :
+                                <div className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
+                                    <div className="message-view__item--avatar face-url">
+                                        <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                    </div>
+                                    {
+                                        message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                            return (
+                                                <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                    {
+                                                        displayDiffMessage(elment)
+                                                    }
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </div>
+                            }
+                            <div className="message-view__item--blank"></div>
+                        </React.Fragment>
+                    )
                 })
             }
+            <Menu
+                id={MESSAGE_MENU_ID}
+                theme={theme.light}
+                animation={animation.fade}
+
+            >
+                {
+                    RIGHT_CLICK_MENU_LIST.map(({ id, text }) => {
+                        return (
+                            <Item  key={id} onClick={(e) => handlRightClick(e, id)}>
+                                {text}
+                            </Item>
+                        )
+                    })
+                }
+            </Menu>
         </div>
     )
 };

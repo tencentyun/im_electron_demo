@@ -4,6 +4,8 @@ import React from "react";
 
 import "./group-tool-drawer.scss";
 import { GroupSetting } from "./groupSetting/GroupSetting";
+import { GroupAccountecment } from "./groupSetting/GroupAccountecment";
+import { GroupAccountecmentSetting } from "./groupAccountecmentSetting/GroupAccountecmentSetting";
 
 export interface GroupToolRecordsType {
   conversationInfo: State.conversationItem;
@@ -73,7 +75,8 @@ export const GroupToolDrawer = (props: {
       popupContainer={popupContainer}
       onClose={close}
     >
-    {defaultForm.toolId === 'setting' && <GroupSetting conversationInfo={defaultForm.conversationInfo} />}
+    {defaultForm.toolId === 'setting' && <GroupSetting close={close} conversationInfo={defaultForm.conversationInfo} />}
+    {defaultForm.toolId === 'announcement' && <GroupAccountecmentSetting  close={close} conversationInfo={defaultForm.conversationInfo} />}
     </Drawer>
   );
 };

@@ -1,15 +1,11 @@
 import { Button, PopConfirm } from "@tencent/tea-component";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useMessageDirect } from "../../../../utils/react-use/useDirectMsgPage";
 import { Avatar } from "../../../../components/avatar/avatar";
 import { deleteGroup, GroupList, quitGroup } from "../api";
 import "./group-item.scss";
-
-const wait = (time) =>
-  new Promise((reslove) => {
-    setTimeout(() => reslove(true), time);
-  });
+import { replaceConversaionList, updateCurrentSelectedConversation } from "../../../../store/actions/conversation";
 
 export const GroupItem = (props: {
   groupName: string;
@@ -31,6 +27,8 @@ export const GroupItem = (props: {
   } = props;
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
+  const {conversationList} = useSelector((state:State.RootState) => state.conversation)
+  const dispatch = useDispatch();
 
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [quitLoading, setQuitLoading] = useState(false);
@@ -47,10 +45,22 @@ export const GroupItem = (props: {
     });
   };
 
+  const updateConversationListAndCurrentSelectConveration = () => {
+    const afterModifyConversationList = conversationList.filter(item => item.conv_id !== groupId);
+    const matchedConversation = afterModifyConversationList[0];
+    const hasConversation = !!matchedConversation;
+    dispatch(replaceConversaionList(afterModifyConversationList));
+    if(hasConversation) {
+      dispatch(updateCurrentSelectedConversation(matchedConversation));
+
+    }
+  }
+
   const handleDeleteGroup = async () => {
     try {
       setDeleteLoading(true);
       await deleteGroup(groupId);
+      updateConversationListAndCurrentSelectConveration();
       onRefresh();
     } catch (e) {
       console.log(e.message);
@@ -62,7 +72,7 @@ export const GroupItem = (props: {
     setQuitLoading(true);
     try {
       await quitGroup(groupId);
-      await wait(1000)
+      updateConversationListAndCurrentSelectConveration();
       onRefresh();
     } catch (e) {
       console.log(e.message);

@@ -14,8 +14,9 @@ import { GroupOperator } from "./GroupOperator";
 
 export const GroupSetting = (props: {
   conversationInfo: State.conversationItem;
+  close: () => void;
 }): JSX.Element => {
-  const { conversationInfo } = props;
+  const { conversationInfo, close } = props;
   const groupId = conversationInfo.conv_id;
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
@@ -59,6 +60,7 @@ export const GroupSetting = (props: {
       <GroupAccountecment
         accountecment={groupDetail.group_detial_info_notification}
         groupId={groupDetail.group_detial_info_group_id}
+        onRefresh={retry}
       />
       <Divider />
       <GroupMember userList={memberList} />
@@ -89,6 +91,7 @@ export const GroupSetting = (props: {
         onRefresh={retry}
         groupOwner={groupDetail.group_detial_info_owener_identifier}
         groupType={groupDetail.group_detial_info_group_type}
+        close={close}
       />
     </div>
   );

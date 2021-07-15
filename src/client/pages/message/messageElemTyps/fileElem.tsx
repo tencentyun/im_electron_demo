@@ -17,7 +17,7 @@ export const FileElem = (props: any): JSX.Element => {
     const item = () => {
         
         return (
-            <div className="message-view__item--file" onClick={showFile}>
+            <div className="message-view__item--file" onDoubleClick={showFile}>
                 <div className="message-view__item--file___ext">png</div>
                 <div className="message-view__item--file___content">
                     <div className="message-view__item--file___content____name">{displayName()}</div>

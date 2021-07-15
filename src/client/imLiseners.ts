@@ -61,8 +61,8 @@ export default function initListeners(callback:InitListenersCallback){
     * 发送方发送消息，接收方收到消息。此时发送方调用接口[TIMMsgRevoke]()撤回该消息，接收方的ImSDK会通过此接口设置的回调抛出。
     */
     timRenderInstance.TIMSetMsgRevokeCallback({
-        callback:()=>{
-
+        callback:(args)=>{
+            console.log("=============", args);
         }
     })
 
