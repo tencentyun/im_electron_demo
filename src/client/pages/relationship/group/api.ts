@@ -63,6 +63,7 @@ export const createGroup = async (params: createGroupParams): Promise<any> => {
     create_group_param_group_type: Number(groupType),
     create_group_param_notification: groupAnnouncement,
   };
+
   const { data } = await timRenderInstance.TIMGroupCreate({
     params: createParams,
   });

@@ -6,9 +6,9 @@ import { GroupTypeSelect } from "./GroupTypeSelect";
 
 import "./create-group-form.scss";
 
-const validateOldPassword = async (value: string) => {
+const validateOldValue = async (value: string, label: string) => {
   if (!value) {
-    return "请输入旧密码";
+    return `${label}必填`;
   }
 };
 
@@ -58,7 +58,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                 disabled={submitting}
                 validateOnBlur
                 validateFields={[]}
-                validate={validateOldPassword}
+                validate={(value) => validateOldValue(value, '群聊名称') }
               >
                 {({ input, meta }) => (
                   <Form.Item
@@ -84,7 +84,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                 disabled={submitting}
                 validateOnBlur
                 validateFields={[]}
-                validate={validateOldPassword}
+                validate={(value) => validateOldValue(value, '群类型') }
               >
                 {({ input, meta }) => (
                   <Form.Item
@@ -111,7 +111,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                 disabled={submitting}
                 validateOnBlur
                 validateFields={[]}
-                validate={validateOldPassword}
+                validate={(value) => validateOldValue(value, '管理员UID') }
               >
                 {({ input, meta }) => (
                   <Form.Item
@@ -137,7 +137,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                 disabled={submitting}
                 validateOnBlur
                 validateFields={[]}
-                validate={validateOldPassword}
+                validate={(value) => validateOldValue(value, '入群方式') }
               >
                 {({ input, meta }) => (
                   <Form.Item
@@ -161,7 +161,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                 disabled={submitting}
                 validateOnBlur
                 validateFields={[]}
-                validate={validateOldPassword}
+                validate={(value) => validateOldValue(value, '群公告') }
               >
                 {({ input, meta }) => (
                   <Form.Item

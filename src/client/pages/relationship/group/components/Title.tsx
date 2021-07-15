@@ -5,10 +5,14 @@ import { GroupList } from "../api";
 import { CreateGroupDialog } from "./CreateGroupDialog";
 import "./title.scss";
 
+const wait = (time) =>
+  new Promise((reslove) => {
+    setTimeout(() => reslove(true), time);
+  });
+
 export const Title = (props: {
   onRefresh: () => Promise<GroupList>;
 }): JSX.Element => {
-  console.log("Title");
   const { onRefresh } = props;
 
   const createGroupDialogRef = useDialogRef();
@@ -31,8 +35,9 @@ export const Title = (props: {
       </div>
       <CreateGroupDialog
         dialogRef={createGroupDialogRef}
-        onSuccess={() => {
-          onRefresh();
+        onSuccess={async () => {
+          await wait(1000);
+          await onRefresh();
         }}
       />
     </>

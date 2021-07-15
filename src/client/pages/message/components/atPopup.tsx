@@ -44,9 +44,13 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element =
 
     return (
         <div>
-            <List ref={refPopup} className="at-popup" split="divide">
+            <List ref={refPopup} className="at-popup">
                 {
-                    list.map((v, i) => <List.Item key={i} onClick={() => callback(v.group_member_info_identifier)}>{v.group_member_info_identifier}</List.Item>)
+                    list.map((v, i) => 
+                        <List.Item key={i} onClick={() => callback(v.group_member_info_identifier)}>    
+                            {v.group_member_info_identifier}
+                        </List.Item>
+                    )
                 }
             </List>
         </div>

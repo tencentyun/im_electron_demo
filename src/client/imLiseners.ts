@@ -33,7 +33,8 @@ export default function initListeners(callback:InitListenersCallback){
                 type: 'TIMAddRecvNewMsgCallback',
                 data: JSON.parse(args[0])
             })
-        }
+        },
+        user_data: "test"
     })
 
 
@@ -48,7 +49,8 @@ export default function initListeners(callback:InitListenersCallback){
     timRenderInstance.TIMSetMsgReadedReceiptCallback({
         callback:()=>{
 
-        }
+        },
+        user_data: "test"
     })
 
 
@@ -63,7 +65,8 @@ export default function initListeners(callback:InitListenersCallback){
     timRenderInstance.TIMSetMsgRevokeCallback({
         callback:(args)=>{
             console.log("=============", args);
-        }
+        },
+        user_data: "test"
     })
 
 
@@ -79,7 +82,8 @@ export default function initListeners(callback:InitListenersCallback){
     timRenderInstance.TIMSetMsgElemUploadProgressCallback({
         callback:()=>{
 
-        }
+        },
+        user_data: "test"
     })
 
     /**
@@ -96,7 +100,8 @@ export default function initListeners(callback:InitListenersCallback){
                 type: 'TIMSetGroupTipsEventCallback',
                 data: JSON.parse(args)
             })
-        }
+        },
+        user_data: "test"
     })
 
 
@@ -111,7 +116,8 @@ export default function initListeners(callback:InitListenersCallback){
     timRenderInstance.TIMSetGroupAttributeChangedCallback({
         callback:()=>{
 
-        }
+        },
+        user_data: "test"
     })
 
 

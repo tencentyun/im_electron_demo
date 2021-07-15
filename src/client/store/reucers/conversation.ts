@@ -24,16 +24,18 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
                 const { conv_id } = action.payload[i];
                 const conv_index = listCopy.findIndex((item)=>{return item.conv_id === conv_id})
                 if(conv_index>-1){
+                    console.log('更新会话')
                     // 存在，直接更新
                     listCopy[conv_index] = action.payload[i]
                 } else {
+                    console.log('添加会话')
                     // 不存在，添加
                     listCopy.unshift(action.payload[i])
                 }
             }
             return {
                 ...state,
-                conversationList: sortByPindAndTime(listCopy) 
+                conversationList: listCopy
             }
         case UPDATE_CURRENT_SELECTED_CONVERSATION:
             return {

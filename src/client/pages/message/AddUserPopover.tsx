@@ -36,7 +36,6 @@ export const AddUserPopover = (props: {groupId: string}): JSX.Element => {
             value={value}
             onChange={(value) => setValue(value)}
             onKeyDown={(e) => {
-              console.log(e);
              if(e.which === 13) {
                handleAdd();
              }

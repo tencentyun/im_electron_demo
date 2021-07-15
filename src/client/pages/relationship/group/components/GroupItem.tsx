@@ -1,15 +1,15 @@
 import { Button, PopConfirm } from "@tencent/tea-component";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useMessageDirect } from "../../../../utils/react-use/useDirectMsgPage";
 import { Avatar } from "../../../../components/avatar/avatar";
 import { deleteGroup, GroupList, quitGroup } from "../api";
 import "./group-item.scss";
-
-const wait = (time) =>
-  new Promise((reslove) => {
-    setTimeout(() => reslove(true), time);
-  });
+import {
+  replaceConversaionList,
+  updateCurrentSelectedConversation,
+} from "../../../../store/actions/conversation";
+import { TIMConvDelete, getConversionList } from "../../../message/api";
 
 export const GroupItem = (props: {
   groupName: string;
@@ -31,6 +31,7 @@ export const GroupItem = (props: {
   } = props;
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
+  const dispatch = useDispatch();
 
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [quitLoading, setQuitLoading] = useState(false);
@@ -47,11 +48,28 @@ export const GroupItem = (props: {
     });
   };
 
+  const updateConversation = async () => {
+    const response = await getConversionList();
+    dispatch(replaceConversaionList(response));
+    if (response.length) {
+      dispatch(updateCurrentSelectedConversation(response[0]));
+    }
+  };
+
+  // 退出群组后删除当前会话
+  const updateConversationListAndCurrentSelectConveration = async () => {
+    await TIMConvDelete(groupId, 2);
+    // await updateConversation();
+  };
+
   const handleDeleteGroup = async () => {
     try {
       setDeleteLoading(true);
       await deleteGroup(groupId);
-      onRefresh();
+      await Promise.all([
+        onRefresh(),
+        updateConversationListAndCurrentSelectConveration(),
+      ]);
     } catch (e) {
       console.log(e.message);
     }
@@ -62,8 +80,10 @@ export const GroupItem = (props: {
     setQuitLoading(true);
     try {
       await quitGroup(groupId);
-      await wait(1000)
-      onRefresh();
+      await Promise.all([
+        onRefresh(),
+        updateConversationListAndCurrentSelectConveration(),
+      ]);
     } catch (e) {
       console.log(e.message);
     }

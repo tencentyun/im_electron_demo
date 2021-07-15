@@ -4,6 +4,17 @@
     background-color: white;
     padding: 5px;
     left: 53px;
-    bottom: 173px;
-    width: 100px;
+    bottom: 34px;
+    width: 351px;
+    padding: 0;
 }
+.at-popup li {
+    height: 40px;
+    line-height: 40px;
+    padding: 0 12px;
+}
+.at-popup li:hover {
+    background-color: #E8F2FF;
+    cursor: pointer;
+}
+

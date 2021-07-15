@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addMessage } from '../../store/actions/message';
 
-import { TextArea, Button, message } from '@tencent/tea-component';
+import { TextArea, Button, message, Modal } from '@tencent/tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
 import { reciMessage } from '../../store/actions/message'
 import { emojiMap, emojiName, emojiUrl } from './emoji-map'
@@ -55,6 +55,8 @@ export const MessageInput = (props: Props) : JSX.Element => {
 
     const handleSendTextMsg = async () => {
         try {
+            const text = editorState.toText()
+            const atList = getAtList(text)
             const { data: { code, json_params } } = await sendTextMsg({
                 convId,
                 convType,
@@ -63,6 +65,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
                     text_elem_content: editorState.toText(),
                 }],
                 userId,
+                messageAtArray: atList
             });
     
             if(code === 0) {
@@ -75,6 +78,10 @@ export const MessageInput = (props: Props) : JSX.Element => {
         } catch(e) {
             message.error({ content: `出错了: ${e.message}`})
         }
+    }
+    const getAtList = (text: string) => {
+        const list = text.match(/@\w+/g);
+        return list ? list.map(v => v.slice(1)) : []
     }
     const handleSendPhotoMessage = () => {
         imagePicker.current.click();
@@ -103,14 +110,13 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 }],
                 userId,
             });
-            console.log(code, desc, json_params, image.path)
             if(code === 0) {
                 dispatch(reciMessage({
                     convId,
-                    messages: JSON.parse(json_params)
+                    messages: [JSON.parse(json_params)]
                 }))
             }
-        }
+        } 
     }
 
     const sendFileMessage = async(e) => {
@@ -127,7 +133,12 @@ export const MessageInput = (props: Props) : JSX.Element => {
             userId,
         });
 
-        console.log(code, desc, json_params, file.path)
+        if(code === 0) {
+            dispatch(reciMessage({
+                convId,
+                messages: [JSON.parse(json_params)]
+            }))
+        }
     }
 
     const sendVideoMessage = async(e) => {
@@ -140,7 +151,12 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 video_elem_video_type: "MP4",
                 video_elem_video_size: video.size,
                 video_elem_video_duration: 10,
-                video_elem_video_path: video.value
+                video_elem_video_path: video.value,
+                video_elem_image_type: "png",
+                video_elem_image_size: 10000,
+                video_elem_image_width: 200,
+                video_elem_image_height: 80,
+                video_elem_image_path: "./cover.png"
             }],
             userId,
         });
@@ -155,7 +171,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 elem_type: 2,
                 sound_elem_file_path: sound.value,
                 sound_elem_file_size: sound.size,
-                sound_elem_file_time: 10
+                sound_elem_file_time: 10,
             }],
             userId,
         });
@@ -243,6 +259,13 @@ export const MessageInput = (props: Props) : JSX.Element => {
         <div className="message-input">
             <div className="message-input__feature-area">
                 {
+                    isAtPopup && <AtPopup callback={onAtPopupCallback} group_id={convId}  />
+                }
+                {
+                    isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
+                }
+                {
+                    
                     FEATURE_LIST.map(({id}) => (
                         <span 
                             key={id} 
@@ -253,15 +276,6 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 }
             </div>
             <div className="message-input__text-area" onKeyPress={handleOnkeyPress}>
-                {/* <TextArea
-                    showCount={false}
-                    size='full'
-                    value={text}
-                    onChange={(value, context) => {
-                        setText(value);
-                    }}
-                    placeholder="请输入消息"
-                /> */}
                 <BraftEditor
                     onChange={editorChange}
                     value={editorState}
@@ -274,14 +288,19 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 <Button type="primary" onClick={handleSendTextMsg} disabled={editorState.toText() === ''}>发送</Button>
             </div>
             {
-                isAtPopup && <AtPopup callback={onAtPopupCallback} group_id={convId}  />
-            }
-            {
-                isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
-            }
-            {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }
+            <Modal caption="真的发这个图片吗" onClose={close}>
+                <Modal.Body>真的发这个图片吗</Modal.Body>
+                <Modal.Footer>
+                <Button type="primary" onClick={close}>
+                    确定
+                </Button>
+                <Button type="weak" onClick={close}>
+                    取消
+                </Button>
+                </Modal.Footer>
+            </Modal>
             <input ref={filePicker} onChange={sendFileMessage} type="file" style={{ display:'none'}} />
             <input ref={imagePicker} onChange={sendImageMessage} type="file" style={{ display:'none'}} />
             <input ref={videoPicker} onChange={sendVideoMessage} type="file" style={{ display:'none'}} />
