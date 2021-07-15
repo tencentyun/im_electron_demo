@@ -21,8 +21,9 @@ export const GroupBaseInfo = (props: {
   groupName: string;
   groupId: string;
   groupType: number;
+  onRefresh: () => Promise<any>;
 }): JSX.Element => {
-  const { groupAvatar, groupId, groupName, groupType } = props;
+  const { groupAvatar, groupId, groupName, groupType, onRefresh } = props;
 
   const editDialog = useDialogRef<EditGroupBaseInfoRecordsType>();
 
@@ -48,7 +49,7 @@ export const GroupBaseInfo = (props: {
           </span>
         </div>
       </div>
-      <EditGroupBaseInfoDialog dialogRef={editDialog} />
+      <EditGroupBaseInfoDialog dialogRef={editDialog} onSuccess={() =>{ console.log(111); onRefresh()}} />
     </>
   );
 };
