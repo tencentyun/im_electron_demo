@@ -67,8 +67,8 @@ export const Message = (): JSX.Element => {
 
     const handleSearchBoxClick = () => dialogRef.current.open();
 
-    const getLastMsgInfo = lastMsg => {
-        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_read } = lastMsg;
+    const getLastMsgInfo = (lastMsg,conv_type) => {
+        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read } = lastMsg;
         const { user_profile_nick_name } = message_sender_profile;
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
         const firstMsg = message_elem_array[0];
@@ -90,7 +90,9 @@ export const Message = (): JSX.Element => {
         }[firstMsg.elem_type];
 
         return <React.Fragment>
-            <span className={`icon ${message_is_read ? 'is-read' : ''}`} />
+            {
+               conv_type === 1 ? <span className={`icon ${message_is_peer_read ? 'is-read' : ''}`} /> : null
+            }
             <span className="text">{displayLastMsg}</span>
         </React.Fragment>;
     }
@@ -191,7 +193,7 @@ export const Message = (): JSX.Element => {
                 <div className="conversion-list">
                     {
                         conversationList.map((item) => {
-                            const { conv_profile, conv_id, conv_last_msg, conv_unread_num } = item;
+                            const { conv_profile, conv_id, conv_last_msg, conv_unread_num,conv_type } = item;
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
                             return (
@@ -210,7 +212,7 @@ export const Message = (): JSX.Element => {
                                             }
                                         </div>
                                         {
-                                            conv_last_msg ? <div className="conversion-list__item--last-message">{getLastMsgInfo(conv_last_msg)}</div> : null
+                                            conv_last_msg ? <div className="conversion-list__item--last-message">{getLastMsgInfo(conv_last_msg,conv_type)}</div> : null
                                         }
                                     </div>
                                 </div>
