@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addMessage } from '../../store/actions/message';
 
-import { TextArea, Button, message } from '@tencent/tea-component';
+import { TextArea, Button, message, Modal } from '@tencent/tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
 import { reciMessage } from '../../store/actions/message'
 import { emojiMap, emojiName, emojiUrl } from './emoji-map'
@@ -103,14 +103,13 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 }],
                 userId,
             });
-            console.log(code, desc, json_params, image.path)
             if(code === 0) {
                 dispatch(reciMessage({
                     convId,
-                    messages: JSON.parse(json_params)
+                    messages: [JSON.parse(json_params)]
                 }))
             }
-        }
+        } 
     }
 
     const sendFileMessage = async(e) => {
@@ -127,7 +126,12 @@ export const MessageInput = (props: Props) : JSX.Element => {
             userId,
         });
 
-        console.log(code, desc, json_params, file.path)
+        if(code === 0) {
+            dispatch(reciMessage({
+                convId,
+                messages: [JSON.parse(json_params)]
+            }))
+        }
     }
 
     const sendVideoMessage = async(e) => {
@@ -140,7 +144,12 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 video_elem_video_type: "MP4",
                 video_elem_video_size: video.size,
                 video_elem_video_duration: 10,
-                video_elem_video_path: video.value
+                video_elem_video_path: video.value,
+                video_elem_image_type: "png",
+                video_elem_image_size: 10000,
+                video_elem_image_width: 200,
+                video_elem_image_height: 80,
+                video_elem_image_path: "./cover.png"
             }],
             userId,
         });
@@ -155,7 +164,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 elem_type: 2,
                 sound_elem_file_path: sound.value,
                 sound_elem_file_size: sound.size,
-                sound_elem_file_time: 10
+                sound_elem_file_time: 10,
             }],
             userId,
         });
@@ -282,6 +291,17 @@ export const MessageInput = (props: Props) : JSX.Element => {
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }
+            <Modal caption="真的发这个图片吗" onClose={close}>
+                <Modal.Body>真的发这个图片吗</Modal.Body>
+                <Modal.Footer>
+                <Button type="primary" onClick={close}>
+                    确定
+                </Button>
+                <Button type="weak" onClick={close}>
+                    取消
+                </Button>
+                </Modal.Footer>
+            </Modal>
             <input ref={filePicker} onChange={sendFileMessage} type="file" style={{ display:'none'}} />
             <input ref={imagePicker} onChange={sendImageMessage} type="file" style={{ display:'none'}} />
             <input ref={videoPicker} onChange={sendVideoMessage} type="file" style={{ display:'none'}} />

@@ -39,6 +39,11 @@ type VideoMsg = {
   video_elem_video_size: number;
   video_elem_video_duration: number;
   video_elem_video_path: string;
+  video_elem_image_type: string;
+  video_elem_image_size: number;
+  video_elem_image_width: number;
+  video_elem_image_height: number;
+  video_elem_image_path: string;
 };
 
 type FaceMsg = {
@@ -205,7 +210,7 @@ const sendMsg = async ({
   convId,
   convType,
   messageElementArray,
-  userData,
+  userData = "",
   userId,
 }: SendMsgParams<
   TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg
