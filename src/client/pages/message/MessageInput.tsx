@@ -307,4 +307,5 @@ export const MessageInput = (props: Props) : JSX.Element => {
             <input ref={soundPicker} onChange={sendSoundMessage} type="file" style={{ display:'none'}} />
         </div>
     )
+
 }
