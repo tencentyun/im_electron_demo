@@ -90,6 +90,15 @@ export const getGroupInfoList = async (groupIdList: Array<string>) => {
   return groupInfoList.map((item) => item.get_groups_info_result_info);
 };
 
+export const getJoinGroupList = async () => {
+  const {
+    data: { code, json_param },
+  } = await timRenderInstance.TIMGroupGetJoinedGroupList();
+  const groupList = JSON.parse(json_param);
+
+  return groupList;
+};
+
 const getIds = (conversionList) =>
   conversionList.reduce(
     (acc, cur) => {
@@ -338,9 +347,9 @@ export const searchGroup = async (params: {
       group_search_params_field_list: [2],
     },
   });
-
-  return JSON.parse(json_param);
-};
+  console.log("searchGroup", JSON.parse(json_param || "[]"));
+  return JSON.parse(json_param || "[]")
+}
 
 export const searchFriends = async (params: {
   keyWords: string;
@@ -354,9 +363,9 @@ export const searchFriends = async (params: {
     },
     user_data: "1234",
   });
-
-  return JSON.parse(json_params);
-};
+  console.log("searchFriends", JSON.parse(json_params || "[]"));
+  return JSON.parse(json_params || "[]")
+}
 
 export const getGroupMemberList = async (params: {
   groupId: string;

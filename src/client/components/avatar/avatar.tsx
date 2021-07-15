@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router-dom"
 import './avatar.scss'
 
 
-type AvatarSizeEnum = "default" | "large" | "small"
+type AvatarSizeEnum = "default" | "large" | "small" | "mini"
 
 interface AvatarProps  {
     size?: AvatarSizeEnum,
