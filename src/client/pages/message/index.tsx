@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { replaceConversaionList, updateConversationList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
 import { Avatar } from '../../components/avatar/avatar';
