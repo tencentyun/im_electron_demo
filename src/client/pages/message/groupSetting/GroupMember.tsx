@@ -21,8 +21,14 @@ export const GroupMember = (props: {
       <div className="group-member">
         <div className="group-member--title">
           <span>群成员</span>
-          <span onClick={() => dialogRef.current.open({memberList: userList})}>查看更多&gt;</span>
-          </div>
+          <span
+            className="group-member--title__right"
+            onClick={() => dialogRef.current.open({ memberList: userList })}
+          >
+            <span style={{ marginRight: "4px" }}>{userList.length}人</span>
+            <span>&gt;</span>
+          </span>
+        </div>
         <div className="group-member--avatar">
           {userList?.slice(0, 15)?.map((v, index) => (
             <Avatar
@@ -32,7 +38,10 @@ export const GroupMember = (props: {
           ))}
         </div>
       </div>
-      <GroupMemberListDrawer popupContainer={popupContainer} dialogRef={dialogRef} />
+      <GroupMemberListDrawer
+        popupContainer={popupContainer}
+        dialogRef={dialogRef}
+      />
     </>
   );
 };

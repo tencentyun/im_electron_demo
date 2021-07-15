@@ -34,10 +34,12 @@ export const GroupMemberListDrawer = (props: {
       header: "",
       key: "member",
       render: (record: any) => {
+        const isOwner = record.group_member_info_member_role === 3;
         return (
           <div className="member-list-drawer--item">
             <Avatar url={record.user_profile_face_url} />
             <span className="member-list-drawer--item__name">{record.user_profile_nick_name}</span>
+            {isOwner && <span className="member-list-drawer--item__owner">群主</span>}
           </div>
         );
       },
