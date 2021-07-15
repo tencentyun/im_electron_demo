@@ -55,6 +55,8 @@ export const MessageInput = (props: Props) : JSX.Element => {
 
     const handleSendTextMsg = async () => {
         try {
+            const text = editorState.toText()
+            const atList = getAtList(text)
             const { data: { code, json_params } } = await sendTextMsg({
                 convId,
                 convType,
@@ -63,6 +65,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
                     text_elem_content: editorState.toText(),
                 }],
                 userId,
+                messageAtArray: atList
             });
     
             if(code === 0) {
@@ -75,6 +78,10 @@ export const MessageInput = (props: Props) : JSX.Element => {
         } catch(e) {
             message.error({ content: `出错了: ${e.message}`})
         }
+    }
+    const getAtList = (text: string) => {
+        const list = text.match(/@\w+/g);
+        return list ? list.map(v => v.slice(1)) : []
     }
     const handleSendPhotoMessage = () => {
         imagePicker.current.click();

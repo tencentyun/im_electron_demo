@@ -6,6 +6,7 @@ type SendMsgParams<T> = {
   messageElementArray: [T];
   userData?: string;
   userId: string;
+  messageAtArray?: string[];
 };
 
 type TextMsg = {
@@ -212,6 +213,7 @@ const sendMsg = async ({
   messageElementArray,
   userData,
   userId,
+  messageAtArray,
 }: SendMsgParams<
   TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg
 >): Promise<MsgResponse> => {
@@ -221,6 +223,7 @@ const sendMsg = async ({
     params: {
       message_elem_array: messageElementArray,
       message_sender: userId,
+      message_group_at_user_array: messageAtArray
     },
     user_data: "test",
   });
