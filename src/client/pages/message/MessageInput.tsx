@@ -252,6 +252,13 @@ export const MessageInput = (props: Props) : JSX.Element => {
         <div className="message-input">
             <div className="message-input__feature-area">
                 {
+                    isAtPopup && <AtPopup callback={onAtPopupCallback} group_id={convId}  />
+                }
+                {
+                    isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
+                }
+                {
+                    
                     FEATURE_LIST.map(({id}) => (
                         <span 
                             key={id} 
@@ -262,15 +269,6 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 }
             </div>
             <div className="message-input__text-area" onKeyPress={handleOnkeyPress}>
-                {/* <TextArea
-                    showCount={false}
-                    size='full'
-                    value={text}
-                    onChange={(value, context) => {
-                        setText(value);
-                    }}
-                    placeholder="请输入消息"
-                /> */}
                 <BraftEditor
                     onChange={editorChange}
                     value={editorState}
@@ -282,12 +280,6 @@ export const MessageInput = (props: Props) : JSX.Element => {
             <div className="message-input__button-area">
                 <Button type="primary" onClick={handleSendTextMsg} disabled={editorState.toText() === ''}>发送</Button>
             </div>
-            {
-                isAtPopup && <AtPopup callback={onAtPopupCallback} group_id={convId}  />
-            }
-            {
-                isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
-            }
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }

@@ -210,7 +210,7 @@ const sendMsg = async ({
   convId,
   convType,
   messageElementArray,
-  userData = "",
+  userData,
   userId,
 }: SendMsgParams<
   TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg
@@ -222,7 +222,7 @@ const sendMsg = async ({
       message_elem_array: messageElementArray,
       message_sender: userId,
     },
-    user_data: userData,
+    user_data: "test",
   });
   return res;
 };
