@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { replaceConversaionList, updateConversationList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
-import { format } from 'timeago.js';
+import { replaceConversaionList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
 import { Avatar } from '../../components/avatar/avatar';
 
 import { SearchBox } from '../../components/searchBox/SearchBox';
