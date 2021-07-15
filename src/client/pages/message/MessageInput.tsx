@@ -21,30 +21,41 @@ type Props = {
     convType: number
 }
 
-const FEATURE_LIST = [{
+const FEATURE_LIST_GROUP = [{
     id: 'face',
-},{
+}, {
     id: 'at',
-},{
+}, {
     id: 'photo'
 }, {
     id: 'file'
-}, {
-    id: 'voice'
 }, {
     id: 'phone'
 }, {
     id: 'more'
 }]
-
-export const MessageInput = (props: Props) : JSX.Element => {
+const FEATURE_LIST_C2C = [{
+    id: 'face',
+}, {
+    id: 'photo'
+}, {
+    id: 'file'
+}, {
+    id: 'phone'
+}, {
+    id: 'more'
+}]
+const FEATURE_LIST = {
+    1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
+}
+export const MessageInput = (props: Props): JSX.Element => {
     const { convId, convType } = props;
-    const [ activeFeature, setActiveFeature ] = useState('');
-    const [ isAtPopup, setAtPopup ] = useState(false);
-    const [ isEmojiPopup, setEmojiPopup ] = useState(false);
-    const [ isRecordPopup, setRecordPopup ] = useState(false);
-    const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
-    const [ atList, setAtList ] = useState([]);
+    const [activeFeature, setActiveFeature] = useState('');
+    const [isAtPopup, setAtPopup] = useState(false);
+    const [isEmojiPopup, setEmojiPopup] = useState(false);
+    const [isRecordPopup, setRecordPopup] = useState(false);
+    const [editorState, setEditorState] = useState<EditorState>(BraftEditor.createEditorState(null))
+    const [atList, setAtList] = useState([]);
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
@@ -67,16 +78,16 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 userId,
                 messageAtArray: atList
             });
-    
-            if(code === 0) {
+
+            if (code === 0) {
                 dispatch(reciMessage({
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
                 setEditorState(ContentUtils.clear(editorState))
             }
-        } catch(e) {
-            message.error({ content: `出错了: ${e.message}`})
+        } catch (e) {
+            message.error({ content: `出错了: ${e.message}` })
         }
     }
     const getAtList = (text: string) => {
@@ -96,10 +107,10 @@ export const MessageInput = (props: Props) : JSX.Element => {
     const handleSendVideoMessage = () => {
         videoPicker.current.click();
     }
-    const sendImageMessage = async(e) => {
+    const sendImageMessage = async (e) => {
         const image = e.target.files[0]
 
-        if(image) {
+        if (image) {
             const { data: { code, desc, json_params } } = await sendImageMsg({
                 convId,
                 convType,
@@ -110,16 +121,16 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 }],
                 userId,
             });
-            if(code === 0) {
+            if (code === 0) {
                 dispatch(reciMessage({
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
             }
-        } 
+        }
     }
 
-    const sendFileMessage = async(e) => {
+    const sendFileMessage = async (e) => {
         const file = e.target.files[0]
         const { data: { code, desc, json_params } } = await sendFileMsg({
             convId,
@@ -133,7 +144,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
             userId,
         });
 
-        if(code === 0) {
+        if (code === 0) {
             dispatch(reciMessage({
                 convId,
                 messages: [JSON.parse(json_params)]
@@ -141,7 +152,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
         }
     }
 
-    const sendVideoMessage = async(e) => {
+    const sendVideoMessage = async (e) => {
         const video = e.target.files[0]
         const { data: { code, json_params } } = await sendVideoMsg({
             convId,
@@ -162,7 +173,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
         });
     }
 
-    const sendSoundMessage = async(e) => {
+    const sendSoundMessage = async (e) => {
         const sound = e.target.files[0]
         const { data: { code, json_params } } = await sendSoundMsg({
             convId,
@@ -188,11 +199,11 @@ export const MessageInput = (props: Props) : JSX.Element => {
     }
 
     const handleFeatureClick = (featureId) => {
-        switch(featureId) {
+        switch (featureId) {
             case "face":
                 handleSendFaceMessage()
             case "at":
-                if(convType === 2) handleSendAtMessage()
+                if (convType === 2) handleSendAtMessage()
                 break;
             case "photo":
                 handleSendPhotoMessage()
@@ -204,16 +215,16 @@ export const MessageInput = (props: Props) : JSX.Element => {
                 handleSendSoundMessage()
                 break;
             case "phone":
-                // handleSendPhoneMessage()
+            // handleSendPhoneMessage()
             case "more":
-                // handleSendMoreMessage()
+            // handleSendMoreMessage()
 
         }
         setActiveFeature(featureId);
     }
 
     const handleOnkeyPress = (e) => {
-        if(e.keyCode == 13 || e.charCode ===13) {
+        if (e.keyCode == 13 || e.charCode === 13) {
             e.preventDefault();
             handleSendTextMsg();
         }
@@ -221,21 +232,21 @@ export const MessageInput = (props: Props) : JSX.Element => {
 
     const onAtPopupCallback = (userName) => {
         resetState()
-        if(userName) {
+        if (userName) {
             setEditorState(ContentUtils.insertText(editorState, `@${userName} `))
         }
     }
 
     const onEmojiPopupCallback = (id) => {
         resetState()
-        if(id) {
+        if (id) {
             setEditorState(ContentUtils.insertText(editorState, id))
         }
     }
 
     const handleRecordPopupCallback = (path) => {
         resetState()
-        if(path) {
+        if (path) {
             console.log(path)
         }
     }
@@ -259,17 +270,17 @@ export const MessageInput = (props: Props) : JSX.Element => {
         <div className="message-input">
             <div className="message-input__feature-area">
                 {
-                    isAtPopup && <AtPopup callback={onAtPopupCallback} group_id={convId}  />
+                    isAtPopup && <AtPopup callback={onAtPopupCallback} group_id={convId} />
                 }
                 {
                     isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
                 }
                 {
-                    
-                    FEATURE_LIST.map(({id}) => (
-                        <span 
-                            key={id} 
-                            className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`} 
+
+                    FEATURE_LIST[convType].map(({ id }) => (
+                        <span
+                            key={id}
+                            className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
                             onClick={() => handleFeatureClick(id)}
                         />
                     ))
@@ -281,7 +292,7 @@ export const MessageInput = (props: Props) : JSX.Element => {
                     value={editorState}
                     controls={[]}
                     ref={instance => editorInstance = instance}
-                    contentStyle={{height: '100%', fontSize: 14}}
+                    contentStyle={{ height: '100%', fontSize: 14 }}
                 />
             </div>
             <div className="message-input__button-area">
@@ -293,18 +304,18 @@ export const MessageInput = (props: Props) : JSX.Element => {
             <Modal caption="真的发这个图片吗" onClose={close}>
                 <Modal.Body>真的发这个图片吗</Modal.Body>
                 <Modal.Footer>
-                <Button type="primary" onClick={close}>
-                    确定
-                </Button>
-                <Button type="weak" onClick={close}>
-                    取消
-                </Button>
+                    <Button type="primary" onClick={close}>
+                        确定
+                    </Button>
+                    <Button type="weak" onClick={close}>
+                        取消
+                    </Button>
                 </Modal.Footer>
             </Modal>
-            <input ref={filePicker} onChange={sendFileMessage} type="file" style={{ display:'none'}} />
-            <input ref={imagePicker} onChange={sendImageMessage} type="file" style={{ display:'none'}} />
-            <input ref={videoPicker} onChange={sendVideoMessage} type="file" style={{ display:'none'}} />
-            <input ref={soundPicker} onChange={sendSoundMessage} type="file" style={{ display:'none'}} />
+            <input ref={filePicker} onChange={sendFileMessage} type="file" style={{ display: 'none' }} />
+            <input ref={imagePicker} onChange={sendImageMessage} type="file" style={{ display: 'none' }} />
+            <input ref={videoPicker} onChange={sendVideoMessage} type="file" style={{ display: 'none' }} />
+            <input ref={soundPicker} onChange={sendSoundMessage} type="file" style={{ display: 'none' }} />
         </div>
     )
 

@@ -124,6 +124,31 @@
                 }
             }
         }
+        &--merge{
+            cursor: pointer;
+            width: 360px;
+            height: 88px;
+            background: #F9F9F9;
+            border-radius: 2px 8px 8px 8px;
+            border: 1px solid #EEEEEE;
+            padding: 12px;
+            &___title{
+                width: 312px;
+                height: 20px;
+                font-size: 14px;
+                font-weight: 500;
+                color: #000000;
+                line-height: 20px;
+            }
+            &___abst{
+                width: 336px;
+                height: 20px;
+                line-height: 20px;
+                font-size: 14px;
+                font-weight: 400;
+                color: #000000;
+            }
+        }
     }
 
     .right-menu {
