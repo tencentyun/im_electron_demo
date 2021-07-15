@@ -12,7 +12,7 @@ export const MessageResult = (props) => {
     const [activedItem, setActivedItem] = useState(result[0]);
     const regex = new RegExp(keyWords, "g");
 
-    const hilightKeyWords = messageText => messageText.replace(regex, `<span className="highlight">${keyWords}</span>`);
+    const hilightKeyWords = messageText => messageText.replace(regex, `<span class="highlight">${keyWords}</span>`);
 
     const handleItemClick = (item) => setActivedItem(item);
 
