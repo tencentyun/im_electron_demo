@@ -13,7 +13,6 @@ const wait = (time) =>
 export const Title = (props: {
   onRefresh: () => Promise<GroupList>;
 }): JSX.Element => {
-  console.log("Title");
   const { onRefresh } = props;
 
   const createGroupDialogRef = useDialogRef();

@@ -5,7 +5,11 @@ import { useMessageDirect } from "../../../../utils/react-use/useDirectMsgPage";
 import { Avatar } from "../../../../components/avatar/avatar";
 import { deleteGroup, GroupList, quitGroup } from "../api";
 import "./group-item.scss";
-import { replaceConversaionList, updateCurrentSelectedConversation } from "../../../../store/actions/conversation";
+import {
+  replaceConversaionList,
+  updateCurrentSelectedConversation,
+} from "../../../../store/actions/conversation";
+import { TIMConvDelete, getConversionList } from "../../../message/api";
 
 export const GroupItem = (props: {
   groupName: string;
@@ -27,7 +31,6 @@ export const GroupItem = (props: {
   } = props;
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
-  const {conversationList} = useSelector((state:State.RootState) => state.conversation)
   const dispatch = useDispatch();
 
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -45,23 +48,28 @@ export const GroupItem = (props: {
     });
   };
 
-  const updateConversationListAndCurrentSelectConveration = () => {
-    const afterModifyConversationList = conversationList.filter(item => item.conv_id !== groupId);
-    const matchedConversation = afterModifyConversationList[0];
-    const hasConversation = !!matchedConversation;
-    dispatch(replaceConversaionList(afterModifyConversationList));
-    if(hasConversation) {
-      dispatch(updateCurrentSelectedConversation(matchedConversation));
-
+  const updateConversation = async () => {
+    const response = await getConversionList();
+    dispatch(replaceConversaionList(response));
+    if (response.length) {
+      dispatch(updateCurrentSelectedConversation(response[0]));
     }
-  }
+  };
+
+  // 退出群组后删除当前会话
+  const updateConversationListAndCurrentSelectConveration = async () => {
+    await TIMConvDelete(groupId, 2);
+    // await updateConversation();
+  };
 
   const handleDeleteGroup = async () => {
     try {
       setDeleteLoading(true);
       await deleteGroup(groupId);
-      updateConversationListAndCurrentSelectConveration();
-      onRefresh();
+      await Promise.all([
+        onRefresh(),
+        updateConversationListAndCurrentSelectConveration(),
+      ]);
     } catch (e) {
       console.log(e.message);
     }
@@ -72,8 +80,10 @@ export const GroupItem = (props: {
     setQuitLoading(true);
     try {
       await quitGroup(groupId);
-      updateConversationListAndCurrentSelectConveration();
-      onRefresh();
+      await Promise.all([
+        onRefresh(),
+        updateConversationListAndCurrentSelectConveration(),
+      ]);
     } catch (e) {
       console.log(e.message);
     }

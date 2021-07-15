@@ -435,7 +435,6 @@ export const modifyGroupInfo = async (params: {
       ...modifyParams,
     },
   });
-  console.log('data', data);
   const { code, desc } = data;
   if (code === 0) {
     return {};
