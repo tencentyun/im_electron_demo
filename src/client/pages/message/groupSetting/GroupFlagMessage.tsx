@@ -41,6 +41,7 @@ export const GroupFlagMessage = (props: {
         size="full"
         type="simulate"
         appearance="button"
+        className="group-flag-message--select"
         value={"" + flagMsg}
         onChange={(value) => handleChange(value)}
         options={flagMsgOptions}

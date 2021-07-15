@@ -3,6 +3,17 @@ import React from "react";
 import { Form as FinalForm, Field } from "react-final-form";
 import { getStatus } from "../../../utils/getStatus";
 
+const reg = /(https?|ftp|file):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/;
+
+const validateFaceUrl = (value: string) => {
+  if(!value) {
+    return '用户头像地址必填';
+  }
+
+  if(value && !reg.test(value)) {
+    return 'url不合法';
+  }
+}
 
 const validateValue = async (value: string,label: string) => {
   if (!value) {
@@ -57,7 +68,7 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
                 disabled={submitting}
                 validateOnBlur
                 validateFields={[]}
-                validate={(value) => validateValue(value , '群头像地址')}
+                validate={validateFaceUrl}
               >
                 {({ input, meta }) => (
                   <Form.Item

@@ -4,10 +4,10 @@ import "./group-tool-bar.scss";
 import { GroupToolDrawer, GroupToolRecordsType } from "./GroupToolDrawer";
 
 const tools = [
-  {
-    id: "query-message",
-    title: "聊天记录",
-  },
+  // {
+  //   id: "query-message",
+  //   title: "聊天记录",
+  // },
   {
     id: "announcement",
     title: "群公告",
@@ -29,6 +29,7 @@ export const GroupToolBar = (props: { conversationInfo: State.conversationItem }
 
   const popupContainer = document.getElementById("messageInfo");
 
+
   return (
     <>
       <div className="tool-bar" id="toolBar">
@@ -49,7 +50,7 @@ export const GroupToolBar = (props: { conversationInfo: State.conversationItem }
           </div>
         ))}
       </div>
-      <GroupToolDrawer popupContainer={popupContainer} dialogRef={groupToolRef} onClose={() => setActive("")} />
+      <GroupToolDrawer dialogRef={groupToolRef}  popupContainer={popupContainer} onClose={() => setActive("")} />
     </>
   );
 };

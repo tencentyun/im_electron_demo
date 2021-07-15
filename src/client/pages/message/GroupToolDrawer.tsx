@@ -1,11 +1,11 @@
 import { DialogRef, useDialog } from "../../utils/react-use/useDialog";
 import { Drawer, H3, H5 } from "@tencent/tea-component";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 import "./group-tool-drawer.scss";
 import { GroupSetting } from "./groupSetting/GroupSetting";
-import { GroupAccountecment } from "./groupSetting/GroupAccountecment";
 import { GroupAccountecmentSetting } from "./groupAccountecmentSetting/GroupAccountecmentSetting";
+import { useSelector } from "react-redux";
 
 export interface GroupToolRecordsType {
   conversationInfo: State.conversationItem;
@@ -20,6 +20,7 @@ export const GroupToolDrawer = (props: {
 }): JSX.Element => {
   const { onClose, dialogRef, popupContainer } = props;
 
+  const firstRenderRef = useRef({ isFirstRender: true });
   const [visible, setShowState, defaultForm] = useDialog<GroupToolRecordsType>(
     dialogRef,
     {
@@ -63,7 +64,7 @@ export const GroupToolDrawer = (props: {
 
   return (
     <Drawer
-      disableAnimation={true}
+      // disableAnimation={true}
       visible={visible}
       title={
         <div className="tool-drawer--title">
@@ -72,11 +73,22 @@ export const GroupToolDrawer = (props: {
         </div>
       }
       className="tool-drawer"
+      // outerClickClosable={false}
       popupContainer={popupContainer}
       onClose={close}
     >
-    {defaultForm.toolId === 'setting' && <GroupSetting close={close} conversationInfo={defaultForm.conversationInfo} />}
-    {defaultForm.toolId === 'announcement' && <GroupAccountecmentSetting  close={close} conversationInfo={defaultForm.conversationInfo} />}
+      {defaultForm.toolId === "setting" && (
+        <GroupSetting
+          close={close}
+          conversationInfo={defaultForm.conversationInfo}
+        />
+      )}
+      {defaultForm.toolId === "announcement" && (
+        <GroupAccountecmentSetting
+          close={close}
+          conversationInfo={defaultForm.conversationInfo}
+        />
+      )}
     </Drawer>
   );
 };
