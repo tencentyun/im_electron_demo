@@ -1,7 +1,6 @@
 import { Input } from "@tencent/tea-component";
 import React, { useEffect, useState } from "react";
 import { modifyGroupInfo } from "../api";
-import { memberRoleMap } from "./config";
 import { EditIcon } from "./EditIcon";
 import "./group-introduction.scss";
 

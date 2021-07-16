@@ -69,9 +69,11 @@ export const GroupSetting = (props: {
       <GroupMember
         userList={memberList}
         onRefresh={retry}
+        userId={userId}
         groupId={groupDetail.group_detial_info_group_id}
         groupType={groupDetail.group_detial_info_group_type}
         groupAddOption={groupDetail.group_detial_info_add_option}
+        userIdentity={currentUserSetting.group_member_info_member_role}
       />
       <Divider />
       <GroupFlagMessage

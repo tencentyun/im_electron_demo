@@ -8,17 +8,33 @@ import {
 } from "./MemberListDrawer";
 import {
   AddMemberRecordsType,
-  GroupAddMemberDialog,
-} from "./GroupAddMemberDialog";
+  AddGroupMemberDialog,
+} from "./AddGroupMemberDialog";
+import {
+  DeleteGroupMemberDialog,
+  DeleteMemberRecordsType,
+} from "./DeleteGroupMember";
 
 export const GroupMember = (props: {
-  userList: { user_profile_face_url: string }[];
+  userList: { user_profile_face_url: string; user_profile_nick_name: string }[];
   onRefresh: () => Promise<any>;
+  userIdentity: number;
+  userId: string;
   groupId: string;
   groupType: number;
   groupAddOption: number;
 }): JSX.Element => {
-  const { userList, groupId, groupType, groupAddOption, onRefresh } = props;
+  const {
+    userList,
+    groupId,
+    groupType,
+    groupAddOption,
+    userId,
+    userIdentity,
+    onRefresh,
+  } = props;
+
+  console.log("props", props);
 
   const popupContainer = document.getElementById("messageInfo");
 
@@ -26,8 +42,21 @@ export const GroupMember = (props: {
 
   const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
 
+  const deleteMemberDialogRef = useDialogRef<DeleteMemberRecordsType>();
+
   // 可拉人进群条件为 群类型不为直播群且当前群没有设置禁止加入
   const canInviteMember = [0, 1, 2].includes(groupType) && groupAddOption !== 0;
+
+  /**
+   * 对于私有群：只有创建者可删除群组成员。
+   * 对于公开群和聊天室：只有管理员和群主可以踢人。
+   * 对于直播大群：不能踢人
+   * 用户身份类型 memberRoleMap
+   * 群类型  groupTypeMap
+   */
+  const canDeleteMember =
+    (groupType === 1 && userIdentity === 3) ||
+    ([0, 2].includes(groupType) && [2, 3].includes(userIdentity));
 
   return (
     <>
@@ -57,14 +86,28 @@ export const GroupMember = (props: {
               加
             </span>
           )}
-          <span className="group-member--delete">减</span>
+          {canDeleteMember && (
+            <span
+              className="group-member--delete"
+              onClick={() =>
+                deleteMemberDialogRef.current.open({ groupId, userList })
+              }
+            >
+              减
+            </span>
+          )}
         </div>
       </div>
+
       <GroupMemberListDrawer
         popupContainer={popupContainer}
         dialogRef={dialogRef}
       />
-      <GroupAddMemberDialog
+      <DeleteGroupMemberDialog
+        dialogRef={deleteMemberDialogRef}
+        onSuccess={() => onRefresh()}
+      />
+      <AddGroupMemberDialog
         dialogRef={addMemberDialogRef}
         onSuccess={() => onRefresh()}
       />
