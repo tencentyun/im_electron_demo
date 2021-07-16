@@ -38,7 +38,7 @@ export const MessageResult = (props) => {
                                 const { message_elem_array } = messageArray[0];
         
                                 return (
-                                    <div className={`message-result__content-item ${activedItem.conv_id === conv_id ? 'is-active' : ''}`} onClick={() => handleItemClick(item)}>
+                                    <div  key={conv_id} className={`message-result__content-item ${activedItem.conv_id === conv_id ? 'is-active' : ''}`} onClick={() => handleItemClick(item)}>
                                         <Avatar url={faceUrl}></Avatar>
                                         <div className="message-result__content-item--text">
                                             <span className="message-result__content-item--nick-name">{nickName}</span>
@@ -52,10 +52,10 @@ export const MessageResult = (props) => {
                     <div className="message-result__content--message-list ">
                         <div className="message-result__content--message-list-content customize-scroll-style">
                             {
-                            activedItem.messageArray.map(item => {
+                            activedItem.messageArray.map((item, index) => {
                                 const { message_elem_array, message_sender_profile: { user_profile_face_url, user_profile_nick_name} } = item as State.message;
                                 return (
-                                    <div className="message-result__content-item" >
+                                    <div key={index} className="message-result__content-item" >
                                             <Avatar url={user_profile_face_url}></Avatar>
                                             <div className="message-result__content-item--text">
                                                 <span className="message-result__content-item--nick-name">{user_profile_nick_name}</span>

@@ -47,6 +47,9 @@
         display: flex;
         padding: 13px 12px;
         width: 232px;
+        &:hover {
+            background-color: #E8F2FF;
+        }
         &--profile {
             position: relative;
             width: 36px;
@@ -126,6 +129,9 @@
 
         &.is-active {
             background: #E8F2FF;
+        }
+        &.is-pinned {
+            background: #d1d1d1;
         }
     }
 }

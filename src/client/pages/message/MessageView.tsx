@@ -22,6 +22,7 @@ import { GroupTipsElemItem } from './messageElemTyps/grouptipsElem';
 import { VideoElem } from './messageElemTyps/videoElem';
 import { MergeElem } from './messageElemTyps/mergeElem';
 import { ForwardPopup } from './components/forwardPopup';
+import formateTime from '../../utils/timeFormat';
 import { Icon } from '@tencent/tea-component';
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
@@ -264,6 +265,11 @@ export const MessageView = (props: Props): JSX.Element => {
                 messageList.map(item => {
                     if(!item){
                         return null
+                    }
+                    if (item.isTimeDivider) {
+                        return (
+                            <div key={item.time} className="message-view__item--time-divider">{formateTime(item.time * 1000, true)}</div>
+                        )
                     }
                     const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;

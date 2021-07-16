@@ -1,14 +1,14 @@
 import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
 import { Modal } from "@tencent/tea-component";
 import React from "react";
-import { GroupAddMemberForm, FormValue } from "./GroupAddMemberForm";
+import { AddGroupMemberForm, FormValue } from "./AddGroupMemberForm";
 import { inviteMemberGroup } from "../api";
 
 export interface AddMemberRecordsType {
   groupId: string;
 }
 
-export const GroupAddMemberDialog = (props: {
+export const AddGroupMemberDialog = (props: {
   onSuccess?: () => void;
   dialogRef: DialogRef<AddMemberRecordsType>;
 }): JSX.Element => {
@@ -33,7 +33,7 @@ export const GroupAddMemberDialog = (props: {
   return (
     <Modal className="dialog" disableEscape visible={visible} onClose={onClose}>
       <Modal.Body>
-        <GroupAddMemberForm onSubmit={onOk} onSuccess={success} />
+        <AddGroupMemberForm onSubmit={onOk} onSuccess={success} />
       </Modal.Body>
     </Modal>
   );

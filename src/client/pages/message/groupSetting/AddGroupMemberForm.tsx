@@ -21,7 +21,7 @@ interface Props {
   onClose?: () => void;
 }
 
-export const GroupAddMemberForm = (props: Props): JSX.Element => {
+export const AddGroupMemberForm = (props: Props): JSX.Element => {
   const { onSubmit, onSuccess, onError } = props;
 
   // eslint-disable-next-line
