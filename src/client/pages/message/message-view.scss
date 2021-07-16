@@ -149,6 +149,20 @@
                 color: #000000;
             }
         }
+        &--icon {
+            margin: 12px 10px;
+        }
+        &--tea-icon {
+            margin-right: 5px;
+        }
+        &--icon-normal {
+            margin: 12px 10px;
+            box-sizing: border-box;
+            width: 16px;
+            height: 16px;
+            border-radius: 7px;
+            border: 2px solid #ddd;
+        }
     }
 
     .right-menu {
