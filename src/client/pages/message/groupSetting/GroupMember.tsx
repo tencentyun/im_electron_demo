@@ -16,7 +16,11 @@ import {
 } from "./DeleteGroupMember";
 
 export const GroupMember = (props: {
-  userList: { user_profile_face_url: string; user_profile_nick_name: string }[];
+  userList: {
+    user_profile_face_url: string;
+    user_profile_nick_name: string;
+    group_member_info_member_role: number;
+  }[];
   onRefresh: () => Promise<any>;
   userIdentity: number;
   userId: string;
@@ -34,8 +38,6 @@ export const GroupMember = (props: {
     onRefresh,
   } = props;
 
-  console.log("props", props);
-
   const popupContainer = document.getElementById("messageInfo");
 
   const dialogRef = useDialogRef<GroupMemberListDrawerRecordsType>();
@@ -43,6 +45,10 @@ export const GroupMember = (props: {
   const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
 
   const deleteMemberDialogRef = useDialogRef<DeleteMemberRecordsType>();
+
+  const memberList = userList?.filter(
+    (item) => ![2, 3].includes(item.group_member_info_member_role)
+  );
 
   // 可拉人进群条件为 群类型不为直播群且当前群没有设置禁止加入
   const canInviteMember = [0, 1, 2].includes(groupType) && groupAddOption !== 0;
@@ -83,17 +89,15 @@ export const GroupMember = (props: {
               className="group-member--add"
               onClick={() => addMemberDialogRef.current.open({ groupId })}
             >
-              加
             </span>
           )}
           {canDeleteMember && (
             <span
               className="group-member--delete"
               onClick={() =>
-                deleteMemberDialogRef.current.open({ groupId, userList })
+                deleteMemberDialogRef.current.open({ groupId, userList: memberList })
               }
             >
-              减
             </span>
           )}
         </div>
