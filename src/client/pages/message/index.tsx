@@ -193,11 +193,11 @@ export const Message = (): JSX.Element => {
                 <div className="conversion-list">
                     {
                         conversationList.map((item) => {
-                            const { conv_profile, conv_id, conv_last_msg, conv_unread_num,conv_type } = item;
+                            const { conv_profile, conv_id, conv_last_msg, conv_unread_num,conv_type,conv_is_pinned } = item;
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
                             return (
-                                <div className={`conversion-list__item ${conv_id === currentSelectedConversation.conv_id ? 'is-active' : ''}`} key={conv_id} onClick={() => handleConvListClick(item)} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                <div className={`conversion-list__item ${conv_id === currentSelectedConversation.conv_id ? 'is-active' : ''} ${conv_is_pinned ? 'is-pinned':''}`} key={conv_id} onClick={() => handleConvListClick(item)} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                     <div className="conversion-list__item--profile">
                                         {
                                             conv_unread_num > 0 ? <div className="conversion-list__item--profile___unread">{getDisplayUnread(conv_unread_num)}</div> : null

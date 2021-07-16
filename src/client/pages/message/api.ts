@@ -153,6 +153,8 @@ export const addProfileForConversition = async (conversitionList) => {
  * @returns
  */
 export const TIMConvPinConversation = async (convId, convType, isPinned) => {
+  console.log(isPinned,'ispinner')
+
   const res = await timRenderInstance.TIMConvPinConversation({
     convId,
     convType,

@@ -92,7 +92,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "file-loader": "^6.2.0",
     "final-form": "^4.20.2",
-    "im_electron_sdk": "^1.0.21",
+    "im_electron_sdk": "^1.0.23",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
     "react": "^17.0.2",
