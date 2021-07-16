@@ -220,6 +220,7 @@ export const sendMsg = async ({
   convType,
   messageElementArray,
   userId,
+  userData,
   messageAtArray,
 }: SendMsgParams<
   TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg
