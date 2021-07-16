@@ -534,8 +534,8 @@ export const deleteGroupMember = async (params: {
   console.log('params', params);
   const { data } = await timRenderInstance.TIMGroupDeleteMember({
     params: {
-      group_invite_member_param_group_id: params.groupId,
-      group_invite_member_param_identifier_array: params.userIdList,
+      group_delete_member_param_group_id: params.groupId,
+      group_delete_member_param_identifier_array: params.userIdList,
     }
   });
   console.log('data', data);
