@@ -64,12 +64,41 @@ const getConvType = (userItem): number => {
     if(!userItem) return 1
     return userItem.friend_profile_identifier ? 1 : 2
 }
+const getMergeMessageTitle = (message): string => {
+    return message.message_conv_type === 1 ? `${message.message_sender}和${message.message_conv_id}的聊天记录` : "群聊"
+}
+const getMergeMessageAbstactArray = (messageList): string[] => {
+    const ret: string[] = []
+    messageList.forEach(message => {
+        message.message_elem_array.forEach(elem => {
+            const displayTextMsg = elem.text_elem_content
+            const sender = message.message_sender
+            const displayLastMsg = {
+                '0': displayTextMsg,
+                '1': '[图片]',
+                '2': '[声音]',
+                '3': '[自定义消息]',
+                '4': '[文件消息]',
+                '5': '[群组系统消息]',
+                '6': '[表情消息]',
+                '7': '[位置消息]',
+                '8': '[群组系统通知]',
+                '9': '[视频消息]',
+                '10': '[关系]',
+                '11': '[资料]',
+                '12': '[合并消息]',
+            }[elem.elem_type];
+            ret.push(`${sender}: ${displayLastMsg}`)
+        })
+    })
+    return ret;
+}
 
 
 export const MessageView = (props: Props): JSX.Element => {
     const { messageList } = props;
     const [ isTransimitPopup, setTransimitPopup ] = useState(false);
-    const [ isForwardTypePopup, setForwardTypePopup ] = useState(true);
+    // const [ isForwardTypePopup, setForwardTypePopup ] = useState(true);
     const [ isMultiSelect, setMultiSelect ] = useState(false);
     const [ forwardType, setForwardType ] = useState("divide");
     const [ seletedMessage, setSeletedMessage ] = useState([]);
@@ -134,8 +163,8 @@ export const MessageView = (props: Props): JSX.Element => {
                     convType: getConvType(user),
                     messageElementArray: [{
                         elem_type: 12,
-                        merge_elem_title: "合并消息",
-                        merge_elem_abstract_array: ["合并消息1"],
+                        merge_elem_title: getMergeMessageTitle(seletedMessage[0]),
+                        merge_elem_abstract_array: getMergeMessageAbstactArray(seletedMessage),
                         merge_elem_compatible_text: "你的版本不支持此消息",
                         merge_elem_message_array: seletedMessage
                     }],
@@ -148,7 +177,6 @@ export const MessageView = (props: Props): JSX.Element => {
                     }))
                 }
             }
-            
         })
         setTransimitPopup(false)
         setSeletedMessage([])
@@ -156,7 +184,7 @@ export const MessageView = (props: Props): JSX.Element => {
     }
     const handleForwardTypePopup = (type) => {
         if(!seletedMessage.length) return false;
-        setForwardTypePopup(false)
+        // setForwardTypePopup(false)
         setTransimitPopup(true)
         setForwardType(type)
     }
