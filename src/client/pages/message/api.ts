@@ -215,11 +215,10 @@ export const markMessageAsRead = async (
   return { code, desc, json_params };
 };
 
-const sendMsg = async ({
+export const sendMsg = async ({
   convId,
   convType,
   messageElementArray,
-  userData,
   userId,
   messageAtArray,
 }: SendMsgParams<

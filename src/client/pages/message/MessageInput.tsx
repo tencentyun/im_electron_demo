@@ -44,7 +44,6 @@ export const MessageInput = (props: Props) : JSX.Element => {
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ isRecordPopup, setRecordPopup ] = useState(false);
     const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
-    const [ atList, setAtList ] = useState([]);
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
@@ -188,10 +187,13 @@ export const MessageInput = (props: Props) : JSX.Element => {
     }
 
     const handleFeatureClick = (featureId) => {
+        console.log(featureId)
         switch(featureId) {
             case "face":
                 handleSendFaceMessage()
+                break;
             case "at":
+                console.log("at")
                 if(convType === 2) handleSendAtMessage()
                 break;
             case "photo":

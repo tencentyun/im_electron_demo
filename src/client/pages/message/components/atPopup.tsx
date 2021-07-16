@@ -1,5 +1,6 @@
 import { List } from "@tencent/tea-component"
 import React, { FC, useEffect, useRef, useState } from "react"
+import { Avatar } from "../../../components/avatar/avatar"
 import timRenderInstance from "../../../utils/timRenderInstance"
 import './atPopup.scss'
 
@@ -48,6 +49,10 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element =
                 {
                     list.map((v, i) => 
                         <List.Item key={i} onClick={() => callback(v.group_member_info_identifier)}>    
+                            <Avatar
+                                size="mini"
+                                userID = { v.group_member_info_identifier }
+                            />
                             {v.group_member_info_identifier}
                         </List.Item>
                     )
