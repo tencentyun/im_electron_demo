@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Avatar } from '../../components/avatar/avatar';
-import { revokeMsg, deleteMsg } from './api';
+import { revokeMsg, deleteMsg, sendMsg } from './api';
 import {
     Menu,
     Item,
@@ -14,7 +14,7 @@ import {
 import './message-view.scss';
 import { TextElemItem } from './messageElemTyps/textElemItem';
 import { PicElemItem } from './messageElemTyps/picElemItem';
-import { markeMessageAsRevoke, deleteMessage } from '../../store/actions/message';
+import { markeMessageAsRevoke, deleteMessage, reciMessage } from '../../store/actions/message';
 import { CustomElem } from './messageElemTyps/customElem';
 import { VoiceElem } from './messageElemTyps/voiceElem';
 import { FileElem } from './messageElemTyps/fileElem';
@@ -23,6 +23,7 @@ import { VideoElem } from './messageElemTyps/videoElem';
 import { MergeElem } from './messageElemTyps/mergeElem';
 import { ForwardPopup } from './components/forwardPopup';
 import formateTime from '../../utils/timeFormat';
+import { Icon } from '@tencent/tea-component';
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -51,11 +52,20 @@ const RIGHT_CLICK_MENU_LIST = [{
     text: '多选'
 }];
 
+const getId = (item) => {
+    if(!item) return false
+    return item.message_msg_id
+}
 
 
 export const MessageView = (props: Props): JSX.Element => {
     const { messageList } = props;
+    const [ isTransimitPopup, setTransimitPopup ] = useState(false);
+    const [ isForwardTypePopup, setForwardTypePopup ] = useState(true);
+    const [ isMultiSelect, setMultiSelect ] = useState(false);
+    const [ seletedMessage, setSeletedMessage ] = useState([]);
     const dispatch = useDispatch();
+    let forwardType: string;
 
     const handleRevokeMsg = async (params) => {
         const { convId, msgId, convType } = params;
@@ -84,6 +94,54 @@ export const MessageView = (props: Props): JSX.Element => {
         }));
     };
 
+    const handleTransimitMsg = (params) => {
+        const { convId, msgId, convType, message } = params;
+        setTransimitPopup(true)
+        setSeletedMessage([message])
+    }
+
+    const handleForwardPopupSuccess = (userList) => {
+        setTransimitPopup(false)
+        userList.forEach(async (user, k) => {
+            const userId = "lexuslin";
+            const { data: { code, json_params } } = await sendMsg({
+                convId: "lexuslin3",
+                convType: 1,
+                messageElementArray: seletedMessage[0].message_elem_array,
+                userId,
+                messageAtArray: []
+            });
+            if(code === 0) {
+                dispatch(reciMessage({
+                    convId: user.conv_id,
+                    messages: [JSON.parse(json_params)]
+                }))
+            }
+        })
+        
+    }
+
+    const handleForwardTypePopup = (type) => {
+        setForwardTypePopup(false)
+        setTransimitPopup(true)
+        forwardType = type
+    }
+
+    const handleMultiSelectMsg = (params) => {
+        setMultiSelect(true)
+    }
+    const handleSelectMessage = (item) => {
+        if(seletedMessage.findIndex(v => getId(v) === getId(item)) > -1 ) {
+            const list = seletedMessage.filter(v => getId(v) !== getId(item))
+            setSeletedMessage(list)
+            console.log("remove:", getId(item))
+        } else {
+            seletedMessage.push(item)
+            setSeletedMessage(Array.from(seletedMessage))
+            console.log("add:", getId(item))
+        }
+    }
+
     const handlRightClick = (e, id) => {
         const { data } = e.props;
         switch (id) {
@@ -92,6 +150,15 @@ export const MessageView = (props: Props): JSX.Element => {
                 break;
             case 'delete':
                 handleDeleteMsg(data);
+                break;
+            case 'transimit':
+                handleTransimitMsg(data);
+                break;
+            case 'reply':
+                handleDeleteMsg(data);
+                break;
+            case 'multiSelect':
+                handleMultiSelectMsg(data);
                 break;
         }
     }
@@ -105,14 +172,14 @@ export const MessageView = (props: Props): JSX.Element => {
                 data: {
                     convId: message.message_conv_id,
                     msgId: message.message_msg_id,
-                    convType: message.message_conv_type
+                    convType: message.message_conv_type,
+                    message: message
                 }
             }
         })
     }
 
     const displayDiffMessage = (element) => {
-      
         const { elem_type, ...res } = element;
         let resp
         switch (elem_type) {
@@ -185,7 +252,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         { `${revokedPerson} 撤回了一条消息` }
                                     </div>
                                 ) :
-                                <div className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
+                                <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
                                     <div className="message-view__item--avatar face-url">
                                         <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                                     </div>
@@ -211,7 +278,6 @@ export const MessageView = (props: Props): JSX.Element => {
                 id={MESSAGE_MENU_ID}
                 theme={theme.light}
                 animation={animation.fade}
-
             >
                 {
                     RIGHT_CLICK_MENU_LIST.map(({ id, text }) => {
@@ -224,7 +290,19 @@ export const MessageView = (props: Props): JSX.Element => {
                 }
             </Menu>
             {
-                // <ForwardPopup callback={() => {}} conv_id={"11"} conv_type={1} />
+                isTransimitPopup && <ForwardPopup onSuccess={handleForwardPopupSuccess} onClose={() => {setTransimitPopup(false)}}/>
+            }
+            {
+                // isForwardTypePopup && 
+                // <div className="forward-type-popup">
+                //     <Icon type="close" className="forward-type-popup__close" onClick={() => setForwardTypePopup(false)} />
+                //     <div className="forward-type-popup__combine" onClick={() => handleForwardTypePopup("combine")}>
+                //         <p>合并转发</p>
+                //     </div>
+                //     <div className="forward-type-popup__divide" onClick={() => handleForwardTypePopup("divide")}>
+                //         <p>逐条转发</p>
+                //     </div>
+                // </div>   
             }
         </div>
     )

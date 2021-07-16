@@ -153,6 +153,8 @@ export const addProfileForConversition = async (conversitionList) => {
  * @returns
  */
 export const TIMConvPinConversation = async (convId, convType, isPinned) => {
+  console.log(isPinned,'ispinner')
+
   const res = await timRenderInstance.TIMConvPinConversation({
     convId,
     convType,
@@ -215,12 +217,12 @@ export const markMessageAsRead = async (
   return { code, desc, json_params };
 };
 
-const sendMsg = async ({
+export const sendMsg = async ({
   convId,
   convType,
   messageElementArray,
-  userData,
   userId,
+  userData,
   messageAtArray,
 }: SendMsgParams<
   TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg
@@ -348,8 +350,8 @@ export const searchGroup = async (params: {
     },
   });
   console.log("searchGroup", JSON.parse(json_param || "[]"));
-  return JSON.parse(json_param || "[]")
-}
+  return JSON.parse(json_param || "[]");
+};
 
 export const searchFriends = async (params: {
   keyWords: string;
@@ -364,8 +366,8 @@ export const searchFriends = async (params: {
     user_data: "1234",
   });
   console.log("searchFriends", JSON.parse(json_params || "[]"));
-  return JSON.parse(json_params || "[]")
-}
+  return JSON.parse(json_params || "[]");
+};
 
 export const getGroupMemberList = async (params: {
   groupId: string;
@@ -407,17 +409,17 @@ export const getGroupMemberInfoList = async (params: {
 };
 
 const modifyFlagMap = {
-  group_modify_info_param_group_name: 1,
-  group_modify_info_param_notification: 2,
-  group_modify_info_param_introduction: 4,
-  group_modify_info_param_face_url: 8,
-  group_modify_info_param_add_option: 16,
-  group_modify_info_param_max_member_num: 32,
-  group_modify_info_param_visible: 64,
-  group_modify_info_param_searchable: 128,
-  group_modify_info_param_is_shutup_all: 256,
-  group_modify_info_param_owner: -2147483648,
-  group_modify_info_param_custom_info: 512,
+  group_modify_info_param_group_name: 0x01,
+  group_modify_info_param_notification: 0x01 << 1,
+  group_modify_info_param_introduction: 0x01 << 2,
+  group_modify_info_param_face_url: 0x01 << 3,
+  group_modify_info_param_add_option: 0x01 << 4,
+  group_modify_info_param_max_member_num: 0x01 << 5,
+  group_modify_info_param_visible: 0x01 << 6,
+  group_modify_info_param_searchable: 0x01 << 7,
+  group_modify_info_param_is_shutup_all: 0x01 << 8,
+  group_modify_info_param_owner: 0x01 << 31,
+  group_modify_info_param_custom_info: 0x01 << 9,
 };
 
 export const modifyGroupInfo = async (params: {
@@ -442,16 +444,18 @@ export const modifyGroupInfo = async (params: {
     (key) => modifyFlagMap[key]
   );
 
-  const fetchList = modifyFlags.map((currentFlag) => timRenderInstance.TIMGroupModifyGroupInfo({
-    params: {
-      group_modify_info_param_group_id: groupId,
-      group_modify_info_param_modify_flag: currentFlag,
-      ...modifyParams,
-    }
-  }));
+  const fetchList = modifyFlags.map((currentFlag) =>
+    timRenderInstance.TIMGroupModifyGroupInfo({
+      params: {
+        group_modify_info_param_group_id: groupId,
+        group_modify_info_param_modify_flag: currentFlag,
+        ...modifyParams,
+      },
+    })
+  );
 
   const results = await Promise.all(fetchList);
-  if (!results.find(item => item?.data?.code !== 0)) {
+  if (!results.find((item) => item?.data?.code !== 0)) {
     return {};
   }
 
@@ -459,11 +463,11 @@ export const modifyGroupInfo = async (params: {
 };
 
 const modifyGroupMemberMap = {
-  group_modify_member_info_msg_flag: 1,
-  group_modify_member_info_member_role: 2,
-  group_modify_member_info_shutup_time: 4,
-  group_modify_member_info_name_card: 8,
-  group_modify_member_info_custom_info: 16,
+  group_modify_member_info_msg_flag: 0x01,
+  group_modify_member_info_member_role: 0x01 << 1,
+  group_modify_member_info_shutup_time: 0x01 << 2,
+  group_modify_member_info_name_card: 0x01 << 3,
+  group_modify_member_info_custom_info: 0x01 << 4,
 };
 
 export const modifyGroupMemberInfo = async (params: {
@@ -502,5 +506,24 @@ export const modifyGroupMemberInfo = async (params: {
     return {};
   }
 
+  throw new Error(desc);
+};
+
+export const deleteGroupMember = async (params: {
+  groupId: string;
+  userIdList: string[];
+}): Promise<any> => {
+  console.log('params', params);
+  const { data } = await timRenderInstance.TIMGroupDeleteMember({
+    params: {
+      group_invite_member_param_group_id: params.groupId,
+      group_invite_member_param_identifier_array: params.userIdList,
+    }
+  });
+  console.log('data', data);
+  const { code, desc } = data;
+  if (code === 0) {
+    return {};
+  }
   throw new Error(desc);
 };

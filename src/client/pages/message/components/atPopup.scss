@@ -7,14 +7,24 @@
     bottom: 34px;
     width: 351px;
     padding: 0;
+    animation:animate .5s;
+    box-shadow:  0 1px 8px rgba(0,32,96,.1)
 }
 .at-popup li {
     height: 40px;
     line-height: 40px;
     padding: 0 12px;
+    display: flex;
+    align-items: center;
+}
+.at-popup .avatar {
+    margin-right: 8px;
 }
 .at-popup li:hover {
     background-color: #E8F2FF;
     cursor: pointer;
 }
-
+@keyframes animate {
+    0%   {opacity:0;}
+	100%   {opacity:1;}
+}

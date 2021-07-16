@@ -50,12 +50,11 @@ const FEATURE_LIST = {
 }
 export const MessageInput = (props: Props): JSX.Element => {
     const { convId, convType } = props;
-    const [activeFeature, setActiveFeature] = useState('');
-    const [isAtPopup, setAtPopup] = useState(false);
-    const [isEmojiPopup, setEmojiPopup] = useState(false);
-    const [isRecordPopup, setRecordPopup] = useState(false);
-    const [editorState, setEditorState] = useState<EditorState>(BraftEditor.createEditorState(null))
-    const [atList, setAtList] = useState([]);
+    const [ activeFeature, setActiveFeature ] = useState('');
+    const [ isAtPopup, setAtPopup ] = useState(false);
+    const [ isEmojiPopup, setEmojiPopup ] = useState(false);
+    const [ isRecordPopup, setRecordPopup ] = useState(false);
+    const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
@@ -202,6 +201,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         switch (featureId) {
             case "face":
                 handleSendFaceMessage()
+                break;
             case "at":
                 if (convType === 2) handleSendAtMessage()
                 break;
