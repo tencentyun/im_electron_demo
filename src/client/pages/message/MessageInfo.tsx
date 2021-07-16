@@ -11,6 +11,7 @@ import { addMessage } from "../../store/actions/message";
 
 import { AddUserPopover } from "./AddUserPopover";
 import { useDialogRef } from "../../utils/react-use/useDialog";
+import { addTimeDivider } from "../../utils/addTimeDivider";
 import {
   GroupSettingDrawer,
   GroupSettingRecordsType,
@@ -99,9 +100,10 @@ export const MessageInfo = (
   useEffect(() => {
     const getMessageList = async () => {
       const messageResponse = await getMsgList(conv_id, conv_type);
+      const addTimeDividerResponse = addTimeDivider(messageResponse.reverse());
       const payload = {
         convId: conv_id,
-        messages: messageResponse,
+        messages: addTimeDividerResponse.reverse(),
       };
       dispatch(addMessage(payload));
     };

@@ -47,6 +47,8 @@ declare namespace State {
         message_server_time: number
         message_status: number
         message_unique_id: number
+        isTimeDivider?: boolean
+        time?: number
     }
     export type userProfileCustom  = {
         user_profile_custom_string_info_key: string
