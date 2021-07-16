@@ -1,5 +1,5 @@
 import React from 'react';
-import { Slider } from '@tencent/tea-component';
+import { Slider } from 'tea-component';
 
 export const CommonSetting = () => {
     const marks = [{ value: 10 }, { value: 12 }, { value: 14 }];

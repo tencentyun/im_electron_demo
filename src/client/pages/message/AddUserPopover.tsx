@@ -1,4 +1,4 @@
-import { Input, Popover } from "@tencent/tea-component";
+import { Input, Popover } from "tea-component";
 import React, { useState } from "react";
 import "./add-user-popover.scss";
 import { inviteMemberGroup } from "./api";

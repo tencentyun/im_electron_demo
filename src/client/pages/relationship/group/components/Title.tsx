@@ -1,4 +1,4 @@
-import { Button } from "@tencent/tea-component";
+import { Button } from "tea-component";
 import React from "react";
 import { useDialogRef } from "../../../../utils/react-use/useDialog";
 import { GroupList } from "../api";

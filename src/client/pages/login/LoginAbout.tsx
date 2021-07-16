@@ -1,6 +1,6 @@
 import React from 'react';
 import { shell } from 'electron';
-import { Button } from '@tencent/tea-component';
+import { Button } from 'tea-component';
 
 import './login-about.scss';
 import loginBg from '../../assets/icon/login-bg.png';

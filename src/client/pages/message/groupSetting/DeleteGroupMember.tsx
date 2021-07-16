@@ -1,5 +1,5 @@
 import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
-import { Button, Icon, Input, Modal } from "@tencent/tea-component";
+import { Button, Icon, Input, Modal } from "tea-component";
 import React, { FC, useState , useEffect } from "react";
 import { debounce } from "lodash";
 import { Avatar } from "../../../components/avatar/avatar";

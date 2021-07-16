@@ -1,4 +1,4 @@
-import { Button, TextArea } from "@tencent/tea-component";
+import { Button, TextArea } from "tea-component";
 import React, { useState , useEffect } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";

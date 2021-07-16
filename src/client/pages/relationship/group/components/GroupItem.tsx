@@ -1,4 +1,4 @@
-import { Button, PopConfirm } from "@tencent/tea-component";
+import { Button, PopConfirm } from "tea-component";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMessageDirect } from "../../../../utils/react-use/useDirectMsgPage";

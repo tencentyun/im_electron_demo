@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Modal } from '@tencent/tea-component';
+import { Modal } from 'tea-component';
 import { useDialog } from "../../../utils/react-use/useDialog";
 import { SearchMessage } from './SearchMessage';
 

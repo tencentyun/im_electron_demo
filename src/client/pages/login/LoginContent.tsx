@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Tabs, TabPanel, Input, Button, Checkbox } from "@tencent/tea-component";
+import { Tabs, TabPanel, Input, Button, Checkbox } from "tea-component";
 import { DEFAULT_USERID, DEFAULT_USER_SIG} from '../../constants';
 import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';

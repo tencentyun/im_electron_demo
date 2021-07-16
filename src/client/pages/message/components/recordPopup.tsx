@@ -1,4 +1,4 @@
-import {  Button } from "@tencent/tea-component"
+import {  Button } from "tea-component"
 import React, { FC, useEffect, useRef } from "react"
 import './recordPopup.scss'
 import Recorder from 'js-audio-recorder'

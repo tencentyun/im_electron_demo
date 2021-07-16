@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addMessage } from '../../store/actions/message';
 
-import { TextArea, Button, message, Modal } from '@tencent/tea-component';
+import { TextArea, Button, message, Modal } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
 import { reciMessage } from '../../store/actions/message'
 import { emojiMap, emojiName, emojiUrl } from './emoji-map'
