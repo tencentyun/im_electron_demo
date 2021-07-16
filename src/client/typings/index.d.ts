@@ -106,6 +106,13 @@ declare namespace State {
         conv_type: number
         conv_unread_num: number
     }
+
+    export type MessageReceipt = {
+        msg_receipt_conv_id: string,
+        msg_receipt_conv_id: number,
+        msg_receipt_conv_id: string
+    }
+    
     export type userInfo = {
         userId: string,
         faceUrl: string,

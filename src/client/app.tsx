@@ -17,9 +17,9 @@ import { ToolsBar } from './components/toolsBar/toolsBar';
 
 import './app.scss'
 import initListeners from './imLiseners';
-import { setUnreadCount, updateConversationList } from './store/actions/conversation';
+import { setUnreadCount, updateConversationList, markConvLastMsgIsReaded } from './store/actions/conversation';
 import { addProfileForConversition } from './pages/message/api';
-import { reciMessage, markeMessageAsRevoke } from './store/actions/message';
+import { reciMessage, markeMessageAsRevoke, markMessageAsReaded } from './store/actions/message';
 // eslint-disable-next-line import/no-unresolved
 let isInited = false
 
@@ -68,6 +68,9 @@ const App = () => {
                              */
                             case "TIMSetMsgRevokeCallback":
                                 _handleMessageRevoked(data);
+                                break;
+                            case "TIMSetMsgReadedReceiptCallback":
+                                _handleMessageReaded(data);
                                 break;
                         }
                     });
@@ -146,6 +149,15 @@ const App = () => {
                 messageId
             }))
         });
+    }
+
+    const _handleMessageReaded = (data) => {
+        const c2cDdata = data.filter(item => item.msg_receipt_conv_type === 1);
+        const convIds = c2cDdata.map(item => item.msg_receipt_conv_id);
+        if(c2cDdata.length > 0) {
+            dispatch(markConvLastMsgIsReaded(c2cDdata));
+            dispatch(markMessageAsReaded({convIds}));
+        }
     }
 
     useEffect(()=>{

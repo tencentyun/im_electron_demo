@@ -241,9 +241,10 @@ export const MessageView = (props: Props): JSX.Element => {
                             <div key={item.time} className="message-view__item--time-divider">{formateTime(item.time * 1000, true)}</div>
                         )
                     }
-                    const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status } = item;
+                    const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status, message_is_peer_read, message_conv_type } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                     const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
+                    const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self;
                     return (
                         <React.Fragment key={message_msg_id}>
                             {
@@ -260,12 +261,16 @@ export const MessageView = (props: Props): JSX.Element => {
                                         message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                             return (
                                                 <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                    
                                                     {
                                                         displayDiffMessage(elment)
                                                     }
                                                 </div>
                                             )
                                         })
+                                    }
+                                    {
+                                        shouldShowPerReadIcon && <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span>
                                     }
                                 </div>
                             }

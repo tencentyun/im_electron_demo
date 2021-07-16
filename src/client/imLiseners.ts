@@ -47,8 +47,11 @@ export default function initListeners(callback:InitListenersCallback){
     * 发送方发送消息，接收方调用接口[TIMMsgReportReaded]()上报该消息已读，发送方ImSDK会通过此接口设置的回调抛出。
     */
     timRenderInstance.TIMSetMsgReadedReceiptCallback({
-        callback:()=>{
-
+        callback:(...args)=>{
+            callback({
+                type: 'TIMSetMsgReadedReceiptCallback',
+                data: JSON.parse(args[0][0])
+            })
         },
         user_data: "test"
     })

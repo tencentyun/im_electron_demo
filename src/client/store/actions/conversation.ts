@@ -2,6 +2,7 @@ export const SET_UNREAD_COUNT = 'SET_UNREAD_COUNT';
 export const UPDATE_CONVERSATIONLIST = 'UPDATE_CONVERSATIONLIST'
 export const UPDATE_CURRENT_SELECTED_CONVERSATION = 'UPDATE_CURRENT_SELECTED_CONVERSATION'
 export const REPLACE_CONV_LIST = 'REPLACE_CONV_LIST'
+export const MARK_CONV_LAST_MSG_IS_READED = 'MARK_CONV_LAST_MSG_IS_READED'
 
 export const setUnreadCount = (payload: number) : State.actcionType<number> => ({
     type: SET_UNREAD_COUNT,
@@ -20,5 +21,10 @@ export const updateCurrentSelectedConversation = (payload :State.conversationIte
 
 export const replaceConversaionList = (payload:Array<State.conversationItem>):State.actcionType<Array<State.conversationItem>> => ({
     type: REPLACE_CONV_LIST,
+    payload
+})
+
+export const markConvLastMsgIsReaded = (payload: Array<State.MessageReceipt>) : State.actcionType<Array<State.MessageReceipt>> => ({
+    type: MARK_CONV_LAST_MSG_IS_READED,
     payload
 })

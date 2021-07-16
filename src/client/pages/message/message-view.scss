@@ -39,6 +39,7 @@
 
         &.is-self {
             flex-direction: row-reverse;
+            display: flex;
 
             .face-url {
                 margin-right: 0;
@@ -157,6 +158,20 @@
                 font-weight: 400;
                 color: #000000;
             }
+        }
+
+        &--element-icon {
+            width: 16px;
+            height: 16px;
+            background-image: url('../../assets/icon/not-read.svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            align-self: flex-end;
+            margin-right: 4px;
+        }
+
+        &--element-icon.is-read {
+            background-image: url('../../assets/icon/readed.svg');
         }
     }
 

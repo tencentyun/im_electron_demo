@@ -1,4 +1,4 @@
-import { REPLACE_CONV_LIST, SET_UNREAD_COUNT, UPDATE_CONVERSATIONLIST, UPDATE_CURRENT_SELECTED_CONVERSATION } from '../actions/conversation';
+import { REPLACE_CONV_LIST, SET_UNREAD_COUNT, UPDATE_CONVERSATIONLIST, UPDATE_CURRENT_SELECTED_CONVERSATION, MARK_CONV_LAST_MSG_IS_READED } from '../actions/conversation';
 
 const initState = {
     unreadCount: 0,
@@ -17,7 +17,7 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
               ...state,
               unreadCount: action.payload
           }
-        case UPDATE_CONVERSATIONLIST:
+        case UPDATE_CONVERSATIONLIST: {
             // 会话按是否置顶、时间排序
             const listCopy = [...state.conversationList]
             for(let i = 0;i<action.payload.length;i++){
@@ -37,6 +37,7 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
                 ...state,
                 conversationList: listCopy
             }
+        }
         case UPDATE_CURRENT_SELECTED_CONVERSATION:
             return {
                 ...state,
@@ -47,6 +48,22 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
                 ...state,
                 conversationList: action.payload
             }
+
+        case MARK_CONV_LAST_MSG_IS_READED: {
+            const catchList = [...state.conversationList];
+            const { payload  } = action;
+            const convIds = payload.map((element : State.MessageReceipt)  => element.msg_receipt_conv_id);
+            catchList.forEach(item => {
+                if(convIds.includes(item.conv_id)) {
+                    item.conv_last_msg.message_is_peer_read = true;
+                }
+            })
+
+            return {
+                ...state,
+                conversationList: catchList
+            }
+        }
         default:
           return state;
     }

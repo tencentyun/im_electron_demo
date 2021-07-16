@@ -52,6 +52,20 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
           }
         }
 
+        case ActionTypeEnum.MARKE_MESSAGE_AS_READED: {
+          const { convIds } = payload;
+          convIds.forEach(convId => {
+            const messageList = state.historyMessageList.get(convId);
+            messageList.forEach(item => {
+              if (item.message_is_from_self) {
+                item.message_is_peer_read = true;
+              }
+            });
+            state.historyMessageList.set(convId, messageList);
+          });
+          return state;
+        }
+
         default:
           return state;
         }
