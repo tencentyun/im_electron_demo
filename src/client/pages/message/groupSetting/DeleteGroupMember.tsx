@@ -1,10 +1,11 @@
 import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
 import { Button, Icon, Input, Modal } from "tea-component";
-import React, { FC, useState , useEffect } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { debounce } from "lodash";
 import { Avatar } from "../../../components/avatar/avatar";
 import { deleteGroupMember } from "../api";
 
+import './delete-group-member.scss';
 
 const getId = (item) => {
   if (!item) return false;
@@ -73,17 +74,19 @@ export const DeleteGroupMemberDialog = (props: {
   const [selectedList, setSelectedList] = useState([]);
 
   const filterUserList = (value: string) => {
-    if(!value.length) {
+    if (!value.length) {
       setUserList(defaultForm.userList);
-      return ;
+      return;
     }
-   const copyUserList = [...userList];
-   const list = copyUserList.filter(v => v?.user_profile_nick_name?.includes(value));
-   setUserList(list || []);
-  }
+    const copyUserList = [...userList];
+    const list = copyUserList.filter((v) =>
+      v?.user_profile_nick_name?.includes(value)
+    );
+    setUserList(list || []);
+  };
 
   const setValue = (value) => {
-    filterUserList(value)
+    filterUserList(value);
   };
   const handleInoputOnchange = debounce(setValue, 300);
 
@@ -118,9 +121,8 @@ export const DeleteGroupMemberDialog = (props: {
   };
 
   useEffect(() => {
-    setUserList(defaultForm.userList)
-  }, [defaultForm.userList])
-
+    setUserList(defaultForm.userList);
+  }, [defaultForm.userList]);
 
   return (
     <Modal
@@ -131,7 +133,16 @@ export const DeleteGroupMemberDialog = (props: {
     >
       <Modal.Body>
         <div className="forward-popup__search-list">
-          <div className="forward-popup__search-list__search">
+          <div className="search-box">
+            <Icon type="search" className="search-icon" />
+            <Input
+              type="search"
+              className="search-input"
+              placeholder="查找群成员"
+              onChange={handleInoputOnchange}
+            />
+          </div>
+          {/* <div className="forward-popup__search-list__search">
             <Icon className="forward-popup__search-list__icon" type="search" />
             <Input
               className="forward-popup__search-list__input"
@@ -139,7 +150,7 @@ export const DeleteGroupMemberDialog = (props: {
               placeholder="查找群成员"
               onChange={handleInoputOnchange}
             />
-          </div>
+          </div> */}
           <div className="forward-popup__search-list__list customize-scroll-style">
             {userList.map((v, k) => (
               <UserItem

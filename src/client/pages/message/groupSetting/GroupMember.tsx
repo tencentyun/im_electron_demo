@@ -88,17 +88,20 @@ export const GroupMember = (props: {
             <span
               className="group-member--add"
               onClick={() => addMemberDialogRef.current.open({ groupId })}
-            >
-            </span>
+            ></span>
           )}
-          {canDeleteMember && (
+          {canDeleteMember && memberList.length ? (
             <span
               className="group-member--delete"
               onClick={() =>
-                deleteMemberDialogRef.current.open({ groupId, userList: memberList })
+                deleteMemberDialogRef.current.open({
+                  groupId,
+                  userList: memberList,
+                })
               }
-            >
-            </span>
+            ></span>
+          ) : (
+            <></>
           )}
         </div>
       </div>
