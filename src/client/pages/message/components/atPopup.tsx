@@ -1,4 +1,4 @@
-import { List } from "@tencent/tea-component"
+import { List } from "tea-component"
 import React, { FC, useEffect, useRef, useState } from "react"
 import { Avatar } from "../../../components/avatar/avatar"
 import timRenderInstance from "../../../utils/timRenderInstance"

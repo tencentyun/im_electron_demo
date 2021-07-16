@@ -26,7 +26,7 @@
  * ```
  */
 
-import "@tencent/tea-component/dist/tea.css";
+import "tea-component/dist/tea.css";
 import './client/app';
 
 console.log('👋 This message is being logged by "renderer.js", included via webpack');

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Icon } from '@tencent/tea-component';
+import { Input, Icon } from 'tea-component';
 
 import "./searchBox.scss";
 

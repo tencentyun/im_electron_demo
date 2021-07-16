@@ -1,4 +1,4 @@
-import { Select } from "@tencent/tea-component";
+import { Select } from "tea-component";
 import React, { useEffect, useState } from "react";
 import { modifyGroupMemberInfo } from "../api";
 import "./group-flag-message.scss";

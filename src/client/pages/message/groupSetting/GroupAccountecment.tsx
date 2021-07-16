@@ -1,4 +1,4 @@
-import { Input } from "@tencent/tea-component";
+import { Input } from "tea-component";
 import React, { useEffect, useState } from "react";
 import { modifyGroupInfo } from "../api";
 import { EditIcon } from "./EditIcon";

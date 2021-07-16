@@ -1,4 +1,4 @@
-import { Select, SelectProps } from "@tencent/tea-component";
+import { Select, SelectProps } from "tea-component";
 import React from "react";
 
 export const groupTypeOptions = [

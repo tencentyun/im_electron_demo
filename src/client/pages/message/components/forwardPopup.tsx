@@ -1,4 +1,4 @@
-import { Button, Icon, Input, List, Modal } from "@tencent/tea-component"
+import { Button, Icon, Input, List, Modal } from "tea-component"
 import React, { FC, useEffect, useRef, useState } from "react"
 import { searchFriends, searchGroup } from "../api"
 import { debounce } from 'lodash';

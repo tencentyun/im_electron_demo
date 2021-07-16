@@ -1,5 +1,5 @@
 import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
-import { Modal } from "@tencent/tea-component";
+import { Modal } from "tea-component";
 import React from "react";
 import { modifyGroupInfo } from "../api";
 import { TransferGroupForm, FormValue } from "./TransferGroupForm";

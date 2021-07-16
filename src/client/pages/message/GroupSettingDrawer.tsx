@@ -1,5 +1,5 @@
 import { DialogRef, useDialog } from "../../utils/react-use/useDialog";
-import { Drawer, H3 } from "@tencent/tea-component";
+import { Drawer, H3 } from "tea-component";
 import React from "react";
 
 import "./group-tool-drawer.scss";

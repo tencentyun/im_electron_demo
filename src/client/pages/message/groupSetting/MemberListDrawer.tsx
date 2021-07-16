@@ -1,6 +1,6 @@
 import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
 import { Avatar } from "../../../components/avatar/avatar";
-import { Drawer, H3, Table } from "@tencent/tea-component";
+import { Drawer, H3, Table } from "tea-component";
 import { isWin } from "../../../utils/tools";
 import React from "react";
 

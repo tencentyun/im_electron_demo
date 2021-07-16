@@ -23,7 +23,7 @@ import { VideoElem } from './messageElemTyps/videoElem';
 import { MergeElem } from './messageElemTyps/mergeElem';
 import { ForwardPopup } from './components/forwardPopup';
 import formateTime from '../../utils/timeFormat';
-import { Icon } from '@tencent/tea-component';
+import { Icon } from 'tea-component';
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
