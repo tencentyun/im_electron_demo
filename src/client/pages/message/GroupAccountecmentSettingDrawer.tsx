@@ -31,7 +31,7 @@ export const GroupAccountecmentSettingDrawer = (props: {
       title={
         <div className="tool-drawer--title">
           <H3>群公告</H3>
-          <span className="tool-drawer--title__sub">{`最近修改: `}</span>
+          {/* <span className="tool-drawer--title__sub">{`最近修改: `}</span> */}
         </div>
       }
       className="tool-drawer"

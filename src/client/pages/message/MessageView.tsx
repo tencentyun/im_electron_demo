@@ -20,6 +20,7 @@ import { VoiceElem } from './messageElemTyps/voiceElem';
 import { FileElem } from './messageElemTyps/fileElem';
 import { GroupTipsElemItem } from './messageElemTyps/grouptipsElem';
 import { VideoElem } from './messageElemTyps/videoElem';
+import { MergeElem } from './messageElemTyps/mergeElem';
 import { ForwardPopup } from './components/forwardPopup';
 import { Icon } from '@tencent/tea-component';
 
@@ -218,7 +219,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <div>资料消息</div>
                 break;
             case 12:
-                resp = <div>合并消息</div>
+                resp = <MergeElem { ...res }/>
                 break;
             default:
                 resp = null;

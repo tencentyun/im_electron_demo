@@ -232,7 +232,7 @@ export const sendMsg = async ({
       message_sender: userId,
       message_group_at_user_array: messageAtArray,
     },
-    user_data: "test",
+    user_data: userData,
   });
   return res;
 };

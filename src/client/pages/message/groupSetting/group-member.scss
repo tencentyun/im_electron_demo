@@ -26,4 +26,22 @@
       margin-bottom: 12px;
     }
   }
+
+  &--add {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #999999;
+    border-radius: 36px;
+    margin-right: 12px;
+    margin-bottom: 12px;
+  }
+
+  &--delete {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #999999;
+    border-radius: 36px;
+    margin-right: 12px;
+    margin-bottom: 12px;
+  }
 }
