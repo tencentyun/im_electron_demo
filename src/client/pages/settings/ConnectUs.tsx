@@ -1,6 +1,6 @@
 import React from 'react';
 import { shell } from 'electron';
-import { Button } from '@tencent/tea-component';
+import { Button } from 'tea-component';
 import { PURCHASE_LINK, CONTACT_LINK} from '../../constants';
 
 import './connectUs.scss';

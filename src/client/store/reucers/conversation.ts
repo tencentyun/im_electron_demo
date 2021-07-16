@@ -7,6 +7,9 @@ const initState = {
 }
 const sortByPindAndTime = (conversationList:Array<State.conversationItem>) :Array<State.conversationItem>=>{
     return  conversationList.sort((pre,next)=>{
+        if(pre.conv_is_pinned){
+            return  1
+        }
         return next.conv_active_time - pre.conv_active_time
     })
 }
@@ -35,7 +38,7 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
             }
             return {
                 ...state,
-                conversationList: listCopy
+                conversationList: sortByPindAndTime(listCopy)
             }
         }
         case UPDATE_CURRENT_SELECTED_CONVERSATION:

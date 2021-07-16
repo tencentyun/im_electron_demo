@@ -53,6 +53,14 @@ type FaceMsg = {
   face_elem_buf: string;
 };
 
+type MergeMsg = {
+  elem_type: number;
+  merge_elem_title: string;
+  merge_elem_abstract_array: string[];
+  merge_elem_compatible_text: string;
+  merge_elem_message_array: any[];
+};
+
 type MsgResponse = {
   data: {
     code: number;
@@ -77,6 +85,16 @@ const getUserInfoList = async (userIdList: Array<string>) => {
     },
   });
   return JSON.parse(json_param);
+};
+
+export const getLoginUserID = async () => {
+  const {
+    data: { code, json_param },
+  } = await timRenderInstance.TIMGetLoginUserID({
+    userData: "test"
+  });
+  const loginUserID = json_param;
+  return loginUserID;
 };
 
 export const getGroupInfoList = async (groupIdList: Array<string>) => {
@@ -225,7 +243,7 @@ export const sendMsg = async ({
   userData,
   messageAtArray,
 }: SendMsgParams<
-  TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg
+  TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg | MergeMsg
 >): Promise<MsgResponse> => {
   const res = await timRenderInstance.TIMMsgSendMessage({
     conv_id: convId,
@@ -255,7 +273,7 @@ export const sendSoundMsg = (
 export const sendVideoMsg = (
   params: SendMsgParams<VideoMsg>
 ): Promise<MsgResponse> => sendMsg(params);
-// export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
+export const sendMergeMsg = (params: SendMsgParams<MergeMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
@@ -516,8 +534,8 @@ export const deleteGroupMember = async (params: {
   console.log('params', params);
   const { data } = await timRenderInstance.TIMGroupDeleteMember({
     params: {
-      group_invite_member_param_group_id: params.groupId,
-      group_invite_member_param_identifier_array: params.userIdList,
+      group_delete_member_param_group_id: params.groupId,
+      group_delete_member_param_identifier_array: params.userIdList,
     }
   });
   console.log('data', data);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '@tencent/tea-component';
+import { Button } from 'tea-component';
 import { Avatar } from '../../../components/avatar/avatar';
 import { EmptyResult } from './EmptyResult';
 import { useMessageDirect } from '../../../utils/react-use/useDirectMsgPage';

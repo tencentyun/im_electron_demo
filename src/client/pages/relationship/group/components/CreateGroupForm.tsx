@@ -1,4 +1,4 @@
-import { Form, Input, Button, RadioGroup, Radio } from "@tencent/tea-component";
+import { Form, Input, Button, RadioGroup, Radio } from "tea-component";
 import React from "react";
 import { Form as FinalForm, Field } from "react-final-form";
 import { getStatus } from "../../../../utils/getStatus";

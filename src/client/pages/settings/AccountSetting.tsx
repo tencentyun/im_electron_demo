@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { Button } from '@tencent/tea-component';
+import { Button } from 'tea-component';
 import { useHistory } from "react-router-dom";
 
 import timRenderInstance from '../../utils/timRenderInstance';

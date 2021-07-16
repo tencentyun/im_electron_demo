@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { debounce } from 'lodash';
 
-import { Tabs, TabPanel, Input, Icon } from '@tencent/tea-component';
+import { Tabs, TabPanel, Input, Icon } from 'tea-component';
 import { searchTextMessage,  searchGroup, searchFriends, addProfileForConversition } from '../api';
 import { GroupResult } from './GroupResult';
 import { ContacterResult } from './ContacterResult';

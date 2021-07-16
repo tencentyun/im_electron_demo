@@ -1,4 +1,4 @@
-import { Checkbox, message } from "@tencent/tea-component";
+import { Checkbox, message } from "tea-component";
 import React, { useEffect, useState } from "react";
 import { modifyGroupInfo } from "../api";
 

@@ -1,5 +1,5 @@
 import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
-import { Button, Icon, Input, Modal } from "@tencent/tea-component";
+import { Button, Icon, Input, Modal } from "tea-component";
 import React, { FC, useState , useEffect } from "react";
 import { debounce } from "lodash";
 import { Avatar } from "../../../components/avatar/avatar";
@@ -32,7 +32,6 @@ export const UserItem: FC<UserItemProps> = ({
   hasCloseIcon,
   hasSelectedIcon,
 }): JSX.Element => {
-  console.log('item', item)
   const name = item?.user_profile_nick_name || "";
   const faceUrl = item?.user_profile_face_url || "";
   const id = item?.user_profile_identifier || "";
@@ -111,8 +110,8 @@ export const DeleteGroupMemberDialog = (props: {
         groupId: defaultForm.groupId,
         userIdList: selectedList.map((v) => v.user_profile_identifier),
       });
-      onSuccess?.();
       onClose();
+      onSuccess?.();
     } catch (e) {
       console.log(e.message);
     }
