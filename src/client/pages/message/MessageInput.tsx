@@ -51,7 +51,7 @@ const FEATURE_LIST = {
 export const MessageInput = (props: Props): JSX.Element => {
     const { convId, convType } = props;
     const [ activeFeature, setActiveFeature ] = useState('');
-    const [ isAtPopup, setAtPopup ] = useState(false);
+    const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ isRecordPopup, setRecordPopup ] = useState(false);
     const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
@@ -224,10 +224,14 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleOnkeyPress = (e) => {
+        console.log(1111, convType)
         if (e.keyCode == 13 || e.charCode === 13) {
             e.preventDefault();
             handleSendTextMsg();
-        }
+        } else if(e.key === "@" && convType === 2) {
+            e.preventDefault();
+            setAtPopup(true)
+        } 
     }
 
     const onAtPopupCallback = (userName) => {
@@ -268,10 +272,10 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     return (
         <div className="message-input">
+            {
+                atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
+            }
             <div className="message-input__feature-area">
-                {
-                    isAtPopup && <AtPopup callback={onAtPopupCallback} group_id={convId} />
-                }
                 {
                     isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
                 }

@@ -1,12 +1,16 @@
+.at-popup-wrapper {
+    position: absolute;
+}
 .at-popup{
     position: absolute;
+    z-index: 10;
     border: 1px solid #eee;
     background-color: white;
     padding: 5px;
-    left: 53px;
-    bottom: 34px;
     width: 351px;
     padding: 0;
+    left: 0;
+    bottom: 0;
     animation:animate .5s;
     box-shadow:  0 1px 8px rgba(0,32,96,.1)
 }

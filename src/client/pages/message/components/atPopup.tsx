@@ -2,7 +2,9 @@ import { List } from "@tencent/tea-component"
 import React, { FC, useEffect, useRef, useState } from "react"
 import { Avatar } from "../../../components/avatar/avatar"
 import timRenderInstance from "../../../utils/timRenderInstance"
+import { getSelectionCoords } from '../../../utils/getSelectionCoords';
 import './atPopup.scss'
+import { getGroupMemberList } from "../api";
 
 interface AtPopupProps {
     callback: Function,
@@ -11,21 +13,20 @@ interface AtPopupProps {
 
 export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element => {
     const [list, setList] = useState([])
+    const [coords, setCoords] = useState({x: 0, y: 0})
     const refPopup = useRef(null)
-
+    const newCoords = getSelectionCoords(window)
+    
+    
     const getList = async () => {
-        const { data: { code, json_param } } = await timRenderInstance.TIMGroupGetMemberInfoList({
-            params: {
-                group_get_members_info_list_param_group_id: group_id
-            },
-            data: "test data",
+        const list = await getGroupMemberList({
+            groupId: group_id
         });
-        if (code === 0) { 
-            const list = JSON.parse(json_param).group_get_memeber_info_list_result_info_array
-            setList(list)
-        }
+        const arr = list.group_get_memeber_info_list_result_info_array
+        setList(arr)
     }
     useEffect(() => {
+        setCoords({x: newCoords.x - 325, y: newCoords.y - 35})
         getList()
     }, [group_id])
 
@@ -44,18 +45,16 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element =
     }
 
     return (
-        <div>
-            <List ref={refPopup} className="at-popup">
-                {
-                    list.map((v, i) => 
-                        <List.Item key={i} onClick={() => callback(v.group_member_info_identifier)}>    
-                            <Avatar
-                                size="mini"
-                                userID = { v.group_member_info_identifier }
-                            />
-                            {v.group_member_info_identifier}
-                        </List.Item>
-                    )
+        <div className="at-popup-wrapper" style={{left: coords.x, top: coords.y}}>
+            <List ref={refPopup} className="at-popup" >
+                {   
+                    list.map((v, i) => <List.Item key={i} onClick={() => callback(v.group_member_info_identifier)}>    
+                        <Avatar
+                            size="mini"
+                            userID = { v.group_member_info_identifier }
+                        />
+                        {v.group_member_info_identifier}
+                    </List.Item>)
                 }
             </List>
         </div>
