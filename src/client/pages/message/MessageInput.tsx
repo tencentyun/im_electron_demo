@@ -67,7 +67,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         try {
             const text = editorState.toText()
             const atList = getAtList(text)
-            const { data: { code, json_params } } = await sendTextMsg({
+            const { data: { code, json_params,desc } } = await sendTextMsg({
                 convId,
                 convType,
                 messageElementArray: [{
@@ -84,6 +84,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                     messages: [JSON.parse(json_params)]
                 }))
                 setEditorState(ContentUtils.clear(editorState))
+            } else {
+                message.error({content: `消息发送失败 ${desc}`})
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
@@ -125,6 +127,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
+            } else {
+                message.error({content: `消息发送失败 ${desc}`})
             }
         }
     }
@@ -148,28 +152,40 @@ export const MessageInput = (props: Props): JSX.Element => {
                 convId,
                 messages: [JSON.parse(json_params)]
             }))
+        } else {
+            message.error({content: `消息发送失败 ${desc}`})
         }
     }
 
     const sendVideoMessage = async (e) => {
         const video = e.target.files[0]
-        const { data: { code, json_params } } = await sendVideoMsg({
-            convId,
-            convType,
-            messageElementArray: [{
-                elem_type: 9,
-                video_elem_video_type: "MP4",
-                video_elem_video_size: video.size,
-                video_elem_video_duration: 10,
-                video_elem_video_path: video.value,
-                video_elem_image_type: "png",
-                video_elem_image_size: 10000,
-                video_elem_image_width: 200,
-                video_elem_image_height: 80,
-                video_elem_image_path: "./cover.png"
-            }],
-            userId,
-        });
+        if(video){
+            const { data: { code, json_params, desc } } = await sendVideoMsg({
+                convId,
+                convType,
+                messageElementArray: [{
+                    elem_type: 9,
+                    video_elem_video_type: "MP4",
+                    video_elem_video_size: video.size,
+                    video_elem_video_duration: 10,
+                    video_elem_video_path: video.value,
+                    video_elem_image_type: "png",
+                    video_elem_image_size: 10000,
+                    video_elem_image_width: 200,
+                    video_elem_image_height: 80,
+                    video_elem_image_path: "./cover.png"
+                }],
+                userId,
+            });
+            if (code === 0) {
+                dispatch(reciMessage({
+                    convId,
+                    messages: [JSON.parse(json_params)]
+                }))
+            } else {
+                message.error({content: `消息发送失败 ${desc}`})
+            }
+        }
     }
 
     const sendSoundMessage = async (e) => {
