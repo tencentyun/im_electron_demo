@@ -59,7 +59,9 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
             const convIds = payload.map((element : State.MessageReceipt)  => element.msg_receipt_conv_id);
             catchList.forEach(item => {
                 if(convIds.includes(item.conv_id)) {
-                    item.conv_last_msg.message_is_peer_read = true;
+                    if(item.conv_last_msg){
+                        item.conv_last_msg.message_is_peer_read = true;
+                    }
                 }
             })
 

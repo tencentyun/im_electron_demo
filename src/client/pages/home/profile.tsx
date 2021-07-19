@@ -5,7 +5,7 @@ import timRenderInstance from "../../utils/timRenderInstance";
 import { setUserInfo } from '../../store/actions/user';
 import { Avatar } from "../../components/avatar/avatar";
 import { Bubble, Button } from "tea-component";
-import { markMessageAsRead } from "../message/api";
+import { useMessageDirect } from '../../utils/react-use/useDirectMsgPage';
 export const Profile = (): JSX.Element => {
     const dispatch = useDispatch();
     const [sdkAppid] = useState(DEFAULT_USERID);
@@ -36,21 +36,18 @@ export const Profile = (): JSX.Element => {
         getSelfInfo()
     }, [])
 
+    const directToMsgPage = useMessageDirect();
+
     const handleMsgReaded = async () => {
-        const userInfo = useSelector((state: State.RootState) => state.userInfo);
-        console.warn(userInfo,"用户信息")
-        
-        // try {
-        //   const { code, ...res } = await markMessageAsRead(
-        //     // conv_id,
-        //     // conv_type,
-        //     // message_msg_id
-        //   );
-        //   if (code === 0) {
-        //     console.log("设置会话已读成功");
-        //   } else {
-        //     console.log("设置会话已读失败", code, res);
-        //   }
+        const { data: { json_param } } = await timRenderInstance.TIMProfileGetUserProfileList({
+            json_get_user_profile_list_param: {
+                friendship_getprofilelist_param_identifier_array: [sdkAppid]
+            },
+        });
+        directToMsgPage({
+            convType: 1,
+            profile : JSON.parse(json_param)[0],
+        })
       };
     return (
         <div className="userinfo-avatar">
