@@ -1,5 +1,12 @@
 import { ConvItem } from "../pages/message/type"
 
+export enum TIMConvType {
+    kTIMConv_Invalid, // 无效会话
+    kTIMConv_C2C,     // 个人会话
+    kTIMConv_Group,   // 群组会话
+    kTIMConv_System,  // 系统会话
+};
+
 export const getMessageId = (message: State.message): string => {
     return message.message_msg_id
 }
@@ -11,14 +18,14 @@ export const getConvId = (convItem: ConvItem): string => {
         return (convItem as State.FriendProfile).friend_profile_identifier
     }
 }
-export const getConvType = (convItem: ConvItem): State.TIMConvType => {
+export const getConvType = (convItem: ConvItem): TIMConvType => {
     const item = convItem as State.FriendProfile
-    return item.friend_profile_identifier ? State.TIMConvType.kTIMConv_C2C : State.TIMConvType.kTIMConv_Group
+    return item.friend_profile_identifier ? TIMConvType.kTIMConv_C2C : TIMConvType.kTIMConv_Group
 }
 export const getMergeMessageTitle = (message: State.message): string => {
     const groupTitle: string = "群聊"
     const c2cTitle: string = `${message.message_sender}和${message.message_conv_id}的聊天记录`
-    return message.message_conv_type === State.TIMConvType.kTIMConv_C2C ? c2cTitle : groupTitle
+    return message.message_conv_type === TIMConvType.kTIMConv_C2C ? c2cTitle : groupTitle
 }
 export const getMergeMessageAbstactArray = (messageGroup: State.message[]): string[] => {
     const ret: string[] = []

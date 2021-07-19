@@ -141,7 +141,7 @@ declare namespace State {
         friend_profile_custom_string_info_value: string
     }
 
-    enum TIMConvType {
+    export enum TIMConvType {
         kTIMConv_Invalid, // 无效会话
         kTIMConv_C2C,     // 个人会话
         kTIMConv_Group,   // 群组会话

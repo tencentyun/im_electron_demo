@@ -102,9 +102,10 @@ export const MessageView = (props: Props): JSX.Element => {
     }
 
     const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
+        
         const userId = await getLoginUserID()
         const isDivideSending = forwardType === ForwardType.divide
-        const isCombineSending = isDivideSending
+        const isCombineSending = !isDivideSending
         convItemGroup.forEach(async (convItem, k) => {
             if(isDivideSending) {
                 seletedMessage.forEach(async message => {
