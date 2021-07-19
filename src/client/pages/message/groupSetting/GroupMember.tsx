@@ -51,7 +51,7 @@ export const GroupMember = (props: {
   );
 
   // 可拉人进群条件为 群类型不为直播群且当前群没有设置禁止加入
-  const canInviteMember = [0, 1, 2].includes(groupType) && groupAddOption !== 0;
+  const canInviteMember = [0, 1, 2].includes(groupType);
 
   /**
    * 对于私有群：只有创建者可删除群组成员。
@@ -69,13 +69,17 @@ export const GroupMember = (props: {
       <div className="group-member">
         <div className="group-member--title">
           <span>群成员</span>
-          <span
-            className="group-member--title__right"
-            onClick={() => dialogRef.current.open({ memberList: userList })}
-          >
-            <span style={{ marginRight: "4px" }}>{userList.length}人</span>
-            <span>&gt;</span>
-          </span>
+          {userList.length ? (
+            <span
+              className="group-member--title__right"
+              onClick={() => dialogRef.current.open({ memberList: userList })}
+            >
+              <span style={{ marginRight: "4px" }}>{userList.length}人</span>
+              <span>&gt;</span>
+            </span>
+          ) : (
+            <></>
+          )}
         </div>
         <div className="group-member--avatar">
           {userList?.slice(0, 15)?.map((v, index) => (
