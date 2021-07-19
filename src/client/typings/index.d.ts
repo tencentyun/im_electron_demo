@@ -124,4 +124,27 @@ declare namespace State {
         type: string;
         payload: T;
     }
+
+    export type FriendProfile = {
+        friend_profile_identifier: string,
+        friend_profile_group_name_array: string[],
+        friend_profile_remark: string,
+        friend_profile_add_wording: string,
+        friend_profile_add_source: string,
+        friend_profile_add_time: number,
+        friend_profile_user_profile: UserProfile,
+        friend_profile_custom_string_array: FriendProfileCustemStringInfo[],
+    }
+
+    export type FriendProfileCustemStringInfo  = {
+        friend_profile_custom_string_info_key: string
+        friend_profile_custom_string_info_value: string
+    }
+
+    enum TIMConvType {
+        kTIMConv_Invalid, // 无效会话
+        kTIMConv_C2C,     // 个人会话
+        kTIMConv_Group,   // 群组会话
+        kTIMConv_System,  // 系统会话
+    };
 }

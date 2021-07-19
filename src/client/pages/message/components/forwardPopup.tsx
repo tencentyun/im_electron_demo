@@ -1,8 +1,18 @@
-import { Button, Icon, Input, List, Modal } from "tea-component"
-import React, { FC, useEffect, useRef, useState } from "react"
+import { 
+    Button, 
+    Icon, 
+    Input,
+    Modal 
+} from "tea-component"
+import React, { 
+    FC, 
+    useEffect, 
+    useRef, 
+    useState 
+} from "react"
+import { Avatar } from "../../../components/avatar/avatar";
 import { searchFriends, searchGroup } from "../api"
 import { debounce } from 'lodash';
-import { Avatar } from "../../../components/avatar/avatar";
 import './forwardPopup.scss'
 
 interface ForwardPopupProps {
@@ -69,9 +79,6 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
         e.stopPropagation();
         const list = selectedList.filter(v => getId(v) !== conv_id)
         setSelectedList(list)
-    }
-    const handleClose = () => {
-
     }
     return (
         <div ref={refPopup} >
