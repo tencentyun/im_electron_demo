@@ -77,7 +77,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 userId,
                 messageAtArray: atList
             });
-
+            console.warn(code, desc, json_params,'消息发送111111')
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -122,6 +122,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }],
                 userId,
             });
+            console.warn(code, desc, json_params,'消息发送22222')
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -146,7 +147,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             }],
             userId,
         });
-
+        console.warn(code, desc, json_params,'消息发送33333')
         if (code === 0) {
             dispatch(reciMessage({
                 convId,
@@ -177,6 +178,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }],
                 userId,
             });
+            console.warn(code, desc, json_params,'消息发送44444')
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,

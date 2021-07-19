@@ -22,6 +22,7 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
           }
         case UPDATE_CONVERSATIONLIST: {
             // 会话按是否置顶、时间排序
+            // eslint-disable-next-line no-case-declarations
             const listCopy = [...state.conversationList]
             for(let i = 0;i<action.payload.length;i++){
                 const { conv_id } = action.payload[i];

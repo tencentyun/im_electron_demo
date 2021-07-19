@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { replaceConversaionList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
+import { replaceConversaionList, updateCurrentSelectedConversation, getUserStatus } from '../../store/actions/conversation';
 import { Avatar } from '../../components/avatar/avatar';
 
 import { SearchBox } from '../../components/searchBox/SearchBox';
-import { getConversionList, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage } from './api';
+import { getConversionList, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage, getUsetStatusRequest } from './api';
 import './message.scss';
 import { MessageInfo } from './MessageInfo';
 import { GroupToolBar } from './GroupToolBar';
@@ -58,9 +58,11 @@ export const Message = (): JSX.Element => {
                 dispatch(updateCurrentSelectedConversation(response[0]))
             }
         }
+        
     }
     useEffect(() => {
         getData();
+        getUsetStatus();
     }, []);
 
     const handleConvListClick = convInfo => dispatch(updateCurrentSelectedConversation(convInfo));
@@ -112,6 +114,33 @@ export const Message = (): JSX.Element => {
         })
     }
 
+
+    const getUsetStatus = ()=>{
+        // 获取当前对话标列表好友状态
+        const sdkappid = "1400529075";
+        const uid = "YANGGUANG37";
+        const To_Account = ["denny1", "denny2"];
+        // getUsetStatusRequest(sdkappid, uid, To_Account).then(data=>{
+        //     const { code, userStatusList } = data.data||{}
+        //     if(code === 0){
+        //         console.log('获取对话成员状态列表成功')
+        //         // 清空消息
+        //         dispatch(getUserStatus({
+        //             // userStatusList,
+        //             messages: []
+        //         }))
+        //     }
+        // }).catch(err=>{
+
+        // })
+        //  => {
+        //     return axios({
+        //         url: `/status/get?platform=10&websdkappid=537048168&v=1.7.3&sdkappid=${SDKAPPID}&contentType=json&apn=1&reqtime=${Date.now()}`,
+        //         method: 'POST',
+        //         data: data || {}
+        //     })
+        // }
+    }
     const pingConv = (conv: State.conversationItem,isPinned:boolean)=>{
         const { conv_id,conv_type,conv_is_pinned } = conv
         if(conv_is_pinned === isPinned){
@@ -185,7 +214,7 @@ export const Message = (): JSX.Element => {
     if (currentSelectedConversation === null) {
         return null
     }
-
+    console.warn('当前对话列表所有人员信息', conversationList)
     return (
         <div className="message-content">
             <div className="message-list">

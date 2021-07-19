@@ -164,6 +164,20 @@ export const addProfileForConversition = async (conversitionList) => {
 };
 
 /**
+ * 获取当前对话标列表好友状态
+ * @param sdkappid
+ * @param uid
+ * @param isPinned
+ * @returns
+ */
+export const getUsetStatusRequest = async (sdkappid, uid, To_Account) => {
+  return await timRenderInstance.getUsetStatusRequest({
+    sdkappid,
+    uid,
+    To_Account
+  });
+};
+/**
  * 会话（取消）置顶
  * @param convId
  * @param convType

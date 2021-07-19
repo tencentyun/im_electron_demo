@@ -112,6 +112,8 @@ export const MessageInfo = (
     }
   }, [conv_id]);
 
+  const isOnInternet = false;
+
   return (
     <>
       <div className="message-info" id="messageInfo">
@@ -134,6 +136,15 @@ export const MessageInfo = (
             <span className="message-info__header--name">
               {nickName || conv_id}
             </span>
+            {
+              // currentConversation.type === 'C2C'
+              // eslint-disable-next-line no-constant-condition
+              true ?
+              <span title={isOnInternet?'在线':'离线'} 
+                className={['message-info__header--type', !isOnInternet?'message-info__header--typeoff': ''].join(' ')}
+              >
+              </span>:null
+            }
           </div>
           {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
         </header>
