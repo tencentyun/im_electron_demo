@@ -7,7 +7,7 @@ import { Avatar } from "../../components/avatar/avatar";
 import { UserInfo } from "../../components/EditUserInfo";
 export const Profile = (): JSX.Element => {
     const dispatch = useDispatch();
-    const [userVisible,setUserVisible] = useState(true)
+    const [userVisible,setUserVisible] = useState(false)
     const [sdkAppid ] = useState(DEFAULT_USERID);
     const { faceUrl,nickName,userId } = useSelector((state: State.RootState) => state.userInfo);
     const getSelfInfo = async ()=>{
