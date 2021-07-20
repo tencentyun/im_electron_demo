@@ -63,7 +63,7 @@ function getStatus(meta, validating?) {
             initialValues={{
               avatar:'',
               nick: '',
-              gender: '',
+              gender: 'Gender_Type_Unknown',
             }}
           >
             {({ handleSubmit, validating, submitting }) => {
