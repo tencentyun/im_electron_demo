@@ -52,9 +52,12 @@ module.exports = {
     port: 3000,
     publicPath: '/',
     proxy: {
-      '/status': {
+      '/api': {
         target: 'http://106.52.161.51:30006/',
         secure: false, // http请求https，这里需设置成false,
+        pathRewrite: {
+          "^/api": ""
+        },
         changeOrigin: true // 一些服务器防止爬虫会设置origin,
       }
     }

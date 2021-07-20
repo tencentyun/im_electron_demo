@@ -62,10 +62,10 @@ export const Message = (): JSX.Element => {
                 dispatch(updateCurrentSelectedConversation(response[0]))
             }
         }
-
     }
     useEffect(() => {
         getData();
+        getUsetStatus();
     }, []);
     useEffect(() => {
         getUsetStatus();
@@ -78,6 +78,14 @@ export const Message = (): JSX.Element => {
             ref.current.scrollIntoViewIfNeeded();
         }
     }, [currentSelectedConversation]);
+
+    useEffect(() => {
+        if(currentSelectedConversation?.conv_id) {
+            const ref = getRef(currentSelectedConversation.conv_id);
+            // @ts-ignore
+            ref.current.scrollIntoViewIfNeeded();
+        }
+    }, [currentSelectedConversation] );
 
     const handleConvListClick = convInfo => dispatch(updateCurrentSelectedConversation(convInfo));
 
@@ -235,7 +243,6 @@ export const Message = (): JSX.Element => {
         return null
     }
     console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
-    // console.warn(userTypeList,'回来了没有')
     return (
         <div className="message-content">
             <div className="message-list">
