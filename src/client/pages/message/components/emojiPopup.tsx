@@ -1,7 +1,9 @@
-import { List } from "tea-component"
-import React, { FC, useEffect, useRef, useState } from "react"
-import timRenderInstance from "../../../utils/timRenderInstance"
 import './emojiPopup.scss'
+import React, { 
+    FC, 
+    useEffect, 
+    useRef 
+} from "react"
 import { emojiMap, emojiName, emojiUrl } from '../emoji-map'
 
 interface EmojiPopupProps {

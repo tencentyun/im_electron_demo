@@ -17,7 +17,8 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
          
         case ActionTypeEnum.RECI_MESSAGE: {
           const history = state.historyMessageList.get(payload.convId);
-          const timeDividerResult = addTimeDivider(payload.messages,  history[0]?history[0].message_client_time:'').reverse();
+          const baseTime = history && history.length > 0 ? history[0].message_client_time : 0;
+          const timeDividerResult = addTimeDivider(payload.messages, baseTime).reverse();
           return {
             ...state,
             historyMessageList: state.historyMessageList.set(payload.convId, timeDividerResult.concat(history))

@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { LoadingContainer } from "../../../components/loadingContainer";
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
 import { getGroupInfoList, getGroupMemberInfoList } from "../api";
 import { Divider } from "./Divider";
@@ -20,6 +21,8 @@ export const GroupSetting = (props: {
   const groupId = conversationInfo.conv_id;
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
+
+  console.log('userId', userId)
 
   const { value, loading, retry } = useAsyncRetryFunc(async () => {
     const [r1, r2] = await Promise.all([
@@ -43,7 +46,7 @@ export const GroupSetting = (props: {
   console.log("currentUserSetting", currentUserSetting);
 
   return (
-    <div>
+    <LoadingContainer loading={loading} >
       <GroupBaseInfo
         groupAvatar={groupDetail.group_detial_info_face_url}
         groupId={groupDetail.group_detial_info_group_id}
@@ -104,6 +107,6 @@ export const GroupSetting = (props: {
         groupType={groupDetail.group_detial_info_group_type}
         close={close}
       />
-    </div>
+    </LoadingContainer>
   );
 };

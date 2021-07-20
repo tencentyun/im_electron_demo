@@ -49,7 +49,8 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
         joinGroupMode: "2",
       }}
     >
-      {({ handleSubmit, submitting, validating }) => {
+      {({ handleSubmit, submitting, validating, values }) => {
+        const { groupType } = values;
         return (
           <form onSubmit={handleSubmit}>
             <Form layout="fixed" style={{ width: "100%" }}>
@@ -58,7 +59,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                 disabled={submitting}
                 validateOnBlur
                 validateFields={[]}
-                validate={(value) => validateOldValue(value, '群聊名称') }
+                validate={(value) => validateOldValue(value, "群聊名称")}
               >
                 {({ input, meta }) => (
                   <Form.Item
@@ -84,7 +85,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                 disabled={submitting}
                 validateOnBlur
                 validateFields={[]}
-                validate={(value) => validateOldValue(value, '群类型') }
+                validate={(value) => validateOldValue(value, "群类型")}
               >
                 {({ input, meta }) => (
                   <Form.Item
@@ -111,7 +112,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                 disabled={submitting}
                 validateOnBlur
                 validateFields={[]}
-                validate={(value) => validateOldValue(value, '管理员UID') }
+                validate={(value) => validateOldValue(value, "管理员UID")}
               >
                 {({ input, meta }) => (
                   <Form.Item
@@ -132,36 +133,38 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                 )}
               </Field>
 
-              <Field
-                name="joinGroupMode"
-                disabled={submitting}
-                validateOnBlur
-                validateFields={[]}
-                validate={(value) => validateOldValue(value, '入群方式') }
-              >
-                {({ input, meta }) => (
-                  <Form.Item
-                    required
-                    label="入群方式"
-                    status={getStatus(meta, validating)}
-                    message={
-                      getStatus(meta, validating) === "error" && meta.error
-                    }
-                  >
-                    <RadioGroup {...input}>
-                      <Radio name="1">仅管理员可邀请</Radio>
-                      <Radio name="2">全体成员可邀请</Radio>
-                    </RadioGroup>
-                  </Form.Item>
-                )}
-              </Field>
+              {groupType !== "1" && (
+                <Field
+                  name="joinGroupMode"
+                  disabled={submitting}
+                  validateOnBlur
+                  validateFields={[]}
+                  validate={(value) => validateOldValue(value, "入群方式")}
+                >
+                  {({ input, meta }) => (
+                    <Form.Item
+                      required
+                      label="入群方式"
+                      status={getStatus(meta, validating)}
+                      message={
+                        getStatus(meta, validating) === "error" && meta.error
+                      }
+                    >
+                      <RadioGroup {...input}>
+                        <Radio name="1">仅管理员可邀请</Radio>
+                        <Radio name="2">全体成员可邀请</Radio>
+                      </RadioGroup>
+                    </Form.Item>
+                  )}
+                </Field>
+              )}
 
               <Field
                 name="groupAnnouncement"
                 disabled={submitting}
                 validateOnBlur
                 validateFields={[]}
-                validate={(value) => validateOldValue(value, '群公告') }
+                validate={(value) => validateOldValue(value, "群公告")}
               >
                 {({ input, meta }) => (
                   <Form.Item
