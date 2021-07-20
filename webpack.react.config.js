@@ -69,14 +69,14 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Im electron demo',
-      // Load a custom template (lodash by default)
-      template: 'index.html'
-    })
+        title: 'Im electron demo',
+        // Load a custom template (lodash by default)
+        template: 'index.html'
+      })
   ],
   node: {
     global: true,
-    __dirname: true,
-    __filename: true
+      __dirname: true,
+      __filename: true
   }
 };
