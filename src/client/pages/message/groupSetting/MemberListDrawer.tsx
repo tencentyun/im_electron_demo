@@ -33,7 +33,6 @@ export const GroupMemberListDrawer = (props: {
       header: "",
       key: "member",
       render: (record: any) => {
-        console.log('record', record)
         const isOwner = record.group_member_info_member_role === 3;
         return (
           <div className="member-list-drawer--item">
@@ -43,7 +42,7 @@ export const GroupMemberListDrawer = (props: {
               userID={record.user_profile_identifier}
             />
             <span className="member-list-drawer--item__name">
-              {record.user_profile_nick_name}
+              {record.user_profile_nick_name || record.user_profile_identifier}
             </span>
             {isOwner && (
               <span className="member-list-drawer--item__owner">群主</span>

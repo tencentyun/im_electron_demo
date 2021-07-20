@@ -76,7 +76,7 @@ export const GroupMember = (props: {
               onClick={() => dialogRef.current.open({ memberList: userList })}
             >
               <span style={{ marginRight: "4px" }}>{userList.length}人</span>
-              <span>&gt;</span>
+              <a>查看</a>
             </span>
           ) : (
             <></>
