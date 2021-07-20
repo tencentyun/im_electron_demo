@@ -68,6 +68,7 @@ export const Message = (): JSX.Element => {
     useEffect(() => {
         if(currentSelectedConversation?.conv_id) {
             const ref = getRef(currentSelectedConversation.conv_id);
+            // @ts-ignore
             ref.current.scrollIntoViewIfNeeded();
         }
     }, [currentSelectedConversation] );
