@@ -5,6 +5,7 @@ import { Avatar } from '../../components/avatar/avatar';
 
 import { SearchBox } from '../../components/searchBox/SearchBox';
 import { getConversionList, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage, getUsetStatusRequest } from './api';
+import { getUserTypeQuery } from '../../services/userType'
 import './message.scss';
 import { MessageInfo } from './MessageInfo';
 import { GroupToolBar } from './GroupToolBar';
@@ -118,22 +119,23 @@ export const Message = (): JSX.Element => {
 
     const getUsetStatus = ()=>{
         // 获取当前对话标列表好友状态
-        const sdkappid = "1400529075";
+        // const sdkappid = "1400529075";
         const uid = "YANGGUANG37";
         const To_Account = ["denny1", "denny2"];
-        // getUsetStatusRequest(sdkappid, uid, To_Account).then(data=>{
-        //     const { code, userStatusList } = data.data||{}
-        //     if(code === 0){
-        //         console.log('获取对话成员状态列表成功')
-        //         // 清空消息
-        //         dispatch(getUserStatus({
-        //             // userStatusList,
-        //             messages: []
-        //         }))
-        //     }
-        // }).catch(err=>{
+        getUserTypeQuery({uid, To_Account}).then(data=>{
+            console.warn(data,"获取联系人在线状态返回参数")
+            // const { code, userStatusList } = data.data||{}
+            // if(code === 0){
+            //     console.log('获取对话成员状态列表成功')
+            //     // 清空消息
+            //     dispatch(getUserStatus({
+            //         // userStatusList,
+            //         messages: []
+            //     }))
+            // }
+        }).catch(err=>{
 
-        // })
+        })
         //  => {
         //     return axios({
         //         url: `/status/get?platform=10&websdkappid=537048168&v=1.7.3&sdkappid=${SDKAPPID}&contentType=json&apn=1&reqtime=${Date.now()}`,
