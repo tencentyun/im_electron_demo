@@ -51,7 +51,7 @@ export const Profile = (): JSX.Element => {
                 nickName  = { nickName}
                 userID = { userId }
             />
-            <UserInfo visible={userVisible}  onClose={handleClose} onChange={handleChange}></UserInfo>
+            <UserInfo userInfo={{faceUrl,nickName,userId}} visible={userVisible}  onClose={handleClose} onChange={handleChange}></UserInfo>
         </div>
     )
 }

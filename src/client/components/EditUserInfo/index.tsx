@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from "react"
+import {saveUserInfo} from '../../services/editUserInfo'
 import './index.scss'
 import {
     Form,
@@ -19,16 +20,32 @@ const genderMap = {
 }
 
 interface UserInfo  {
-    avatar?: string,
-    nick?: string,
-    gender?: GENDER,
-  userID?: string,
-  visible: boolean,
-  onChange?: (val?:boolean) => void,
-  onClose:(val?:boolean)=>void
+  userInfo: IForm;
+  visible: boolean;
+  onChange?: (val?: boolean) => void;
+  onClose: (val?: boolean) => void;
 }
 
-export const UserInfo: FC<UserInfo> = ({visible,onChange,onClose}): JSX.Element => {
+interface IForm{
+  avatar: string;
+  nick: string;
+  gender: GENDER;
+  userId?: string;
+  [propName: string]: any;
+}
+
+interface submitUserInfoData{
+  From_Account: string;
+  ProfileItem: IProfileItem[]
+}
+
+interface IProfileItem{
+  Tag: string;
+  value: string
+}
+
+
+export const UserInfo: FC<UserInfo> = ({visible,onChange,onClose,userInfo}): JSX.Element => {
   const [isShow, setVisible] = useState(visible)
   const close = () => {
     setVisible(false)
@@ -50,19 +67,24 @@ function getStatus(meta, validating?) {
   }
   return meta.error ? "error" : "success";
   }
-    async function onSubmit(values) {
-    alert(JSON.stringify(values));
+  async function onSubmit(values: IForm) {
+    const {userId} = userInfo
+    const formData = {
+      From_Account: userId, ProfileItem: [{ Tag: 'Tag_Profile_IM_Image', value: values.avatar }, { Tag: 'Tag_Profile_IM_Nick', value: values.nick }, {
+        Tag:'Tag_Profile_IM_Gender',value: values.gender
+      }]
+    }
+    saveUserInfo<submitUserInfoData>(formData)
   }
     return (
       <Modal visible={isShow} caption="编辑个人资料" onClose={close}>
         <Modal.Body>
-               
             <FinalForm
             onSubmit={onSubmit}
             initialValuesEqual={() => true}
             initialValues={{
               avatar:'',
-              nick: '',
+              nick: 'zhangsan',
               gender: 'Gender_Type_Unknown',
             }}
           >
