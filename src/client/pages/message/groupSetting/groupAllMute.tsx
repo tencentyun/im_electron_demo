@@ -7,10 +7,11 @@ import "./group-all-mute.scss";
 export const GroupAllMute = (props: {
   muteFlag: boolean;
   groupId: string;
+  userIdentity: number;
+  groupType: number;
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
-  const { muteFlag, groupId, onRefresh } = props;
-
+  const { muteFlag, groupId, userIdentity, onRefresh } = props;
 
   const handleChange = async (value: boolean) => {
     try {
@@ -29,9 +30,16 @@ export const GroupAllMute = (props: {
   //   setValue(muteFlag);
   // }, [muteFlag]);
 
+  /**
+   * 只有群主或者管理员可以进行全员禁言。
+   * 用户身份类型 memberRoleMap
+   * 群类型  groupTypeMap
+   */
+  const canEdit = [2, 3].includes(userIdentity);
+
   return (
     <div className="group-all-mute">
-      <Checkbox value={muteFlag} onChange={handleChange}>
+      <Checkbox value={muteFlag} onChange={handleChange} disabled={!canEdit}>
         全员禁言
       </Checkbox>
     </div>

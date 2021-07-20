@@ -38,15 +38,33 @@ export const GroupToolsDrawer = (props: {
     defaultForm.conversationInfo?.conv_profile?.group_detial_info_member_num ||
     0;
 
-  console.log("conversationInfo", currentSelectedConversation);
-
   const close = () => {
     setShowState(false);
     onClose();
   };
 
+  const getTitleAndSubTitle = (toolsId: string) => {
+    let title = "";
+    let subTitle = "";
+    const memberNum =
+      defaultForm.conversationInfo?.conv_profile
+        ?.group_detial_info_member_num || 0;
+    switch (toolsId) {
+      case "setting":
+        title = "设置";
+        subTitle = `群成员 | ${memberNum}`;
+        break;
+      case "announcement":
+        title = "群公告";
+        break;
+    }
+
+    return { title, subTitle };
+  };
+
+  const { title, subTitle } = getTitleAndSubTitle(defaultForm.toolId);
+
   useEffect(() => {
-    console.log("conversationInfo", currentSelectedConversation);
     if (visible) {
       close();
     }
@@ -57,8 +75,8 @@ export const GroupToolsDrawer = (props: {
       visible={visible}
       title={
         <div className="tool-drawer--title">
-          <H3>设置</H3>
-          <span className="tool-drawer--title__sub">{`群成员 | ${memberNum}`}</span>
+          <H3>{title}</H3>
+          <span className="tool-drawer--title__sub">{subTitle}</span>
         </div>
       }
       outerClickClosable={false}
