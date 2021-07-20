@@ -13,7 +13,6 @@ export const Profile = (): JSX.Element => {
     const dispatch = useDispatch();
     const [userVisible,setUserVisible] = useState(false)
     const [sdkAppid] = useState(DEFAULT_USERID);
-    console.log('useSelector((state: State.RootState) => state.userInfo)',useSelector((state: State.RootState) => state.userInfo));
     const { faceUrl,nickName,userId } = useSelector((state: State.RootState) => state.userInfo);
     const getSelfInfo = async ()=>{
         const {data: {code, json_param}} = await timRenderInstance.TIMProfileGetUserProfileList({

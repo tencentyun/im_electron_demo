@@ -1,5 +1,5 @@
 import  request from '../utils/request'
-import { SDK_APPID, SERVICES_URL } from '../constants/index'
+import { SDK_APPID, TIM_BASE_URL } from '../constants/index'
 
 export type userTypeUpsertParams = {
     uid?: string; // 当前用户id
@@ -10,7 +10,7 @@ export type userTypeUpsertParams = {
  */
 export async function getUserTypeQuery(data: userTypeUpsertParams): Promise<any> {
     return request({
-        url: `${SERVICES_URL}/status/get`,
+        url: `${TIM_BASE_URL}/status/get`,
         method: 'POST',
         data: {
             skdappid: SDK_APPID,

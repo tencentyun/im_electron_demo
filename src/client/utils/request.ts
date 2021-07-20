@@ -5,7 +5,8 @@ import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { message } from 'tea-component';
 
 export interface ResponseData {
-    code: number;
+    code?: number;
+    ErrorCode?: number;
     data?: any;
     msg?: string;
     token?: string;
@@ -79,12 +80,11 @@ request.interceptors.request.use(
  */
 request.interceptors.response.use(
     async (response: AxiosResponse) => {
-
         const res: ResponseData = response.data;
-        const { code } = res;
-
+        const { code, ErrorCode } = res;
+        console.log('response', response);
         // 自定义状态码验证
-        if (code !== 0) {
+        if (code !== 0 && +ErrorCode !== 0) {
             return Promise.reject({
                 response,
                 message: 'CustomError',
