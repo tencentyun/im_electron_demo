@@ -6,9 +6,14 @@ declare namespace State {
         userInfo: userInfo,
         conversation: conversation,
         historyMessage: historyMessage,
-        ui: ui
+        ui: ui,
+        userTypeList: Array<userTypeData>
     }
     export type functionTab = 'message' | 'relationship'
+    export type userTypeData = {
+        Status: string,
+        To_Account: string
+    }
     export type ui = {
         function_tab: functionTab
     }
