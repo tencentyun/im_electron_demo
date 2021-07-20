@@ -17,7 +17,6 @@ export const GroupMemberListDrawer = (props: {
   popupContainer?: HTMLElement;
   dialogRef: DialogRef<GroupMemberListDrawerRecordsType>;
 }): JSX.Element => {
-
   const height = window.innerHeight - 77 - (isWin() ? 24 : 0);
 
   const { dialogRef, popupContainer } = props;
@@ -34,12 +33,21 @@ export const GroupMemberListDrawer = (props: {
       header: "",
       key: "member",
       render: (record: any) => {
+        console.log('record', record)
         const isOwner = record.group_member_info_member_role === 3;
         return (
           <div className="member-list-drawer--item">
-            <Avatar url={record.user_profile_face_url} />
-            <span className="member-list-drawer--item__name">{record.user_profile_nick_name}</span>
-            {isOwner && <span className="member-list-drawer--item__owner">群主</span>}
+            <Avatar
+              url={record.user_profile_face_url}
+              nickName={record.user_profile_nick_name}
+              userID={record.user_profile_identifier}
+            />
+            <span className="member-list-drawer--item__name">
+              {record.user_profile_nick_name}
+            </span>
+            {isOwner && (
+              <span className="member-list-drawer--item__owner">群主</span>
+            )}
           </div>
         );
       },
@@ -68,10 +76,10 @@ export const GroupMemberListDrawer = (props: {
         addons={[
           scrollable({
             virtualizedOptions: {
-              height, 
-              itemHeight: 60
-            }
-          })
+              height,
+              itemHeight: 60,
+            },
+          }),
         ]}
       />
     </Drawer>
