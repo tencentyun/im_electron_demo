@@ -5,7 +5,7 @@ import {
     Switch,
     Route,
 } from 'react-router-dom';
-import {  Provider, useDispatch, useSelector } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 
 import store from './store'
 
@@ -26,24 +26,33 @@ let isInited = false
 const App = () => {
     const dispatch = useDispatch()
 
-
-    const { currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
-
-    const { function_tab } = useSelector((state: State.RootState) => state.ui);
-
-    const initIMSDK = () => {
-        if(!isInited){
-            timRenderInstance.TIMInit().then(({data})=>{
-                if(data === 0){
+    const initIMSDK = async () => {
+        if (!isInited) {
+            const privite = await timRenderInstance.callExperimentalAPI({
+                json_param: {
+                    request_internal_operation: 'internal_operation_set_privatization_info',
+                    request_set_privatization_info_param: {
+                        server_address_array: [{
+                            server_address_ip: "106.55.144.99",// ip
+                            server_address_port: 80// 端口
+                        }],
+                        server_public_key: '0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f'// 公钥
+                    }
+                }
+            })
+            console.log('私有化', privite)
+            timRenderInstance.TIMInit().then(async ({ data }) => {
+                
+                if (data === 0) {
+                    
                     isInited = true
                     console.log("初始化成功")
                     initListeners.bind(this)((callback) => {
-                        const { data,type } = callback;
+                        const { data, type } = callback;
                         console.info('======================== 接收到IM事件 start ==============================')
                         console.log("类型：", type)
                         console.log('数据：', data)
                         console.info('======================== 接收到IM事件 end ==============================')
-                        console.log(currentSelectedConversation)
                         switch (type) {
                             /**
                              * 处理收到消息逻辑
@@ -78,29 +87,29 @@ const App = () => {
             })
         }
     }
-    const _handleUnreadChange = (unreadCount)=>{
+    const _handleUnreadChange = (unreadCount) => {
         dispatch(setUnreadCount(unreadCount))
     }
-    const _handeMessage = (messages:State.message[]) => {
+    const _handeMessage = (messages: State.message[]) => {
         // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
         const obj = {};
-        for(let i  = 0;i<messages.length;i++){
-            if(!obj[messages[i].message_conv_id]){
+        for (let i = 0; i < messages.length; i++) {
+            if (!obj[messages[i].message_conv_id]) {
                 obj[messages[i].message_conv_id] = []
             }
             obj[messages[i].message_conv_id].push(messages[i])
         }
-        for(let i in obj){
+        for (let i in obj) {
             dispatch(reciMessage({
                 convId: i,
                 messages: obj[i]
             }))
         }
-        
+
     }
     const _handleConversaion = (conv) => {
-        const { type, data} = conv;
-        switch(type){
+        const { type, data } = conv;
+        switch (type) {
             /**
              * 新增会话
              */
@@ -134,8 +143,8 @@ const App = () => {
                 break;
         }
     }
-    const _updateConversation =async (conversationList:Array<State.conversationItem>)=>{
-        if(conversationList.length){
+    const _updateConversation = async (conversationList: Array<State.conversationItem>) => {
+        if (conversationList.length) {
             const convList = await addProfileForConversition(conversationList);
             dispatch(updateConversationList(convList))
         }
@@ -143,7 +152,7 @@ const App = () => {
 
     const _handleMessageRevoked = (data) => {
         data.forEach(item => {
-            const { message_locator_conv_id: convId,  message_locator_unique_id: messageId} = item;
+            const { message_locator_conv_id: convId, message_locator_unique_id: messageId } = item;
             dispatch(markeMessageAsRevoke({
                 convId,
                 messageId
@@ -154,15 +163,15 @@ const App = () => {
     const _handleMessageReaded = (data) => {
         const c2cDdata = data.filter(item => item.msg_receipt_conv_type === 1);
         const convIds = c2cDdata.map(item => item.msg_receipt_conv_id);
-        if(c2cDdata.length > 0) {
+        if (c2cDdata.length > 0) {
             dispatch(markConvLastMsgIsReaded(c2cDdata));
-            dispatch(markMessageAsReaded({convIds}));
+            dispatch(markMessageAsReaded({ convIds }));
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         initIMSDK()
-    },[])
+    }, [])
     return (
         <div id="app-container">
             <ToolsBar></ToolsBar>
@@ -178,5 +187,5 @@ const App = () => {
 }
 
 ReactDOM.render(<Provider store={store}>
-    <App/>
+    <App />
 </Provider>, document.getElementById('root'));

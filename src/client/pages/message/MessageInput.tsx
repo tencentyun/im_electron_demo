@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addMessage } from '../../store/actions/message';
-
-import { TextArea, Button, message, Modal } from 'tea-component';
+import { Button, message } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
 import { reciMessage } from '../../store/actions/message'
-import { emojiMap, emojiName, emojiUrl } from './emoji-map'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
-
-import './message-input.scss';
-import ReactDOM from 'react-dom';
 import { RecordPopup } from './components/recordPopup';
-import BraftEditor, { ControlType, EditorState } from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
+import './message-input.scss';
 
 type Props = {
     convId: string,
@@ -67,7 +62,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         try {
             const text = editorState.toText()
             const atList = getAtList(text)
-            const { data: { code, json_params } } = await sendTextMsg({
+            const { data: { code, json_params,desc } } = await sendTextMsg({
                 convId,
                 convType,
                 messageElementArray: [{
@@ -84,6 +79,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                     messages: [JSON.parse(json_params)]
                 }))
                 setEditorState(ContentUtils.clear(editorState))
+            } else {
+                message.error({content: `消息发送失败 ${desc}`})
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
@@ -92,6 +89,24 @@ export const MessageInput = (props: Props): JSX.Element => {
     const getAtList = (text: string) => {
         const list = text.match(/@\w+/g);
         return list ? list.map(v => v.slice(1)) : []
+    }
+    const handleDropFile = (e) => {
+        const file = e.dataTransfer?.files[0]
+        const iterator = file.type.matchAll(/(\w+)\//g)
+        const type = iterator.next().value[1]
+        switch(type) {
+            case "image":
+                sendImageMessage(file)
+                break
+            case "audio":
+                sendSoundMessage(file)
+                break
+            case "video":
+                sendVideoMessage(file)
+                break
+            default:
+                sendFileMessage(file)
+        }
     }
     const handleSendPhotoMessage = () => {
         imagePicker.current.click();
@@ -106,16 +121,14 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handleSendVideoMessage = () => {
         videoPicker.current.click();
     }
-    const sendImageMessage = async (e) => {
-        const image = e.target.files[0]
-
-        if (image) {
+    const sendImageMessage = async (file) => {
+        if (file) {
             const { data: { code, desc, json_params } } = await sendImageMsg({
                 convId,
                 convType,
                 messageElementArray: [{
                     elem_type: 1,
-                    image_elem_orig_path: image.path,
+                    image_elem_orig_path: file.path,
                     image_elem_level: 0
                 }],
                 userId,
@@ -125,12 +138,13 @@ export const MessageInput = (props: Props): JSX.Element => {
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
+            } else {
+                message.error({content: `消息发送失败 ${desc}`})
             }
         }
     }
 
-    const sendFileMessage = async (e) => {
-        const file = e.target.files[0]
+    const sendFileMessage = async (file) => {
         const { data: { code, desc, json_params } } = await sendFileMsg({
             convId,
             convType,
@@ -148,39 +162,49 @@ export const MessageInput = (props: Props): JSX.Element => {
                 convId,
                 messages: [JSON.parse(json_params)]
             }))
+        } else {
+            message.error({content: `消息发送失败 ${desc}`})
         }
     }
 
-    const sendVideoMessage = async (e) => {
-        const video = e.target.files[0]
-        const { data: { code, json_params } } = await sendVideoMsg({
-            convId,
-            convType,
-            messageElementArray: [{
-                elem_type: 9,
-                video_elem_video_type: "MP4",
-                video_elem_video_size: video.size,
-                video_elem_video_duration: 10,
-                video_elem_video_path: video.value,
-                video_elem_image_type: "png",
-                video_elem_image_size: 10000,
-                video_elem_image_width: 200,
-                video_elem_image_height: 80,
-                video_elem_image_path: "./cover.png"
-            }],
-            userId,
-        });
+    const sendVideoMessage = async (file) => {
+        if(file){
+            const { data: { code, json_params, desc } } = await sendVideoMsg({
+                convId,
+                convType,
+                messageElementArray: [{
+                    elem_type: 9,
+                    video_elem_video_type: "MP4",
+                    video_elem_video_size: file.size,
+                    video_elem_video_duration: 10,
+                    video_elem_video_path: file.value,
+                    video_elem_image_type: "png",
+                    video_elem_image_size: 10000,
+                    video_elem_image_width: 200,
+                    video_elem_image_height: 80,
+                    video_elem_image_path: "./cover.png"
+                }],
+                userId,
+            });
+            if (code === 0) {
+                dispatch(reciMessage({
+                    convId,
+                    messages: [JSON.parse(json_params)]
+                }))
+            } else {
+                message.error({content: `消息发送失败 ${desc}`})
+            }
+        }
     }
 
-    const sendSoundMessage = async (e) => {
-        const sound = e.target.files[0]
+    const sendSoundMessage = async (file) => {
         const { data: { code, json_params } } = await sendSoundMsg({
             convId,
             convType,
             messageElementArray: [{
                 elem_type: 2,
-                sound_elem_file_path: sound.value,
-                sound_elem_file_size: sound.size,
+                sound_elem_file_path: file.value,
+                sound_elem_file_size: file.size,
                 sound_elem_file_time: 10,
             }],
             userId,
@@ -290,7 +314,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area" onKeyPress={handleOnkeyPress}>
+            <div className="message-input__text-area" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyPress={handleOnkeyPress}>
                 <BraftEditor
                     onChange={editorChange}
                     value={editorState}
@@ -305,7 +329,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }
-            <Modal caption="真的发这个图片吗" onClose={close}>
+            {/* <Modal caption="真的发这个图片吗" onClose={close}>
                 <Modal.Body>真的发这个图片吗</Modal.Body>
                 <Modal.Footer>
                     <Button type="primary" onClick={close}>
@@ -315,11 +339,11 @@ export const MessageInput = (props: Props): JSX.Element => {
                         取消
                     </Button>
                 </Modal.Footer>
-            </Modal>
-            <input ref={filePicker} onChange={sendFileMessage} type="file" style={{ display: 'none' }} />
-            <input ref={imagePicker} onChange={sendImageMessage} type="file" style={{ display: 'none' }} />
-            <input ref={videoPicker} onChange={sendVideoMessage} type="file" style={{ display: 'none' }} />
-            <input ref={soundPicker} onChange={sendSoundMessage} type="file" style={{ display: 'none' }} />
+            </Modal> */}
+            <input ref={filePicker} onChange={e =>sendFileMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
+            <input ref={imagePicker} onChange={e => sendImageMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
+            <input ref={videoPicker} onChange={e => sendVideoMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
+            <input ref={soundPicker} onChange={e => sendSoundMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
         </div>
     )
 

@@ -1,9 +1,13 @@
-import { List } from "tea-component"
-import React, { FC, useEffect, useRef, useState } from "react"
-import { Avatar } from "../../../components/avatar/avatar"
-import timRenderInstance from "../../../utils/timRenderInstance"
-import { getSelectionCoords } from '../../../utils/getSelectionCoords';
 import './atPopup.scss'
+import React, { 
+    FC, 
+    useEffect, 
+    useRef, 
+    useState 
+} from "react"
+import { Avatar } from "../../../components/avatar/avatar"
+import { getSelectionCoords } from '../../../utils/getSelectionCoords';
+import { List } from "tea-component"
 import { getGroupMemberList } from "../api";
 
 interface AtPopupProps {
@@ -18,7 +22,7 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element =
     const newCoords = getSelectionCoords(window)
     
     
-    const getList = async () => {
+    const getData = async () => {
         const list = await getGroupMemberList({
             groupId: group_id
         });
@@ -27,7 +31,7 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element =
     }
     useEffect(() => {
         setCoords({x: newCoords.x - 325, y: newCoords.y - 35})
-        getList()
+        getData()
     }, [group_id])
 
     useEffect(() => {

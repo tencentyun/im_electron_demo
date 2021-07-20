@@ -9,7 +9,7 @@ type SendMsgParams<T> = {
   messageAtArray?: string[];
 };
 
-type TextMsg = {
+export type TextMsg = {
   elem_type: number;
   text_elem_content: string;
 };
