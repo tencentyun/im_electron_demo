@@ -65,8 +65,8 @@ export const Message = (): JSX.Element => {
     }
     useEffect(() => {
         getData();
-        getUsetStatus();
     }, []);
+    
     useEffect(() => {
         getUsetStatus();
     }, [conversationList]);
