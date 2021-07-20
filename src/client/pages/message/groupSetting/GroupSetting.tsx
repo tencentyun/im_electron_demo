@@ -21,6 +21,8 @@ export const GroupSetting = (props: {
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
+  console.log('userId', userId)
+
   const { value, loading, retry } = useAsyncRetryFunc(async () => {
     const [r1, r2] = await Promise.all([
       getGroupMemberInfoList({

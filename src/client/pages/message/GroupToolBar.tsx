@@ -9,6 +9,7 @@ import {
   GroupSettingDrawer,
   GroupSettingRecordsType,
 } from "./GroupSettingDrawer";
+import { GroupToolsDrawer, GroupToolsgRecordsType } from "./GroupToolsDeawer";
 
 const tools = [
   // {
@@ -35,6 +36,8 @@ export const GroupToolBar = (props: {
   const addActiveClass = (id: string): string =>
     active === id ? "is-active" : "";
 
+  const groupToolsRef = useDialogRef<GroupToolsgRecordsType>();
+
   const groupSettingRef = useDialogRef<GroupSettingRecordsType>();
   const groupAccountecmentSettingRef =
     useDialogRef<GroupAccountecmentSettingRecordsType>();
@@ -53,11 +56,16 @@ export const GroupToolBar = (props: {
           <div
             key={id}
             className="tool-bar--item"
-            onClick={() => {
+            onClick={(e) => {
+              console.log("test", e);
               if (active !== id) {
                 setActive(id);
-                const ref = refMap[id];
-                ref.current.open({ conversationInfo });
+                // const ref = refMap[id];
+                // ref.current.open({ conversationInfo });
+                groupToolsRef.current.open({ conversationInfo, toolId: id });
+              } else {
+                groupToolsRef.current.close();
+                setActive('')
               }
             }}
           >
@@ -67,7 +75,12 @@ export const GroupToolBar = (props: {
           </div>
         ))}
       </div>
-      <GroupSettingDrawer
+      <GroupToolsDrawer
+        dialogRef={groupToolsRef}
+        popupContainer={popupContainer}
+        onClose={() => setActive("")}
+      />
+      {/* <GroupSettingDrawer
         dialogRef={groupSettingRef}
         popupContainer={popupContainer}
         onClose={() => setActive("")}
@@ -76,7 +89,7 @@ export const GroupToolBar = (props: {
         dialogRef={groupAccountecmentSettingRef}
         popupContainer={popupContainer}
         onClose={() => setActive("")}
-      />
+      /> */}
     </>
   );
 };
