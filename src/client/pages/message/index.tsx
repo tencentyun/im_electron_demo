@@ -258,6 +258,7 @@ export const Message = (): JSX.Element => {
             {
                 currentSelectedConversation && currentSelectedConversation.conv_type === 2 ? <GroupToolBar conversationInfo={currentSelectedConversation} /> : <></>
             }
+            {/* 音视频通话面板 */}
         </div>
     )
 };
