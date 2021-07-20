@@ -80,16 +80,16 @@ request.interceptors.request.use(
 request.interceptors.response.use(
     async (response: AxiosResponse) => {
 
-        const res: ResponseData = response.data;
-        const { code } = res;
-
+        // const res: ResponseData = response.data;
+        // const { code } = res;
+        // console.warn(res,'拦截后')
         // 自定义状态码验证
-        if (code !== 0) {
-            return Promise.reject({
-                response,
-                message: 'CustomError',
-            });
-        }
+        // if (code !== 0) {
+        //     return Promise.reject({
+        //         response,
+        //         message: 'CustomError',
+        //     });
+        // }
         return response;
     },
     /* error => {} */ // 已在 export default catch
