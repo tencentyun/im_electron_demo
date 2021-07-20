@@ -46,12 +46,13 @@ export const GroupSetting = (props: {
   console.log("currentUserSetting", currentUserSetting);
 
   return (
-    <LoadingContainer loading={loading} >
+    <LoadingContainer loading={loading}>
       <GroupBaseInfo
         groupAvatar={groupDetail.group_detial_info_face_url}
         groupId={groupDetail.group_detial_info_group_id}
         groupName={groupDetail.group_detial_info_group_name}
         groupType={groupDetail.group_detial_info_group_type}
+        userIdentity={currentUserSetting.group_member_info_member_role}
         onRefresh={retry}
       />
       <Divider />
@@ -66,6 +67,8 @@ export const GroupSetting = (props: {
       <GroupAccountecment
         accountecment={groupDetail.group_detial_info_notification}
         groupId={groupDetail.group_detial_info_group_id}
+        userIdentity={currentUserSetting.group_member_info_member_role}
+        groupType={groupDetail.group_detial_info_group_type}
         onRefresh={retry}
       />
       <Divider />
@@ -97,6 +100,8 @@ export const GroupSetting = (props: {
         muteFlag={groupDetail.group_detial_info_is_shutup_all}
         groupId={groupDetail.group_detial_info_group_id}
         onRefresh={retry}
+        userIdentity={currentUserSetting.group_member_info_member_role}
+        groupType={groupDetail.group_detial_info_group_type}
       />
       <Divider />
       <GroupOperator

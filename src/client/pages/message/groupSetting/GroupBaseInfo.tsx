@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDialogRef } from "../../../utils/react-use/useDialog";
 import { Avatar } from "../../../components/avatar/avatar";
 import {
@@ -21,11 +21,21 @@ export const GroupBaseInfo = (props: {
   groupName: string;
   groupId: string;
   groupType: number;
+  userIdentity: number;
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
-  const { groupAvatar, groupId, groupName, groupType, onRefresh } = props;
+  const {
+    groupAvatar,
+    groupId,
+    groupName,
+    userIdentity,
+    groupType,
+    onRefresh,
+  } = props;
 
   const editDialog = useDialogRef<EditGroupBaseInfoRecordsType>();
+
+  const canEdit =groupType === 1 || [2, 3].includes(userIdentity);
 
   return (
     <>
@@ -34,22 +44,29 @@ export const GroupBaseInfo = (props: {
         <div className="group-base-info--text">
           <div>
             <span className="group-base-info--text__name">{groupName}</span>
-            <EditIcon
-              onClick={() =>
-                editDialog.current.open({
-                  groupId,
-                  groupName,
-                  groupFaceUrl: groupAvatar,
-                })
-              }
-            />
+            {canEdit && (
+              <EditIcon
+                onClick={() =>
+                  editDialog.current.open({
+                    groupId,
+                    groupName,
+                    groupFaceUrl: groupAvatar,
+                  })
+                }
+              />
+            )}
           </div>
           <span className="group-base-info--text__type">
             {GROUP_TYPE_MAP[groupType] || ""}
           </span>
         </div>
       </div>
-      <EditGroupBaseInfoDialog dialogRef={editDialog} onSuccess={() =>{ console.log(111); onRefresh()}} />
+      <EditGroupBaseInfoDialog
+        dialogRef={editDialog}
+        onSuccess={() => {
+          onRefresh();
+        }}
+      />
     </>
   );
 };

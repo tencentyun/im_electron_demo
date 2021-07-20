@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { replaceConversaionList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
 import { Avatar } from '../../components/avatar/avatar';
@@ -21,8 +21,11 @@ import { useDialogRef } from "../../utils/react-use/useDialog";
 import useDynamicRef from "../../utils/react-use/useDynamicRef";
 import { addMessage } from '../../store/actions/message';
 import timeFormat from '../../utils/timeFormat';
+import { EmptyResult } from './searchMessage/EmptyResult';
+import { Myloader } from '../../components/skeleton';
 
 export const Message = (): JSX.Element => {
+    const [isLoading, setLoadingStatus ] = useState(false);
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
     const dialogRef = useDialogRef();
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
@@ -54,6 +57,7 @@ export const Message = (): JSX.Element => {
     const dispatch = useDispatch();
     const getData = async () => {
         const response = await getConversionList();
+        setLoadingStatus(false);
         dispatch(replaceConversaionList(response))
         if (response.length) {
             if (currentSelectedConversation === null) {
@@ -62,6 +66,7 @@ export const Message = (): JSX.Element => {
         }
     }
     useEffect(() => {
+        conversationList.length === 0 && setLoadingStatus(true);
         getData();
     }, []);
 
@@ -77,7 +82,7 @@ export const Message = (): JSX.Element => {
 
     const handleSearchBoxClick = () => dialogRef.current.open();
 
-    const getLastMsgInfo = (lastMsg,conv_type) => {
+    const getLastMsgInfo = (lastMsg,conv_type,conv_group_at_info_array) => {
         const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read } = lastMsg;
         const { user_profile_nick_name } = message_sender_profile;
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
@@ -98,10 +103,14 @@ export const Message = (): JSX.Element => {
             '11': '[资料]',
             '12': '[合并消息]',
         }[firstMsg.elem_type];
-
+        const hasAtMessage = conv_group_at_info_array && conv_group_at_info_array.length;
+        const atDisPlayMessage = hasAtMessage && conv_group_at_info_array.pop().conv_group_at_info_at_type === 1 ? "@我" : "@所有人"
         return <React.Fragment>
             {
                conv_type === 1 ? <span className={`icon ${message_is_peer_read ? 'is-read' : ''}`} /> : null
+            }
+            {
+                conv_type && hasAtMessage ? <span className="at-msg">{atDisPlayMessage}</span> : null
             }
             <span className="text">{displayLastMsg}</span>
         </React.Fragment>;
@@ -192,8 +201,12 @@ export const Message = (): JSX.Element => {
         }
     }
 
+    if (isLoading) {
+        return <Myloader />
+    }
+
     if (currentSelectedConversation === null) {
-        return null
+        return <EmptyResult contentText="暂无会话" />
     }
 
     return (
@@ -203,7 +216,7 @@ export const Message = (): JSX.Element => {
                 <div className="conversion-list">
                     {
                         conversationList.map((item) => {
-                            const { conv_profile, conv_id, conv_last_msg, conv_unread_num,conv_type,conv_is_pinned } = item;
+                            const { conv_profile, conv_id, conv_last_msg, conv_unread_num,conv_type,conv_is_pinned, conv_group_at_info_array } = item;
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
                             return (
@@ -222,9 +235,10 @@ export const Message = (): JSX.Element => {
                                             }
                                         </div>
                                         {
-                                            conv_last_msg ? <div className="conversion-list__item--last-message">{getLastMsgInfo(conv_last_msg,conv_type)}</div> : null
+                                            conv_last_msg ? <div className="conversion-list__item--last-message">{getLastMsgInfo(conv_last_msg,conv_type,conv_group_at_info_array)}</div> : null
                                         }
                                     </div>
+                                    <span className="pinned-tag"></span>
                                 </div>
                             )
                         })
@@ -253,6 +267,7 @@ export const Message = (): JSX.Element => {
             {
                 currentSelectedConversation && currentSelectedConversation.conv_type === 2 ? <GroupToolBar conversationInfo={currentSelectedConversation} /> : <></>
             }
+            {/* 音视频通话面板 */}
         </div>
     )
 };
