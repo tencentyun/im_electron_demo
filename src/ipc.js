@@ -1,5 +1,5 @@
-import { BrowserWindow } from "electron";
-import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG } from "./const/const";
+// import { BrowserWindow } from "electron";
+const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG } = require("./const/const");
 const { dialog } = require('electron')
 const { ipcMain } = require('electron')
 const fs = require('fs')
@@ -7,9 +7,10 @@ const path = require('path')
 const http = require('http')
 const url = require('url')
 const child_process = require('child_process')
-export default class IPC {
-    win:BrowserWindow = null;
-    constructor(win:BrowserWindow){
+
+class IPC {
+    win = null;
+    constructor(win){
         this.win = win;
         ipcMain.on(RENDERPROCESSCALL,(event,data) => {
             console.log("get message from render process",event.processId,data)
@@ -73,3 +74,5 @@ export default class IPC {
         }
     }
 }
+
+module.exports = IPC;

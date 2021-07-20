@@ -1,6 +1,0 @@
-export const MINSIZEWIN = 'MINSIZEWIN'
-export const RENDERPROCESSCALL = 'RENDERPROCESSCALL'
-export const MAXSIZEWIN = 'MAXSIZEWIN'
-export const CLOSE = 'CLOSE'
-export const SHOWDIALOG = 'SHOWDIALOG'
-export const DOWNLOADFILE = 'DOWNLOADFILE'

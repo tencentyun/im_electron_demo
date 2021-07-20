@@ -18,12 +18,14 @@ import {
 import 'react-contexify/dist/ReactContexify.min.css';
 import { SearchMessageModal } from './searchMessage';
 import { useDialogRef } from "../../utils/react-use/useDialog";
+import useDynamicRef from "../../utils/react-use/useDynamicRef";
 import { addMessage } from '../../store/actions/message';
 import timeFormat from '../../utils/timeFormat';
 
 export const Message = (): JSX.Element => {
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
     const dialogRef = useDialogRef();
+    const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
 
     const convMenuID = "CONV_HANDLE"
 
@@ -62,6 +64,13 @@ export const Message = (): JSX.Element => {
     useEffect(() => {
         getData();
     }, []);
+
+    useEffect(() => {
+        if(currentSelectedConversation?.conv_id) {
+            const ref = getRef(currentSelectedConversation.conv_id);
+            ref.current.scrollIntoViewIfNeeded();
+        }
+    }, [currentSelectedConversation] );
 
     const handleConvListClick = convInfo => dispatch(updateCurrentSelectedConversation(convInfo));
 
@@ -197,7 +206,7 @@ export const Message = (): JSX.Element => {
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
                             return (
-                                <div className={`conversion-list__item ${conv_id === currentSelectedConversation.conv_id ? 'is-active' : ''} ${conv_is_pinned ? 'is-pinned':''}`} key={conv_id} onClick={() => handleConvListClick(item)} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                <div ref={setRef(conv_id)} className={`conversion-list__item ${conv_id === currentSelectedConversation.conv_id ? 'is-active' : ''} ${conv_is_pinned ? 'is-pinned':''}`} key={conv_id} onClick={() => handleConvListClick(item)} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                     <div className="conversion-list__item--profile">
                                         {
                                             conv_unread_num > 0 ? <div className="conversion-list__item--profile___unread">{getDisplayUnread(conv_unread_num)}</div> : null

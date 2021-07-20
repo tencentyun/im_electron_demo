@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import {
     Menu,
@@ -62,11 +62,16 @@ const RIGHT_CLICK_MENU_LIST = [{
 
 export const MessageView = (props: Props): JSX.Element => {
     const { messageList } = props;
+    const messageViewRef = useRef(null);
     const [isTransimitPopup, setTransimitPopup] = useState(false);
     const [isMultiSelect, setMultiSelect] = useState(false);
     const [forwardType, setForwardType] = useState<ForwardType>(ForwardType.divide);
     const [seletedMessage, setSeletedMessage] = useState<State.message[]>([]);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        // messageViewRef?.current?.firstChild?.scrollIntoView();
+    }, [messageList])
 
     const handleRevokeMsg = async (params) => {
         const { convId, msgId, convType } = params;
@@ -253,7 +258,7 @@ export const MessageView = (props: Props): JSX.Element => {
         return resp;
     }
     return (
-        <div className="message-view">
+        <div className="message-view" ref={messageViewRef}>
             {
                messageList && messageList.length > 0 &&
                 messageList.map(item => {
