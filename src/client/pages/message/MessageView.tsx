@@ -70,7 +70,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        messageViewRef?.current?.firstChild?.scrollIntoView();
+        // messageViewRef?.current?.firstChild?.scrollIntoView();
     }, [messageList])
 
     const handleRevokeMsg = async (params) => {
