@@ -70,6 +70,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "braft-editor": "^2.3.9",
     "concurrently": "^6.2.0",
     "electron-squirrel-startup": "^1.0.0",
