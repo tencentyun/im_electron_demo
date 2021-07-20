@@ -7,9 +7,11 @@ import "./group-accountecment.scss";
 export const GroupAccountecment = (props: {
   accountecment: string;
   groupId: string;
-  onRefresh: () => Promise<any>
+  userIdentity: number;
+  groupType: number;
+  onRefresh: () => Promise<any>;
 }): JSX.Element => {
-  const { accountecment, groupId, onRefresh } = props;
+  const { accountecment, groupId, userIdentity, groupType, onRefresh } = props;
 
   const [input, setInput] = useState(accountecment);
   const [isEdit, setIsEdit] = useState(false);
@@ -33,11 +35,20 @@ export const GroupAccountecment = (props: {
     setInput(accountecment);
   }, [accountecment]);
 
+  /**
+   * 当前不是修改状态，才出现修改按钮
+   * 对于公开群、聊天室和直播大群，只有群主或者管理员可以修改群简介。
+   * 对于私有群，任何人可修改群简介。
+   * 用户身份类型 memberRoleMap
+   * 群类型  groupTypeMap
+   */
+  const canEdit = !isEdit && (groupType === 1 || [2, 3].includes(userIdentity));
+
   return (
     <div className="group-accountecment">
       <div className="group-accountecment--title">
         <span className="group-accountecment--title__text">群公告</span>
-        {!isEdit && <EditIcon onClick={() => setIsEdit(true)} />}
+        {canEdit && <EditIcon onClick={() => setIsEdit(true)} />}
       </div>
       {isEdit ? (
         <Input
@@ -55,7 +66,7 @@ export const GroupAccountecment = (props: {
           }}
         />
       ) : (
-      <div className="group-accountecment--info">{input || ''}</div>
+        <div className="group-accountecment--info">{input || ""}</div>
       )}
     </div>
   );

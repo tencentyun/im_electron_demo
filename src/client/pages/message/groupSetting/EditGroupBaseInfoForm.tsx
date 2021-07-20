@@ -6,9 +6,9 @@ import { getStatus } from "../../../utils/getStatus";
 const reg = /(https?|ftp|file):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/;
 
 const validateFaceUrl = (value: string) => {
-  if(!value) {
-    return '用户头像地址必填';
-  }
+  // if(!value) {
+  //   return '用户头像地址必填';
+  // }
 
   if(value && !reg.test(value)) {
     return 'url不合法';
@@ -72,7 +72,7 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
               >
                 {({ input, meta }) => (
                   <Form.Item
-                    required
+                    // required
                     label="群头像"
                     status={getStatus(meta, validating)}
                     message={
@@ -94,11 +94,11 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
                 disabled={submitting}
                 validateOnBlur
                 validateFields={[]}
-                validate={(value) => validateValue(value , '群名称')}
+                // validate={(value) => validateValue(value , '群名称')}
               >
                 {({ input, meta }) => (
                   <Form.Item
-                    required
+                    // required
                     label="群聊名称"
                     status={getStatus(meta, validating)}
                     message={
