@@ -5,6 +5,7 @@
   "description": "IM Electron Demo",
   "main": "src/main.js",
   "scripts": {
+    "start": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
     "lint": "eslint --ext .ts .",
     "build": "npm run build:react && electron-builder -w",
     "dev:electron": "cross-env NODE_ENV=development && electron .",
@@ -70,6 +71,7 @@
   },
   "dependencies": {
     "braft-editor": "^2.3.9",
+    "concurrently": "^6.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "file-loader": "^6.2.0",
     "final-form": "^4.20.2",
