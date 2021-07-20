@@ -10,10 +10,11 @@ const getInstance = ():TimRender => {
             get: (obj, prop) => {
                 return async (...args) => {
                     const res = await obj[prop](...args);
-                    if (res.data.code !== 0 )  {
+                    if (res && res.data && res.data.code !== 0 )  {
                         const {data: {code, desc} } = res;
                         console.error("接口出错:", prop, code, desc);
-                        return message.error({content: ` ${String(prop)} 接口出错：${desc}`});
+                        message.error({content: ` ${String(prop)} 接口出错：${desc}`});
+                        return res
                     } 
                     return  res
                 }
