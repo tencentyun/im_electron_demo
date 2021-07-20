@@ -91,7 +91,7 @@ export const MessageInfo = (
   
   // 可拉人进群条件为 当前选中聊天类型为群且群类型不为直播群且当前群没有设置禁止加入
   const canInviteMember =
-    conv_type === 2 && [0, 1, 2].includes(groupType) && addOption !== 0;
+    conv_type === 2 && [0, 1, 2].includes(groupType);
 
   useEffect(() => {
     setMessageRead();
@@ -111,6 +111,8 @@ export const MessageInfo = (
       getMessageList();
     }
   }, [conv_id]);
+
+  const isOnInternet = true;
 
   return (
     <>
@@ -134,6 +136,13 @@ export const MessageInfo = (
             <span className="message-info__header--name">
               {nickName || conv_id}
             </span>
+            {
+              conv_type === 1 ?
+              <span title={isOnInternet?'在线':'离线'} 
+                className={['message-info__header--type', !isOnInternet?'message-info__header--typeoff': ''].join(' ')}
+              >
+              </span>:null
+            }
           </div>
           {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
         </header>

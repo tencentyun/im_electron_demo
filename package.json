@@ -3,92 +3,76 @@
   "productName": "IM Electron Demo",
   "version": "1.0.0",
   "description": "IM Electron Demo",
-  "main": ".webpack/main",
+  "main": "src/main.js",
   "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts ."
+    "start": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
+    "lint": "eslint --ext .ts .",
+    "build": "npm run build:react && electron-builder -w",
+    "dev:electron": "cross-env NODE_ENV=development && electron .",
+    "dev:react": "cross-env NODE_ENV=development webpack server --config webpack.react.config.js --mode development",
+    "build:react": "cross-env NODE_ENV=production webpack --config webpack.react.config.js --mode production"
   },
   "keywords": [],
   "author": {
     "name": "Jingfeng",
     "email": "joyxian@tencent.com"
   },
-  "license": "MIT",
-  "config": {
-    "forge": {
-      "packagerConfig": {},
-      "makers": [
+  "build": {
+    "appId": "electron-sdk",
+    "mac": {},
+    "win": {
+      "target": [
         {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "my_new_app"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
+          "target": "nsis",
+          "arch": [
+            "x64"
           ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
         }
       ],
-      "plugins": [
-        [
-          "@electron-forge/plugin-webpack",
-          {
-            "mainConfig": "./webpack.main.config.js",
-            "renderer": {
-              "config": "./webpack.renderer.config.js",
-              "entryPoints": [
-                {
-                  "html": "./src/index.html",
-                  "js": "./src/renderer.ts",
-                  "name": "main_window"
-                }
-              ]
-            }
-          }
-        ]
+      "extraFiles": [
+        {
+          "from": "./node_modules/im_electron_sdk/lib/",
+          "to": "./node_modules/im_electron_sdk/lib/",
+          "filter": [
+            "**/*"
+          ]
+        }
       ]
     }
   },
+  "license": "MIT",
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.57",
-    "@electron-forge/maker-deb": "^6.0.0-beta.57",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.57",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.57",
-    "@electron-forge/maker-zip": "^6.0.0-beta.57",
-    "@electron-forge/plugin-webpack": "^6.0.0-beta.57",
-    "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.7",
+    "@babel/preset-react": "^7.14.5",
+    "@babel/preset-typescript": "^7.14.5",
     "@types/react": "^17.0.13",
     "@types/react-dom": "^17.0.8",
     "@types/react-router-dom": "^5.1.7",
     "@typescript-eslint/eslint-plugin": "^4.28.1",
     "@typescript-eslint/parser": "^4.28.1",
+    "babel-loader": "^8.2.2",
+    "cross-env": "^7.0.3",
     "css-loader": "^5.2.6",
-    "electron": "13.1.5",
+    "electron": "^13.1.5",
+    "electron-builder": "^22.11.7",
     "eslint": "^7.30.0",
     "eslint-plugin-import": "^2.23.4",
-    "fork-ts-checker-webpack-plugin": "^6.2.12",
+    "html-webpack-plugin": "^5.3.2",
+    "node-gyp": "^7.1.2",
     "node-loader": "^2.0.0",
     "sass-loader": "^12.1.0",
     "style-loader": "^2.0.0",
     "ts-loader": "^9.2.3",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "webpack": "^5.45.1",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
     "axios": "^0.21.1",
     "braft-editor": "^2.3.9",
+    "concurrently": "^6.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "file-loader": "^6.2.0",
     "final-form": "^4.20.2",

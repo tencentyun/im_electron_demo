@@ -1,6 +1,7 @@
 import React from "react";
 import { useDialogRef } from "../../../utils/react-use/useDialog";
 import { Avatar } from "../../../components/avatar/avatar";
+import { useMessageDirect } from '../../../utils/react-use/useDirectMsgPage';
 import "./group-member.scss";
 import {
   GroupMemberListDrawer,
@@ -51,7 +52,7 @@ export const GroupMember = (props: {
   );
 
   // 可拉人进群条件为 群类型不为直播群且当前群没有设置禁止加入
-  const canInviteMember = [0, 1, 2].includes(groupType) && groupAddOption !== 0;
+  const canInviteMember = [0, 1, 2].includes(groupType);
 
   /**
    * 对于私有群：只有创建者可删除群组成员。
@@ -64,25 +65,47 @@ export const GroupMember = (props: {
     (groupType === 1 && userIdentity === 3) ||
     ([0, 2].includes(groupType) && [2, 3].includes(userIdentity));
 
+  const directToMsgPage = useMessageDirect();
+  
+  // 双击与群成员建立单独会话
+  const handleMsgGroupRead = async (profile) => {
+    directToMsgPage({
+        convType: 1,
+        profile : profile,
+    })
+  };
+
+  const isOnInternet = false;
+
   return (
     <>
       <div className="group-member">
         <div className="group-member--title">
           <span>群成员</span>
-          <span
-            className="group-member--title__right"
-            onClick={() => dialogRef.current.open({ memberList: userList })}
-          >
-            <span style={{ marginRight: "4px" }}>{userList.length}人</span>
-            <span>&gt;</span>
-          </span>
+          {userList.length ? (
+            <span
+              className="group-member--title__right"
+              onClick={() => dialogRef.current.open({ memberList: userList })}
+            >
+              <span style={{ marginRight: "4px" }}>{userList.length}人</span>
+              <span>&gt;</span>
+            </span>
+          ) : (
+            <></>
+          )}
         </div>
         <div className="group-member--avatar">
           {userList?.slice(0, 15)?.map((v, index) => (
-            <Avatar
-              key={`${v.user_profile_face_url}-${index}`}
-              url={v.user_profile_face_url}
-            />
+            <div className="group-member--avatar-box" key={`${v.user_profile_face_url}-${index}`} onDoubleClick={()=>{handleMsgGroupRead(v)}}>
+              <Avatar
+                // key={`${v.user_profile_face_url}-${index}`}
+                url={v.user_profile_face_url}
+              />
+              <span title={isOnInternet?'在线':'离线'} 
+                className={['group-member--avatar-type', !isOnInternet?'group-member--avatar-typeoff': ''].join(' ')}
+              >
+              </span>
+            </div>
           ))}
           {canInviteMember && (
             <span

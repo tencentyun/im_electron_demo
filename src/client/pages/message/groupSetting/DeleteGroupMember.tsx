@@ -113,6 +113,7 @@ export const DeleteGroupMemberDialog = (props: {
         groupId: defaultForm.groupId,
         userIdList: selectedList.map((v) => v.user_profile_identifier),
       });
+      setSelectedList([])
       onClose();
       onSuccess?.();
     } catch (e) {

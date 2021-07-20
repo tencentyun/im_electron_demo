@@ -9,7 +9,7 @@ type SendMsgParams<T> = {
   messageAtArray?: string[];
 };
 
-type TextMsg = {
+export type TextMsg = {
   elem_type: number;
   text_elem_content: string;
 };
@@ -104,6 +104,7 @@ export const getGroupInfoList = async (groupIdList: Array<string>) => {
     groupIds: groupIdList,
   });
   const groupInfoList = JSON.parse(json_param);
+  console.log('groupInfoList', groupInfoList)
 
   return groupInfoList.map((item) => item.get_groups_info_result_info);
 };
@@ -158,11 +159,25 @@ export const addProfileForConversition = async (conversitionList) => {
     }
     return {
       ...item,
-      conv_profile: profile,
+      conv_profile: profile || {},
     };
   });
 };
 
+/**
+ * 获取当前对话标列表好友状态
+ * @param sdkappid
+ * @param uid
+ * @param isPinned
+ * @returns
+ */
+export const getUsetStatusRequest = async (sdkappid, uid, To_Account) => {
+  return await timRenderInstance.getUsetStatusRequest({
+    sdkappid,
+    uid,
+    To_Account
+  });
+};
 /**
  * 会话（取消）置顶
  * @param convId
