@@ -11,5 +11,5 @@ export const DEFAULT_USERID = 'lexuslin';
 export const DEFAULT_USER_SIG = 'eJwsjU3PgjAQhP-LXnnDW6s02sSDBw8IMTEQ8UrsiivaNkvjR4z-3QjM8cnMPG8o8yLGpydG0FMlfvnrIRm0gU6EDBrIBmRbB3K2vsJQ6Exbe08G9LjoqAEN2yrbF8lq1lBwl8i3qfPRWe6OLDaHnMtHUb3WXKHM-tPl*BTohqAnSiq1UImYD-Tem2Us4PMNAAD--0bsMtg_';
 
 
-export const DEFAULT_USERID = '940928'; 
-export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
+// export const DEFAULT_USERID = '940928'; 
+// export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
