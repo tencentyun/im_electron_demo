@@ -67,6 +67,8 @@ export const createGroup = async (params: createGroupParams): Promise<any> => {
   const { data } = await timRenderInstance.TIMGroupCreate({
     params: createParams,
   });
+
+  console.log('data', data)
   const { code, desc } = data;
   if (code === 0) {
     return {};
