@@ -70,7 +70,8 @@ export const Message = (): JSX.Element => {
     const handleSearchBoxClick = () => dialogRef.current.open();
 
     const getLastMsgInfo = (lastMsg,conv_type) => {
-        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read } = lastMsg;
+        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read, message_sender, message_conv_id } = lastMsg;
+        // console.warn(lastMsg,'查看当前消息')
         const { user_profile_nick_name } = message_sender_profile;
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
         const firstMsg = message_elem_array[0];
@@ -93,7 +94,7 @@ export const Message = (): JSX.Element => {
 
         return <React.Fragment>
             {
-               conv_type === 1 ? <span className={`icon ${message_is_peer_read ? 'is-read' : ''}`} /> : null
+               (conv_type === 1 && message_sender !== message_conv_id)? <span className={`icon ${message_is_peer_read ? 'is-read' : ''}`} /> : null
             }
             <span className="text">{displayLastMsg}</span>
         </React.Fragment>;
@@ -168,7 +169,12 @@ export const Message = (): JSX.Element => {
         TIMConvDelete(conv_id,conv_type).then(data=>{
             const { code } = data.data||{}
             if(code === 0){
-                console.log('删除会话成功')
+                // 删除会话后聊天框内容和qq一样转移成对话列表里的上一个或下一个人
+                const index = conversationList.findIndex(i=>i.conv_id === conv_id)
+                if(conversationList.length > 1 && currentSelectedConversation.conv_id === conv_id){
+                    const fandIndex = index === conversationList.length - 1? index-1 : index+1
+                    dispatch(updateCurrentSelectedConversation(conversationList[fandIndex]))
+                }
                 getData()
             }
         }).catch(err=>{
@@ -214,7 +220,7 @@ export const Message = (): JSX.Element => {
     if (currentSelectedConversation === null) {
         return null
     }
-    console.warn('当前对话列表所有人员信息', conversationList)
+    console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
     return (
         <div className="message-content">
             <div className="message-list">

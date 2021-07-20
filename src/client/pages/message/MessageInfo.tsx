@@ -112,7 +112,7 @@ export const MessageInfo = (
     }
   }, [conv_id]);
 
-  const isOnInternet = false;
+  const isOnInternet = true;
 
   return (
     <>
@@ -137,9 +137,7 @@ export const MessageInfo = (
               {nickName || conv_id}
             </span>
             {
-              // currentConversation.type === 'C2C'
-              // eslint-disable-next-line no-constant-condition
-              true ?
+              conv_type === 1 ?
               <span title={isOnInternet?'在线':'离线'} 
                 className={['message-info__header--type', !isOnInternet?'message-info__header--typeoff': ''].join(' ')}
               >

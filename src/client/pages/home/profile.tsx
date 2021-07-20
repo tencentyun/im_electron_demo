@@ -64,7 +64,7 @@ export const Profile = (): JSX.Element => {
                     nickName={nickName}
                     userID={userId}
                 />
-                {/* bubble组件必须包含一个有click之类事件的方法 */}
+                {/* bubble组件必须包含一个有click之类事件的方法的元素 */}
                 <span></span>
             </Bubble>
         </div>
