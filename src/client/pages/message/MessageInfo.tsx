@@ -38,6 +38,8 @@ export const MessageInfo = (
   const { historyMessageList } = useSelector(
     (state: State.RootState) => state.historyMessage
   );
+  const userTypeList = useSelector((state: State.RootState) => state.userTypeList);
+  
   const msgList = historyMessageList.get(conv_id);
 
   const getDisplayConvInfo = () => {
@@ -112,7 +114,16 @@ export const MessageInfo = (
     }
   }, [conv_id]);
 
-  const isOnInternet = true;
+  const isOnInternet = () => {
+    let buuer = false;
+    for(const item in userTypeList){
+        console.warn(userTypeList[item])
+        if(userTypeList[item].To_Account === conv_id && userTypeList[item].Status === 'Online'){
+          buuer = true
+        }
+    }
+    return buuer
+  };
 
   return (
     <>
@@ -138,8 +149,8 @@ export const MessageInfo = (
             </span>
             {
               conv_type === 1 ?
-              <span title={isOnInternet?'在线':'离线'} 
-                className={['message-info__header--type', !isOnInternet?'message-info__header--typeoff': ''].join(' ')}
+              <span title={isOnInternet()?'在线':'离线'} 
+                className={['message-info__header--type', !isOnInternet()?'message-info__header--typeoff': ''].join(' ')}
               >
               </span>:null
             }
