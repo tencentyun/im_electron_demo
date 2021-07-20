@@ -4,8 +4,10 @@ import { DEFAULT_USERID } from "../../constants";
 import timRenderInstance from "../../utils/timRenderInstance";
 import { setUserInfo } from '../../store/actions/user';
 import { Avatar } from "../../components/avatar/avatar";
+import { UserInfo } from "../../components/EditUserInfo";
 export const Profile = (): JSX.Element => {
     const dispatch = useDispatch();
+    const [userVisible,setUserVisible] = useState(true)
     const [sdkAppid ] = useState(DEFAULT_USERID);
     const { faceUrl,nickName,userId } = useSelector((state: State.RootState) => state.userInfo);
     const getSelfInfo = async ()=>{
@@ -29,17 +31,27 @@ export const Profile = (): JSX.Element => {
             }));
         }
     }
+    const handleAvatarClick = () => {
+        setUserVisible(true)
+    }
+    const handleChange = (val) => {
+        console.log('val',val);
+    }
+     const handleClose = (val) => {
+          setUserVisible(val)
+    }
     useEffect(()=>{
         getSelfInfo()
     },[])
 
     return (
-        <div className="userinfo-avatar">
+        <div className="userinfo-avatar" onClick={handleAvatarClick}>
             <Avatar
                 url={ faceUrl }
                 nickName  = { nickName}
                 userID = { userId }
             />
+            <UserInfo visible={userVisible}  onClose={handleClose} onChange={handleChange}></UserInfo>
         </div>
     )
 }

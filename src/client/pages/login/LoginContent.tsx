@@ -10,7 +10,7 @@ import { setIsLogInAction } from '../../store/actions/login';
 import { loginParam } from 'im_electron_sdk/dist/interface';
 
 const tabs = [
-    {id: 'verifyCodeLogin', label: '验证码登陆'},
+    // {id: 'verifyCodeLogin', label: '验证码登陆'},
     {id: 'passwordLogin', label: '密码登陆'}
 ]
 
