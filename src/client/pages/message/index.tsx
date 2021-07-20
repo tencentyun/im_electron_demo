@@ -4,7 +4,7 @@ import { replaceConversaionList, updateCurrentSelectedConversation } from '../..
 import { Avatar } from '../../components/avatar/avatar';
 
 import { SearchBox } from '../../components/searchBox/SearchBox';
-import { getConversionList, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage } from './api';
+import { getConversionList, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage, TIMMsgSetC2CReceiveMessageOpt, TIMMsgSetGroupReceiveMessageOpt } from './api';
 import './message.scss';
 import { MessageInfo } from './MessageInfo';
 import { GroupToolBar } from './GroupToolBar';
@@ -44,6 +44,10 @@ export const Message = (): JSX.Element => {
         {
             id: "disable",
             text: "消息免打扰"
+        },
+        {
+            id: "undisable",
+            text: "移除消息免打扰"
         },
         {
             id: "remove",
@@ -182,6 +186,17 @@ export const Message = (): JSX.Element => {
 
         })
     }
+    const disableRecMsg  = async (conv: State.conversationItem,isDisable:boolean) => {
+        const { conv_type,conv_id } = conv;
+        let data;
+        if(conv_type === 1){
+            data = await TIMMsgSetC2CReceiveMessageOpt(conv_id,isDisable?1:0)
+        }
+        if(conv_type === 2){
+           data = await TIMMsgSetGroupReceiveMessageOpt(conv_id,isDisable?1:0)
+        }
+        console.log(data)
+    }
     const handleClickMenuItem = (e,id) => {
         const { data }  = e.props;
         switch (id){
@@ -196,7 +211,13 @@ export const Message = (): JSX.Element => {
                 break;
             case 'clean':
                 cleanMessage(data);
-                break
+                break;
+            case 'disable':
+                disableRecMsg(data,true);
+                break;
+            case 'undisable':
+                disableRecMsg(data,false);
+                break;
 
         }
     }
@@ -216,9 +237,10 @@ export const Message = (): JSX.Element => {
                 <div className="conversion-list">
                     {
                         conversationList.map((item) => {
-                            const { conv_profile, conv_id, conv_last_msg, conv_unread_num,conv_type,conv_is_pinned, conv_group_at_info_array } = item;
+                            const { conv_profile, conv_id, conv_last_msg, conv_unread_num,conv_type,conv_is_pinned, conv_group_at_info_array,conv_recv_opt } = item;
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
+                            console.log('conv_recv_opt',conv_recv_opt)
                             return (
                                 <div ref={setRef(conv_id)} className={`conversion-list__item ${conv_id === currentSelectedConversation.conv_id ? 'is-active' : ''} ${conv_is_pinned ? 'is-pinned':''}`} key={conv_id} onClick={() => handleConvListClick(item)} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                     <div className="conversion-list__item--profile">
@@ -239,6 +261,9 @@ export const Message = (): JSX.Element => {
                                         }
                                     </div>
                                     <span className="pinned-tag"></span>
+                                    {
+                                        conv_recv_opt===1 ? <span className="mute"></span>:null
+                                    }
                                 </div>
                             )
                         })

@@ -211,6 +211,33 @@ export const TIMMsgClearHistoryMessage = async (conv_id, conv_type) => {
     conv_type,
   });
 };
+
+/**
+ * C2C消息免打扰
+ * @param conv_id 
+ * @param conv_type 
+ * @returns 
+ */
+export const TIMMsgSetC2CReceiveMessageOpt = async (userid, opt) => {
+  return await timRenderInstance.TIMMsgSetC2CReceiveMessageOpt({
+    params:[userid],
+    opt,
+  });
+};
+
+/**
+ * 群消息免打扰
+ * @param conv_id 
+ * @param conv_type 
+ * @returns 
+ */
+export const TIMMsgSetGroupReceiveMessageOpt = async (group_id, opt) => {
+  return await timRenderInstance.TIMMsgSetGroupReceiveMessageOpt({
+    group_id,
+    opt,
+  });
+};
+
 export const getMsgList = async (convId, convType) => {
   const {
     data: { json_params },

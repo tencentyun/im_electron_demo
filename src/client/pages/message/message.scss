@@ -136,6 +136,17 @@
         .pinned-tag {
             display: none;
         }
+        .mute {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background-image: url('../../assets/icon/mute.png');
+            background-size: 14px 14px;
+            background-position: 0 0;
+            top: 50%;
+            // margin-top: -7px;
+            right: 10px;
+        }
         &.is-pinned {
             .pinned-tag{
                 display: block;
