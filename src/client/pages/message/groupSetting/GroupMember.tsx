@@ -20,6 +20,7 @@ export const GroupMember = (props: {
     user_profile_face_url: string;
     user_profile_nick_name: string;
     group_member_info_member_role: number;
+    user_profile_identifier: string;
   }[];
   onRefresh: () => Promise<any>;
   userIdentity: number;
@@ -75,7 +76,7 @@ export const GroupMember = (props: {
               onClick={() => dialogRef.current.open({ memberList: userList })}
             >
               <span style={{ marginRight: "4px" }}>{userList.length}人</span>
-              <span>&gt;</span>
+              <a>查看</a>
             </span>
           ) : (
             <></>
@@ -86,6 +87,8 @@ export const GroupMember = (props: {
             <Avatar
               key={`${v.user_profile_face_url}-${index}`}
               url={v.user_profile_face_url}
+              nickName={v.user_profile_nick_name}
+              userID={v.user_profile_identifier}
             />
           ))}
           {canInviteMember && (
