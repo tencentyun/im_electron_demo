@@ -2,7 +2,8 @@
 export const PURCHASE_LINK = 'https://buy.cloud.tencent.com/avc';
 export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service'
 
-
+export const SDK_APPID = '1400187352'
+export const SERVICES_URL = ''
 // The config of login page
 export const DEFAULT_USERID = '3708';
 export const DEFAULT_USER_SIG = 'eJwszcHKgkAUBeB3uesfuc78M9pAixZuIggtq20wV7mpaTZUTvTukXqW34Fz3rDf7AJ6ddwTGKnxl78R2dLVccHUgwEZYQyT32117jq2YMJ-RCUWGKm54RIMZPK5bb26cGzzLKVDkZ6avGwrXxdVsq6HfNUMR*98csPlPOm4ITChFloJRC0nfYzPIkD4fAMAAP--V98xew__';

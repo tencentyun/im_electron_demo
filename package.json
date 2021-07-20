@@ -87,6 +87,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "braft-editor": "^2.3.9",
     "electron-squirrel-startup": "^1.0.0",
     "file-loader": "^6.2.0",
