@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { replaceConversaionList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
+import { replaceConversaionList, updateCurrentSelectedConversation, getUserStatus } from '../../store/actions/conversation';
 import { Avatar } from '../../components/avatar/avatar';
 
 import { SearchBox } from '../../components/searchBox/SearchBox';
-import { getConversionList, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage } from './api';
+import { getConversionList, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage, getUsetStatusRequest } from './api';
+import { getUserTypeQuery } from '../../services/userType'
 import './message.scss';
 import { MessageInfo } from './MessageInfo';
 import { GroupToolBar } from './GroupToolBar';
@@ -60,9 +61,11 @@ export const Message = (): JSX.Element => {
                 dispatch(updateCurrentSelectedConversation(response[0]))
             }
         }
+        
     }
     useEffect(() => {
         getData();
+        getUsetStatus();
     }, []);
 
     useEffect(() => {
@@ -78,7 +81,8 @@ export const Message = (): JSX.Element => {
     const handleSearchBoxClick = () => dialogRef.current.open();
 
     const getLastMsgInfo = (lastMsg,conv_type) => {
-        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read } = lastMsg;
+        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read, message_sender, message_conv_id } = lastMsg;
+        // console.warn(lastMsg,'查看当前消息')
         const { user_profile_nick_name } = message_sender_profile;
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
         const firstMsg = message_elem_array[0];
@@ -101,7 +105,7 @@ export const Message = (): JSX.Element => {
 
         return <React.Fragment>
             {
-               conv_type === 1 ? <span className={`icon ${message_is_peer_read ? 'is-read' : ''}`} /> : null
+               (conv_type === 1 && message_sender !== message_conv_id)? <span className={`icon ${message_is_peer_read ? 'is-read' : ''}`} /> : null
             }
             <span className="text">{displayLastMsg}</span>
         </React.Fragment>;
@@ -122,6 +126,34 @@ export const Message = (): JSX.Element => {
         })
     }
 
+
+    const getUsetStatus = ()=>{
+        // 获取当前对话标列表好友状态
+        // const sdkappid = "1400529075";
+        const uid = "YANGGUANG37";
+        const To_Account = ["denny1", "denny2"];
+        getUserTypeQuery({uid, To_Account}).then(data=>{
+            console.warn(data,"获取联系人在线状态返回参数")
+            // const { code, userStatusList } = data.data||{}
+            // if(code === 0){
+            //     console.log('获取对话成员状态列表成功')
+            //     // 清空消息
+            //     dispatch(getUserStatus({
+            //         // userStatusList,
+            //         messages: []
+            //     }))
+            // }
+        }).catch(err=>{
+
+        })
+        //  => {
+        //     return axios({
+        //         url: `/status/get?platform=10&websdkappid=537048168&v=1.7.3&sdkappid=${SDKAPPID}&contentType=json&apn=1&reqtime=${Date.now()}`,
+        //         method: 'POST',
+        //         data: data || {}
+        //     })
+        // }
+    }
     const pingConv = (conv: State.conversationItem,isPinned:boolean)=>{
         const { conv_id,conv_type,conv_is_pinned } = conv
         if(conv_is_pinned === isPinned){
@@ -149,11 +181,16 @@ export const Message = (): JSX.Element => {
         TIMConvDelete(conv_id,conv_type).then(data=>{
             const { code } = data.data||{}
             if(code === 0){
-                console.log('删除会话成功')
+                // 删除会话后聊天框内容和qq一样转移成对话列表里的上一个或下一个人
+                const index = conversationList.findIndex(i=>i.conv_id === conv_id)
+                if(conversationList.length > 1 && currentSelectedConversation.conv_id === conv_id){
+                    const fandIndex = index === conversationList.length - 1? index-1 : index+1
+                    dispatch(updateCurrentSelectedConversation(conversationList[fandIndex]))
+                }
                 getData()
             }
         }).catch(err=>{
-
+            
         })
     }
     const cleanMessage = (conv: State.conversationItem)=>{
@@ -195,7 +232,7 @@ export const Message = (): JSX.Element => {
     if (currentSelectedConversation === null) {
         return null
     }
-
+    console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
     return (
         <div className="message-content">
             <div className="message-list">

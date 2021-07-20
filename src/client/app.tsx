@@ -28,19 +28,19 @@ const App = () => {
 
     const initIMSDK = async () => {
         if (!isInited) {
-            const privite = await timRenderInstance.callExperimentalAPI({
-                json_param: {
-                    request_internal_operation: 'internal_operation_set_privatization_info',
-                    request_set_privatization_info_param: {
-                        server_address_array: [{
-                            server_address_ip: "106.55.144.99",// ip
-                            server_address_port: 80// 端口
-                        }],
-                        server_public_key: '0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f'// 公钥
-                    }
-                }
-            })
-            console.log('私有化', privite)
+            // const privite = await timRenderInstance.callExperimentalAPI({
+            //     json_param: {
+            //         request_internal_operation: 'internal_operation_set_privatization_info',
+            //         request_set_privatization_info_param: {
+            //             server_address_array: [{
+            //                 server_address_ip: "106.55.144.99",// ip
+            //                 server_address_port: 80// 端口
+            //             }],
+            //             server_public_key: '0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f'// 公钥
+            //         }
+            //     }
+            // })
+            // console.log('私有化', privite)
             timRenderInstance.TIMInit().then(async ({ data }) => {
                 
                 if (data === 0) {
@@ -99,7 +99,7 @@ const App = () => {
             }
             obj[messages[i].message_conv_id].push(messages[i])
         }
-        for (let i in obj) {
+        for (const i in obj) {
             dispatch(reciMessage({
                 convId: i,
                 messages: obj[i]

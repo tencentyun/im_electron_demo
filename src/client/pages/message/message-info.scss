@@ -16,7 +16,19 @@
       display: flex;
       align-items: center;
     }
+    &--type {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #09f175;
+      cursor: pointer;
+      margin-left: 3px;
+    }
 
+    &--typeoff {
+      background-color: #fd563c;
+    }
     &--name {
       font-size: 16px;
       font-weight: 500;

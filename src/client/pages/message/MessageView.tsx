@@ -270,7 +270,8 @@ export const MessageView = (props: Props): JSX.Element => {
                             <div key={item.time} className="message-view__item--time-divider">{formateTime(item.time * 1000, true)}</div>
                         )
                     }
-                    const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status, message_is_peer_read, message_conv_type } = item;
+                    // console.warn(item,'查看发送内容')
+                    const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status, message_is_peer_read, message_conv_type, message_conv_id, message_sender } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                     const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
                     const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self;
@@ -304,7 +305,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         })
                                     }
                                     {
-                                        shouldShowPerReadIcon && <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span>
+                                        shouldShowPerReadIcon && message_conv_id !== message_sender && <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span>
                                     }
                                 </div>
                             }

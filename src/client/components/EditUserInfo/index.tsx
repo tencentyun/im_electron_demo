@@ -27,9 +27,9 @@ interface UserInfo  {
 }
 
 interface IForm{
-  avatar: string;
-  nick: string;
-  gender: GENDER;
+  avatar?: string;
+  nick?: string;
+  gender?: GENDER;
   userId?: string;
   [propName: string]: any;
 }
@@ -44,6 +44,13 @@ interface IProfileItem{
   value: string
 }
 
+function formKeyChange() {
+  const keyMap = {
+    'avatar':'faceUrl',
+    'nick':'nickName',
+    'gender':'faceUrl',
+  }
+}
 
 export const UserInfo: FC<UserInfo> = ({visible,onChange,onClose,userInfo}): JSX.Element => {
   const [isShow, setVisible] = useState(visible)
@@ -74,7 +81,8 @@ function getStatus(meta, validating?) {
         Tag:'Tag_Profile_IM_Gender',value: values.gender
       }]
     }
-    saveUserInfo<submitUserInfoData>(formData)
+    await saveUserInfo<submitUserInfoData>(formData)
+
   }
     return (
       <Modal visible={isShow} caption="编辑个人资料" onClose={close}>

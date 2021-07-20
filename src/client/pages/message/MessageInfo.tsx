@@ -112,6 +112,8 @@ export const MessageInfo = (
     }
   }, [conv_id]);
 
+  const isOnInternet = true;
+
   return (
     <>
       <div className="message-info" id="messageInfo">
@@ -134,6 +136,13 @@ export const MessageInfo = (
             <span className="message-info__header--name">
               {nickName || conv_id}
             </span>
+            {
+              conv_type === 1 ?
+              <span title={isOnInternet?'在线':'离线'} 
+                className={['message-info__header--type', !isOnInternet?'message-info__header--typeoff': ''].join(' ')}
+              >
+              </span>:null
+            }
           </div>
           {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
         </header>

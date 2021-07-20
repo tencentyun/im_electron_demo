@@ -18,16 +18,12 @@ type Props = {
 
 const FEATURE_LIST_GROUP = [{
     id: 'face',
-}, {
-    id: 'at',
-}, {
+},{
     id: 'photo'
 }, {
     id: 'file'
 }, {
     id: 'phone'
-}, {
-    id: 'more'
 }]
 const FEATURE_LIST_C2C = [{
     id: 'face',
@@ -37,8 +33,6 @@ const FEATURE_LIST_C2C = [{
     id: 'file'
 }, {
     id: 'phone'
-}, {
-    id: 'more'
 }]
 const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
@@ -72,7 +66,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 userId,
                 messageAtArray: atList
             });
-
+            console.warn(code, desc, json_params,'消息发送111111')
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -133,6 +127,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }],
                 userId,
             });
+            console.warn(code, desc, json_params,'消息发送22222')
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -156,7 +151,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             }],
             userId,
         });
-
+        console.warn(code, desc, json_params,'消息发送33333')
         if (code === 0) {
             dispatch(reciMessage({
                 convId,
@@ -186,6 +181,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }],
                 userId,
             });
+            console.warn(code, desc, json_params,'消息发送44444')
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -220,7 +216,9 @@ export const MessageInput = (props: Props): JSX.Element => {
         // resetState()
         setEmojiPopup(true)
     }
-
+    const handleSendPhoneMessage = ()=> {
+        
+    }
     const handleFeatureClick = (featureId) => {
         switch (featureId) {
             case "face":
@@ -239,7 +237,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                 handleSendSoundMessage()
                 break;
             case "phone":
-            // handleSendPhoneMessage()
+                handleSendPhoneMessage()
+            break;
             case "more":
             // handleSendMoreMessage()
 
