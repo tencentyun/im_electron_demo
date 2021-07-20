@@ -6,6 +6,7 @@ import { Tabs, TabPanel, Input, Button, Checkbox } from "tea-component";
 import { DEFAULT_USERID, DEFAULT_USER_SIG} from '../../constants';
 import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
+import { changeFunctionTab } from '../../store/actions/ui';
 // eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
 
@@ -34,6 +35,7 @@ export const LoginContent = (): JSX.Element => {
         console.log(code,data,desc,json_param);
         if(code === 0) {
             dispatch(setIsLogInAction(true));
+            dispatch(changeFunctionTab('message'));
             history.replace('/home/message');
         }
     }
