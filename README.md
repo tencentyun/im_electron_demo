@@ -7,8 +7,7 @@
 npm install
 
 // run 
-npm run dev:react
-npm run dev:electron
+npm run start
 ```
 
 ## How to build app
