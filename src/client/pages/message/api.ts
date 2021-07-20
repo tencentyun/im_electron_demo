@@ -158,7 +158,7 @@ export const addProfileForConversition = async (conversitionList) => {
     }
     return {
       ...item,
-      conv_profile: profile,
+      conv_profile: profile || {},
     };
   });
 };
