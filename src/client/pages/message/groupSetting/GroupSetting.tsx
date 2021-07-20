@@ -46,7 +46,7 @@ export const GroupSetting = (props: {
   console.log("currentUserSetting", currentUserSetting);
 
   return (
-    <LoadingContainer loading={loading} >
+    <LoadingContainer loading={loading}>
       <GroupBaseInfo
         groupAvatar={groupDetail.group_detial_info_face_url}
         groupId={groupDetail.group_detial_info_group_id}
