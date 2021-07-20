@@ -18,16 +18,12 @@ type Props = {
 
 const FEATURE_LIST_GROUP = [{
     id: 'face',
-}, {
-    id: 'at',
-}, {
+},{
     id: 'photo'
 }, {
     id: 'file'
 }, {
     id: 'phone'
-}, {
-    id: 'more'
 }]
 const FEATURE_LIST_C2C = [{
     id: 'face',
@@ -37,8 +33,6 @@ const FEATURE_LIST_C2C = [{
     id: 'file'
 }, {
     id: 'phone'
-}, {
-    id: 'more'
 }]
 const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
@@ -220,7 +214,9 @@ export const MessageInput = (props: Props): JSX.Element => {
         // resetState()
         setEmojiPopup(true)
     }
-
+    const handleSendPhoneMessage = ()=> {
+        
+    }
     const handleFeatureClick = (featureId) => {
         switch (featureId) {
             case "face":
@@ -239,7 +235,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                 handleSendSoundMessage()
                 break;
             case "phone":
-            // handleSendPhoneMessage()
+                handleSendPhoneMessage()
+            break;
             case "more":
             // handleSendMoreMessage()
 
