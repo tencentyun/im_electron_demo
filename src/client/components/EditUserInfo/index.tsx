@@ -63,8 +63,8 @@ function getStatus(meta, validating?) {
     return (
       <Modal visible={isShow} caption="编辑个人资料" onClose={close}>
         <Modal.Body>
-            
-        {/* <FinalForm
+               
+            <FinalForm
             onSubmit={onSubmit}
             initialValuesEqual={() => true}
             initialValues={{
@@ -75,22 +75,21 @@ function getStatus(meta, validating?) {
             {({ handleSubmit, validating, submitting }) => {
               return (
                 <form onSubmit={handleSubmit}>
-                  <Form.Title>表单验证</Form.Title>
                   <Form>
                     <Field
-                      name="name"
+                      name="nick"
                       validateOnBlur
                       validateFields={[]}
                       validate={async value => {
                         await sleep(1500);
                         return !value || value.length < 4
-                          ? "昵称太短了哦"
+                          ? "姓名太短了哦"
                           : undefined;
                       }}
                     >
                       {({ input, meta }) => (
                         <Form.Item
-                          label="昵称"
+                          label="姓名"
                           status={getStatus(meta, validating)}
                           message={
                             getStatus(meta, validating) === "error" &&
@@ -106,42 +105,7 @@ function getStatus(meta, validating?) {
                       )}
                     </Field>
                     <Field
-                      name="sex"
-                      validateFields={[]}
-                      validate={value => (!value ? "请选择性别" : undefined)}
-                    >
-                      {({ input, meta }) => (
-                        <Form.Item
-                          label="性别"
-                          status={getStatus(meta)}
-                          message={getStatus(meta) === "error" && meta.error}
-                        >
-                          <RadioGroup {...input}>
-                            <Radio name="male">男</Radio>
-                            <Radio name="female">女</Radio>
-                          </RadioGroup>
-                        </Form.Item>
-                      )}
-                    </Field>
-                    <Field
-                      name="age"
-                      validateFields={[]}
-                      validate={value =>
-                        value < 18 ? "你好像还未成年哦" : undefined
-                      }
-                    >
-                      {({ input, meta }) => (
-                        <Form.Item
-                          label="年龄"
-                          status={meta.error ? "error" : "success"}
-                          message={meta.error}
-                        >
-                          <InputNumber {...input} min={12} max={100} />
-                        </Form.Item>
-                      )}
-                    </Field>
-                    <Field
-                      name="hobbies"
+                      name="gender"
                       validateFields={[]}
                       validate={value =>
                         value.length < 1 ? "请至少选择一个哦" : undefined
@@ -149,15 +113,14 @@ function getStatus(meta, validating?) {
                     >
                       {({ input, meta }) => (
                         <Form.Item
-                          label="兴趣"
+                          label="性别"
                           status={getStatus(meta)}
-                          message="选择一项或多项爱好"
                         >
-                          <CheckboxGroup {...input}>
-                            <Checkbox name="code">编程</Checkbox>
-                            <Checkbox name="web">抠图</Checkbox>
-                            <Checkbox name="jinli">超越</Checkbox>
-                          </CheckboxGroup>
+                          <RadioGroup {...input}>
+                            {
+                              Object.keys(genderMap).map(k=>  <Radio name={k}>{ genderMap[k]}</Radio>)
+                            }
+                          </RadioGroup>
                         </Form.Item>
                       )}
                     </Field>
@@ -174,14 +137,13 @@ function getStatus(meta, validating?) {
                 </form>
               );
             }}
-          </FinalForm> */}
+          </FinalForm>
+        
         </Modal.Body>
         <Modal.Footer>
-          <Form.Action>
-            <Button type="primary"  htmlType="submit">保存</Button>
-            <Button onClick={close}>取消</Button>
-          </Form.Action>
+         
         </Modal.Footer>
+
       </Modal>
 
 
