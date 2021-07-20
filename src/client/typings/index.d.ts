@@ -104,7 +104,8 @@ declare namespace State {
         conv_profile: groupProfile & userProfile
         conv_recv_opt: number
         conv_type: number
-        conv_unread_num: number
+        conv_unread_num: number,
+        conv_group_at_info_array: Array<any>
     }
 
     export type MessageReceipt = {
