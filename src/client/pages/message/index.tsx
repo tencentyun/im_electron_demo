@@ -178,7 +178,7 @@ export const Message = (): JSX.Element => {
                 getData()
             }
         }).catch(err=>{
-
+            
         })
     }
     const cleanMessage = (conv: State.conversationItem)=>{
