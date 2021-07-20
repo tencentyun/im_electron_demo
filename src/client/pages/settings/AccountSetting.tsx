@@ -4,7 +4,7 @@ import { Button } from 'tea-component';
 import { useHistory } from "react-router-dom";
 
 import timRenderInstance from '../../utils/timRenderInstance';
-import { setIsLogInAction } from '../../store/actions/login';
+import { setIsLogInAction, userLogout } from '../../store/actions/login';
 
 
 export const AccountSetting = (): JSX.Element => {
@@ -13,6 +13,7 @@ export const AccountSetting = (): JSX.Element => {
 
     const logOutHandler = async () => {
         await timRenderInstance.TIMLogout();
+        dispatch(userLogout());
         history.replace('/login');
         dispatch(setIsLogInAction(false));
     };
