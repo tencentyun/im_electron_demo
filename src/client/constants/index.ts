@@ -7,8 +7,8 @@ export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service
 // export const DEFAULT_USERID = '3708';
 // export const DEFAULT_USER_SIG = 'eJwszcHKgkAUBeB3uesfuc78M9pAixZuIggtq20wV7mpaTZUTvTukXqW34Fz3rDf7AJ6ddwTGKnxl78R2dLVccHUgwEZYQyT32117jq2YMJ-RCUWGKm54RIMZPK5bb26cGzzLKVDkZ6avGwrXxdVsq6HfNUMR*98csPlPOm4ITChFloJRC0nfYzPIkD4fAMAAP--V98xew__';
 
-// export const DEFAULT_USERID = 'lexuslin';
-// export const DEFAULT_USER_SIG = 'eJwtjM0KgkAURt9l1iF3rjbjCC1chVFBWtR2dKa8ZGL*IUTvnqnf7jsHzoed94nT25oFDB1gq*mTsWVLd5pwYYeuKahcXGOeuqrIsIB7ANyX7hpnY4eKajtyAB-GzbSl158J9FAAV3Kp0GNMK6Ey40UYp7GmLsrRCDc8Qp7dePqWPc-UVqvd4XJNThv2-QHiqDGk';
+export const DEFAULT_USERID = 'lexuslin';
+export const DEFAULT_USER_SIG = 'eJwsjU3PgjAQhP-LXnnDW6s02sSDBw8IMTEQ8UrsiivaNkvjR4z-3QjM8cnMPG8o8yLGpydG0FMlfvnrIRm0gU6EDBrIBmRbB3K2vsJQ6Exbe08G9LjoqAEN2yrbF8lq1lBwl8i3qfPRWe6OLDaHnMtHUb3WXKHM-tPl*BTohqAnSiq1UImYD-Tem2Us4PMNAAD--0bsMtg_';
 
 
 export const DEFAULT_USERID = '940928'; 
