@@ -25,6 +25,7 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
             const listCopy = [...state.conversationList]
             for(let i = 0;i<action.payload.length;i++){
                 const { conv_id } = action.payload[i];
+                console.log(listCopy.length)
                 const conv_index = listCopy.findIndex((item)=>{return item.conv_id === conv_id})
                 if(conv_index>-1){
                     console.log('更新会话')
@@ -35,6 +36,7 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
                     // 不存在，添加
                     listCopy.unshift(action.payload[i])
                 }
+                console.log(listCopy.length)
             }
             return {
                 ...state,
