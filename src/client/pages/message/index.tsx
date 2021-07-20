@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { replaceConversaionList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
 import { Avatar } from '../../components/avatar/avatar';
@@ -21,8 +21,11 @@ import { useDialogRef } from "../../utils/react-use/useDialog";
 import useDynamicRef from "../../utils/react-use/useDynamicRef";
 import { addMessage } from '../../store/actions/message';
 import timeFormat from '../../utils/timeFormat';
+import { EmptyResult } from './searchMessage/EmptyResult';
+import { Myloader } from '../../components/skeleton';
 
 export const Message = (): JSX.Element => {
+    const [isLoading, setLoadingStatus ] = useState(false);
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
     const dialogRef = useDialogRef();
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
@@ -54,6 +57,7 @@ export const Message = (): JSX.Element => {
     const dispatch = useDispatch();
     const getData = async () => {
         const response = await getConversionList();
+        setLoadingStatus(false);
         dispatch(replaceConversaionList(response))
         if (response.length) {
             if (currentSelectedConversation === null) {
@@ -62,6 +66,7 @@ export const Message = (): JSX.Element => {
         }
     }
     useEffect(() => {
+        conversationList.length === 0 && setLoadingStatus(true);
         getData();
     }, []);
 
@@ -196,8 +201,12 @@ export const Message = (): JSX.Element => {
         }
     }
 
+    if (isLoading) {
+        return <Myloader />
+    }
+
     if (currentSelectedConversation === null) {
-        return null
+        return <EmptyResult contentText="暂无会话" />
     }
 
     return (
