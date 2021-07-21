@@ -36,6 +36,11 @@
         flex-direction: row;
         margin-top: 20px;
         
+        &--withdraw{
+            margin-left: 5px;
+            color: blue;
+            cursor: pointer;
+        }
 
         &.is-self {
             flex-direction: row-reverse;

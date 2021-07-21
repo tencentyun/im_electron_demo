@@ -29,6 +29,7 @@ import { VideoElem } from './messageElemTyps/videoElem';
 import { MergeElem } from './messageElemTyps/mergeElem';
 import { ForwardPopup } from './components/forwardPopup';
 import formateTime from '../../utils/timeFormat';
+import { ContentUtils } from 'braft-utils'
 import { Icon, message } from 'tea-component';
 import { custEmojiUpsert }  from '../../services/custEmoji'
 import type { custEmojiUpsertParams }  from '../../services/custEmoji'
@@ -36,7 +37,9 @@ import type { custEmojiUpsertParams }  from '../../services/custEmoji'
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
 type Props = {
-    messageList: Array<State.message>
+    messageList: Array<State.message>,
+    editorState,
+    setEditorState
 }
 
 const RIGHT_CLICK_MENU_LIST = [{
@@ -67,7 +70,7 @@ const RIGHT_CLICK_MENU_LIST = [{
 
 
 export const MessageView = (props: Props): JSX.Element => {
-    const { messageList } = props;
+    const { messageList, editorState, setEditorState } = props;
     const messageViewRef = useRef(null);
     const [isTransimitPopup, setTransimitPopup] = useState(false);
     const [isMultiSelect, setMultiSelect] = useState(false);
@@ -304,6 +307,22 @@ export const MessageView = (props: Props): JSX.Element => {
         }
         return resp;
     }
+
+    // 从发送消息时间开始算起，两分钟内可以编辑
+    const isTimeoutFun = (time)=>{
+        const now = new Date()
+        if(parseInt(now.getTime() / 1000) - time  > 2 * 60) {
+            return false
+        }else{
+            return true
+        }
+    }
+
+    const reEdit = (data)=> {
+        setEditorState(ContentUtils.insertText(editorState, data))
+    }
+
+    // console.warn('查看当前会话所有消息',messageList)
     const getMenuItemData = () => {
         const { elem_type, custom_elem_data = '' } = currMenuMessage.message_elem_array[0];
         // elemtype:1图片, 3 自定义消息为CUST_EMOJI类型
@@ -339,7 +358,7 @@ export const MessageView = (props: Props): JSX.Element => {
                         )
                     }
                     // console.warn(item,'查看发送内容')
-                    const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status, message_is_peer_read, message_conv_type, message_conv_id, message_sender } = item;
+                    const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status, message_is_peer_read, message_conv_type, message_conv_id, message_sender, message_client_time } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                     const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
                     const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self;
@@ -350,6 +369,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                 message_status === 6 ? (
                                     <div className="message-view__item is-revoked" >
                                         { `${revokedPerson} 撤回了一条消息` }
+                                        {(message_is_from_self && isTimeoutFun(message_client_time) && message_elem_array[0].elem_type === 0)?<span className="message-view__item--withdraw" onClick={()=>{reEdit(message_elem_array[0].text_elem_content)}}> 重新编辑</span>:<></>}
                                     </div>
                                 ) :
                                 <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>

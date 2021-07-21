@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Avatar } from "../../components/avatar/avatar";
 import { getMsgList, markMessageAsRead } from "./api";
@@ -12,6 +12,7 @@ import { addMessage } from "../../store/actions/message";
 import { AddUserPopover } from "./AddUserPopover";
 import { useDialogRef } from "../../utils/react-use/useDialog";
 import { addTimeDivider } from "../../utils/addTimeDivider";
+import BraftEditor, { EditorState } from 'braft-editor'
 import {
   GroupSettingDrawer,
   GroupSettingRecordsType,
@@ -39,6 +40,7 @@ export const MessageInfo = (
     (state: State.RootState) => state.historyMessage
   );
   const userTypeList = useSelector((state: State.RootState) => state.userTypeList);
+  const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
   
   const msgList = historyMessageList.get(conv_id);
 
@@ -117,7 +119,7 @@ export const MessageInfo = (
   const isOnInternet = () => {
     let buuer = false;
     for(const item in userTypeList){
-        console.warn(userTypeList[item])
+        // console.warn(userTypeList[item])
         if(userTypeList[item].To_Account === conv_id && userTypeList[item].Status === 'Online'){
           buuer = true
         }
@@ -159,10 +161,10 @@ export const MessageInfo = (
         </header>
         <section className="message-info__content">
           <div className="message-info__content--view">
-            <MessageView messageList={msgList || []} />
+            <MessageView messageList={msgList || []} editorState={editorState} setEditorState={setEditorState}/>
           </div>
           <div className="message-info__content--input">
-            <MessageInput convId={conv_id} convType={conv_type} />
+            <MessageInput convId={conv_id} convType={conv_type} editorState={editorState} setEditorState={setEditorState} />
           </div>
         </section>
       </div>

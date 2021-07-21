@@ -3,7 +3,7 @@ import { SET_USER_STATUS } from "../actions/userTypeList";
 const initState = []
 
 
-const getUsetTypeListData = (state = initState, action: { type: any; payload: any }) => {
+const userTypeList = (state = initState, action: { type: any; payload: any }) => {
     const { type , payload } = action;
     // console.warn(payload,typeof(payload),'怎么可能是对象')
     switch (type) {
@@ -17,4 +17,4 @@ const getUsetTypeListData = (state = initState, action: { type: any; payload: an
         }
 }
 
-export default getUsetTypeListData;
+export default userTypeList;
