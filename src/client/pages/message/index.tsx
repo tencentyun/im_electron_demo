@@ -160,7 +160,7 @@ export const Message = (): JSX.Element => {
                 To_Account.push(i.conv_id)
             }
         })
-        console.warn(conversationList, To_Account, '入参单个参数')
+        // console.warn(conversationList, To_Account, '入参单个参数')
         getUserTypeQuery({ uid, To_Account }).then(data => {
             console.warn(data, "获取联系人在线状态返回参数")
             if (data.ErrorCode === 0) {

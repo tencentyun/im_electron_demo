@@ -13,7 +13,9 @@ import './message-input.scss';
 
 type Props = {
     convId: string,
-    convType: number
+    convType: number,
+    editorState,
+    setEditorState
 }
 
 const FEATURE_LIST_GROUP = [{
@@ -38,12 +40,12 @@ const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType } = props;
+    const { convId, convType, editorState, setEditorState } = props;
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ isRecordPopup, setRecordPopup ] = useState(false);
-    const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
+    // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
@@ -66,7 +68,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 userId,
                 messageAtArray: atList
             });
-            console.warn(code, desc, json_params,'消息发送111111')
+            // console.warn(code, desc, json_params,'消息发送111111')
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
