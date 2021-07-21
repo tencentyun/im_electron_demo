@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message } from 'tea-component';
-import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg, sendCustomMsg } from './api'
+import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
 import { reciMessage } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
-import { EmojiPopup, CUSTEMOJI } from './components/emojiPopup'
+import { EmojiPopup } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
 import BraftEditor, { EditorState } from 'braft-editor'
 import { ContentUtils } from 'braft-utils'
@@ -14,12 +14,7 @@ import './message-input.scss';
 type Props = {
     convId: string,
     convType: number,
-<<<<<<< HEAD
-    editorState,
-    setEditorState
-=======
     isShutUpAll: boolean,
->>>>>>> origin/main
 }
 
 const FEATURE_LIST_GROUP = [{
@@ -44,16 +39,12 @@ const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
 export const MessageInput = (props: Props): JSX.Element => {
-<<<<<<< HEAD
-    const { convId, convType, editorState, setEditorState } = props;
-=======
     const { convId, convType, isShutUpAll } = props;
->>>>>>> origin/main
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ isRecordPopup, setRecordPopup ] = useState(false);
-    // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
+    const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
@@ -77,7 +68,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 userId,
                 messageAtArray: atList
             });
-            // console.warn(code, desc, json_params,'消息发送111111')
+
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -136,7 +127,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }],
                 userId,
             });
-            console.warn(code, desc, json_params,'消息发送22222')
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -160,7 +150,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             }],
             userId,
         });
-        console.warn(code, desc, json_params,'消息发送33333')
+
         if (code === 0) {
             dispatch(reciMessage({
                 convId,
@@ -190,7 +180,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }],
                 userId,
             });
-            console.warn(code, desc, json_params,'消息发送44444')
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -272,41 +261,11 @@ export const MessageInput = (props: Props): JSX.Element => {
             setEditorState(ContentUtils.insertText(editorState, `@${userName} `))
         }
     }
-    const handleSendCustEmojiMessage = async (url) => {
-        try {
-        
-            const { data: { code, json_params,desc } } = await sendCustomMsg({
-                convId,
-                convType,
-                messageElementArray: [{
-                    elem_type: 3,
-                    custom_elem_data: 'CUST_EMOJI',
-                    custom_elem_desc: url,
-                    custom_elem_ext: '自定义表情'
-                }],
-                userId
-            });
-            if (code === 0) {
-                dispatch(reciMessage({
-                    convId,
-                    messages: [JSON.parse(json_params)]
-                }))
-            } else {
-                message.error({content: `消息发送失败 ${desc}`})
-            }
-        } catch (e) {
-            message.error({ content: `出错了: ${e.message}` })
-        }
-    }
-    const onEmojiPopupCallback = (id, type='') => {
+
+    const onEmojiPopupCallback = (id) => {
         resetState()
-        if (type === CUSTEMOJI) {
-            // 发送自定义表情
-            handleSendCustEmojiMessage(id)
-        } else {
-            if (id) {
-                setEditorState(ContentUtils.insertText(editorState, id))
-            }
+        if (id) {
+            setEditorState(ContentUtils.insertText(editorState, id))
         }
     }
 
