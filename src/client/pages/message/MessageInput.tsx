@@ -74,10 +74,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
-                setEditorState(ContentUtils.clear(editorState))
-            } else {
-                message.error({content: `消息发送失败 ${desc}`})
             }
+            setEditorState(ContentUtils.clear(editorState))
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
         }

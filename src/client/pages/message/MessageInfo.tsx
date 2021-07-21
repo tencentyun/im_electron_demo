@@ -58,10 +58,10 @@ export const MessageInfo = (
     }
     return info;
   };
-  const vilidatelastMessage = (messageList:State.message[])=>{
+  const validatelastMessage = (messageList:State.message[])=>{
     let msg:State.message;
     for(let i = messageList.length-1;i>-1;i--){
-        if(messageList[i].message_msg_id){
+        if(messageList[i].message_msg_id && !messageList[i].message_is_from_self){
             msg = messageList[i];
             break;
         }
@@ -75,17 +75,21 @@ export const MessageInfo = (
         return;
       }
       try {
-        const { message_msg_id } = vilidatelastMessage(msgList);
-        const { code, ...res } = await markMessageAsRead(
-          conv_id,
-          conv_type,
-          message_msg_id
-        );
-        if (code === 0) {
-          console.log("设置会话已读成功");
-        } else {
-          console.log("设置会话已读失败", code, res);
-        }
+          const { message_msg_id } = validatelastMessage(msgList) || {};
+          if(!message_msg_id){
+            return
+          }
+          const { code, ...res } = await markMessageAsRead(
+            conv_id,
+            conv_type,
+            message_msg_id
+          );
+
+          if (code === 0) {
+            console.log("设置会话已读成功");
+          } else {
+            console.log("设置会话已读失败", code, res);
+          }
       } catch (err) {
         console.log("设置会话已读失败", err);
       }

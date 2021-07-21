@@ -214,6 +214,10 @@ export const MessageView = (props: Props): JSX.Element => {
         })
     }
 
+    const handleMessageReSend = (item) => {
+        console.log(item);
+    }
+
     const displayDiffMessage = (element) => {
         const { elem_type, ...res } = element;
         let resp
@@ -263,7 +267,7 @@ export const MessageView = (props: Props): JSX.Element => {
         }
         return resp;
     }
-    const vilidatelastMessage = (messageList:State.message[])=>{
+    const validatelastMessage = (messageList:State.message[])=>{
         let msg:State.message;
         for(let i = messageList.length-1;i>-1;i--){
             if(messageList[i].message_msg_id){
@@ -276,7 +280,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const getMoreMsg = async () => {
         if(!noMore){
             
-            const msg:State.message = vilidatelastMessage(messageList)
+            const msg:State.message = validatelastMessage(messageList)
             if(!msg){
                 return
             }
@@ -313,7 +317,8 @@ export const MessageView = (props: Props): JSX.Element => {
                     const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status, message_is_peer_read, message_conv_type } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                     const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
-                    const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self;
+                    const isMessageSendFailed = message_status === 3 && message_is_from_self;
+                    const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self && !isMessageSendFailed;
                     const seleted = seletedMessage.findIndex(i => getMessageId(i) === getMessageId(item)) > -1
                     return (
                         <React.Fragment key={message_msg_id}>
@@ -344,7 +349,8 @@ export const MessageView = (props: Props): JSX.Element => {
                                         })
                                     }
                                     {
-                                        shouldShowPerReadIcon && <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span>
+                                        shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
+                                        isMessageSendFailed &&  <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
                                     }
                                 </div>
                             }
