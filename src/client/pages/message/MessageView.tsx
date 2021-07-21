@@ -28,8 +28,10 @@ import { GroupTipsElemItem } from './messageElemTyps/grouptipsElem';
 import { VideoElem } from './messageElemTyps/videoElem';
 import { MergeElem } from './messageElemTyps/mergeElem';
 import { ForwardPopup } from './components/forwardPopup';
-import { Icon } from 'tea-component';
 import formateTime from '../../utils/timeFormat';
+import { Icon, message } from 'tea-component';
+import { custEmojiUpsert }  from '../../services/custEmoji'
+import type { custEmojiUpsertParams }  from '../../services/custEmoji'
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -40,6 +42,10 @@ type Props = {
 const RIGHT_CLICK_MENU_LIST = [{
     id: 'revoke',
     text: '撤回'
+},
+{
+    id: 'addCustEmoji',
+    text: '添加到表情'
 },
 {
     id: 'delete',
@@ -67,6 +73,8 @@ export const MessageView = (props: Props): JSX.Element => {
     const [isMultiSelect, setMultiSelect] = useState(false);
     const [forwardType, setForwardType] = useState<ForwardType>(ForwardType.divide);
     const [seletedMessage, setSeletedMessage] = useState<State.message[]>([]);
+    const [ currMenuMessage, setCurrMenuMessage ] = useState<State.message>(); // 当前右击菜单消息
+
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -86,6 +94,37 @@ export const MessageView = (props: Props): JSX.Element => {
         }));
 
     };
+
+    // 添加到自定义表情, 图片和自定义表情可添加
+    const handleAddCustEmoji = async (params) => {
+        const { elem_type, image_elem_large_url = '', custom_elem_data = '', custom_elem_desc} = params?.message?.message_elem_array[0];
+        
+        let sticker_url = ''
+        if (elem_type === 1) {
+            sticker_url = image_elem_large_url
+        } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
+            sticker_url = custom_elem_desc
+        } else {
+            return
+        }
+        try {
+            const userId = await getLoginUserID()
+            const emojiParams: custEmojiUpsertParams = {
+                uid:  userId,
+                sticker_url,
+                op_type: 1
+            }
+            const data = await custEmojiUpsert(emojiParams)
+            if (data.ErrorCode === 0) {
+                message.success({ content: '添加成功' })
+            } else {
+                const content = data.ErrorInfo.replace('already exists', '请勿重复添加表情')
+                message.error({ content })
+            }
+        } catch(e) {
+            message.error({ content: '添加错误' })
+        }
+    }
 
     const handleDeleteMsg = async (params) => {
         const { convId, msgId, convType } = params;
@@ -177,6 +216,9 @@ export const MessageView = (props: Props): JSX.Element => {
             case 'revoke':
                 handleRevokeMsg(data);
                 break;
+            case 'addCustEmoji':
+                handleAddCustEmoji(data);
+                break;
             case 'delete':
                 handleDeleteMsg(data);
                 break;
@@ -192,8 +234,13 @@ export const MessageView = (props: Props): JSX.Element => {
         }
     }
 
+    // 消息类型是否是自定义表情
+    const onIsCustEmoji = (type, data) => {
+        return type === 3 && data === 'CUST_EMOJI'
+    }
     const handleContextMenuEvent = (e, message: State.message) => {
         e.preventDefault();
+        setCurrMenuMessage(message)
         contextMenu.show({
             id: MESSAGE_MENU_ID,
             event: e,
@@ -257,6 +304,27 @@ export const MessageView = (props: Props): JSX.Element => {
         }
         return resp;
     }
+    const getMenuItemData = () => {
+        const { elem_type, custom_elem_data = '' } = currMenuMessage.message_elem_array[0];
+        // elemtype:1图片, 3 自定义消息为CUST_EMOJI类型
+        const isEmoji = elem_type === 1 || onIsCustEmoji(elem_type, custom_elem_data)
+        let menuData = RIGHT_CLICK_MENU_LIST
+        if (!isEmoji) {
+            // 过滤添加到表情MenuItem
+            menuData = menuData.filter(item => item.id !== 'addCustEmoji')
+        }
+        return menuData
+    }
+    const getMenuItem = () => {
+        const menuData = getMenuItemData()
+        return menuData.map(({ id, text }) => {
+            return (
+                <Item  key={id} onClick={(e) => handlRightClick(e, id)}>
+                    {text}
+                </Item>
+            )
+        })
+    }
     return (
         <div className="message-view" ref={messageViewRef}>
             {
@@ -296,7 +364,6 @@ export const MessageView = (props: Props): JSX.Element => {
                                         message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                             return (
                                                 <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-                                                    
                                                     {
                                                         displayDiffMessage(elment)
                                                     }
@@ -320,13 +387,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 animation={animation.fade}
             >
                 {
-                    RIGHT_CLICK_MENU_LIST.map(({ id, text }) => {
-                        return (
-                            <Item  key={id} onClick={(e) => handlRightClick(e, id)}>
-                                {text}
-                            </Item>
-                        )
-                    })
+                   currMenuMessage && getMenuItem()
                 }
             </Menu>
             {
