@@ -117,7 +117,8 @@ declare namespace State {
         userId: string,
         faceUrl: string,
         nickName: string,
-        role: number
+        role: number,
+        gender: number
     }
 
     export type actcionType<T> = {

@@ -58,73 +58,126 @@ interface IEncrptPwdRes {
     ErrorInfo: string;
 }
 
+// export const LoginContent = (): JSX.Element => {
+//     const dispatch = useDispatch();
+//     const history = useHistory();
+//     const [userID, setUserID] = useState(DEFAULT_USERID);
+//     const [password, setPassword] = useState('7798_test');
+//     const isDisablelogin = userID && password;
+
+//     const customizeTabBarRender = (children: JSX.Element) => {
+//         return <a className="customize-tab-bar">{children}</a>
+//     }
+
+//     const handleLoginClick = async () => {
+//         getEncrptPwd({
+//             Pwd: password
+//         }).then(getEncrptPwdRes => {
+//             const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
+
+//             getUserLoginInfo({
+//                 systemid: HUA_RUN_SYSTEMID,
+//                 userName: userID.toUpperCase(),
+//                 userPass: Encypt,
+//                 asyuserind: null,
+//                 password: 'MTIzNDU2'
+//             }).then(async res => {
+//                 const { USERLOGIN } = res.data
+//                 const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
+//                 const params: loginParam = {
+//                     userID: USERLOGIN.toUpperCase(),
+//                     userSig: userSig
+//                 }
+//                 const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
+//                 console.log(code, data, desc, json_param);
+//                 if (code === 0) {
+//                     dispatch(setIsLogInAction(true));
+//                     dispatch(changeFunctionTab('message'));
+//                     history.replace('/home/message');
+//                 }
+//             }).catch(err => {
+//                 const { ERRCODE } = err.data
+//                 message.error({
+//                     content: "登录失败：" + err.message || errType(ERRCODE),
+//                 })
+//             })
+//         }).catch(err => {
+//             message.error({
+//                 content: "登录失败：" + err.message || err.ErrorInfo,
+//             })
+//         })
+
+//     }
+
+//     return (
+//         <div className="login--context">
+//             <h2 className="login--context__title">登陆IM</h2>
+//             <Tabs tabs={tabs} placement="top" tabBarRender={customizeTabBarRender}>
+//                 <TabPanel id="verifyCodeLogin">
+//                     <Input placeholder="请输入用户名" className="login--input" />
+//                     <Input placeholder="请输入密码" className="login--input" />
+//                 </TabPanel>
+//                 {/* <TabPanel id="passwordLogin">
+//                     <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val)}} />
+//                     <Input placeholder="请输入usersig"  value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />
+//                 </TabPanel> */}
+//                 <TabPanel id="passwordLogin">
+//                     <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val) }} />
+//                     <Input placeholder="请输入密码" value={password} className="login--input" onChange={(val) => setPassword(val)} />
+//                 </TabPanel>
+//             </Tabs>
+//             <Checkbox display="block" value={false} className="login--auto">
+//                 下次自动登录
+//             </Checkbox>
+//             <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}> 登陆</Button>
+//         </div>
+//     )
+// }
+
+
+// 原本的登录
 export const LoginContent = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory();
+    const [activedTab, setActivedTab] = useState('passwordLogin');
     const [userID, setUserID] = useState(DEFAULT_USERID);
-    // const [password, setPassword] = useState(DEFAULT_USER_SIG);
-    const [password, setPassword] = useState('7798_test');
-    const isDisablelogin = userID && password;
+    const [usersig, setUserSig] = useState(DEFAULT_USER_SIG);
+    const isDisablelogin = activedTab === 'passwordLogin' && userID && usersig;
 
     const customizeTabBarRender = (children: JSX.Element) => {
         return <a className="customize-tab-bar">{children}</a>
     }
 
+    const handleTabChange = ({id}) => {
+        if(id === 'verifyCodeLogin') return message.warning({content: '敬请期待'});
+        setActivedTab(id);
+    }
+
     const handleLoginClick = async () => {
-        getEncrptPwd({
-            Pwd: password
-        }).then(getEncrptPwdRes => {
-            const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
-
-            getUserLoginInfo({
-                systemid: HUA_RUN_SYSTEMID,
-                userName: userID.toUpperCase(),
-                userPass: Encypt,
-                asyuserind: null,
-                password: 'MTIzNDU2'
-            }).then(async res => {
-                const { USERLOGIN } = res.data
-                const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
-                const params: loginParam = {
-                    userID: USERLOGIN.toUpperCase(),
-                    userSig: userSig
-                }
-                const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
-                console.log(code, data, desc, json_param);
-                if (code === 0) {
-                    dispatch(setIsLogInAction(true));
-                    dispatch(changeFunctionTab('message'));
-                    history.replace('/home/message');
-                }
-            }).catch(err => {
-                const { ERRCODE } = err.data
-                message.error({
-                    content: "登录失败：" + err.message || errType(ERRCODE),
-                })
-            })
-        }).catch(err => {
-            message.error({
-                content: "登录失败：" + err.message || err.ErrorInfo,
-            })
-        })
-
+        const params:loginParam = {
+            userID: userID,
+            userSig: usersig
+        }
+        const { data: { code,data,desc,json_param }} = await timRenderInstance.TIMLogin(params);
+        console.log(code,data,desc,json_param);
+        if(code === 0) {
+            dispatch(setIsLogInAction(true));
+            dispatch(changeFunctionTab('message'));
+            history.replace('/home/message');
+        }
     }
 
     return (
         <div className="login--context">
             <h2 className="login--context__title">登陆IM</h2>
-            <Tabs tabs={tabs} placement="top" tabBarRender={customizeTabBarRender}>
+            <Tabs tabs={tabs} placement="top" activeId={activedTab} onActive={handleTabChange} tabBarRender={customizeTabBarRender}>
                 <TabPanel id="verifyCodeLogin">
                     <Input placeholder="请输入用户名" className="login--input" />
                     <Input placeholder="请输入密码" className="login--input" />
                 </TabPanel>
-                {/* <TabPanel id="passwordLogin">
+                <TabPanel id="passwordLogin">
                     <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val)}} />
                     <Input placeholder="请输入usersig"  value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />
-                </TabPanel> */}
-                <TabPanel id="passwordLogin">
-                    <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val) }} />
-                    <Input placeholder="请输入密码" value={password} className="login--input" onChange={(val) => setPassword(val)} />
                 </TabPanel>
             </Tabs>
             <Checkbox display="block" value={false} className="login--auto">
