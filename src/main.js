@@ -57,6 +57,7 @@ const createWindow = () => {
 
   
   mainWindow.loadURL(`http://localhost:3000`);
+  mainWindow.webContents.openDevTools();
 
   // ***use for production***
 
