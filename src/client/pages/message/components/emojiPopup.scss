@@ -2,27 +2,132 @@
     position: absolute;
     border: 1px solid #eee;
     background-color: white;
-    padding: 17px 6px 17px 17px;
+    padding: 17px 0 0 0;
     left: 0;
     bottom: 34px;
-    width: 300px;
+    width: 350px;
     animation:animate .5s;
     box-shadow:  0 1px 8px rgba(0,32,96,.1)
 }
 .emoji-popup span {
-    width: 20px;
-    height: 20px;
-    padding: 3px;
     display: inline-block;
 }
 .emoji-popup span:hover {
     cursor: pointer;
 }
-.emoji-popup img {
-    width: 20px;
-    height: 20px;
+.emojis-default {
+    img {
+        width: 25px;
+        height: 25px;
+    }
+    span {
+        padding: 3px;
+        width: 25px;
+        height: 25px;
+    }
 }
 @keyframes animate {
     0%   {opacity:0;}
 	100%   {opacity:1;}
+}
+
+.emoji-tab {
+    box-sizing: border-box;
+    background-color: #f5f5f5;
+    padding: 0 5px;
+
+    .tabs {
+        display: flex;
+        height: 30px;
+        flex-direction: row;
+        box-sizing: border-box;
+    }
+
+    .single {
+        display: flex;
+        width: 45px;
+        cursor: pointer;
+    }
+}
+
+.emojis {
+    height: 202px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: auto;
+    -webkit-overflow-scrolling: auto;
+    padding: 0 0 15px 15px;
+}
+
+.emoji {
+    height: 30px;
+    width: 30px;
+    margin: 0 8px 10px 0;
+    box-sizing: border-box;
+}
+.emoji:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.icon-star {
+    font-size: 26px;
+    margin: -2px;
+    color: rgba(0,0,0,0.8);
+}
+.tab-icon{
+    width: 30px;
+    height: 30px;
+}
+.smileiconactive{
+    background: url('../../../assets/icon/face-message-active.svg') white center center no-repeat;
+    background-size: 19px;
+}
+.smileicon{
+    background: url('../../../assets/icon/face-message.svg') center center no-repeat;
+}
+.custemojiactive{
+    background: url('../../../assets/icon/love-active.svg') white center center no-repeat;
+    background-size: 21px;
+}
+.custemojiicon{
+    background: url('../../../assets/icon/love.svg') center center no-repeat;
+    background-size: 20px;
+}
+
+.emojis-cust {
+    span {
+        width: 50px;
+        height: 50px;
+        margin:0 16px 17px 0;
+        text-align: center;
+        align-items: center;
+        display: flex;
+        justify-content: center;
+    }
+    img {
+        max-width: 50px;
+        max-height: 50px;
+    }
+    span:hover{
+        opacity: 0.8;
+    }
+}
+.emojis::-webkit-scrollbar {
+    width: 3px;
+}
+.emojis::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: rgba(0,0,0,0.1);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+.emojis::-webkit-slider-thumb:window-inactive {
+    background: rgba(255,0,0,0.4);
+}
+
+.emoji-popup .react-contexify {
+    min-width: 80px !important;
 }
