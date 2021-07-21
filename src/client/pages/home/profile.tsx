@@ -43,7 +43,7 @@ export const Profile = (): JSX.Element => {
   useEffect(() => {
     getSelfInfo();
   }, []);
-
+console.log('useSelector((state: State.RootState) => state.userInfo)',useSelector((state: State.RootState) => state.userInfo));
   const directToMsgPage = useMessageDirect();
 
   const handleMsgReaded = async () => {
@@ -89,8 +89,10 @@ export const Profile = (): JSX.Element => {
         <>
           <div className="card-content">
             <div className="main-info">
-              <Avatar url={faceUrl} nickName={nickName} userID={userId} />
-              <div className="nickname">{userId}</div>
+              <div className="info-item">
+                <Avatar url={faceUrl} nickName={nickName} userID={userId} />
+                <div className="nickname">{userId}</div>
+              </div>
               <div className="info-btn" onClick={handleAvatarClick}><Icon type="setting" /></div>
             </div>
             <div className="info-bar">
@@ -122,7 +124,7 @@ export const Profile = (): JSX.Element => {
       {/* bubble组件必须包含一个有click之类事件的方法的元素 */}
       <span></span>
     </Bubble>
-       <UserInfo userInfo={{faceUrl,nickName,userId}} visible={userVisible}  onClose={handleClose} onChange={handleChange}></UserInfo>
+       <UserInfo userInfo={{faceUrl,nickName,userId,gender}} visible={userVisible}  onClose={handleClose} onChange={handleChange}></UserInfo>
     </div>
     
   );
