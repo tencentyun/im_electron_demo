@@ -52,7 +52,7 @@
         }
         &__list {
             padding: 20px;
-            overflow-y: scroll;
+            overflow-y: overlay;
             overflow-x: hidden;
             flex: 1;      
         }
@@ -98,7 +98,7 @@
 }
 
 .customize-scroll-style {
-    overflow-y: scroll;
+    overflow-y: overlay;
     overflow-x: hidden;
     box-sizing: border-box;
     &:hover {

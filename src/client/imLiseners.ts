@@ -101,10 +101,10 @@ export default function initListeners(callback:InitListenersCallback){
     * 群组系统消息事件包括 加入群、退出群、踢出群、设置管理员、取消管理员、群资料变更、群成员资料变更。此消息是针对所有群组成员下发的
     */
     timRenderInstance.TIMSetGroupTipsEventCallback({
-        callback:(args)=>{
+        callback:(...args)=>{
             callback({
                 type: 'TIMSetGroupTipsEventCallback',
-                data: JSON.parse(args)
+                data: args
             })
         },
         user_data: "test"

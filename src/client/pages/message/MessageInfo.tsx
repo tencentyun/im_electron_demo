@@ -35,6 +35,7 @@ export const MessageInfo = (
   const groupSettingRef = useDialogRef<GroupSettingRecordsType>();
 
   const popupContainer = document.getElementById("messageInfo");
+  const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all;
 
   const { historyMessageList } = useSelector(
     (state: State.RootState) => state.historyMessage
@@ -69,16 +70,19 @@ export const MessageInfo = (
         return;
       }
       try {
-        const { message_msg_id } = msgList[0];
-        const { code, ...res } = await markMessageAsRead(
-          conv_id,
-          conv_type,
-          message_msg_id
-        );
-        if (code === 0) {
-          console.log("设置会话已读成功");
-        } else {
-          console.log("设置会话已读失败", code, res);
+        const { message_msg_id, message_is_from_self } = msgList[0];
+        if(!message_is_from_self) {
+          const { code, ...res } = await markMessageAsRead(
+            conv_id,
+            conv_type,
+            message_msg_id
+          );
+
+          if (code === 0) {
+            console.log("设置会话已读成功");
+          } else {
+            console.log("设置会话已读失败", code, res);
+          }
         }
       } catch (err) {
         console.log("设置会话已读失败", err);
@@ -164,7 +168,7 @@ export const MessageInfo = (
             <MessageView messageList={msgList || []} editorState={editorState} setEditorState={setEditorState}/>
           </div>
           <div className="message-info__content--input">
-            <MessageInput convId={conv_id} convType={conv_type} editorState={editorState} setEditorState={setEditorState} />
+            <MessageInput convId={conv_id} convType={conv_type}  isShutUpAll={isShutUpAll}/>
           </div>
         </section>
       </div>

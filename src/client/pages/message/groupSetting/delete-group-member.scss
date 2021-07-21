@@ -39,7 +39,7 @@
     padding: 12px;
 
     &__list {
-      overflow-y: scroll;
+      overflow-y: overlay;
       overflow-x: hidden;
       flex: 1;
     }
@@ -105,7 +105,7 @@
 }
 
 .customize-scroll-style {
-  overflow-y: scroll;
+  overflow-y: overlay;
   overflow-x: hidden;
   box-sizing: border-box;
   &:hover {
