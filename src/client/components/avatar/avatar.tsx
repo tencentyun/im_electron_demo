@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from "react"
 import { RouteComponentProps } from "react-router-dom"
+import { ImagePreview } from "tea-component";
 import './avatar.scss'
 
 
@@ -58,9 +59,16 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
     },[avatar,nick,uid,gid])
     return (
         <>
-        {
-            url ? urlComp : nickName ? nickComp : userID ? userIDComp : groupID ? groupIDComp : defaltComp
-        }
+            <ImagePreview
+                previewSrc={url}
+            >
+                {open => <div onClick={open}>
+                    {
+                        url ? urlComp : nickName ? nickComp : userID ? userIDComp : groupID ? groupIDComp : defaltComp
+                    }
+                </div>}
+            </ImagePreview>
+    
         </>
     )
 }

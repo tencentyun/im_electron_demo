@@ -16,7 +16,7 @@
 		align-items: center;
 		border-bottom: 1px solid #F2EFEF;
 		padding-bottom: 15px;
-
+		justify-content: space-between;
 		.circle-name {
 			color: #fff;
 			width: 60px;
@@ -29,7 +29,9 @@
 			justify-content: center;
 		}
 	}
-
+	.info-item{
+		display: flex;
+	}
 	.nickname {
 		overflow: hidden;
 		height: 40px;

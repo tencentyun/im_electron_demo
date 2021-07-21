@@ -51,28 +51,22 @@ const createWindow = () => {
   global.WIN = mainWindow;
 
   mainWindow.on('ready-to-show', () => {
-      mainWindow.show();
+    mainWindow.show();
 
-      if (!ipc) ipc = new IPC(mainWindow);
+    if (!ipc) ipc = new IPC(mainWindow);
 
-      // use for developments
+    // use for developments
 
+  })
+
+  mainWindow.on('focus', function () {
+    mainWindow.webContents.send('storagePath', {
+      path: path.join(process.cwd(), '/download/')
     })
-
-    <<
-    << << < HEAD
-
-    ===
-    === =
-    mainWindow.on('focus', function () {
-      mainWindow.webContents.send('storagePath', {
-        path: path.join(process.cwd(), '/download/')
-      })
-    })
+  })
 
 
-    >>>
-    >>> > 2e4 eb041b565cfa24dc1dd0e460173c9f9761c5e
+
   mainWindow.loadURL(`http://localhost:3000`);
   mainWindow.webContents.openDevTools();
   // ***use for production***
