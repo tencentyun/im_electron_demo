@@ -5,7 +5,7 @@ const initState = []
 
 const getUsetTypeListData = (state = initState, action: { type: any; payload: any }) => {
     const { type , payload } = action;
-    console.warn(payload,typeof(payload),'怎么可能是对象')
+    // console.warn(payload,typeof(payload),'怎么可能是对象')
     switch (type) {
         case SET_USER_STATUS:
             return {
