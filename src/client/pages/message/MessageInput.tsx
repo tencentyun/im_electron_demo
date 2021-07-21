@@ -13,7 +13,8 @@ import './message-input.scss';
 
 type Props = {
     convId: string,
-    convType: number
+    convType: number,
+    isShutUpAll: boolean,
 }
 
 const FEATURE_LIST_GROUP = [{
@@ -38,7 +39,7 @@ const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType } = props;
+    const { convId, convType, isShutUpAll } = props;
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
@@ -50,6 +51,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const videoPicker = React.useRef(null);
     const soundPicker = React.useRef(null);
     const dispatch = useDispatch();
+    const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
     let editorInstance;
 
     const handleSendTextMsg = async () => {
@@ -66,16 +68,14 @@ export const MessageInput = (props: Props): JSX.Element => {
                 userId,
                 messageAtArray: atList
             });
-            console.warn(code, desc, json_params,'消息发送111111')
+
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
-                setEditorState(ContentUtils.clear(editorState))
-            } else {
-                message.error({content: `消息发送失败 ${desc}`})
             }
+            setEditorState(ContentUtils.clear(editorState))
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
         }
@@ -127,7 +127,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }],
                 userId,
             });
-            console.warn(code, desc, json_params,'消息发送22222')
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -151,7 +150,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             }],
             userId,
         });
-        console.warn(code, desc, json_params,'消息发送33333')
+
         if (code === 0) {
             dispatch(reciMessage({
                 convId,
@@ -181,7 +180,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }],
                 userId,
             });
-            console.warn(code, desc, json_params,'消息发送44444')
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -294,7 +292,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }, [convId, convType])
 
     return (
-        <div className="message-input">
+        <div className={`message-input ${isShutUpAll ? 'disabled-style' : ''}`}>
             {
                 atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
             }
@@ -313,13 +311,16 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyPress={handleOnkeyPress}>
+            <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyPress={handleOnkeyPress}>
                 <BraftEditor
+                    //@ts-ignore
+                    disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
                     controls={[]}
                     ref={instance => editorInstance = instance}
                     contentStyle={{ height: '100%', fontSize: 14 }}
+                    placeholder={placeHolderText}
                 />
             </div>
             <div className="message-input__button-area">

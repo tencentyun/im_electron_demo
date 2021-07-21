@@ -86,6 +86,6 @@ export const GroupTipsElemItem = (props: any): JSX.Element => {
             })
         }
     </span>;
-    console.log('grouptips', props)
+    // console.log('grouptips', props)
     return item();
 }
