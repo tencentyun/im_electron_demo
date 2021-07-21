@@ -60,8 +60,8 @@ export const MessageInfo = (
   };
   const validatelastMessage = (messageList:State.message[])=>{
     let msg:State.message;
-    for(let i = messageList.length-1;i>-1;i--){
-        if(messageList[i].message_msg_id && !messageList[i].message_is_from_self){
+    for(let i = 0; i < messageList.length; i++){
+        if(messageList[i]?.message_msg_id && !messageList[i].message_is_from_self){
             msg = messageList[i];
             break;
         }
