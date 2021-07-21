@@ -81,11 +81,20 @@ const App = () => {
                             case "TIMSetMsgReadedReceiptCallback":
                                 _handleMessageReaded(data);
                                 break;
+                            /**
+                             * 群组系统消息回调
+                             */
+                            case "TIMSetGroupTipsEventCallback":
+                                _handleGroupInfoModify(data);
+                                break;
                         }
                     });
                 }
             })
         }
+    }
+    const _handleGroupInfoModify  = (data) => {
+        console.log('TIMSetGroupTipsEventCallback', data);
     }
     const _handleUnreadChange = (unreadCount) => {
         dispatch(setUnreadCount(unreadCount))
@@ -99,7 +108,7 @@ const App = () => {
             }
             obj[messages[i].message_conv_id].push(messages[i])
         }
-        for (let i in obj) {
+        for (const i in obj) {
             dispatch(reciMessage({
                 convId: i,
                 messages: obj[i]
