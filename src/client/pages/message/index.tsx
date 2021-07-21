@@ -23,10 +23,12 @@ import { addMessage } from '../../store/actions/message';
 import timeFormat from '../../utils/timeFormat';
 import { EmptyResult } from './searchMessage/EmptyResult';
 import { Myloader } from '../../components/skeleton';
+import { replaceRouter } from '../../store/actions/ui';
 
 export const Message = (): JSX.Element => {
     const [isLoading, setLoadingStatus ] = useState(false);
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
+    const { replace_router } = useSelector((state:State.RootState)=>state.ui)
     const dialogRef = useDialogRef();
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
 
@@ -70,10 +72,13 @@ export const Message = (): JSX.Element => {
         }
     }
     useEffect(() => {
-        conversationList.length === 0 && setLoadingStatus(true);
-        if(conversationList.length === 0){
+        if(!replace_router){
+            conversationList.length === 0 && setLoadingStatus(true);
             getData();
+        }else{
+            dispatch(replaceRouter(false))
         }
+        
     }, []);
 
     useEffect(() => {
