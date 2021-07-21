@@ -58,7 +58,16 @@ export const MessageInfo = (
     }
     return info;
   };
-
+  const vilidatelastMessage = (messageList:State.message[])=>{
+    let msg:State.message;
+    for(let i = messageList.length-1;i>-1;i--){
+        if(messageList[i].message_msg_id){
+            msg = messageList[i];
+            break;
+        }
+    }
+    return msg;
+}
   const setMessageRead = () => {
     // 个人会话且未读数大于0才设置已读
     const handleMsgReaded = async () => {
@@ -66,7 +75,7 @@ export const MessageInfo = (
         return;
       }
       try {
-        const { message_msg_id } = msgList[0];
+        const { message_msg_id } = vilidatelastMessage(msgList);
         const { code, ...res } = await markMessageAsRead(
           conv_id,
           conv_type,

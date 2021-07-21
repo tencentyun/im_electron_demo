@@ -30,7 +30,17 @@
         width: 8px;
         background-color:transparent;
     }
-
+    .showMore {
+        text-align: center;
+        color: blue;
+        font-size: 12px;
+        line-height: 20px;
+        cursor: pointer;
+    }
+    .no-more.showMore{
+        color: #999;
+        cursor: default;
+    }
     &__item {
         display: flex;
         flex-direction: row;

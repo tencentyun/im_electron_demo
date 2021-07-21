@@ -14,7 +14,13 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
             historyMessageList: state.historyMessageList.set(payload.convId, payload.messages)
           }
         }
-         
+        case ActionTypeEnum.ADD_MORE_MESSAGE: {
+          const originMessageList = state.historyMessageList.get(payload.convId);
+          return {
+            ...state,
+            historyMessageList: state.historyMessageList.set(payload.convId, originMessageList.concat(payload.messages))
+          }
+        }
         case ActionTypeEnum.RECI_MESSAGE: {
           const history = state.historyMessageList.get(payload.convId);
           const baseTime = history && history.length > 0 ? history[0].message_client_time : 0;
