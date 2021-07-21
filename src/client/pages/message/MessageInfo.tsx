@@ -34,6 +34,7 @@ export const MessageInfo = (
   const groupSettingRef = useDialogRef<GroupSettingRecordsType>();
 
   const popupContainer = document.getElementById("messageInfo");
+  const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all;
 
   const { historyMessageList } = useSelector(
     (state: State.RootState) => state.historyMessage
@@ -142,7 +143,7 @@ export const MessageInfo = (
             <MessageView messageList={msgList || []} />
           </div>
           <div className="message-info__content--input">
-            <MessageInput convId={conv_id} convType={conv_type} />
+            <MessageInput convId={conv_id} convType={conv_type}  isShutUpAll={isShutUpAll}/>
           </div>
         </section>
       </div>

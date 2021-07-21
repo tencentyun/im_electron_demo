@@ -13,7 +13,8 @@ import './message-input.scss';
 
 type Props = {
     convId: string,
-    convType: number
+    convType: number,
+    isShutUpAll: boolean,
 }
 
 const FEATURE_LIST_GROUP = [{
@@ -38,7 +39,7 @@ const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType } = props;
+    const { convId, convType, isShutUpAll } = props;
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
@@ -311,8 +312,10 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyPress={handleOnkeyPress}>
+            <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyPress={handleOnkeyPress}>
                 <BraftEditor
+                    //@ts-ignore
+                    disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
                     controls={[]}
