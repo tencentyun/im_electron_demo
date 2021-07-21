@@ -22,12 +22,16 @@ export const EditGroupBaseInfoDialog = (props: {
 
   const onOk = async (formValue: FormValue) => {
     const { groupName, groupFaceUrl } = formValue;
+    const params: any = {};
+    if(groupName !== defaultForm.groupName) {
+      params.group_modify_info_param_group_name = groupName;
+    }
+    if(groupFaceUrl !== defaultForm.groupFaceUrl) {
+      params. group_modify_info_param_face_url = groupFaceUrl;
+    }
     await modifyGroupInfo({
       groupId: defaultForm.groupId,
-      modifyParams: {
-        group_modify_info_param_group_name: groupName,
-        group_modify_info_param_face_url: groupFaceUrl,
-      },
+      modifyParams: params,
     });
   };
 
