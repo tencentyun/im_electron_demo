@@ -71,7 +71,9 @@ export const Message = (): JSX.Element => {
     }
     useEffect(() => {
         conversationList.length === 0 && setLoadingStatus(true);
-        getData();
+        if(conversationList.length === 0){
+            getData();
+        }
     }, []);
 
     useEffect(() => {
@@ -226,9 +228,7 @@ export const Message = (): JSX.Element => {
         return <Myloader />
     }
 
-    if (currentSelectedConversation === null) {
-        return <EmptyResult contentText="暂无会话" />
-    }
+    
 
     return (
         <div className="message-content">
@@ -236,7 +236,7 @@ export const Message = (): JSX.Element => {
                 <div className="search-wrap" onClick={handleSearchBoxClick}><SearchBox /></div>
                 <div className="conversion-list">
                     {
-                        conversationList.map((item) => {
+                        currentSelectedConversation === null ? <EmptyResult contentText="暂无会话" /> :  conversationList.map((item) => {
                             const { conv_profile, conv_id, conv_last_msg, conv_unread_num,conv_type,conv_is_pinned, conv_group_at_info_array,conv_recv_opt } = item;
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
@@ -286,7 +286,7 @@ export const Message = (): JSX.Element => {
             </div>
             <SearchMessageModal dialogRef={dialogRef} />
             {
-                currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : null
+                currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : <div className="empty"><EmptyResult contentText="暂无历史消息" /></div>
             }
             {
                 currentSelectedConversation && currentSelectedConversation.conv_type === 2 ? <GroupToolBar conversationInfo={currentSelectedConversation} /> : <></>

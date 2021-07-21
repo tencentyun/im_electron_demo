@@ -115,6 +115,7 @@ const App = () => {
              */
             case 0:
                 console.log('新增会话')
+                _updateConversation(data)
                 break;
             /**
              * 删除会话
