@@ -51,6 +51,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const videoPicker = React.useRef(null);
     const soundPicker = React.useRef(null);
     const dispatch = useDispatch();
+    const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
     let editorInstance;
 
     const handleSendTextMsg = async () => {
@@ -293,7 +294,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }, [convId, convType])
 
     return (
-        <div className="message-input">
+        <div className={`message-input ${isShutUpAll ? 'disabled-style' : ''}`}>
             {
                 atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
             }
@@ -321,6 +322,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     controls={[]}
                     ref={instance => editorInstance = instance}
                     contentStyle={{ height: '100%', fontSize: 14 }}
+                    placeholder={placeHolderText}
                 />
             </div>
             <div className="message-input__button-area">
