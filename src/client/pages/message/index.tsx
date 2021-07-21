@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { replaceConversaionList, updateCurrentSelectedConversation, getUserStatus } from '../../store/actions/conversation';
+import { replaceConversaionList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
 import { getUserType } from '../../store/actions/userTypeList';
 import { Avatar } from '../../components/avatar/avatar';
 
@@ -70,8 +70,8 @@ export const Message = (): JSX.Element => {
     useEffect(() => {
         conversationList.length === 0 && setLoadingStatus(true);
         getData();
-        getUsetStatus();
     }, []);
+    
     useEffect(() => {
         getUsetStatus();
     }, [conversationList]);
