@@ -3,7 +3,7 @@ export const PURCHASE_LINK = 'https://buy.cloud.tencent.com/avc';
 export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service'
 
 export const SDK_APPID = '1400187352'
-export const SERVICES_URL = 'http://192.168.8.159:8888'
+export const SERVICES_URL = ''
 // The config of login page
 
 // The config of login page xingchenhe 私有云测试专用，其他人请不要用这个，需要生成账号找xingchenhe

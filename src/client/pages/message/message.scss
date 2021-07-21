@@ -47,6 +47,7 @@
         display: flex;
         padding: 13px 12px;
         width: 232px;
+        position: relative;
         &:hover {
             background-color: #E8F2FF;
         }
@@ -124,13 +125,28 @@
             .text {
                 margin-left: 5px;;
             }
+            .at-msg {
+                color: #FF584C;
+            }
         }
 
         &.is-active {
             background: #E8F2FF;
         }
+        .pinned-tag {
+            display: none;
+        }
         &.is-pinned {
-            background: #d1d1d1;
+            .pinned-tag{
+                display: block;
+                position: absolute;
+                right: 0;
+                top: 0;
+                // background-color: #006EFF;
+                border: 6px solid #006EFF;
+                border-left-color: transparent;
+                border-bottom-color: transparent;
+            }
         }
     }
 }
