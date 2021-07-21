@@ -1,20 +1,19 @@
-import { Form, Input, Button } from "tea-component";
-import React from "react";
-import { Form as FinalForm, Field } from "react-final-form";
-import { getStatus } from "../../../utils/getStatus";
-
-
-const validateValue = async (value: string,label: string) => {
-  if (!value) {
-    return `${label}必填`;
-  }
-};
-
+import { SearchBox, Radio, Button } from "tea-component";
+import React, { useState } from "react";
+import "./tranfer-group-form.scss";
+import { Avatar } from "../../../components/avatar/avatar";
+import { throttle } from "../../../utils/tools"
 export interface FormValue {
   UID: string;
 }
 
 interface Props {
+  userList: {
+    user_profile_face_url: string;
+    user_profile_nick_name: string;
+    user_profile_identifier: string;
+    group_member_info_member_role: number;
+  }[];
   onSubmit: (formValue: FormValue) => Promise<void>;
   onSuccess?: () => void;
   onError?: () => void;
@@ -22,70 +21,60 @@ interface Props {
 }
 
 export const TransferGroupForm = (props: Props): JSX.Element => {
-  const { onSubmit, onSuccess, onError } = props;
-
+  const { onSubmit, onSuccess, onError, userList } = props;
+  const [selectedUserId, setSelectedUserId] = useState('')
+  const [searchData, setSearchData] = useState(userList)
   // eslint-disable-next-line
-  const _handlerSubmit = async (formValue: FormValue) => {
+  const handlerSubmit = async () => {
     try {
-      await onSubmit(formValue);
+      await onSubmit({
+        UID: selectedUserId
+      });
       onSuccess?.();
     } catch (error) {
       onError?.();
     }
   };
-
+  const onSearch = throttle((value) => {
+    let dataList = userList
+    if (value) {
+      dataList = dataList.filter(item => item.user_profile_nick_name.includes(value) || item.user_profile_identifier.includes(value))
+    }
+    setSearchData(dataList)
+  }, 300)
+  const onChange = (e) => {
+    setSelectedUserId(e)
+  }
   return (
-    <FinalForm
-      onSubmit={_handlerSubmit}
-      initialValuesEqual={() => true}
-      initialValues={{}}
-    >
-      {({ handleSubmit, submitting, validating }) => {
-        return (
-          <form onSubmit={handleSubmit}>
-            <Form layout="fixed" style={{ width: "100%" }}>
-
-            <Field
-                name="UID"
-                disabled={submitting}
-                validateOnBlur
-                validateFields={[]}
-                validate={(value) => validateValue(value , '转让人UID必填')}
-              >
-                {({ input, meta }) => (
-                  <Form.Item
-                    required
-                    label="转让人UID"
-                    status={getStatus(meta, validating)}
-                    message={
-                      getStatus(meta, validating) === "error" && meta.error
-                    }
-                  >
-                    <Input
-                      {...input}
-                      placeholder="请输入转让人UID"
-                      size="full"
-                      disabled={submitting}
-                    />
-                  </Form.Item>
-                )}
-              </Field>  
-
-           
-            </Form>
-            <Form.Action>
-              <Button
-                style={{borderRadius: '4px'}}
-                type="primary"
-                htmlType="submit"
-                loading={submitting}
-              >
-                确认
-              </Button>
-            </Form.Action>
-          </form>
-        );
-      }}
-    </FinalForm>
+    <div className="transfer-group">
+        <section>
+            <SearchBox placeholder="请输入转让人UID或者昵称" onChange={onSearch} onSearch={onSearch} onClear={() => onSearch('')} />
+        </section>
+        <Radio.Group
+          className="group-nember-list"
+          value={selectedUserId}
+          onChange={onChange}
+          layout="column"
+        >
+          {
+             searchData.map((v, index) => (
+               <Radio name={v.user_profile_identifier}  key={v.user_profile_face_url + index} display="block">
+                <div className="group-member--avatar-box">
+                  <Avatar
+                    extralClass="transfer-group-avatar"
+                    url={v.user_profile_face_url}
+                  />
+                  <span className="group-member--name">
+                    {v.user_profile_nick_name}({v.user_profile_identifier})
+                  </span>
+                </div>
+              </Radio>
+            ))
+          }
+        </Radio.Group>
+        <div className="transfer-footer">
+          <Button type="primary" onClick={handlerSubmit} disabled={!selectedUserId}>确定</Button>
+        </div>
+    </div>
   );
 };
