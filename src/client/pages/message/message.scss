@@ -16,7 +16,7 @@
 }
 
 .conversion-list {
-    overflow-y: scroll;
+    overflow-y: overlay;
     overflow-x: hidden;
     flex: 1;   
     &:hover {
@@ -31,7 +31,7 @@
         }
     } 
     &::-webkit-scrollbar {
-        width:8px;
+        width:0px;
         background-color:#fff;
     }
    

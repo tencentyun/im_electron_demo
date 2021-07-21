@@ -42,7 +42,7 @@
 }
 
 .customize-scroll-style {
-    overflow-y: scroll;
+    overflow-y: overlay;
     overflow-x: hidden;
     box-sizing: border-box;
     &:hover {
