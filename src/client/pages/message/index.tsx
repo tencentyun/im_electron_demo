@@ -74,7 +74,7 @@ export const Message = (): JSX.Element => {
     
     useEffect(() => {
         getUsetStatus();
-    }, [conversationList]);
+    }, [conversationList.length]);
 
     useEffect(() => {
         if (currentSelectedConversation?.conv_id) {
@@ -171,7 +171,7 @@ export const Message = (): JSX.Element => {
             console.warn('返回错误信息', err)
         })
     }
-    // getUsetStatus()
+    
     const pingConv = (conv: State.conversationItem, isPinned: boolean) => {
         const { conv_id, conv_type, conv_is_pinned } = conv
         if (conv_is_pinned === isPinned) {
