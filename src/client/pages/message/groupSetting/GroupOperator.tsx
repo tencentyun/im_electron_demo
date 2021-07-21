@@ -38,18 +38,11 @@ export const GroupOperator = (props: {
   // 只有群主可以进行群转让 直播群不可以转让
   const canTransferGroup = isOwner && ![3,4].includes(groupType);
 
-  const updateConversation = async () => {
-    const response = await getConversionList();
-    dispatch(replaceConversaionList(response));
-    if (response.length) {
-      dispatch(updateCurrentSelectedConversation(response[0]));
-    }
-  };
 
   // 退出群组后删除当前会话并更新会话列表
   const updateConversationListAndCurrentSelectConveration = async () => {
     await TIMConvDelete(groupId, 2);
-    await updateConversation();
+    // await updateConversation();
   };
 
   const handleQuitGroup = async () => {
