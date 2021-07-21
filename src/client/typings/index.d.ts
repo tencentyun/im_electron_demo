@@ -117,9 +117,9 @@ declare namespace State {
     
     export type userInfo = {
         userId: string,
-        faceUrl: string,
-        nickName: string,
-        role: number
+        faceUrl?: string,
+        nickName?: string,
+        role?: number
     }
 
     export type actcionType<T> = {
