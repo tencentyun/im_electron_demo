@@ -292,7 +292,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }, [convId, convType])
 
     return (
-        <div className={`message-input ${isShutUpAll ? '' : ''}`}>
+        <div className={`message-input ${isShutUpAll ? 'disabled-style' : ''}`}>
             {
                 atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
             }
@@ -314,7 +314,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyPress={handleOnkeyPress}>
                 <BraftEditor
                     //@ts-ignore
-                    // disabled={isShutUpAll}
+                    disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
                     controls={[]}
