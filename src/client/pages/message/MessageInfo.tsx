@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Avatar } from "../../components/avatar/avatar";
 import { getMsgList, markMessageAsRead } from "./api";
@@ -12,6 +12,7 @@ import { addMessage } from "../../store/actions/message";
 import { AddUserPopover } from "./AddUserPopover";
 import { useDialogRef } from "../../utils/react-use/useDialog";
 import { addTimeDivider } from "../../utils/addTimeDivider";
+import BraftEditor, { EditorState } from 'braft-editor'
 import {
   GroupSettingDrawer,
   GroupSettingRecordsType,
@@ -34,10 +35,14 @@ export const MessageInfo = (
   const groupSettingRef = useDialogRef<GroupSettingRecordsType>();
 
   const popupContainer = document.getElementById("messageInfo");
+  const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all;
 
   const { historyMessageList } = useSelector(
     (state: State.RootState) => state.historyMessage
   );
+  const userTypeList = useSelector((state: State.RootState) => state.userTypeList);
+  const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
+  
   const msgList = historyMessageList.get(conv_id);
 
   const getDisplayConvInfo = () => {
@@ -65,16 +70,19 @@ export const MessageInfo = (
         return;
       }
       try {
-        const { message_msg_id } = msgList[0];
-        const { code, ...res } = await markMessageAsRead(
-          conv_id,
-          conv_type,
-          message_msg_id
-        );
-        if (code === 0) {
-          console.log("设置会话已读成功");
-        } else {
-          console.log("设置会话已读失败", code, res);
+        const { message_msg_id, message_is_from_self } = msgList[0];
+        if(!message_is_from_self) {
+          const { code, ...res } = await markMessageAsRead(
+            conv_id,
+            conv_type,
+            message_msg_id
+          );
+
+          if (code === 0) {
+            console.log("设置会话已读成功");
+          } else {
+            console.log("设置会话已读失败", code, res);
+          }
         }
       } catch (err) {
         console.log("设置会话已读失败", err);
@@ -112,6 +120,17 @@ export const MessageInfo = (
     }
   }, [conv_id]);
 
+  const isOnInternet = () => {
+    let buuer = false;
+    for(const item in userTypeList){
+        // console.warn(userTypeList[item])
+        if(userTypeList[item].To_Account === conv_id && userTypeList[item].Status === 'Online'){
+          buuer = true
+        }
+    }
+    return buuer
+  };
+
   return (
     <>
       <div className="message-info" id="messageInfo">
@@ -134,15 +153,22 @@ export const MessageInfo = (
             <span className="message-info__header--name">
               {nickName || conv_id}
             </span>
+            {
+              conv_type === 1 ?
+              <span title={isOnInternet()?'在线':'离线'} 
+                className={['message-info__header--type', !isOnInternet()?'message-info__header--typeoff': ''].join(' ')}
+              >
+              </span>:null
+            }
           </div>
           {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
         </header>
         <section className="message-info__content">
           <div className="message-info__content--view">
-            <MessageView messageList={msgList || []} />
+            <MessageView messageList={msgList || []} editorState={editorState} setEditorState={setEditorState}/>
           </div>
           <div className="message-info__content--input">
-            <MessageInput convId={conv_id} convType={conv_type} />
+            <MessageInput convId={conv_id} convType={conv_type}  isShutUpAll={isShutUpAll}/>
           </div>
         </section>
       </div>

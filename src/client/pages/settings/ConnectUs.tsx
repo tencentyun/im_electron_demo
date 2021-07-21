@@ -23,7 +23,6 @@ export const ConnectUs = (): JSX.Element => {
             <section className="connet-section">
                 <div className="connect-section--title">
                     <span className="tencent-cloud-logo"></span>
-                    <span className="tencent-cloud-name tc">腾讯云</span>
                     <span className="tencent-cloud-name im">即时通信</span>
                 </div>
                 <div className="connect-desc">
@@ -36,8 +35,8 @@ export const ConnectUs = (): JSX.Element => {
                 </div>
                 <div className="im-logo"></div>
                 <div className="connect-us-button">
-                    <Button type="primary" onClick={handlePurchaseClick}  className="connect-us-button--purchase">立即选购</Button>
-                    <Button type="weak" onClick={handleContactClick} className="connect-us-button--contact">联系我们</Button>
+                    {/* <Button type="primary" onClick={handlePurchaseClick}  className="connect-us-button--purchase">立即选购</Button> */}
+                    {/* <Button type="weak" onClick={handleContactClick} className="connect-us-button--contact">联系我们</Button> */}
                 </div>
             </section>
         </div>
