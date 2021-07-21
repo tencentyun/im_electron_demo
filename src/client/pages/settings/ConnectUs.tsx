@@ -23,7 +23,6 @@ export const ConnectUs = (): JSX.Element => {
             <section className="connet-section">
                 <div className="connect-section--title">
                     <span className="tencent-cloud-logo"></span>
-                    <span className="tencent-cloud-name tc">华润银行</span>
                     <span className="tencent-cloud-name im">即时通信</span>
                 </div>
                 <div className="connect-desc">
