@@ -15,7 +15,7 @@ type Props = RouteComponentProps
 const settingsConfig = [
     {
         id: 'accountSetting',
-        name: '账号设置',
+        name: '设置',
     },
     // {
     //     id: 'commonSetting',
