@@ -15,10 +15,8 @@ export type getCustEmojiType = {
 }
 
 export type custEmojiReponseType = {
-    data: {
-        ErrorCode: number;
-        Data: any;
-    }
+    ErrorCode: number;
+    Data: any;
 }
 /**
  * 添加删除自定义表情
@@ -28,7 +26,7 @@ export async function custEmojiUpsert(data: custEmojiUpsertParams): Promise<any>
         url: `${TIM_BASE_URL}/sticker/upsert`,
         method: 'POST',
         data: {
-            skdappid: SDK_APPID,
+            sdkappid: SDK_APPID,
             ...data
         }
     })
@@ -39,7 +37,7 @@ export async function getCustEmoji(params: getCustEmojiType): Promise<custEmojiR
     return request({
         url: `${TIM_BASE_URL}/sticker/list`,
         params: {
-            skdappid: SDK_APPID,
+            sdkappid: SDK_APPID,
             ...params
         }
     })
