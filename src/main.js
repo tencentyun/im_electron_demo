@@ -52,7 +52,6 @@ const createWindow = () => {
     if(!ipc) ipc = new IPC(mainWindow);
 
     // use for developments
-    mainWindow.webContents.openDevTools();
 
   })
 
