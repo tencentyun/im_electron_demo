@@ -66,16 +66,19 @@ export const MessageInfo = (
         return;
       }
       try {
-        const { message_msg_id } = msgList[0];
-        const { code, ...res } = await markMessageAsRead(
-          conv_id,
-          conv_type,
-          message_msg_id
-        );
-        if (code === 0) {
-          console.log("设置会话已读成功");
-        } else {
-          console.log("设置会话已读失败", code, res);
+        const { message_msg_id, message_is_from_self } = msgList[0];
+        if(!message_is_from_self) {
+          const { code, ...res } = await markMessageAsRead(
+            conv_id,
+            conv_type,
+            message_msg_id
+          );
+
+          if (code === 0) {
+            console.log("设置会话已读成功");
+          } else {
+            console.log("设置会话已读失败", code, res);
+          }
         }
       } catch (err) {
         console.log("设置会话已读失败", err);

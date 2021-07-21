@@ -144,10 +144,30 @@ const App = () => {
                 break;
         }
     }
+
+    const handleMessageSendFailed = (convList) => {
+        const failedList = convList.reduce((acc, cur) => {
+            if(cur.conv_last_msg && cur?.conv_last_msg.message_status === 3) {
+                return {
+                    ...acc,
+                    [cur.conv_id]: [...[acc[cur.conv_id]], cur.conv_last_msg].filter(x => x)
+                }
+            }
+        }, {});
+
+        for (let i in failedList) {
+            dispatch(reciMessage({
+                convId: i,
+                messages: failedList[i]
+            }))
+        }
+    };
+
     const _updateConversation = async (conversationList: Array<State.conversationItem>) => {
         if (conversationList.length) {
             const convList = await addProfileForConversition(conversationList);
-            dispatch(updateConversationList(convList))
+            dispatch(updateConversationList(convList));
+            handleMessageSendFailed(convList);
         }
     }
 

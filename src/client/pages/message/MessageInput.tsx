@@ -74,10 +74,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
-                setEditorState(ContentUtils.clear(editorState))
-            } else {
-                message.error({content: `消息发送失败 ${desc}`})
             }
+            setEditorState(ContentUtils.clear(editorState))
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
         }
@@ -294,7 +292,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }, [convId, convType])
 
     return (
-        <div className={`message-input ${isShutUpAll ? 'disabled-style' : ''}`}>
+        <div className={`message-input ${isShutUpAll ? '' : ''}`}>
             {
                 atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
             }
@@ -316,7 +314,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyPress={handleOnkeyPress}>
                 <BraftEditor
                     //@ts-ignore
-                    disabled={isShutUpAll}
+                    // disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
                     controls={[]}
