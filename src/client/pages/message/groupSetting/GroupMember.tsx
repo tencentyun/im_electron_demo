@@ -89,13 +89,11 @@ export const GroupMember = (props: {
     // const sdkappid = "1400529075";
     const uid = "YANGGUANG37";
     const To_Account = ["denny1", "denny2"];
-    console.warn({ uid, To_Account }, '发送参数')
     userList.forEach((i) => {
         To_Account.push(i.user_profile_identifier)
     })
-    console.warn(userList, To_Account, '入参单个参数')
+
     getUserTypeQuery({ uid, To_Account }).then(data => {
-      console.warn(data, "获取联系人在线状态返回参数")
       if (data.ErrorCode === 0) {
         console.warn(1)
         setUserGroupType(data.queryResult)
@@ -115,8 +113,7 @@ export const GroupMember = (props: {
     return buuer
   };
 
-  console.warn('所有群成员', userList, '')
-  console.warn(userGroupType,'获取的群状态数据')
+  console.warn('所有群成员', userList, '获取的群状态数据', userGroupType)
 
   return (
     <>
@@ -173,6 +170,7 @@ export const GroupMember = (props: {
       <GroupMemberListDrawer
         popupContainer={popupContainer}
         dialogRef={dialogRef}
+        userGroupType={userGroupType}
       />
       <DeleteGroupMemberDialog
         dialogRef={deleteMemberDialogRef}
