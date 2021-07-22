@@ -12,16 +12,16 @@ export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service
 // export const DEFAULT_USER_SIG = 'eJwtzNsKgkAUheF3meuQ7eichC60SCwJonqA0Em2WowH0ozePVMv17fg-5BLfLZeuiYeoRaQ1bQx1c8W7zixI0Au3qTFzRhMiWe7ALYUDqPzo3uDtR6dMUYBYNYWH3-jlAvOlVJLBbMxexiOfnTFvuIqKfM3y*xwu4uKfRA2snDcsovzQW9OXVAla-L9AYNdMIc_';
 
 // xingchenhe公有云 测试
-export const DEFAULT_USERID = 'xhc_test';
-export const DEFAULT_USER_SIG = 'eJwtzE0LgkAUheH-MltDr1fHTGhRbRQkg9o0CFE56SXyc5KB6L9n6vI8B94PO8VHs5ctCxiawBbjpkyWih40si7uFyU7NX9d9rzWNWUssF0A2186HKdH6ppaOTjnHAFgUkWvv3no*a6N6M4Vyod0q1eYFG9jU*5CcQ6BmsToU8vZF446bEHf8qiphKAqteJozb4-WUczLA__';
+// export const DEFAULT_USERID = 'xhc_test';
+// export const DEFAULT_USER_SIG = 'eJwtzE0LgkAUheH-MltDr1fHTGhRbRQkg9o0CFE56SXyc5KB6L9n6vI8B94PO8VHs5ctCxiawBbjpkyWih40si7uFyU7NX9d9rzWNWUssF0A2186HKdH6ppaOTjnHAFgUkWvv3no*a6N6M4Vyod0q1eYFG9jU*5CcQ6BmsToU8vZF446bEHf8qiphKAqteJozb4-WUczLA__';
 
 
 
 // export const DEFAULT_USERID = 'mimi';
 // export const DEFAULT_USER_SIG = 'eJwtzEELgjAYxvHvsmsh22tbKnSI6KYhLIQdl1vxJquxlgXRd8-U4-N74P8hx1ImvQ2kIJBQshw3GnuLeMaRHTqc-WE67T0aUrAVpSxbpxymx749Bjs45xwopZNGdH8TIDKRpZzPFbwM2VPfLlQFwe1YrXMWjVR5dY*6breHa4PlXoFs8PmKqtuQ7w-tTTFt';
 
-// export const DEFAULT_USERID = 'mimimi';
-// export const DEFAULT_USER_SIG = 'eJyrVgrxCdYrSy1SslIy0jNQ0gHzM1NS80oy0zLBwrmZIAiVKU7JTiwoyExRsjI0MTAwtDA3NjWCyKRWFGQWpQLFTU1NjQwMDCCiJZm5IDEzIzMLMwtzQwuoKZnpQIPD-bz8tcuLqvwjA41CnUti9H19jZ1cC5Nd-XwNTcxNIs0yii21XXMKKso8fW2VagGQHjFo';
+export const DEFAULT_USERID = 'mimimi';
+export const DEFAULT_USER_SIG = 'eJyrVgrxCdYrSy1SslIy0jNQ0gHzM1NS80oy0zLBwrmZIAiVKU7JTiwoyExRsjI0MTAwtDA3NjWCyKRWFGQWpQLFTU1NjQwMDCCiJZm5IDEzIzMLMwtzQwuoKZnpQIPD-bz8tcuLqvwjA41CnUti9H19jZ1cC5Nd-XwNTcxNIs0yii21XXMKKso8fW2VagGQHjFo';
 
 // export const DEFAULT_USERID = 'yy';
 // export const DEFAULT_USER_SIG = 'eJwtzMsOgjAQheF36VZDplNaK4kbFrpRMdUEt8ZWHbzQAGkkxncXgeX5TvJ-2GG9j4KrWMIwAjbtN1n3auhCPbftqLW9n7wnyxIeA3A9ExKHx709Va5zKSUCwKANPf*mUM2RI-CxQtcuWtg4h5sWW7VLTZ4qsdRFqTN5DPVkI0tuzMo98gzPARbs*wNMDi7s';

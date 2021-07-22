@@ -68,7 +68,7 @@ export const GroupAccountecmentSetting = (props: {
     setInput(accountecment);
   }, [accountecment]);
 
-   /**
+  /**
    * 当前不是修改状态，才出现修改按钮
    * 对于公开群、聊天室和直播大群，只有群主或者管理员可以修改群简介。
    * 对于私有群，任何人可修改群简介。
@@ -78,7 +78,7 @@ export const GroupAccountecmentSetting = (props: {
   const canEdit = groupType === 1 || [2, 3].includes(userIdentity);
 
   return (
-    <LoadingContainer loading={loading}>
+    <LoadingContainer loading={loading} style={{ height: "100%" }}>
       <div className="group-accountecment-setting">
         <TextArea
           className="group-accountecment-setting--textarea"

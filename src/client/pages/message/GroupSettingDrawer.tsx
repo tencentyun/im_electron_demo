@@ -26,7 +26,7 @@ export const GroupSettingDrawer = (props: {
 
   const close = () => {
     setShowState(false);
-    onClose();
+    onClose?.();
   };
 
   return (

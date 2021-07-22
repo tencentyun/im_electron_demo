@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { HashRouter as Router, Switch, Route } from "react-router-dom";
+import { HashRouter as Router, Switch, Route, useHistory } from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
 
 import store from "./store";
@@ -17,7 +17,6 @@ import {
   setUnreadCount,
   updateConversationList,
   markConvLastMsgIsReaded,
-  replaceConversaionList,
   updateCurrentSelectedConversation,
 } from "./store/actions/conversation";
 import {
@@ -29,15 +28,14 @@ import {
   markeMessageAsRevoke,
   markMessageAsReaded,
 } from "./store/actions/message";
+import { setIsLogInAction, userLogout } from "./store/actions/login";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
-const App = () => {
+export const App = () => {
   const dispatch = useDispatch();
 
-
-
-
+ const history = useHistory()
   const initIMSDK = async () => {
     if (!isInited) {
       // const privite = await timRenderInstance.callExperimentalAPI({
@@ -57,7 +55,7 @@ const App = () => {
         if (data === 0) {
           isInited = true;
           console.log("初始化成功");
-          initListeners.bind(this)((callback) => {
+          initListeners((callback) => {
             const { data, type } = callback;
             console.info(
               "======================== 接收到IM事件 start =============================="
@@ -101,12 +99,23 @@ const App = () => {
               case "TIMSetGroupTipsEventCallback":
                 _handleGroupInfoModify(data);
                 break;
+            /**
+             * 被挤下线
+             */
+              case "TIMSetKickedOfflineCallback":
+                  _handleKickedout();
+                  break;
             }
           });
         }
       });
     }
   };
+  const _handleKickedout = async () => {
+        dispatch(userLogout());
+        history.replace('/login');
+        dispatch(setIsLogInAction(false));
+  }
   const _handleGroupInfoModify = async (data) => {
     const response = await getConversionList();
     dispatch(updateConversationList(response));
@@ -164,6 +173,7 @@ const App = () => {
     }
   };
   const _handleConversaion = (conv) => {
+    
     const { type, data } = conv;
     switch (type) {
       /**
@@ -240,19 +250,19 @@ const App = () => {
   return (
     <div id="app-container">
       <ToolsBar></ToolsBar>
-      <Router>
         <Switch>
           <Route path="/home" component={Home}></Route>
           <Route path="/" component={Login} />
         </Switch>
-      </Router>
     </div>
   );
 };
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+      <Router>
+          <App />
+      </Router>
   </Provider>,
   document.getElementById("root")
 );
