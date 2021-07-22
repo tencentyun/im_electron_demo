@@ -10,7 +10,8 @@ declare namespace State {
     }
     export type functionTab = 'message' | 'relationship'
     export type ui = {
-        function_tab: functionTab
+        function_tab: functionTab,
+        replace_router: boolean
     }
     export type historyMessage = {
         historyMessageList:Map<string, Array<message>>
@@ -104,7 +105,8 @@ declare namespace State {
         conv_profile: groupProfile & userProfile
         conv_recv_opt: number
         conv_type: number
-        conv_unread_num: number
+        conv_unread_num: number,
+        conv_group_at_info_array: Array<any>
     }
 
     export type MessageReceipt = {
@@ -115,9 +117,9 @@ declare namespace State {
     
     export type userInfo = {
         userId: string,
-        faceUrl: string,
-        nickName: string,
-        role: number
+        faceUrl?: string,
+        nickName?: string,
+        role?: number
     }
 
     export type actcionType<T> = {

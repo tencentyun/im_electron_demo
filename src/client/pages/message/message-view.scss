@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column-reverse;
     height: 100%;
-    overflow-y: scroll;
+    overflow-y: overlay;
     overflow-x: hidden;
     padding: 0 20px 20px 20px;
     box-sizing: border-box;
@@ -30,7 +30,17 @@
         width: 8px;
         background-color:transparent;
     }
-
+    .showMore {
+        text-align: center;
+        color: blue;
+        font-size: 12px;
+        line-height: 20px;
+        cursor: pointer;
+    }
+    .no-more.showMore{
+        color: #999;
+        cursor: default;
+    }
     &__item {
         display: flex;
         flex-direction: row;
@@ -51,12 +61,16 @@
             }
         }
 
+        &--element {
+            max-width: 80%;
+        }
+
         &--time-divider {
             margin: 20px 0;
             text-align: center;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 400;
-            color: #000000;
+            color: #bbb;
             line-height: 20px;
         }
 
@@ -167,6 +181,11 @@
             background-repeat: no-repeat;
             background-position: center;
             align-self: flex-end;
+            margin-right: 4px;
+        }
+
+        &--element-icon-error {
+            align-self: center;
             margin-right: 4px;
         }
 

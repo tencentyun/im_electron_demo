@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Tabs, TabPanel, Input, Button, Checkbox } from "tea-component";
+import { Tabs, TabPanel, Input, Button, Checkbox, message } from "tea-component";
 import { DEFAULT_USERID, DEFAULT_USER_SIG} from '../../constants';
 import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
 import { changeFunctionTab } from '../../store/actions/ui';
+import { setUserInfo } from '../../store/actions/user';
 // eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
 
@@ -18,12 +19,18 @@ const tabs = [
 export const LoginContent = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory();
+    const [activedTab, setActivedTab] = useState('passwordLogin');
     const [userID, setUserID] = useState(DEFAULT_USERID);
     const [usersig, setUserSig] = useState(DEFAULT_USER_SIG);
-    const isDisablelogin = userID && usersig;
+    const isDisablelogin = activedTab === 'passwordLogin' && userID && usersig;
 
     const customizeTabBarRender = (children: JSX.Element) => {
         return <a className="customize-tab-bar">{children}</a>
+    }
+
+    const handleTabChange = ({id}) => {
+        if(id === 'verifyCodeLogin') return message.warning({content: '敬请期待'});
+        setActivedTab(id);
     }
 
     const handleLoginClick = async () => {
@@ -35,6 +42,9 @@ export const LoginContent = (): JSX.Element => {
         console.log(code,data,desc,json_param);
         if(code === 0) {
             dispatch(setIsLogInAction(true));
+            dispatch(setUserInfo({
+                userId: userID
+            }));
             dispatch(changeFunctionTab('message'));
             history.replace('/home/message');
         }
@@ -43,7 +53,7 @@ export const LoginContent = (): JSX.Element => {
     return (
         <div className="login--context">
             <h2 className="login--context__title">登陆IM</h2>
-            <Tabs tabs={tabs} placement="top" tabBarRender={customizeTabBarRender}>
+            <Tabs tabs={tabs} placement="top" activeId={activedTab} onActive={handleTabChange} tabBarRender={customizeTabBarRender}>
                 <TabPanel id="verifyCodeLogin">
                     <Input placeholder="请输入用户名" className="login--input" />
                     <Input placeholder="请输入密码" className="login--input" />

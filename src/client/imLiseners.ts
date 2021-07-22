@@ -111,7 +111,7 @@ export default function initListeners(callback:InitListenersCallback){
         callback:(args)=>{
             callback({
                 type: 'TIMSetGroupTipsEventCallback',
-                data: JSON.parse(args)
+                data:  JSON.parse(args[0])
             })
         },
         user_data: "test"

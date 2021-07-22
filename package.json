@@ -59,6 +59,7 @@
     "eslint": "^7.30.0",
     "eslint-plugin-import": "^2.23.4",
     "html-webpack-plugin": "^5.3.2",
+    "native-ext-loader": "^2.3.0",
     "node-gyp": "^7.1.2",
     "node-loader": "^2.0.0",
     "sass-loader": "^12.1.0",
@@ -75,7 +76,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "file-loader": "^6.2.0",
     "final-form": "^4.20.2",
-    "im_electron_sdk": "^1.0.25",
+    "im_electron_sdk": "^1.0.26",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
     "react": "^17.0.2",
@@ -83,10 +84,12 @@
     "react-contextmenu": "^2.14.0",
     "react-dom": "^17.0.2",
     "react-final-form": "^6.5.2",
+    "react-loading-skeleton": "^2.2.0",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "redux": "^4.1.0",
     "sass": "^1.35.1",
-    "tea-component": "^2.6.22"
+    "tea-component": "^2.6.22",
+    "trtc-electron-sdk": "^8.6.102-beta.0"
   }
 }
