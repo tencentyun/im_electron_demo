@@ -140,6 +140,16 @@
                 line-height: 20px;
             }
         }
+        &--group-sys {
+            display: inline-block;
+            padding: 12px;
+            font-size: 14px;
+            border-radius: 2px 8px 8px 8px;
+            background: #ECEEF2;
+            vertical-align: middle;
+            word-wrap: normal;
+            word-break: break-all;
+        }
         &--text {
             display: inline-block;
             padding: 12px;
