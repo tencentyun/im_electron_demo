@@ -68,7 +68,7 @@ export const GroupToolsDrawer = (props: {
     if (visible) {
       close();
     }
-  }, [currentSelectedConversation]);
+  }, [currentSelectedConversation.conv_id]);
 
   return (
     <Drawer

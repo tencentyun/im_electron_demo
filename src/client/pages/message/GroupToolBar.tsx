@@ -1,14 +1,7 @@
 import React, { useState } from "react";
 import { useDialogRef } from "../../utils/react-use/useDialog";
 import "./group-tool-bar.scss";
-import {
-  GroupAccountecmentSettingDrawer,
-  GroupAccountecmentSettingRecordsType,
-} from "./GroupAccountecmentSettingDrawer";
-import {
-  GroupSettingDrawer,
-  GroupSettingRecordsType,
-} from "./GroupSettingDrawer";
+
 import { GroupToolsDrawer, GroupToolsgRecordsType } from "./GroupToolsDeawer";
 
 const tools = [
@@ -38,16 +31,7 @@ export const GroupToolBar = (props: {
 
   const groupToolsRef = useDialogRef<GroupToolsgRecordsType>();
 
-  const groupSettingRef = useDialogRef<GroupSettingRecordsType>();
-  const groupAccountecmentSettingRef =
-    useDialogRef<GroupAccountecmentSettingRecordsType>();
-
   const popupContainer = document.getElementById("messageInfo");
-
-  const refMap = {
-    announcement: groupAccountecmentSettingRef,
-    setting: groupSettingRef,
-  };
 
   return (
     <>
@@ -57,11 +41,8 @@ export const GroupToolBar = (props: {
             key={id}
             className="tool-bar--item"
             onClick={(e) => {
-              console.log("test", e);
               if (active !== id) {
                 setActive(id);
-                // const ref = refMap[id];
-                // ref.current.open({ conversationInfo });
                 groupToolsRef.current.open({ conversationInfo, toolId: id });
               } else {
                 groupToolsRef.current.close();
@@ -80,16 +61,6 @@ export const GroupToolBar = (props: {
         popupContainer={popupContainer}
         onClose={() => setActive("")}
       />
-      {/* <GroupSettingDrawer
-        dialogRef={groupSettingRef}
-        popupContainer={popupContainer}
-        onClose={() => setActive("")}
-      />
-      <GroupAccountecmentSettingDrawer
-        dialogRef={groupAccountecmentSettingRef}
-        popupContainer={popupContainer}
-        onClose={() => setActive("")}
-      /> */}
     </>
   );
 };
