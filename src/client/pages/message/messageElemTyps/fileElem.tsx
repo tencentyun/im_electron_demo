@@ -38,6 +38,5 @@ export const FileElem = (props: any): JSX.Element => {
     useEffect(() => {
         savePic()
     }, [])
-   console.log('fileElem',props)
     return item();
 }

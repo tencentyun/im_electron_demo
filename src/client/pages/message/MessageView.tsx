@@ -313,6 +313,7 @@ export const MessageView = (props: Props): JSX.Element => {
                             <div key={item.time} className="message-view__item--time-divider">{formateTime(item.time * 1000, true)}</div>
                         )
                     }
+                    console.log(item,'item')
                     const { message_elem_array, message_sender_profile, message_is_from_self ,message_status, message_is_peer_read, message_conv_type } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                     const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
