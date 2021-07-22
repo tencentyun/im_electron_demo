@@ -166,10 +166,11 @@ const {nickName,faceUrl,gender} = userInfo
               <form onSubmit={handleSubmit}>
                 <Form>
                   <Field
-                    name="avatar"
+                    name="faceUrl"
                     validateFields={[]}
                   >
                     {({ input, meta }) => (
+                      
                       <Form.Item
                         label="头像"
                       >
