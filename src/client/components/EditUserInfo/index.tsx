@@ -13,6 +13,7 @@ import {
   message
 } from "tea-component";
 import { Form as FinalForm, Field } from "react-final-form";
+import ImgCropper from "../../components/UploadFace";
 
 const genderMap = {
   '1': '男',
@@ -84,6 +85,7 @@ interface UserProfileItem {
 
 export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,onUpdateUserInfo }): JSX.Element => {
   const [isShow, setVisible] = useState(visible)
+  const [imgUrl, setImgUrl] = useState('')
   const close = () => {
     setVisible(false)
     onClose(false)
@@ -94,6 +96,22 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,on
     onChange && onChange(visible)
   }, [visible])
 
+  const open = () => setVisible(true);
+  // const close = () => setVisible(false);
+        
+  function afterCropper(base64) {
+     console.log('base64',base64)
+  }
+  function afterUpload(imgUrl) {
+     console.log('imgUrl',imgUrl)
+     setImgUrl(imgUrl)
+  }
+  function cropperFile(file) {
+     console.log('file',file)
+  }
+  function beforeUpload(file) {
+     console.log('上传前file',file)
+  }
 
   function getStatus(meta, validating?) {
     if (meta.active && validating) {
@@ -106,6 +124,8 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,on
   }
 console.log('userinfo',userInfo);
   async function onSubmit(values: IUser) {
+    console.log('values', values)
+    values.faceUrl = imgUrl
     const formData: submitUserInfoData = {
       json_modify_self_user_profile_param: {
         user_profile_item_face_url: values.faceUrl,
@@ -114,6 +134,7 @@ console.log('userinfo',userInfo);
       },
       user_data: ''
     }
+    console.log('formData', formData)
      const {data: {code}} = await timRenderInstance.TIMProfileModifySelfUserProfile(formData)
       if (code === 0) {
         message.success({
@@ -152,11 +173,12 @@ const {nickName,faceUrl,gender} = userInfo
                       <Form.Item
                         label="头像"
                       >
-                        <Upload
+                        {/* <Upload
                           action="https://run.mocky.io/v3/68ed7204-0487-4135-857d-0e4366b2cfad"
                         >
                           <Button>点击上传</Button>
-                        </Upload>
+                        </Upload> */}
+                        <ImgCropper afterCropper={afterCropper} afterUpload={afterUpload} cropperFile={cropperFile} beforeUpload={beforeUpload}></ImgCropper>
                       </Form.Item>
                     )}
                   </Field>
