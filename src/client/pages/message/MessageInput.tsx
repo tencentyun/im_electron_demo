@@ -15,6 +15,8 @@ type Props = {
     convId: string,
     convType: number,
     isShutUpAll: boolean,
+    editorState,
+    setEditorState
 }
 
 const FEATURE_LIST_GROUP = [{
@@ -39,12 +41,12 @@ const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType, isShutUpAll } = props;
+    const { convId, convType, isShutUpAll, editorState, setEditorState } = props;
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ isRecordPopup, setRecordPopup ] = useState(false);
-    const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
+    // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
