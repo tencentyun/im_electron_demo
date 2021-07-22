@@ -35,6 +35,9 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
       const { convId, messageId } = payload;
       const history = state.historyMessageList.get(convId);
       const replacedMessageList = history.map(item => {
+        if(!item || !item.message_msg_id){
+          return item
+        }
         if (item.message_msg_id === messageId || item.message_unique_id === messageId) {
           return {
             ...item,
