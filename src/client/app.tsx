@@ -121,7 +121,7 @@ export const App = () => {
     dispatch(updateConversationList(response));
     if (response?.length) {
       const newConversaionItem = response.find(
-        (v) => v.conv_id === data.group_tips_elem_group_id.conv_id
+        (v) => v.conv_id === data.group_tips_elem_group_id
       );
       dispatch(
         updateCurrentSelectedConversation(newConversaionItem || response[0])
