@@ -24,7 +24,6 @@ export const GroupMemberListDrawer = (props: {
   dialogRef: DialogRef<GroupMemberListDrawerRecordsType>;
   userGroupType: Array<userTypeData>
 }): JSX.Element => {
-
   const height = window.innerHeight - 77 - (isWin() ? 24 : 0);
 
   const { dialogRef, popupContainer, userGroupType } = props;
@@ -63,14 +62,18 @@ export const GroupMemberListDrawer = (props: {
       render: (record: any) => {
         const isOwner = record.group_member_info_member_role === 3;
         return (
-          <div className="member-list-drawer--item" onDoubleClick={() => { handleMsgGroupRead(record) }}>
-            <Avatar url={record.user_profile_face_url} />
-            <span title={isOnInternet(record.user_profile_identifier) ? '在线' : '离线'}
-                className={['member-list-drawer--item-type', !isOnInternet(record.user_profile_identifier) ? 'member-list-drawer--item-typeoff' : ''].join(' ')}
-              >
-              </span>
-            <span className="member-list-drawer--item__name">{record.user_profile_nick_name}</span>
-            {isOwner && <span className="member-list-drawer--item__owner">群主</span>}
+          <div className="member-list-drawer--item">
+            <Avatar
+              url={record.user_profile_face_url}
+              nickName={record.user_profile_nick_name}
+              userID={record.user_profile_identifier}
+            />
+            <span className="member-list-drawer--item__name">
+              {record.user_profile_nick_name || record.user_profile_identifier}
+            </span>
+            {isOwner && (
+              <span className="member-list-drawer--item__owner">群主</span>
+            )}
           </div>
         );
       },
@@ -99,10 +102,10 @@ export const GroupMemberListDrawer = (props: {
         addons={[
           scrollable({
             virtualizedOptions: {
-              height, 
-              itemHeight: 60
-            }
-          })
+              height,
+              itemHeight: 60,
+            },
+          }),
         ]}
       />
     </Drawer>

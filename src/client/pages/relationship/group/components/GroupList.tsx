@@ -2,6 +2,7 @@ import React from "react";
 
 import { GroupList as GroupListType } from "../api";
 import { GroupItem } from "./GroupItem";
+import { EmptyResult } from "./EmptyResult";
 
 import "./group-list.scss";
 
@@ -11,7 +12,9 @@ export const GroupList = (props: {
 }): JSX.Element => {
   const { value, onRefresh } = props;
 
-  console.log("value", value);
+  if (!value?.length) {
+    return <EmptyResult contentText="暂无数据" />;
+  }
 
   return (
     <div className="group-list">

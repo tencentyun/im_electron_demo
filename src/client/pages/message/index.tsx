@@ -5,8 +5,7 @@ import { getUserType } from '../../store/actions/userTypeList';
 import { Avatar } from '../../components/avatar/avatar';
 
 import { SearchBox } from '../../components/searchBox/SearchBox';
-import { getConversionList, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage } from './api';
-import { getUserTypeQuery } from '../../services/userType'
+import { getConversionList, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage, TIMMsgSetC2CReceiveMessageOpt, TIMMsgSetGroupReceiveMessageOpt } from './api';
 import './message.scss';
 import { MessageInfo } from './MessageInfo';
 import { GroupToolBar } from './GroupToolBar';
@@ -48,6 +47,10 @@ export const Message = (): JSX.Element => {
             text: "消息免打扰"
         },
         {
+            id: "undisable",
+            text: "移除消息免打扰"
+        },
+        {
             id: "remove",
             text: "移除会话"
         },
@@ -69,7 +72,9 @@ export const Message = (): JSX.Element => {
     }
     useEffect(() => {
         conversationList.length === 0 && setLoadingStatus(true);
-        getData();
+        if(conversationList.length === 0){
+            getData();
+        }
     }, []);
     
     useEffect(() => {
@@ -161,15 +166,15 @@ export const Message = (): JSX.Element => {
             }
         })
         // console.warn(conversationList, To_Account, '入参单个参数')
-        getUserTypeQuery({ uid, To_Account }).then(data => {
-            console.warn(data, "获取联系人在线状态返回参数")
-            if (data.ErrorCode === 0) {
-                console.warn(1)
-                dispatch(getUserType(data.queryResult))
-            }
-        }).catch(err => {
-            console.warn('返回错误信息', err)
-        })
+        // getUserTypeQuery({ uid, To_Account }).then(data => {
+        //     console.warn(data, "获取联系人在线状态返回参数")
+        //     if (data.ErrorCode === 0) {
+        //         console.warn(1)
+        //         dispatch(getUserType(data.queryResult))
+        //     }
+        // }).catch(err => {
+        //     console.warn('返回错误信息', err)
+        // })
     }
     
     const pingConv = (conv: State.conversationItem, isPinned: boolean) => {
@@ -228,9 +233,20 @@ export const Message = (): JSX.Element => {
 
         })
     }
-    const handleClickMenuItem = (e, id) => {
-        const { data } = e.props;
-        switch (id) {
+    const disableRecMsg  = async (conv: State.conversationItem,isDisable:boolean) => {
+        const { conv_type,conv_id } = conv;
+        let data;
+        if(conv_type === 1){
+            data = await TIMMsgSetC2CReceiveMessageOpt(conv_id,isDisable?1:0)
+        }
+        if(conv_type === 2){
+           data = await TIMMsgSetGroupReceiveMessageOpt(conv_id,isDisable?1:0)
+        }
+        console.log(data)
+    }
+    const handleClickMenuItem = (e,id) => {
+        const { data }  = e.props;
+        switch (id){
             case 'pinged':
                 pingConv(data, true);
                 break;
@@ -242,7 +258,13 @@ export const Message = (): JSX.Element => {
                 break;
             case 'clean':
                 cleanMessage(data);
-                break
+                break;
+            case 'disable':
+                disableRecMsg(data,true);
+                break;
+            case 'undisable':
+                disableRecMsg(data,false);
+                break;
 
         }
     }
@@ -261,8 +283,8 @@ export const Message = (): JSX.Element => {
                 <div className="search-wrap" onClick={handleSearchBoxClick}><SearchBox /></div>
                 <div className="conversion-list">
                     {
-                        conversationList.map((item) => {
-                            const { conv_profile, conv_id, conv_last_msg, conv_unread_num,conv_type,conv_is_pinned, conv_group_at_info_array } = item;
+                        currentSelectedConversation === null ? <EmptyResult contentText="暂无会话" /> :  conversationList.map((item) => {
+                            const { conv_profile, conv_id, conv_last_msg, conv_unread_num,conv_type,conv_is_pinned, conv_group_at_info_array,conv_recv_opt } = item;
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
                             return (
@@ -285,6 +307,9 @@ export const Message = (): JSX.Element => {
                                         }
                                     </div>
                                     <span className="pinned-tag"></span>
+                                    {
+                                        conv_recv_opt===1 ? <span className="mute"></span>:null
+                                    }
                                 </div>
                             )
                         })
@@ -308,7 +333,7 @@ export const Message = (): JSX.Element => {
             </div>
             <SearchMessageModal dialogRef={dialogRef} />
             {
-                currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : null
+                currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : <div className="empty"><EmptyResult contentText="暂无历史消息" /></div>
             }
             {
                 currentSelectedConversation && currentSelectedConversation.conv_type === 2 ? <GroupToolBar conversationInfo={currentSelectedConversation} /> : <></>

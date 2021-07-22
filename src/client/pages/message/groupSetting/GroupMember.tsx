@@ -22,6 +22,7 @@ export const GroupMember = (props: {
     user_profile_face_url: string;
     user_profile_nick_name: string;
     group_member_info_member_role: number;
+    user_profile_identifier: string;
   }[];
   onRefresh: () => Promise<any>;
   userIdentity: number;
@@ -126,7 +127,7 @@ export const GroupMember = (props: {
               onClick={() => dialogRef.current.open({ memberList: userList })}
             >
               <span style={{ marginRight: "4px" }}>{userList.length}人</span>
-              <span>&gt;</span>
+              <a>查看</a>
             </span>
           ) : (
             <></>
@@ -134,16 +135,12 @@ export const GroupMember = (props: {
         </div>
         <div className="group-member--avatar">
           {userList?.slice(0, 15)?.map((v, index) => (
-            <div className="group-member--avatar-box" key={`${v.user_profile_face_url}-${index}`} onDoubleClick={() => { handleMsgGroupRead(v) }}>
-              <Avatar
-                // key={`${v.user_profile_face_url}-${index}`}
-                url={v.user_profile_face_url}
-              />
-              <span title={isOnInternet(v.user_profile_identifier) ? '在线' : '离线'}
-                className={['group-member--avatar-type', !isOnInternet(v.user_profile_identifier) ? 'group-member--avatar-typeoff' : ''].join(' ')}
-              >
-              </span>
-            </div>
+            <Avatar
+              key={`${v.user_profile_face_url}-${index}`}
+              url={v.user_profile_face_url}
+              nickName={v.user_profile_nick_name}
+              userID={v.user_profile_identifier}
+            />
           ))}
           {canInviteMember && (
             <span
