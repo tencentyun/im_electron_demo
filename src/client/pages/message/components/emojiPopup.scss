@@ -9,9 +9,7 @@
     animation:animate .5s;
     box-shadow:  0 1px 8px rgba(0,32,96,.1)
 }
-.emoji-popup span {
-    display: inline-block;
-}
+
 .emoji-popup span:hover {
     cursor: pointer;
 }
@@ -99,7 +97,7 @@
 }
 
 .emojis-cust {
-    span {
+    span.cust-span {
         width: 50px;
         height: 50px;
         margin:0 16px 17px 0;
@@ -112,8 +110,12 @@
         max-width: 50px;
         max-height: 50px;
     }
-    span:hover{
+    span.cust-span:hover{
         opacity: 0.8;
+    }
+    .tea-action-state{
+        width: 100%;
+        padding-left: 35%;
     }
 }
 .emojis::-webkit-scrollbar {

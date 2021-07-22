@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message, Bubble } from 'tea-component';
-import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
+import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg, sendCustomMsg } from './api'
 import { reciMessage } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
-import { EmojiPopup } from './components/emojiPopup'
+import { EmojiPopup, CUSTEMOJI } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
 import BraftEditor, { EditorState } from 'braft-editor'
 import { ContentUtils } from 'braft-utils'
@@ -64,7 +64,7 @@ const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType, isShutUpAll, editorState, setEditorState } = props;
+    const { convId, convType, isShutUpAll } = props;
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
@@ -297,10 +297,42 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
 
-    const onEmojiPopupCallback = (id) => {
+    const handleSendCustEmojiMessage = async (url) => {
+        try {
+        
+            const { data: { code, json_params,desc } } = await sendCustomMsg({
+                convId,
+                convType,
+                messageElementArray: [{
+                    elem_type: 3,
+                    custom_elem_data: 'CUST_EMOJI',
+                    custom_elem_desc: url,
+                    custom_elem_ext: '自定义表情'
+                }],
+                userId
+            });
+            if (code === 0) {
+                dispatch(reciMessage({
+                    convId,
+                    messages: [JSON.parse(json_params)]
+                }))
+            } else {
+                message.error({content: `消息发送失败 ${desc}`})
+            }
+        } catch (e) {
+            message.error({ content: `出错了: ${e.message}` })
+        }
+    }
+
+    const onEmojiPopupCallback = (id, type='') => {
         resetState()
-        if (id) {
-            setEditorState(ContentUtils.insertText(editorState, id))
+        if (type === CUSTEMOJI) {
+            // 发送自定义表情
+            handleSendCustEmojiMessage(id)
+        } else {
+            if (id) {
+                setEditorState(ContentUtils.insertText(editorState, id))
+            }
         }
     }
 
