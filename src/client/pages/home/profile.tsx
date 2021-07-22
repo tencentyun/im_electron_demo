@@ -64,18 +64,15 @@ console.log('useSelector((state: State.RootState) => state.userInfo)',useSelecto
     const handleAvatarClick = () => {
         setUserVisible(true)
     }
-    const handleChange = (val) => {
-        console.log('val',val);
-    }
      const handleClose = (val) => {
           setUserVisible(val)
     }
   const genderMast = (data) => {
     console.log(data);
     switch (data) {
-      case 0:
-        return "男";
       case 1:
+        return "男";
+      case 2:
         return "女";
       default:
         return "暂无";
@@ -91,13 +88,13 @@ console.log('useSelector((state: State.RootState) => state.userInfo)',useSelecto
             <div className="main-info">
               <div className="info-item">
                 <Avatar url={faceUrl} nickName={nickName} userID={userId} />
-                <div className="nickname">{userId}</div>
+                <div className="nickname">{nickName}</div>
               </div>
               <div className="info-btn" onClick={handleAvatarClick}><Icon type="setting" /></div>
             </div>
             <div className="info-bar">
               <span className="info-key">姓名</span>
-              <span className="info-val nickname">{userId}</span>
+              <span className="info-val nickname">{nickName}</span>
             </div>
             <div className="info-bar">
               <span className="info-key">性别</span>
@@ -124,7 +121,8 @@ console.log('useSelector((state: State.RootState) => state.userInfo)',useSelecto
       {/* bubble组件必须包含一个有click之类事件的方法的元素 */}
       <span></span>
     </Bubble>
-       <UserInfo userInfo={{faceUrl,nickName,userId,gender}} visible={userVisible}  onClose={handleClose} onChange={handleChange}></UserInfo>
+
+       <UserInfo onUpdateUserInfo={getSelfInfo} userInfo={{faceUrl,nickName,userId,gender}} visible={userVisible}  onClose={handleClose}></UserInfo>
     </div>
     
   );
