@@ -61,7 +61,13 @@
                     background-image: url('../../assets/icon/phone-active.svg');
                 }
             }
+            &.screen-shot {
+                background-image: url('../../assets/icon/screen-shot.svg');
 
+                &.is-active {
+                    background-image: url('../../assets/icon/screen-shot.svg');
+                }
+            }
             &.more {
                 background-image: url('../../assets/icon/more.svg');
                 &.is-active {

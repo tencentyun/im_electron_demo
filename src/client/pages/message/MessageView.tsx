@@ -11,7 +11,7 @@ import './message-view.scss';
 import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, TextMsg } from './api';
 import { markeMessageAsRevoke, deleteMessage, reciMessage } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
-import { 
+import {
     getMessageId,
     getConvId,
     getConvType,
@@ -30,6 +30,7 @@ import { MergeElem } from './messageElemTyps/mergeElem';
 import { ForwardPopup } from './components/forwardPopup';
 import { Icon } from 'tea-component';
 import formateTime from '../../utils/timeFormat';
+import { showDialog } from "../../utils/tools";
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -56,6 +57,10 @@ const RIGHT_CLICK_MENU_LIST = [{
 {
     id: 'multiSelect',
     text: '多选'
+},
+{
+    id: 'openFilePath',
+    text: '在文件夹中显示'
 }];
 
 
@@ -107,12 +112,12 @@ export const MessageView = (props: Props): JSX.Element => {
     }
 
     const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
-        
+
         const userId = await getLoginUserID()
         const isDivideSending = forwardType === ForwardType.divide
         const isCombineSending = !isDivideSending
         convItemGroup.forEach(async (convItem, k) => {
-            if(isDivideSending) {
+            if (isDivideSending) {
                 seletedMessage.forEach(async message => {
                     const { data: { code, json_params } } = await sendMsg({
                         convId: getConvId(convItem),
@@ -120,7 +125,7 @@ export const MessageView = (props: Props): JSX.Element => {
                         messageElementArray: message.message_elem_array as [TextMsg],
                         userId
                     });
-                    if(code === 0) {
+                    if (code === 0) {
                         dispatch(reciMessage({
                             convId: getConvId(convItem),
                             messages: [JSON.parse(json_params)]
@@ -128,7 +133,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     }
                 })
             }
-            else if(isCombineSending) {
+            else if (isCombineSending) {
                 const { data: { code, json_params } } = await sendMergeMsg({
                     convId: getConvId(convItem),
                     convType: getConvType(convItem),
@@ -141,7 +146,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     }],
                     userId
                 });
-                if(code === 0) {
+                if (code === 0) {
                     dispatch(reciMessage({
                         convId: getConvId(convItem),
                         messages: [JSON.parse(json_params)]
@@ -154,7 +159,7 @@ export const MessageView = (props: Props): JSX.Element => {
         setMultiSelect(false)
     }
     const handleForwardTypePopup = (type: ForwardType) => {
-        if(!seletedMessage.length) return false;
+        if (!seletedMessage.length) return false;
         setTransimitPopup(true)
         setForwardType(type)
     }
@@ -162,14 +167,18 @@ export const MessageView = (props: Props): JSX.Element => {
         setMultiSelect(true)
     }
     const handleSelectMessage = (message: State.message): void => {
-        const isMessageSelected = seletedMessage.findIndex(v => getMessageId(v) === getMessageId(message)) > -1 
-        if(isMessageSelected) {
+        const isMessageSelected = seletedMessage.findIndex(v => getMessageId(v) === getMessageId(message)) > -1
+        if (isMessageSelected) {
             const list = seletedMessage.filter(v => getMessageId(v) !== getMessageId(message))
             setSeletedMessage(list)
         } else {
             seletedMessage.push(message)
             setSeletedMessage(Array.from(seletedMessage))
         }
+    }
+    const handleopenFilePath = data => {
+        console.log(data, '打开文件夹')
+        showDialog()
     }
     const handlRightClick = (e, id) => {
         const { data } = e.props;
@@ -188,6 +197,9 @@ export const MessageView = (props: Props): JSX.Element => {
                 break;
             case 'multiSelect':
                 handleMultiSelectMsg(data);
+                break;
+            case 'openFilePath':
+                handleopenFilePath(data);
                 break;
         }
     }
@@ -216,19 +228,19 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <TextElemItem {...res} />
                 break;
             case 1:
-                resp = <PicElemItem { ...res }/>
+                resp = <PicElemItem {...res} />
                 break;
             case 2:
-                resp = <VoiceElem { ...res }/>
+                resp = <VoiceElem {...res} />
                 break;
             case 3:
-                resp = <CustomElem { ...res }/>
+                resp = <CustomElem {...res} />
                 break;
             case 4:
-                resp = <FileElem { ...res }/>
+                resp = <FileElem {...res} />
                 break;
             case 5:
-                resp = <GroupTipsElemItem { ...res }/> 
+                resp = <GroupTipsElemItem {...res} />
                 break;
             case 6:
                 resp = <div>表情消息</div>
@@ -240,7 +252,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <div>群组系统通知</div>
                 break;
             case 9:
-                resp =  <VideoElem { ...res }/>
+                resp = <VideoElem {...res} />
                 break;
             case 10:
                 resp = <div>关系消息</div>
@@ -249,7 +261,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <div>资料消息</div>
                 break;
             case 12:
-                resp = <MergeElem { ...res }/>
+                resp = <MergeElem {...res} />
                 break;
             default:
                 resp = null;
@@ -260,9 +272,9 @@ export const MessageView = (props: Props): JSX.Element => {
     return (
         <div className="message-view" ref={messageViewRef}>
             {
-               messageList && messageList.length > 0 &&
+                messageList && messageList.length > 0 &&
                 messageList.map(item => {
-                    if(!item){
+                    if (!item) {
                         return null
                     }
                     if (item.isTimeDivider) {
@@ -280,33 +292,33 @@ export const MessageView = (props: Props): JSX.Element => {
                             {
                                 message_status === 6 ? (
                                     <div className="message-view__item is-revoked" >
-                                        { `${revokedPerson} 撤回了一条消息` }
+                                        {`${revokedPerson} 撤回了一条消息`}
                                     </div>
                                 ) :
-                                <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
-                                    { isMultiSelect && (seleted ? 
-                                        <Icon className="message-view__item--icon" type="success" /> : 
-                                        <i className="message-view__item--icon-normal" ></i>)
-                                    }
-                                    <div className="message-view__item--avatar face-url">
-                                        <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                    <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
+                                        {isMultiSelect && (seleted ?
+                                            <Icon className="message-view__item--icon" type="success" /> :
+                                            <i className="message-view__item--icon-normal" ></i>)
+                                        }
+                                        <div className="message-view__item--avatar face-url">
+                                            <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                        </div>
+                                        {
+                                            message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                                return (
+                                                    <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+
+                                                        {
+                                                            displayDiffMessage(elment)
+                                                        }
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                        {
+                                            shouldShowPerReadIcon && <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span>
+                                        }
                                     </div>
-                                    {
-                                        message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
-                                            return (
-                                                <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-                                                    
-                                                    {
-                                                        displayDiffMessage(elment)
-                                                    }
-                                                </div>
-                                            )
-                                        })
-                                    }
-                                    {
-                                        shouldShowPerReadIcon && <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span>
-                                    }
-                                </div>
                             }
                             <div className="message-view__item--blank"></div>
                         </React.Fragment>
@@ -321,7 +333,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 {
                     RIGHT_CLICK_MENU_LIST.map(({ id, text }) => {
                         return (
-                            <Item  key={id} onClick={(e) => handlRightClick(e, id)}>
+                            <Item key={id} onClick={(e) => handlRightClick(e, id)}>
                                 {text}
                             </Item>
                         )
@@ -329,10 +341,10 @@ export const MessageView = (props: Props): JSX.Element => {
                 }
             </Menu>
             {
-                isTransimitPopup && <ForwardPopup onSuccess={handleForwardPopupSuccess} onClose={() => {setTransimitPopup(false)}}/>
+                isTransimitPopup && <ForwardPopup onSuccess={handleForwardPopupSuccess} onClose={() => { setTransimitPopup(false) }} />
             }
             {
-                isMultiSelect && 
+                isMultiSelect &&
                 <div className="forward-type-popup">
                     <Icon type="close" className="forward-type-popup__close" onClick={() => setMultiSelect(false)} />
                     <div className="forward-type-popup__combine" onClick={() => handleForwardTypePopup(ForwardType.combine)}>
@@ -341,7 +353,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     <div className="forward-type-popup__divide" onClick={() => handleForwardTypePopup(ForwardType.divide)}>
                         <p>逐条转发</p>
                     </div>
-                </div>   
+                </div>
             }
         </div>
     )
