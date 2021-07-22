@@ -64,12 +64,12 @@ const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType, isShutUpAll } = props;
+    const { convId, convType, isShutUpAll, editorState, setEditorState } = props;
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ isRecordPopup, setRecordPopup ] = useState(false);
-    const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
+    // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
@@ -280,11 +280,10 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        console.log(1111, convType)
-        if (e.keyCode == 13 || e.charCode === 13) {
+        if (e.keyCode === 13 || e.charCode === 13) {
             e.preventDefault();
             handleSendTextMsg();
-        } else if (e.key === "@" && convType === 2) {
+        } else if(e.keyCode === 229 && convType === 2) {
             e.preventDefault();
             setAtPopup(true)
         }
@@ -411,7 +410,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyPress={handleOnkeyPress}>
+            <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}>
                 <BraftEditor
                     //@ts-ignore
                     disabled={isShutUpAll}
