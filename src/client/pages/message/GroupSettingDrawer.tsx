@@ -14,6 +14,7 @@ export const GroupSettingDrawer = (props: {
   onClose?: () => void;
   popupContainer?: HTMLElement;
   dialogRef: DialogRef<GroupSettingRecordsType>;
+  visible: boolean;
 }): JSX.Element => {
   const { onClose, dialogRef, popupContainer } = props;
 

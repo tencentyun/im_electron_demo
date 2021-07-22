@@ -21,10 +21,10 @@
       overflow-x: hidden;
 
       &:hover {
-        &::-webkit-scrollbar {
-          width: 8px;
-          background-color: #fff;
-        }
+        // &::-webkit-scrollbar {
+        //   width: 8px;
+        //   background-color: #fff;
+        // }
       }
       &::-webkit-scrollbar {
         width: 0px;
