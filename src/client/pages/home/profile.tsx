@@ -121,7 +121,7 @@ console.log('useSelector((state: State.RootState) => state.userInfo)',useSelecto
       {/* bubble组件必须包含一个有click之类事件的方法的元素 */}
       <span></span>
     </Bubble>
-       <UserInfo onUpdateUserInfo={getSelfInfo} userInfo={{faceUrl,nickName,userId,gender}} visible={userVisible}  onClose={handleClose}></UserInfo>
+
     </div>
     
   );

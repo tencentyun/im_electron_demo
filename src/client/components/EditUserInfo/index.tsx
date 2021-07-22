@@ -165,7 +165,7 @@ const {nickName,faceUrl,gender} = userInfo
                     validateOnBlur
                     validateFields={[]}
                     validate={async value => {
-                      return !value || value.length < 4
+                      return !value || value.length <= 0
                         ? "姓名太短了哦"
                         : undefined;
                     }}
