@@ -32,6 +32,7 @@ import { Icon } from 'tea-component';
 import formateTime from '../../utils/timeFormat';
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
+import { GroupSysElm } from './messageElemTyps/groupSystemElem';
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -247,7 +248,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <div>位置消息</div>
                 break;
             case 8:
-                resp = <div>群组系统通知</div>
+                resp = <GroupSysElm { ...res }/>  
                 break;
             case 9:
                 resp =  <VideoElem { ...res }/>
