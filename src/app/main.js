@@ -56,18 +56,18 @@ const createWindow = () => {
   })
 
   
-  // mainWindow.loadURL(`http://localhost:3000`);
-  // mainWindow.webContents.openDevTools();
+  mainWindow.loadURL(`http://localhost:3000`);
+  mainWindow.webContents.openDevTools();
 
   // ***use for production***
 
-  mainWindow.loadURL(
-    url.format({
-        pathname: path.join(__dirname, '../../bundle/index.html'),
-        protocol: 'file:',
-        slashes: true
-    })
-  );
+  // mainWindow.loadURL(
+  //   url.format({
+  //       pathname: path.join(__dirname, '../../bundle/index.html'),
+  //       protocol: 'file:',
+  //       slashes: true
+  //   })
+  // );
 };
 
 // This method will be called when Electron has finished
