@@ -181,7 +181,6 @@ const {nickName,faceUrl,gender} = userInfo
                       >
                         <Input
                           {...input}
-                          disabled
                           autoComplete="off"
                           placeholder="你是谁"
                         />
