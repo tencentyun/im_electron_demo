@@ -87,12 +87,13 @@ export default function initListeners(callback:InitListenersCallback){
     */
     timRenderInstance.TIMSetMsgElemUploadProgressCallback({
         callback:(args)=>{
+            console.log(22222, args)
             callback({
                 type: 'TIMSetMsgElemUploadProgressCallback',
                 data: {
                     message: JSON.parse(args[0]),
-                    cur_size: 50000,
-                    total_size: 100000
+                    cur_size: args[2],
+                    total_size: args[3]
                 }
             })
         },

@@ -245,7 +245,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleOnkeyPress = (e) => {
-        console.log(1111, convType)
         if (e.keyCode == 13 || e.charCode === 13) {
             e.preventDefault();
             handleSendTextMsg();
