@@ -60,7 +60,14 @@ type MergeMsg = {
   merge_elem_compatible_text: string;
   merge_elem_message_array: any[];
 };
-
+  
+type CustomMsg = {
+  elem_type: number;
+  custom_elem_data?:string;
+  custom_elem_desc?:string;
+  custom_elem_ext?:string;
+  custom_elem_sound?:string;
+}
 type MsgResponse = {
   data: {
     code: number;
@@ -104,6 +111,7 @@ export const getGroupInfoList = async (groupIdList: Array<string>) => {
     groupIds: groupIdList,
   });
   const groupInfoList = JSON.parse(json_param);
+  console.log('groupInfoList', groupInfoList)
 
   return groupInfoList.map((item) => item.get_groups_info_result_info);
 };
@@ -158,11 +166,25 @@ export const addProfileForConversition = async (conversitionList) => {
     }
     return {
       ...item,
-      conv_profile: profile,
+      conv_profile: profile || {},
     };
   });
 };
 
+/**
+ * 获取当前对话标列表好友状态
+ * @param sdkappid
+ * @param uid
+ * @param isPinned
+ * @returns
+ */
+export const getUsetStatusRequest = async (sdkappid, uid, To_Account) => {
+  return await timRenderInstance.getUsetStatusRequest({
+    sdkappid,
+    uid,
+    To_Account
+  });
+};
 /**
  * 会话（取消）置顶
  * @param convId
@@ -204,6 +226,33 @@ export const TIMMsgClearHistoryMessage = async (conv_id, conv_type) => {
     conv_type,
   });
 };
+
+/**
+ * C2C消息免打扰
+ * @param conv_id 
+ * @param conv_type 
+ * @returns 
+ */
+export const TIMMsgSetC2CReceiveMessageOpt = async (userid, opt) => {
+  return await timRenderInstance.TIMMsgSetC2CReceiveMessageOpt({
+    params:[userid],
+    opt,
+  });
+};
+
+/**
+ * 群消息免打扰
+ * @param conv_id 
+ * @param conv_type 
+ * @returns 
+ */
+export const TIMMsgSetGroupReceiveMessageOpt = async (group_id, opt) => {
+  return await timRenderInstance.TIMMsgSetGroupReceiveMessageOpt({
+    group_id,
+    opt,
+  });
+};
+
 export const getMsgList = async (convId, convType) => {
   const {
     data: { json_params },
@@ -243,7 +292,7 @@ export const sendMsg = async ({
   userData,
   messageAtArray,
 }: SendMsgParams<
-  TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg | MergeMsg
+  TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg | MergeMsg | CustomMsg
 >): Promise<MsgResponse> => {
   const res = await timRenderInstance.TIMMsgSendMessage({
     conv_id: convId,
@@ -274,6 +323,7 @@ export const sendVideoMsg = (
   params: SendMsgParams<VideoMsg>
 ): Promise<MsgResponse> => sendMsg(params);
 export const sendMergeMsg = (params: SendMsgParams<MergeMsg>): Promise<MsgResponse> => sendMsg(params);
+export const sendCustomMsg = (params: SendMsgParams<CustomMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);

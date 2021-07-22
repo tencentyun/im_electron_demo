@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { LoadingContainer } from "../../../components/loadingContainer";
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
 import { getGroupInfoList, getGroupMemberInfoList } from "../api";
 import { Divider } from "./Divider";
@@ -20,6 +21,8 @@ export const GroupSetting = (props: {
   const groupId = conversationInfo.conv_id;
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
+
+  console.log('userId', userId)
 
   const { value, loading, retry } = useAsyncRetryFunc(async () => {
     const [r1, r2] = await Promise.all([
@@ -43,12 +46,13 @@ export const GroupSetting = (props: {
   console.log("currentUserSetting", currentUserSetting);
 
   return (
-    <div>
+    <LoadingContainer loading={loading}>
       <GroupBaseInfo
         groupAvatar={groupDetail.group_detial_info_face_url}
         groupId={groupDetail.group_detial_info_group_id}
         groupName={groupDetail.group_detial_info_group_name}
         groupType={groupDetail.group_detial_info_group_type}
+        userIdentity={currentUserSetting.group_member_info_member_role}
         onRefresh={retry}
       />
       <Divider />
@@ -63,6 +67,8 @@ export const GroupSetting = (props: {
       <GroupAccountecment
         accountecment={groupDetail.group_detial_info_notification}
         groupId={groupDetail.group_detial_info_group_id}
+        userIdentity={currentUserSetting.group_member_info_member_role}
+        groupType={groupDetail.group_detial_info_group_type}
         onRefresh={retry}
       />
       <Divider />
@@ -94,9 +100,12 @@ export const GroupSetting = (props: {
         muteFlag={groupDetail.group_detial_info_is_shutup_all}
         groupId={groupDetail.group_detial_info_group_id}
         onRefresh={retry}
+        userIdentity={currentUserSetting.group_member_info_member_role}
+        groupType={groupDetail.group_detial_info_group_type}
       />
       <Divider />
       <GroupOperator
+        userList={memberList}
         userId={userId}
         groupId={groupDetail.group_detial_info_group_id}
         onRefresh={retry}
@@ -104,6 +113,6 @@ export const GroupSetting = (props: {
         groupType={groupDetail.group_detial_info_group_type}
         close={close}
       />
-    </div>
+    </LoadingContainer>
   );
 };

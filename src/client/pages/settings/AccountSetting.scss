@@ -1,0 +1,34 @@
+.connet-section {
+	padding-right:14%;
+	padding-top:40%;
+}
+.setting-content {
+	font-size:14px;
+	.setting-item {
+		margin: 15px;
+		display: flex;
+		justify-content: space-between;
+		.new {
+			font-size: 14px;
+			background: red;
+			padding: 3px;
+			color: #ffffff;
+			border-radius: 6px;
+			margin-left: 10px;
+		}
+
+		.logout {
+			cursor: pointer;
+		}
+
+		.item-val {
+			margin-left: 5px;
+			flex: 1;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			text-align: right;
+			cursor: pointer;
+		}
+	}
+}

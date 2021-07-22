@@ -41,6 +41,11 @@ type MarkeMessageAsReadedPayload = {
     convIds: [string]
 }
 
+export const getUserStatus = (payload: Payload) : State.actcionType<Payload> => ({
+    type: ADD_MESSAGE,
+    payload
+});
+
 export const addMessage = (payload: Payload) : State.actcionType<Payload> => ({
     type: ADD_MESSAGE,
     payload

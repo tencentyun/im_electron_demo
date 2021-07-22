@@ -10,8 +10,7 @@ module.exports = {
   target: 'electron-renderer',
   devtool: 'source-map',
   module: {
-    rules: [
-      {
+    rules: [{
         test: /\.(js|ts)$/,
         exclude: /node_modules/,
         use: {
@@ -51,6 +50,26 @@ module.exports = {
     hot: true,
     port: 3000,
     publicPath: '/',
+    proxy: {
+      '/api': {
+        target: 'http://106.52.161.51:30006/',
+        secure: false, // http请求https，这里需设置成false,
+        pathRewrite: {
+          "^/api": ""
+        },
+        changeOrigin: true // 一些服务器防止爬虫会设置origin,
+      },
+      '/sticker': {
+        target: 'http://106.52.161.51:30006/',
+        secure: false, // http请求https，这里需设置成false,
+        changeOrigin: true // 一些服务器防止爬虫会设置origin,
+      },
+      '/status': {
+        target: 'http://106.52.161.51:30006/',
+        secure: false, // http请求https，这里需设置成false,
+        changeOrigin: true // 一些服务器防止爬虫会设置origin,
+      }
+    }
   },
   output: {
     path: path.resolve(__dirname, './bundle'),
@@ -59,14 +78,14 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-        title: 'Im electron demo',
-        // Load a custom template (lodash by default)
-        template: 'index.html'
-      })
+      title: 'Im electron demo',
+      // Load a custom template (lodash by default)
+      template: 'index.html'
+    })
   ],
   node: {
     global: true,
-      __dirname: true,
-      __filename: true
+    __dirname: true,
+    __filename: true
   }
 };

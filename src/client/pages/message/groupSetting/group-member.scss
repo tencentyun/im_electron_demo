@@ -20,10 +20,31 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-
+    
     div {
       margin-right: 12px;
       margin-bottom: 12px;
+    }
+    
+    &-box {
+      position: relative;
+    }
+
+    &-type {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #09f175;
+      cursor: pointer;
+      margin-left: 3px;
+      position: absolute;
+      bottom: 12px;
+      right: 24px;
+    }
+
+    &-typeoff {
+      background-color: #adadad;;
     }
   }
 

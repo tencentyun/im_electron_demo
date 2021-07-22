@@ -7,19 +7,23 @@ import {
   MutableRefObject,
 } from "react";
 
-export type DialogRef<S extends any = any> = React.MutableRefObject<{
+interface RefProps<S> {
   open: (arg?: Partial<S>) => void;
-}>;
+  close: () => void;
+}
 
-export function useDialogRef<S extends any = any>(): MutableRefObject<{
-  open: (arg?: Partial<S>) => void;
-}> {
-  const dialogRef = useRef<{
-    open: (arg?: Partial<S>) => void;
-  }>({
+export type DialogRef<S extends any = any> = React.MutableRefObject<
+  RefProps<S>
+>;
+
+export function useDialogRef<S extends any = any>(): MutableRefObject<
+  RefProps<S>
+> {
+  const dialogRef = useRef<RefProps<S>>({
     // 默认值
     /* eslint-disable */
-    open: () => {}
+    open: () => {},
+    close: () => {},
   });
   return dialogRef;
 }
@@ -48,6 +52,7 @@ export function useDialog<S extends RecordType>(
         }
         setShowState(true);
       },
+      close: () => setShowState(false),
     };
   }, [defaultVal, dialogRef, mergeFn, setDefaultVal]);
 

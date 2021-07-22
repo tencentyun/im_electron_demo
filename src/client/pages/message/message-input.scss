@@ -1,6 +1,11 @@
 .message-input {
     height: 100%;
 
+    &.disabled-style {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+
     &__feature-area {
         // height: 30px;
         padding-left: 12px;

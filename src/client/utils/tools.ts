@@ -38,12 +38,29 @@ const downloadFilesByUrl = (url, name) => {
         params
     })
 }
-
+const throttle = (fn, delay) => {
+    let timer
+    let t_start = Date.now()
+    return function(...args) {
+        const context = this as any
+        const t_curr = Date.now()
+        clearTimeout(timer)
+        if( t_curr - t_start >= delay) {
+            fn.apply(context, args)
+            t_start = t_curr
+        } else {
+            timer = setTimeout(() => {
+                fn.apply(context, args)
+            }, delay)
+        }
+    }
+}
 export {
     isWin,
     minSizeWin,
     maxSizeWin,
     closeWin,
     showDialog,
-    downloadFilesByUrl
+    downloadFilesByUrl,
+    throttle
 }
