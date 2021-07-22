@@ -7,6 +7,10 @@ declare namespace State {
         conversation: conversation,
         historyMessage: historyMessage,
         ui: ui
+        groupDrawer: GroupDrawer,
+    }
+    export type GroupDrawer = {
+        tools_tab: 'setting' | 'announcement';
     }
     export type functionTab = 'message' | 'relationship'
     export type ui = {
