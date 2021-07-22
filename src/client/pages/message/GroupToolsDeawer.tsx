@@ -34,13 +34,9 @@ export const GroupToolsDrawer = (props: {
     announcement: GroupAccountecmentSetting,
   }[defaultForm.toolId];
 
-  const memberNum =
-    defaultForm.conversationInfo?.conv_profile?.group_detial_info_member_num ||
-    0;
-
   const close = () => {
     setShowState(false);
-    onClose();
+    onClose?.();
   };
 
   const getTitleAndSubTitle = (toolsId: string) => {
