@@ -47,6 +47,7 @@ class IPC {
         child_process.exec(`start "" ${path.resolve(process.cwd(),'./download/')}`);
     }
     downloadFilesByUrl(file_url){
+        console.log(file_url,'11111111111111111111111111111111111111111111111111111111111111')
         const cwd = process.cwd();
         const downloadDicPath = path.resolve(cwd,'./download/')
         if (!fs.existsSync(downloadDicPath)) {
