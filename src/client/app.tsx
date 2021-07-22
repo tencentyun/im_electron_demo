@@ -35,9 +35,8 @@ let isInited = false;
 const App = () => {
   const dispatch = useDispatch();
 
-  const { currentSelectedConversation } = useSelector(
-    (state: State.RootState) => state.conversation
-  );
+
+
 
   const initIMSDK = async () => {
     if (!isInited) {
@@ -110,34 +109,37 @@ const App = () => {
   };
   const _handleGroupInfoModify = async (data) => {
     const response = await getConversionList();
-    dispatch(replaceConversaionList(response));
-    if (response.length) {
+    dispatch(updateConversationList(response));
+    if (response?.length) {
       const newConversaionItem = response.find(
-        (v) => v.conv_id === currentSelectedConversation.conv_id
+        (v) => v.conv_id === data.group_tips_elem_group_id.conv_id
       );
       dispatch(
         updateCurrentSelectedConversation(newConversaionItem || response[0])
       );
     }
-    console.log("TIMSetGroupTipsEventCallback", data);
   };
   const handleMessageSendFailed = (convList) => {
     const failedList = convList.reduce((acc, cur) => {
-        if(cur.conv_last_msg && cur?.conv_last_msg.message_status === 3) {
-            return {
-                ...acc,
-                [cur.conv_id]: [...[acc[cur.conv_id]], cur.conv_last_msg].filter(x => x)
-            }
-        }
+      if (cur.conv_last_msg && cur?.conv_last_msg.message_status === 3) {
+        return {
+          ...acc,
+          [cur.conv_id]: [...[acc[cur.conv_id]], cur.conv_last_msg].filter(
+            (x) => x
+          ),
+        };
+      }
     }, {});
 
-    for (let i in failedList) {
-        dispatch(reciMessage({
-            convId: i,
-            messages: failedList[i]
-        }))
+    for (const i in failedList) {
+      dispatch(
+        reciMessage({
+          convId: i,
+          messages: failedList[i],
+        })
+      );
     }
-};
+  };
   const _handleUnreadChange = (unreadCount) => {
     dispatch(setUnreadCount(unreadCount));
   };
