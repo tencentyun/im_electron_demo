@@ -33,6 +33,7 @@ import { ContentUtils } from 'braft-utils'
 import { Icon, message } from 'tea-component';
 import { custEmojiUpsert } from '../../services/custEmoji'
 import type { custEmojiUpsertParams } from '../../services/custEmoji'
+import { showDialog } from "../../utils/tools";
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -65,6 +66,10 @@ const RIGHT_CLICK_MENU_LIST = [{
 {
     id: 'multiSelect',
     text: '多选'
+},
+{
+    id: 'openFile',
+    text: '文件夹目录'
 }];
 
 
@@ -234,6 +239,9 @@ export const MessageView = (props: Props): JSX.Element => {
             case 'multiSelect':
                 handleMultiSelectMsg(data);
                 break;
+            case 'openFile':
+                handleOpenFile(data);
+                break;
         }
     }
 
@@ -261,7 +269,9 @@ export const MessageView = (props: Props): JSX.Element => {
     const handleMessageReSend = (item) => {
         console.log(item);
     }
-
+    const handleOpenFile = (item) => {
+        showDialog()
+    }
     const displayDiffMessage = (element) => {
         const { elem_type, ...res } = element;
         let resp

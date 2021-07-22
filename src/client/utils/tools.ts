@@ -30,9 +30,9 @@ const showDialog = () => {
         type: SHOWDIALOG
     })
 }
-const downloadFilesByUrl = (url, name) => {
+const downloadFilesByUrl = (params) => {
     // console.log('11111111111', url, name)
-    const params = { url, name }
+    // const params = { url, name }
     ipcRenderer.send(RENDERPROCESSCALL, {
         type: DOWNLOADFILE,
         params
@@ -41,11 +41,11 @@ const downloadFilesByUrl = (url, name) => {
 const throttle = (fn, delay) => {
     let timer
     let t_start = Date.now()
-    return function(...args) {
+    return function (...args) {
         const context = this as any
         const t_curr = Date.now()
         clearTimeout(timer)
-        if( t_curr - t_start >= delay) {
+        if (t_curr - t_start >= delay) {
             fn.apply(context, args)
             t_start = t_curr
         } else {

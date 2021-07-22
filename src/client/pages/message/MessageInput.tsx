@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, message, Bubble } from 'tea-component';
+import { Button, message, Bubble, Dropdown, List } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
 import { reciMessage } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
@@ -65,11 +65,11 @@ const FEATURE_LIST = {
 }
 export const MessageInput = (props: Props): JSX.Element => {
     const { convId, convType, isShutUpAll, editorState, setEditorState } = props;
-    const [ activeFeature, setActiveFeature ] = useState('');
-    const [ atPopup, setAtPopup ] = useState(false);
-    const [ isEmojiPopup, setEmojiPopup ] = useState(false);
-    const [ isRecordPopup, setRecordPopup ] = useState(false);
-    const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
+    const [activeFeature, setActiveFeature] = useState('');
+    const [atPopup, setAtPopup] = useState(false);
+    const [isEmojiPopup, setEmojiPopup] = useState(false);
+    const [isRecordPopup, setRecordPopup] = useState(false);
+    const [editorState, setEditorState] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
@@ -78,7 +78,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
     let editorInstance;
-
+    // const enterSend = localStorage.getItem('sendType') || '1'
     const handleSendTextMsg = async () => {
         try {
             const text = editorState.toText()
@@ -240,8 +240,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         // resetState()
         setEmojiPopup(true)
     }
-    const handleSendPhoneMessage = ()=> {
-        
+    const handleSendPhoneMessage = () => {
+
     }
     const handleFeatureClick = (featureId) => {
         switch (featureId) {
@@ -280,14 +280,34 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        console.log(1111, convType)
-        if (e.keyCode == 13 || e.charCode === 13) {
-            e.preventDefault();
-            handleSendTextMsg();
-        } else if (e.key === "@" && convType === 2) {
-            e.preventDefault();
-            setAtPopup(true)
+        console.log(localStorage.getItem('sendType') || '1')
+        const type = localStorage.getItem('sendType') || '1'
+        if (type == '1') {
+            // enter发送
+            if (e.ctrlKey && e.keyCode === 13) {
+                // setEditorState(editorState.toText() + '\n')
+                // editorState.toText() += '\n'
+                console.log('换行', '----------------------', editorState)
+            } else if (e.keyCode == 13 || e.charCode === 13) {
+                e.preventDefault();
+                handleSendTextMsg();
+            } else if (e.key === "@" && convType === 2) {
+                e.preventDefault();
+                setAtPopup(true)
+            }
+        } else {
+            // Ctrl+enter发送
+            if (e.ctrlKey && e.keyCode === 13) {
+                e.preventDefault();
+                handleSendTextMsg();
+            } else if (e.keyCode == 13 || e.charCode === 13) {
+                console.log('换行', '----------------------', editorState)
+            } else if (e.key === "@" && convType === 2) {
+                e.preventDefault();
+                setAtPopup(true)
+            }
         }
+
     }
 
     const onAtPopupCallback = (userName) => {
@@ -322,6 +342,16 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(editorState)
     }
 
+    const menu = close => (
+        <List type="option" style={{ width: '200px', background: '#ffffff' }}>
+            <List.Item onClick={() => changeSendShotcut(1)}><img src='../../assets/icon/choose.svg'></img> 按Enter键发送消息</List.Item>
+            <List.Item onClick={() => changeSendShotcut(2)}><img src='../../assets/icon/choose.svg'></img> 按Ctrl+Enter键发送消息</List.Item>
+        </List>
+    );
+    const changeSendShotcut = (index) => {
+        const sendType = index == 1 ? '1' : '0'
+        localStorage.setItem('sendType', sendType)
+    }
     useEffect(() => {
         setEditorState(ContentUtils.clear(editorState))
     }, [convId, convType])
@@ -379,7 +409,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyPress={handleOnkeyPress}>
+            <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyUp={handleOnkeyPress}>
                 <BraftEditor
                     //@ts-ignore
                     disabled={isShutUpAll}
@@ -391,9 +421,22 @@ export const MessageInput = (props: Props): JSX.Element => {
                     placeholder={placeHolderText}
                 />
             </div>
-            <div className="message-input__button-area">
+            <span className="message-input__button-area">
                 <Button type="primary" onClick={handleSendTextMsg} disabled={editorState.toText() === ''}>发送</Button>
-            </div>
+            </span>
+            {/* <span className="message-input__down" title='切换发送消息快捷键'></span> */}
+            <Dropdown
+                clickClose={true}
+                className="message-input__down"
+                button=""
+                appearance="button"
+                onOpen={() => console.log("open")}
+                onClose={() => console.log("close")}
+                placement='left-end'
+                boxSizeSync
+            >
+                {menu}
+            </Dropdown>
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }

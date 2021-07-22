@@ -1,6 +1,15 @@
 .message-input {
     height: 100%;
+    // .tea-overlay{
+    //     .tea-dropdown-box{
+    //         max-width: none !important;
+    //     }
+    // }
 
+    // .tea-dropdown-box{
+    //     max-width: none;
+    //     background: red;
+    // }
     &.disabled-style {
         pointer-events: none;
         opacity: 0.7;
@@ -93,11 +102,20 @@
 
     &__button-area {
         position: absolute;
-        right: 20px;
+        right: 50px;
         bottom: 20px;
         z-index: 1;
     }
-
+    &__down {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        z-index: 1;
+        // background: url('../../assets/icon/down.svg') center no-repeat;
+        // padding: 14px;
+        // border: 1px solid #eee;
+        // cursor: pointer;
+    }
     &__at-popup {
         position: absolute;
         right: 20px;
@@ -113,3 +131,17 @@
 // div.bf-content {
 //     font-size: 14px;
 // }
+
+
+:global(.tea-dropdown-box){
+    max-width: none;
+    background: red;
+}
+:global(#tea-overlay-root){
+    &.tea-overlay {
+        &.tea-dropdown-box{
+            max-width: none !important;
+            background: red;
+        }
+    }
+}
