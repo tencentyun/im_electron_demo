@@ -1,5 +1,5 @@
-import { Select, SelectProps } from "tea-component";
-import React from "react";
+import { Select, SelectProps } from "tea-component"
+import React from "react"
 
 export const groupTypeOptions = [
   { value: "1" as const, text: "好友工作群" },
@@ -8,7 +8,7 @@ export const groupTypeOptions = [
 ];
 
 export const GroupTypeSelect = (props: SelectProps): JSX.Element => {
-  const { value, onChange, ...others } = props;
+  const { value, onChange, ...others } = props
   return (
     <Select
       value={value}
