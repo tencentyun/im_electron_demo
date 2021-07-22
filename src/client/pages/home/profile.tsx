@@ -13,14 +13,16 @@ export const Profile = (): JSX.Element => {
     const dispatch = useDispatch();
     const [userVisible,setUserVisible] = useState(false)
     const [sdkAppid] = useState(DEFAULT_USERID);
+  // eslint-disable-next-line prefer-const
   let { faceUrl, nickName, userId, gender, role } = useSelector((state: State.RootState) => state.userInfo);
    const fillStyle = { width: "100%" };
   const [initData, setInitData] = useState({});
  // 处理后端返回的文件路径，目前的所存储的文件路径不是直接返回一个可访问的资源，是一个base64字符
 (async () => {
-   await request({
-      method: 'GET',
-    }). then(res => {
+   request({
+     method: 'GET',
+     url:faceUrl,
+    }).then(res => {
       faceUrl = res.data
     })
   })()

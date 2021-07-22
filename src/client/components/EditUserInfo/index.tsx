@@ -156,7 +156,7 @@ const {nickName,faceUrl,gender} = userInfo
                         <Upload
                           action="https://run.mocky.io/v3/68ed7204-0487-4135-857d-0e4366b2cfad"
                         >
-                          <Button>点击上传{JSON.stringify(input)}</Button>
+                          <Button>点击上传</Button>
                         </Upload>
                       </Form.Item>
                     )}
