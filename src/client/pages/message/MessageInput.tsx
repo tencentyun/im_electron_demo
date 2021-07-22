@@ -40,6 +40,7 @@ const FEATURE_LIST = {
 }
 export const MessageInput = (props: Props): JSX.Element => {
     const { convId, convType, isShutUpAll } = props;
+    const [ isDraging, setDraging] = useState(false);
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
@@ -88,6 +89,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         const file = e.dataTransfer?.files[0]
         const iterator = file.type.matchAll(/(\w+)\//g)
         const type = iterator.next().value[1]
+        setDraging(false);
         switch(type) {
             case "image":
                 sendImageMessage(file)
@@ -102,6 +104,15 @@ export const MessageInput = (props: Props): JSX.Element => {
                 sendFileMessage(file)
         }
     }
+
+    const handleDragEnter = e => {
+        setDraging(true);
+    };
+
+    const handleDragLeave = () => {
+        setDraging(false);
+    }
+
     const handleSendPhotoMessage = () => {
         imagePicker.current.click();
     }
@@ -289,10 +300,13 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     useEffect(() => {
         setEditorState(ContentUtils.clear(editorState))
-    }, [convId, convType])
+    }, [convId, convType]);
+
+    const shutUpStyle = isShutUpAll ? 'disabled-style' : '';
+    const dragEnterStyle = isDraging ? 'draging-style' : '';
 
     return (
-        <div className={`message-input ${isShutUpAll ? 'disabled-style' : ''}`}>
+        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyPress={ handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
                 atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
             }
@@ -311,7 +325,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyPress={handleOnkeyPress}>
+            <div className="message-input__text-area">
                 <BraftEditor
                     //@ts-ignore
                     disabled={isShutUpAll}
