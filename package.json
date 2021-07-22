@@ -78,6 +78,7 @@
     "braft-editor": "^2.3.9",
     "concurrently": "^6.2.0",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-updater": "^4.3.9",
     "file-loader": "^6.2.0",
     "final-form": "^4.20.2",
     "im_electron_sdk": "^1.0.26",
