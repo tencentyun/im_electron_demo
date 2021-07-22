@@ -16,6 +16,12 @@ import {
 } from "./TransferGroupDialog";
 
 export const GroupOperator = (props: {
+  userList: {
+    user_profile_face_url: string;
+    user_profile_nick_name: string;
+    user_profile_identifier: string;
+    group_member_info_member_role: number;
+  }[];
   groupId: string;
   userId: string;
   groupOwner: string;
@@ -23,7 +29,7 @@ export const GroupOperator = (props: {
   close: () => void;
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
-  const { groupId, userId, groupType, groupOwner, close, onRefresh } = props;
+  const { groupId, userId, groupType, groupOwner, close, onRefresh, userList } = props;
   const [quitLoading, setQuitLoading] = useState(false);
 
   const dispatch = useDispatch();
@@ -97,6 +103,7 @@ export const GroupOperator = (props: {
         )}
       </div>
       <TransferGroupDialog
+        userList={userList}
         dialogRef={transferDialogRef}
         onSuccess={onRefresh}
       />

@@ -105,6 +105,7 @@ export const GroupSetting = (props: {
       />
       <Divider />
       <GroupOperator
+        userList={memberList}
         userId={userId}
         groupId={groupDetail.group_detial_info_group_id}
         onRefresh={retry}

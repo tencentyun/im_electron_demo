@@ -122,6 +122,7 @@ console.log('useSelector((state: State.RootState) => state.userInfo)',useSelecto
       <span></span>
     </Bubble>
 
+       <UserInfo onUpdateUserInfo={getSelfInfo} userInfo={{faceUrl,nickName,userId,gender}} visible={userVisible}  onClose={handleClose}></UserInfo>
     </div>
     
   );
