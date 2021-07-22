@@ -1,5 +1,5 @@
 import  request from '../utils/request'
-import { SDK_APPID, TIM_BASE_URL } from '../constants/index'
+import { SDKAPPID, TIM_BASE_URL } from '../constants/index'
 
 export type userTypeUpsertParams = {
     uid: string; // 当前用户id
@@ -10,11 +10,10 @@ export type userTypeUpsertParams = {
  */
 export async function getUserTypeQuery(data: userTypeUpsertParams): Promise<any> {
     return request({
-        url: `/status/get?platform=10&websdkappid=537048168&v=1.7.3&sdkappid=${SDK_APPID}&contentType=json&apn=1&reqtime=${Date.now()}`,
+        url: `${TIM_BASE_URL}/status/get?platform=10&websdkappid=537048168&v=1.7.3&sdkappid=${SDKAPPID}&contentType=json&apn=1&reqtime=${Date.now()}`,
         method: 'POST',
         data: {
-            // skdappid: SDK_APPID,
-            sdkappid: 1400529075,
+            sdkappid: SDKAPPID,
             ...data
         },
         headers: {
