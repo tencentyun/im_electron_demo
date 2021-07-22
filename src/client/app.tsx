@@ -140,6 +140,8 @@ export const App = () => {
       }
     }, {});
 
+    if(!failedList) return;
+
     for (const i in failedList) {
       dispatch(
         reciMessage({

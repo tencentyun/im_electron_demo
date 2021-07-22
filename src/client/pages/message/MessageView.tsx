@@ -304,7 +304,7 @@ export const MessageView = (props: Props): JSX.Element => {
             
             {
                messageList && messageList.length > 0 &&
-                messageList.map(item => {
+                messageList.map((item, index) => {
                     if(!item){
                         return null
                     }
@@ -313,21 +313,21 @@ export const MessageView = (props: Props): JSX.Element => {
                             <div key={item.time} className="message-view__item--time-divider">{formateTime(item.time * 1000, true)}</div>
                         )
                     }
-                    const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status, message_is_peer_read, message_conv_type } = item;
+                    const { message_elem_array, message_sender_profile, message_is_from_self ,message_status, message_is_peer_read, message_conv_type } = item;
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                     const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
                     const isMessageSendFailed = message_status === 3 && message_is_from_self;
                     const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self && !isMessageSendFailed;
                     const seleted = seletedMessage.findIndex(i => getMessageId(i) === getMessageId(item)) > -1
                     return (
-                        <React.Fragment key={message_msg_id}>
+                        <React.Fragment key={index}>
                             {
                                 message_status === 6 ? (
                                     <div className="message-view__item is-revoked" >
                                         { `${revokedPerson} 撤回了一条消息` }
                                     </div>
                                 ) :
-                                <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
+                                <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
                                     { isMultiSelect && (seleted ? 
                                         <Icon className="message-view__item--icon" type="success" /> : 
                                         <i className="message-view__item--icon-normal" ></i>)
