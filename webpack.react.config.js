@@ -10,8 +10,7 @@ module.exports = {
   target: 'electron-renderer',
   devtool: 'source-map',
   module: {
-    rules: [
-      {
+    rules: [{
         test: /\.(js|ts)$/,
         exclude: /node_modules/,
         use: {

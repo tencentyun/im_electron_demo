@@ -131,7 +131,7 @@ const App = () => {
         }
     }, {});
 
-    for (let i in failedList) {
+    for (const i in failedList) {
         dispatch(reciMessage({
             convId: i,
             messages: failedList[i]

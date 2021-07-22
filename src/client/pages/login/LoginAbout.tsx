@@ -18,7 +18,7 @@ export const LoginAbout = (): JSX.Element => {
         <div className="login-about">
             <section className="login-about__header">
                 <span className="login-about__header--logo" />
-                <span className="login-about__header--tc-text">腾讯云</span>
+                <span className="login-about__header--tc-text">华润云</span>
                 <span className='login-about__header--split' />
                 <span className='login-about__header--im-text'> 即时通信</span>
             </section>
@@ -33,10 +33,10 @@ export const LoginAbout = (): JSX.Element => {
             <section className="login-about__logo" >
                 <img src={loginBg}></img>
             </section>
-            <section className="login-about__button">
+            {/* <section className="login-about__button">
                 <Button type="weak" className="login-about__button--purchase" onClick={handlePurchaseClick}>立即选购</Button>
                 <Button type="text" className="login-about__button--contact" onClick={handleContactClick}>联系我们</Button>
-            </section>
+            </section> */}
         </div>
     )
 };

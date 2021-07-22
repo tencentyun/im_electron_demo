@@ -24,6 +24,7 @@ import { addMessage } from '../../store/actions/message';
 import timeFormat from '../../utils/timeFormat';
 import { EmptyResult } from './searchMessage/EmptyResult';
 import { Myloader } from '../../components/skeleton';
+import { getUserTypeQuery } from '../../services/userType'
 
 export const Message = (): JSX.Element => {
     const [isLoading, setLoadingStatus ] = useState(false);

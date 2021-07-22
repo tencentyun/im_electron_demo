@@ -1,4 +1,8 @@
-const { app, BrowserWindow, ipcRenderer } = require('electron');
+const {
+  app,
+  BrowserWindow,
+  ipcRenderer
+} = require('electron');
 const path = require('path');
 const url = require('url');
 const TimMain = require('im_electron_sdk/dist/main');
@@ -33,8 +37,8 @@ const createWindow = () => {
     width: 960,
     minWidth: 830,
     minHeight: 600,
-    show:false,
-    frame:false,
+    show: false,
+    frame: false,
     webPreferences: {
       webSecurity: true,
       nodeIntegration: true,
@@ -46,20 +50,23 @@ const createWindow = () => {
 
   global.WIN = mainWindow;
 
-  mainWindow.on('ready-to-show',() => {
+  mainWindow.on('ready-to-show', () => {
     mainWindow.show();
 
-    if(!ipc) ipc = new IPC(mainWindow);
+    if (!ipc) ipc = new IPC(mainWindow);
 
     // use for developments
 
   })
 
   mainWindow.on('focus', function () {
-    mainWindow.webContents.send('storagePath', { path: path.join(process.cwd(), '/download/') })
+    mainWindow.webContents.send('storagePath', {
+      path: path.join(process.cwd(), '/download/')
+    })
   })
 
-  
+
+
   mainWindow.loadURL(`http://localhost:3000`);
   mainWindow.webContents.openDevTools();
   // ***use for production***
