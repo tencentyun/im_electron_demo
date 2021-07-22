@@ -145,17 +145,18 @@ const {nickName,faceUrl,gender} = userInfo
               <form onSubmit={handleSubmit}>
                 <Form>
                   <Field
-                    name="avatar"
+                    name="faceUrl"
                     validateFields={[]}
                   >
                     {({ input, meta }) => (
+                      
                       <Form.Item
                         label="头像"
                       >
                         <Upload
                           action="https://run.mocky.io/v3/68ed7204-0487-4135-857d-0e4366b2cfad"
                         >
-                          <Button>点击上传</Button>
+                          <Button>点击上传{JSON.stringify(input)}</Button>
                         </Upload>
                       </Form.Item>
                     )}

@@ -59,7 +59,9 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
     },[avatar,nick,uid,gid])
     return (
         <>
-            <ImagePreview
+            {
+                url ? (
+                    <ImagePreview
                 previewSrc={url}
             >
                 {open => <div onClick={open}>
@@ -68,6 +70,9 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
                     }
                 </div>}
             </ImagePreview>
+                ) : url ? urlComp : nickName ? nickComp : userID ? userIDComp : groupID ? groupIDComp : defaltComp
+            }
+            
     
         </>
     )

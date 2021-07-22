@@ -7,15 +7,24 @@ import { Avatar } from "../../components/avatar/avatar";
 import { UserInfo } from "../../components/EditUserInfo";
 import { Bubble, Button ,Icon} from "tea-component";
 import { useMessageDirect  } from '../../utils/react-use/useDirectMsgPage';
-
+import request from '../../utils/request'
 import "./profile.scss";
 export const Profile = (): JSX.Element => {
     const dispatch = useDispatch();
     const [userVisible,setUserVisible] = useState(false)
     const [sdkAppid] = useState(DEFAULT_USERID);
-  const { faceUrl, nickName, userId, gender, role } = useSelector((state: State.RootState) => state.userInfo);
+  let { faceUrl, nickName, userId, gender, role } = useSelector((state: State.RootState) => state.userInfo);
    const fillStyle = { width: "100%" };
   const [initData, setInitData] = useState({});
+ // 处理后端返回的文件路径，目前的所存储的文件路径不是直接返回一个可访问的资源，是一个base64字符
+(async () => {
+   await request({
+      method: 'GET',
+    }). then(res => {
+      faceUrl = res.data
+    })
+  })()
+ 
     const getSelfInfo = async ()=>{
         const {data: {code, json_param}} = await timRenderInstance.TIMProfileGetUserProfileList({
             json_get_user_profile_list_param: {
