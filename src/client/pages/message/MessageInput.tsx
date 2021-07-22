@@ -247,11 +247,10 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleOnkeyPress = (e) => {
-        console.log(1111, convType)
-        if (e.keyCode == 13 || e.charCode === 13) {
+        if (e.keyCode === 13 || e.charCode === 13) {
             e.preventDefault();
             handleSendTextMsg();
-        } else if(e.key === "@" && convType === 2) {
+        } else if(e.keyCode === 229 && convType === 2) {
             e.preventDefault();
             setAtPopup(true)
         } 
@@ -292,7 +291,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     useEffect(() => {
         setEditorState(ContentUtils.clear(editorState))
     }, [convId, convType])
-
     return (
         <div className={`message-input ${isShutUpAll ? 'disabled-style' : ''}`}>
             {
@@ -313,7 +311,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyPress={handleOnkeyPress}>
+            <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}>
                 <BraftEditor
                     //@ts-ignore
                     disabled={isShutUpAll}
