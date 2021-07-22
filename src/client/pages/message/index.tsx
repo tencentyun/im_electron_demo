@@ -69,6 +69,8 @@ export const Message = (): JSX.Element => {
             if (currentSelectedConversation === null) {
                 dispatch(updateCurrentSelectedConversation(response[0]))
             }
+        }else{
+            dispatch(updateCurrentSelectedConversation(null))
         }
     }
     useEffect(() => {
@@ -80,6 +82,12 @@ export const Message = (): JSX.Element => {
         }
         
     }, []);
+
+    useEffect(()=>{
+        if(currentSelectedConversation===null && conversationList.length > 0){
+            dispatch(updateCurrentSelectedConversation(conversationList[0]))
+        }
+    },[conversationList.length])
 
     useEffect(() => {
         if(currentSelectedConversation?.conv_id) {
