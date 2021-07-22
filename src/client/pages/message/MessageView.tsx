@@ -303,6 +303,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                             )
                                         })
                                     }
+                                    {/* <div>1111, {message_status}</div> */}
                                     {
                                         shouldShowPerReadIcon && <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span>
                                     }

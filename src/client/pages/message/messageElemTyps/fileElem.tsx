@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { downloadFilesByUrl, showDialog } from "../../../utils/tools";
 
 export const FileElem = (props: any): JSX.Element => {
+    const status = props.message_status
     const calcuSize = () => {
         const { file_elem_file_size } = props;
         return (file_elem_file_size / (1024 * 1024)).toFixed(2)
@@ -24,6 +25,7 @@ export const FileElem = (props: any): JSX.Element => {
                     <div className="message-view__item--file___content____size">{calcuSize()}MB</div>
                 </div>
                 <div className="message-view__item--file___handle"></div>
+                {/* <div>{status}</div> */}
             </div>
         )
     };
@@ -38,6 +40,6 @@ export const FileElem = (props: any): JSX.Element => {
     useEffect(() => {
         savePic()
     }, [])
-   console.log('fileElem',props)
+//    console.log('fileElem',props)
     return item();
 }

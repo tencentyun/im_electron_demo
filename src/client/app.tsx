@@ -28,19 +28,19 @@ const App = () => {
 
     const initIMSDK = async () => {
         if (!isInited) {
-            const privite = await timRenderInstance.callExperimentalAPI({
-                json_param: {
-                    request_internal_operation: 'internal_operation_set_privatization_info',
-                    request_set_privatization_info_param: {
-                        server_address_array: [{
-                            server_address_ip: "106.55.144.99",// ip
-                            server_address_port: 80// 端口
-                        }],
-                        server_public_key: '0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f'// 公钥
-                    }
-                }
-            })
-            console.log('私有化', privite)
+            // const privite = await timRenderInstance.callExperimentalAPI({
+            //     json_param: {
+            //         request_internal_operation: 'internal_operation_set_privatization_info',
+            //         request_set_privatization_info_param: {
+            //             server_address_array: [{
+            //                 server_address_ip: "106.55.144.99",// ip
+            //                 server_address_port: 80// 端口
+            //             }],
+            //             server_public_key: '0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f'// 公钥
+            //         }
+            //     }
+            // })
+            // console.log('私有化', privite)
             timRenderInstance.TIMInit().then(async ({ data }) => {
                 
                 if (data === 0) {
@@ -60,6 +60,11 @@ const App = () => {
                             case "TIMAddRecvNewMsgCallback":
                                 _handeMessage(data);
                                 break;
+                            /**
+                             * 上传进度
+                             */
+                            case "TIMSetMsgElemUploadProgressCallback":
+                                _handleElemUploadProgres(data);
                             /**
                              * 会话改变
                              */
@@ -107,6 +112,9 @@ const App = () => {
         }
 
     }
+    const _handleElemUploadProgres = ({message, cur_size, total_size}) => {
+        console.log(111111, message, cur_size)
+    }
     const _handleConversaion = (conv) => {
         const { type, data } = conv;
         switch (type) {
@@ -146,6 +154,7 @@ const App = () => {
     const _updateConversation = async (conversationList: Array<State.conversationItem>) => {
         if (conversationList.length) {
             const convList = await addProfileForConversition(conversationList);
+            _handeMessage([conversationList[0].conv_last_msg])
             dispatch(updateConversationList(convList))
         }
     }

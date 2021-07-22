@@ -3,7 +3,7 @@ import timRenderInstance from "../../utils/timRenderInstance";
 type SendMsgParams<T> = {
   convId: string;
   convType: number;
-  messageElementArray: [T];
+  messageElementArray: T[];
   userData?: string;
   userId: string;
   messageAtArray?: string[];
