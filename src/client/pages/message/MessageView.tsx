@@ -11,7 +11,7 @@ import './message-view.scss';
 import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, TextMsg } from './api';
 import { markeMessageAsRevoke, deleteMessage, reciMessage } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
-import { 
+import {
     getMessageId,
     getConvId,
     getConvType,
@@ -31,8 +31,8 @@ import { ForwardPopup } from './components/forwardPopup';
 import formateTime from '../../utils/timeFormat';
 import { ContentUtils } from 'braft-utils'
 import { Icon, message } from 'tea-component';
-import { custEmojiUpsert }  from '../../services/custEmoji'
-import type { custEmojiUpsertParams }  from '../../services/custEmoji'
+import { custEmojiUpsert } from '../../services/custEmoji'
+import type { custEmojiUpsertParams } from '../../services/custEmoji'
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -76,7 +76,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const [isMultiSelect, setMultiSelect] = useState(false);
     const [forwardType, setForwardType] = useState<ForwardType>(ForwardType.divide);
     const [seletedMessage, setSeletedMessage] = useState<State.message[]>([]);
-    const [ currMenuMessage, setCurrMenuMessage ] = useState<State.message>(); // 当前右击菜单消息
+    const [currMenuMessage, setCurrMenuMessage] = useState<State.message>(); // 当前右击菜单消息
 
     const dispatch = useDispatch();
 
@@ -100,8 +100,8 @@ export const MessageView = (props: Props): JSX.Element => {
 
     // 添加到自定义表情, 图片和自定义表情可添加
     const handleAddCustEmoji = async (params) => {
-        const { elem_type, image_elem_large_url = '', custom_elem_data = '', custom_elem_desc} = params?.message?.message_elem_array[0];
-        
+        const { elem_type, image_elem_large_url = '', custom_elem_data = '', custom_elem_desc } = params?.message?.message_elem_array[0];
+
         let sticker_url = ''
         if (elem_type === 1) {
             sticker_url = image_elem_large_url
@@ -113,7 +113,7 @@ export const MessageView = (props: Props): JSX.Element => {
         try {
             const userId = await getLoginUserID()
             const emojiParams: custEmojiUpsertParams = {
-                uid:  userId,
+                uid: userId,
                 sticker_url,
                 op_type: 1
             }
@@ -124,7 +124,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 const content = data.ErrorInfo.replace('already exists', '请勿重复添加表情')
                 message.error({ content })
             }
-        } catch(e) {
+        } catch (e) {
             message.error({ content: '添加错误' })
         }
     }
@@ -149,12 +149,12 @@ export const MessageView = (props: Props): JSX.Element => {
     }
 
     const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
-        
+
         const userId = await getLoginUserID()
         const isDivideSending = forwardType === ForwardType.divide
         const isCombineSending = !isDivideSending
         convItemGroup.forEach(async (convItem, k) => {
-            if(isDivideSending) {
+            if (isDivideSending) {
                 seletedMessage.forEach(async message => {
                     const { data: { code, json_params } } = await sendMsg({
                         convId: getConvId(convItem),
@@ -162,7 +162,7 @@ export const MessageView = (props: Props): JSX.Element => {
                         messageElementArray: message.message_elem_array as [TextMsg],
                         userId
                     });
-                    if(code === 0) {
+                    if (code === 0) {
                         dispatch(reciMessage({
                             convId: getConvId(convItem),
                             messages: [JSON.parse(json_params)]
@@ -170,7 +170,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     }
                 })
             }
-            else if(isCombineSending) {
+            else if (isCombineSending) {
                 const { data: { code, json_params } } = await sendMergeMsg({
                     convId: getConvId(convItem),
                     convType: getConvType(convItem),
@@ -183,7 +183,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     }],
                     userId
                 });
-                if(code === 0) {
+                if (code === 0) {
                     dispatch(reciMessage({
                         convId: getConvId(convItem),
                         messages: [JSON.parse(json_params)]
@@ -196,7 +196,7 @@ export const MessageView = (props: Props): JSX.Element => {
         setMultiSelect(false)
     }
     const handleForwardTypePopup = (type: ForwardType) => {
-        if(!seletedMessage.length) return false;
+        if (!seletedMessage.length) return false;
         setTransimitPopup(true)
         setForwardType(type)
     }
@@ -204,8 +204,8 @@ export const MessageView = (props: Props): JSX.Element => {
         setMultiSelect(true)
     }
     const handleSelectMessage = (message: State.message): void => {
-        const isMessageSelected = seletedMessage.findIndex(v => getMessageId(v) === getMessageId(message)) > -1 
-        if(isMessageSelected) {
+        const isMessageSelected = seletedMessage.findIndex(v => getMessageId(v) === getMessageId(message)) > -1
+        if (isMessageSelected) {
             const list = seletedMessage.filter(v => getMessageId(v) !== getMessageId(message))
             setSeletedMessage(list)
         } else {
@@ -270,19 +270,19 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <TextElemItem {...res} />
                 break;
             case 1:
-                resp = <PicElemItem { ...res }/>
+                resp = <PicElemItem {...res} />
                 break;
             case 2:
-                resp = <VoiceElem { ...res }/>
+                resp = <VoiceElem {...res} />
                 break;
             case 3:
-                resp = <CustomElem { ...res }/>
+                resp = <CustomElem {...res} />
                 break;
             case 4:
-                resp = <FileElem { ...res }/>
+                resp = <FileElem {...res} />
                 break;
             case 5:
-                resp = <GroupTipsElemItem { ...res }/> 
+                resp = <GroupTipsElemItem {...res} />
                 break;
             case 6:
                 resp = <div>表情消息</div>
@@ -294,7 +294,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <div>群组系统通知</div>
                 break;
             case 9:
-                resp =  <VideoElem { ...res }/>
+                resp = <VideoElem {...res} />
                 break;
             case 10:
                 resp = <div>关系消息</div>
@@ -303,7 +303,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <div>资料消息</div>
                 break;
             case 12:
-                resp = <MergeElem { ...res }/>
+                resp = <MergeElem {...res} />
                 break;
             default:
                 resp = null;
@@ -313,16 +313,16 @@ export const MessageView = (props: Props): JSX.Element => {
     }
 
     // 从发送消息时间开始算起，两分钟内可以编辑
-    const isTimeoutFun = (time)=>{
+    const isTimeoutFun = (time) => {
         const now = new Date()
-        if(parseInt(now.getTime() / 1000) - time  > 2 * 60) {
+        if (parseInt(now.getTime() / 1000) - time > 2 * 60) {
             return false
-        }else{
+        } else {
             return true
         }
     }
 
-    const reEdit = (data)=> {
+    const reEdit = (data) => {
         setEditorState(ContentUtils.insertText(editorState, data))
     }
 
@@ -342,7 +342,7 @@ export const MessageView = (props: Props): JSX.Element => {
         const menuData = getMenuItemData()
         return menuData.map(({ id, text }) => {
             return (
-                <Item  key={id} onClick={(e) => handlRightClick(e, id)}>
+                <Item key={id} onClick={(e) => handlRightClick(e, id)}>
                     {text}
                 </Item>
             )
@@ -351,9 +351,9 @@ export const MessageView = (props: Props): JSX.Element => {
     return (
         <div className="message-view" ref={messageViewRef}>
             {
-               messageList && messageList.length > 0 &&
+                messageList && messageList.length > 0 &&
                 messageList.map(item => {
-                    if(!item){
+                    if (!item) {
                         return null
                     }
                     if (item.isTimeDivider) {
@@ -373,34 +373,34 @@ export const MessageView = (props: Props): JSX.Element => {
                             {
                                 message_status === 6 ? (
                                     <div className="message-view__item is-revoked" >
-                                        { `${revokedPerson} 撤回了一条消息` }
-                                        {(message_is_from_self && isTimeoutFun(message_client_time) && message_elem_array[0].elem_type === 0)?<span className="message-view__item--withdraw" onClick={()=>{reEdit(message_elem_array[0].text_elem_content)}}> 重新编辑</span>:<></>}
+                                        {`${revokedPerson} 撤回了一条消息`}
+                                        {(message_is_from_self && isTimeoutFun(message_client_time) && message_elem_array[0].elem_type === 0) ? <span className="message-view__item--withdraw" onClick={() => { reEdit(message_elem_array[0].text_elem_content) }}> 重新编辑</span> : <></>}
                                     </div>
                                 ) :
-                                <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
-                                    { isMultiSelect && (seleted ? 
-                                        <Icon className="message-view__item--icon" type="success" /> : 
-                                        <i className="message-view__item--icon-normal" ></i>)
-                                    }
-                                    <div className="message-view__item--avatar face-url">
-                                        <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                    <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
+                                        {isMultiSelect && (seleted ?
+                                            <Icon className="message-view__item--icon" type="success" /> :
+                                            <i className="message-view__item--icon-normal" ></i>)
+                                        }
+                                        <div className="message-view__item--avatar face-url">
+                                            <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                        </div>
+                                        {
+                                            message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                                return (
+                                                    <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                        {
+                                                            displayDiffMessage(elment)
+                                                        }
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                        {
+                                            shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
+                                                isMessageSendFailed && <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
+                                        }
                                     </div>
-                                    {
-                                        message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
-                                            return (
-                                                <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-                                                    {
-                                                        displayDiffMessage(elment)
-                                                    }
-                                                </div>
-                                            )
-                                        })
-                                    }
-                                    {
-                                        shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
-                                        isMessageSendFailed &&  <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
-                                    }
-                                </div>
                             }
                             <div className="message-view__item--blank"></div>
                         </React.Fragment>
@@ -413,14 +413,14 @@ export const MessageView = (props: Props): JSX.Element => {
                 animation={animation.fade}
             >
                 {
-                   currMenuMessage && getMenuItem()
+                    currMenuMessage && getMenuItem()
                 }
             </Menu>
             {
-                isTransimitPopup && <ForwardPopup onSuccess={handleForwardPopupSuccess} onClose={() => {setTransimitPopup(false)}}/>
+                isTransimitPopup && <ForwardPopup onSuccess={handleForwardPopupSuccess} onClose={() => { setTransimitPopup(false) }} />
             }
             {
-                isMultiSelect && 
+                isMultiSelect &&
                 <div className="forward-type-popup">
                     <Icon type="close" className="forward-type-popup__close" onClick={() => setMultiSelect(false)} />
                     <div className="forward-type-popup__combine" onClick={() => handleForwardTypePopup(ForwardType.combine)}>
@@ -429,7 +429,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     <div className="forward-type-popup__divide" onClick={() => handleForwardTypePopup(ForwardType.divide)}>
                         <p>逐条转发</p>
                     </div>
-                </div>   
+                </div>
             }
         </div>
     )
