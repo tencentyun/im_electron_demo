@@ -24,6 +24,7 @@ import { addMessage } from '../../store/actions/message';
 import timeFormat from '../../utils/timeFormat';
 import { EmptyResult } from './searchMessage/EmptyResult';
 import { Myloader } from '../../components/skeleton';
+import { getUserTypeQuery } from '../../services/userType'
 
 export const Message = (): JSX.Element => {
     const [isLoading, setLoadingStatus ] = useState(false);
@@ -166,15 +167,15 @@ export const Message = (): JSX.Element => {
             }
         })
         // console.warn(conversationList, To_Account, '入参单个参数')
-        // getUserTypeQuery({ uid, To_Account }).then(data => {
-        //     console.warn(data, "获取联系人在线状态返回参数")
-        //     if (data.ErrorCode === 0) {
-        //         console.warn(1)
-        //         dispatch(getUserType(data.queryResult))
-        //     }
-        // }).catch(err => {
-        //     console.warn('返回错误信息', err)
-        // })
+        getUserTypeQuery({ uid, To_Account }).then(data => {
+            console.warn(data, "获取联系人在线状态返回参数")
+            if (data.ErrorCode === 0) {
+                console.warn(1)
+                dispatch(getUserType(data.queryResult))
+            }
+        }).catch(err => {
+            console.warn('返回错误信息', err)
+        })
     }
     
     const pingConv = (conv: State.conversationItem, isPinned: boolean) => {
