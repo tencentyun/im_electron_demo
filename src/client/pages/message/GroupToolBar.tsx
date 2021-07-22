@@ -1,8 +1,12 @@
-import React, { useState } from "react";
-import { useDialogRef } from "../../utils/react-use/useDialog";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  changeDrawersVisible,
+  changeToolsTab,
+} from "../../store/actions/groupDrawer";
 import "./group-tool-bar.scss";
 
-import { GroupToolsDrawer, GroupToolsgRecordsType } from "./GroupToolsDeawer";
+import { GroupToolsDrawer } from "./GroupToolsDeawer";
 
 const tools = [
   // {
@@ -20,18 +24,19 @@ const tools = [
 ];
 
 export const GroupToolBar = (props: {
-  conversationInfo: State.conversationItem;
+  onActive: (id: string) => void;
+  onClose: () => void;
+  onShow: () => void;
 }): JSX.Element => {
-  const { conversationInfo } = props;
+  const { onActive, onClose, onShow} = props;
 
-  const [active, setActive] = useState("");
+  const { toolsTab } = useSelector(
+    (state: State.RootState) => state.groupDrawer
+  );
+
 
   const addActiveClass = (id: string): string =>
-    active === id ? "is-active" : "";
-
-  const groupToolsRef = useDialogRef<GroupToolsgRecordsType>();
-
-  const popupContainer = document.getElementById("messageInfo");
+    toolsTab === id ? "is-active" : "";
 
   return (
     <>
@@ -40,13 +45,13 @@ export const GroupToolBar = (props: {
           <div
             key={id}
             className="tool-bar--item"
-            onClick={(e) => {
-              if (active !== id) {
-                setActive(id);
-                groupToolsRef.current.open({ conversationInfo, toolId: id });
+            onClick={() => {
+              if (toolsTab !== id) {
+                onActive(id);
+                onShow();
               } else {
-                groupToolsRef.current.close();
-                setActive('')
+                onActive("");
+                onClose();
               }
             }}
           >
@@ -56,11 +61,6 @@ export const GroupToolBar = (props: {
           </div>
         ))}
       </div>
-      <GroupToolsDrawer
-        dialogRef={groupToolsRef}
-        popupContainer={popupContainer}
-        onClose={() => setActive("")}
-      />
     </>
   );
 };

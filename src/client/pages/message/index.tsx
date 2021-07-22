@@ -301,9 +301,9 @@ export const Message = (): JSX.Element => {
             {
                 currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : <div className="empty"><EmptyResult contentText="暂无历史消息" /></div>
             }
-            {
+            {/* {
                 currentSelectedConversation && currentSelectedConversation.conv_type === 2 ? <GroupToolBar conversationInfo={currentSelectedConversation} /> : <></>
-            }
+            } */}
             {/* 音视频通话面板 */}
         </div>
     )
