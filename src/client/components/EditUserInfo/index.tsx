@@ -91,7 +91,7 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,on
 
   useEffect(() => {
     setVisible(visible)
-    onChange(visible)
+    onChange && onChange(visible)
   }, [visible])
 
 
