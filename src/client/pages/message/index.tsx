@@ -101,8 +101,8 @@ export const Message = (): JSX.Element => {
 
     const handleSearchBoxClick = () => dialogRef.current.open();
 
-    const getLastMsgInfo = (lastMsg,conv_type,conv_group_at_info_array) => {
-        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read } = lastMsg;
+    const getLastMsgInfo = (lastMsg:State.message,conv_type,conv_group_at_info_array) => {
+        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read,message_is_read } = lastMsg;
         const { user_profile_nick_name } = message_sender_profile;
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
         const firstMsg = message_elem_array[0];
@@ -124,9 +124,11 @@ export const Message = (): JSX.Element => {
         }[firstMsg.elem_type];
         const hasAtMessage = conv_group_at_info_array && conv_group_at_info_array.length;
         const atDisPlayMessage = hasAtMessage && conv_group_at_info_array.pop().conv_group_at_info_at_type === 1 ? "@我" : "@所有人"
+        const isRead = message_is_from_self && message_is_peer_read || !message_is_from_self && message_is_read
         return <React.Fragment>
+            
             {
-               conv_type === 1 ? <span className={`icon ${message_is_peer_read ? 'is-read' : ''}`} /> : null
+               <span className={`icon ${isRead ? 'is-read' : ''}`} />
             }
             {
                 conv_type && hasAtMessage ? <span className="at-msg">{atDisPlayMessage}</span> : null
