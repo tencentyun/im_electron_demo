@@ -61,9 +61,14 @@ export const MessageInfo = (
   const validatelastMessage = (messageList:State.message[])=>{
     let msg:State.message;
     for(let i = 0; i < messageList.length; i++){
-        if(messageList[i]?.message_msg_id && !messageList[i].message_is_from_self){
-            msg = messageList[i];
-            break;
+        // 筛选不是自己的且发送成功的消息
+        if(messageList[i]?.message_msg_id && !messageList[i].message_is_from_self && messageList[i].message_status === 2){
+            // 不能是群系统通知
+            const { elem_type } = messageList[i].message_elem_array[0]||{};
+            if(elem_type != 5 && elem_type!= 8){
+              msg = messageList[i];
+              break;
+            }
         }
     }
     return msg;

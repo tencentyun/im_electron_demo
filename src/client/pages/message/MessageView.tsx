@@ -286,7 +286,6 @@ export const MessageView = (props: Props): JSX.Element => {
             }
             const { message_conv_id,message_conv_type,message_msg_id  } = msg;
             const messageResponse = await getMsgList(message_conv_id, message_conv_type,message_msg_id);
-            console.log('消息',messageResponse)
             if(messageResponse.length>0){
                 setAnchor(message_msg_id) 
             }else{
