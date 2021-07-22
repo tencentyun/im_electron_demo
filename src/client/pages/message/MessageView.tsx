@@ -31,8 +31,8 @@ import { ForwardPopup } from './components/forwardPopup';
 import formateTime from '../../utils/timeFormat';
 import { ContentUtils } from 'braft-utils'
 import { Icon, message } from 'tea-component';
-import { custEmojiUpsert }  from '../../services/custEmoji'
-import type { custEmojiUpsertParams }  from '../../services/custEmoji'
+import { custEmojiUpsert } from '../../services/custEmoji'
+import type { custEmojiUpsertParams } from '../../services/custEmoji'
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -65,10 +65,6 @@ const RIGHT_CLICK_MENU_LIST = [{
 {
     id: 'multiSelect',
     text: '多选'
-},
-{
-    id: 'openFilePath',
-    text: '在文件夹中显示'
 }];
 
 
@@ -80,7 +76,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const [isMultiSelect, setMultiSelect] = useState(false);
     const [forwardType, setForwardType] = useState<ForwardType>(ForwardType.divide);
     const [seletedMessage, setSeletedMessage] = useState<State.message[]>([]);
-    const [ currMenuMessage, setCurrMenuMessage ] = useState<State.message>(); // 当前右击菜单消息
+    const [currMenuMessage, setCurrMenuMessage] = useState<State.message>(); // 当前右击菜单消息
 
     const dispatch = useDispatch();
 
@@ -104,8 +100,8 @@ export const MessageView = (props: Props): JSX.Element => {
 
     // 添加到自定义表情, 图片和自定义表情可添加
     const handleAddCustEmoji = async (params) => {
-        const { elem_type, image_elem_large_url = '', custom_elem_data = '', custom_elem_desc} = params?.message?.message_elem_array[0];
-        
+        const { elem_type, image_elem_large_url = '', custom_elem_data = '', custom_elem_desc } = params?.message?.message_elem_array[0];
+
         let sticker_url = ''
         if (elem_type === 1) {
             sticker_url = image_elem_large_url
@@ -117,7 +113,7 @@ export const MessageView = (props: Props): JSX.Element => {
         try {
             const userId = await getLoginUserID()
             const emojiParams: custEmojiUpsertParams = {
-                uid:  userId,
+                uid: userId,
                 sticker_url,
                 op_type: 1
             }
@@ -128,7 +124,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 const content = data.ErrorInfo.replace('already exists', '请勿重复添加表情')
                 message.error({ content })
             }
-        } catch(e) {
+        } catch (e) {
             message.error({ content: '添加错误' })
         }
     }
@@ -217,10 +213,6 @@ export const MessageView = (props: Props): JSX.Element => {
             setSeletedMessage(Array.from(seletedMessage))
         }
     }
-    const handleopenFilePath = data => {
-        console.log(data, '打开文件夹')
-        showDialog()
-    }
     const handlRightClick = (e, id) => {
         const { data } = e.props;
         switch (id) {
@@ -241,9 +233,6 @@ export const MessageView = (props: Props): JSX.Element => {
                 break;
             case 'multiSelect':
                 handleMultiSelectMsg(data);
-                break;
-            case 'openFilePath':
-                handleopenFilePath(data);
                 break;
         }
     }
@@ -324,16 +313,16 @@ export const MessageView = (props: Props): JSX.Element => {
     }
 
     // 从发送消息时间开始算起，两分钟内可以编辑
-    const isTimeoutFun = (time)=>{
+    const isTimeoutFun = (time) => {
         const now = new Date()
-        if(parseInt(now.getTime() / 1000) - time  > 2 * 60) {
+        if (parseInt(now.getTime() / 1000) - time > 2 * 60) {
             return false
-        }else{
+        } else {
             return true
         }
     }
 
-    const reEdit = (data)=> {
+    const reEdit = (data) => {
         setEditorState(ContentUtils.insertText(editorState, data))
     }
 
@@ -353,7 +342,7 @@ export const MessageView = (props: Props): JSX.Element => {
         const menuData = getMenuItemData()
         return menuData.map(({ id, text }) => {
             return (
-                <Item  key={id} onClick={(e) => handlRightClick(e, id)}>
+                <Item key={id} onClick={(e) => handlRightClick(e, id)}>
                     {text}
                 </Item>
             )
@@ -384,8 +373,8 @@ export const MessageView = (props: Props): JSX.Element => {
                             {
                                 message_status === 6 ? (
                                     <div className="message-view__item is-revoked" >
-                                        { `${revokedPerson} 撤回了一条消息` }
-                                        {(message_is_from_self && isTimeoutFun(message_client_time) && message_elem_array[0].elem_type === 0)?<span className="message-view__item--withdraw" onClick={()=>{reEdit(message_elem_array[0].text_elem_content)}}> 重新编辑</span>:<></>}
+                                        {`${revokedPerson} 撤回了一条消息`}
+                                        {(message_is_from_self && isTimeoutFun(message_client_time) && message_elem_array[0].elem_type === 0) ? <span className="message-view__item--withdraw" onClick={() => { reEdit(message_elem_array[0].text_elem_content) }}> 重新编辑</span> : <></>}
                                     </div>
                                 ) :
                                     <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
@@ -400,7 +389,6 @@ export const MessageView = (props: Props): JSX.Element => {
                                             message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                                 return (
                                                     <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-
                                                         {
                                                             displayDiffMessage(elment)
                                                         }
@@ -409,25 +397,10 @@ export const MessageView = (props: Props): JSX.Element => {
                                             })
                                         }
                                         {
-                                            shouldShowPerReadIcon && <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span>
+                                            shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
+                                                isMessageSendFailed && <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
                                         }
                                     </div>
-                                    {
-                                        message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
-                                            return (
-                                                <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-                                                    {
-                                                        displayDiffMessage(elment)
-                                                    }
-                                                </div>
-                                            )
-                                        })
-                                    }
-                                    {
-                                        shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
-                                        isMessageSendFailed &&  <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
-                                    }
-                                </div>
                             }
                             <div className="message-view__item--blank"></div>
                         </React.Fragment>
@@ -440,7 +413,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 animation={animation.fade}
             >
                 {
-                   currMenuMessage && getMenuItem()
+                    currMenuMessage && getMenuItem()
                 }
             </Menu>
             {
