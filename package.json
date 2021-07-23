@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "im_electron_sdk": "^1.0.29",
+    "react-audio-player": "^0.17.0",
     "trtc-electron-sdk": "^8.6.102-beta.0"
   }
 }

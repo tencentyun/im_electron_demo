@@ -6,6 +6,7 @@ const MARKE_MESSAGE_AS_READED = "MARKE_MESSAGE_AS_READED";
 const ADD_MORE_MESSAGE = "ADD_MORE_MESSAGE";
 const UPDATE_MESSAGES = "UPDATE_MESSAGES"
 const UPDATE_MESSAGE_ELEM_PROGRESS = "UPDATE_MESSAGE_ELEM_PROGRESS"
+const SET_CURRENT_REPLY_USER = "SET_CURRENT_REPLY_USER"
 
 export enum ActionTypeEnum {
     ADD_MESSAGE = "ADD_MESSAGE",
@@ -15,12 +16,13 @@ export enum ActionTypeEnum {
     MARKE_MESSAGE_AS_READED = "MARKE_MESSAGE_AS_READED",
     ADD_MORE_MESSAGE = "ADD_MORE_MESSAGE",
     UPDATE_MESSAGES = "UPDATE_MESSAGES",
-    UPDATE_MESSAGE_ELEM_PROGRESS = "UPDATE_MESSAGE_ELEM_PROGRESS"
+    UPDATE_MESSAGE_ELEM_PROGRESS = "UPDATE_MESSAGE_ELEM_PROGRESS",
+    SET_CURRENT_REPLY_USER = "SET_CURRENT_REPLY_USER"
 }
 
 export type Action = {
     type: ActionTypeEnum,
-    payload: Payload & ReciMessagePayload & UpdateMessagePayload & UpdateMessageElemProgressPayload & UpdateMessagesPayload & DeleteMessagePayload & MarkeMessageAsReadedPayload
+    payload: Payload & ReciMessagePayload & UpdateMessagePayload & UpdateMessageElemProgressPayload & UpdateMessagesPayload & DeleteMessagePayload & MarkeMessageAsReadedPayload & SetCurrentReplyUserPayload
 }
 
 type AddMoreMessage = {
@@ -63,6 +65,10 @@ type MarkeMessageAsReadedPayload = {
     convIds: [string]
 }
 
+type SetCurrentReplyUserPayload = {
+    profile: State.userProfile
+}
+
 export const addMessage = (payload: Payload) : State.actcionType<Payload> => ({
     type: ADD_MESSAGE,
     payload
@@ -102,3 +108,8 @@ export const updateMessageElemProgress = (payload: UpdateMessageElemProgressPayl
     type: UPDATE_MESSAGE_ELEM_PROGRESS,
     payload
 });
+
+export const setCurrentReplyUser = (payload: SetCurrentReplyUserPayload): State.actcionType<SetCurrentReplyUserPayload> => ({
+    type: SET_CURRENT_REPLY_USER,
+    payload
+})

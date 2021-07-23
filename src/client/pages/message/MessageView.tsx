@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     Menu,
     Item,
@@ -33,6 +33,7 @@ import formateTime from '../../utils/timeFormat';
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
 import { GroupSysElm } from './messageElemTyps/groupSystemElem';
+import { setCurrentReplyUser } from '../../store/actions/message'
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -114,8 +115,15 @@ export const MessageView = (props: Props): JSX.Element => {
         setSeletedMessage([message])
     }
 
+    const handleReplyMsg = (params) => {
+        const { message } = params;
+        const { message_sender, message_sender_profile } = message
+        dispatch(setCurrentReplyUser({
+            profile: message_sender_profile
+        }))
+    }
+
     const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
-        
         const userId = await getLoginUserID()
         const isDivideSending = forwardType === ForwardType.divide
         const isCombineSending = !isDivideSending
@@ -192,7 +200,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 handleTransimitMsg(data);
                 break;
             case 'reply':
-                handleDeleteMsg(data);
+                handleReplyMsg(data);
                 break;
             case 'multiSelect':
                 handleMultiSelectMsg(data);

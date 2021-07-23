@@ -164,7 +164,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             }],
             userId,
         });
-
+        console.log(file,1111)
         if (code === 0) {
             dispatch(updateMessages({
                 convId,

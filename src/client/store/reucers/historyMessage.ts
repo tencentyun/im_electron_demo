@@ -3,7 +3,8 @@ import { addTimeDivider } from "../../utils/addTimeDivider";
 
 const initState = {
   historyMessageList: new Map(),
-  uploadProgressList: new Map()
+  uploadProgressList: new Map(),
+  currentReplyUser: null
 }
 
 const messageReducer = (state = initState, action: Action): State.historyMessage => {
@@ -88,7 +89,6 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
       const oldMessageList = state.historyMessageList.get(payload.convId);
       const newMessageList = oldMessageList.map(oldMessage => {
         if(oldMessage.message_msg_id === payload.message.message_msg_id) {
-          console.log(oldMessage, payload.message)
           matched = true
           return payload.message
         } else {
@@ -96,12 +96,11 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
         }
       });
       if(!matched) newMessageList.unshift(payload.message)
-       
-      const ret = {
+      
+      return {
         ...state,
         historyMessageList: state.historyMessageList.set(payload.convId, newMessageList)
       }
-      return ret
     }
 
     case ActionTypeEnum.UPDATE_MESSAGE_ELEM_PROGRESS: {
@@ -109,6 +108,13 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
       return {
         ...state,
         uploadProgressList: state.uploadProgressList.set(`${messageId}_${index}`, {cur_size, total_size})
+      }
+    }
+
+    case ActionTypeEnum.SET_CURRENT_REPLY_USER: {
+      return {
+        ...state,
+        currentReplyUser: payload.profile
       }
     }
 
