@@ -72,13 +72,14 @@ const RIGHT_CLICK_MENU_LIST = [{
 
 
 
+
 export const MessageView = (props: Props): JSX.Element => {
     const { messageList, editorState, setEditorState } = props;
     const messageViewRef = useRef(null);
     const [isTransimitPopup, setTransimitPopup] = useState(false);
     const [isMultiSelect, setMultiSelect] = useState(false);
     const [forwardType, setForwardType] = useState<ForwardType>(ForwardType.divide);
-    const [seletedMessage, setSeletedMessage] = useState<State.message[]>([]);
+    const [seletedMessage, setSeletedMessage] = useState<State.message[]>([]);f
     const [currMenuMessage, setCurrMenuMessage] = useState<State.message>(); // 当前右击菜单消息
     const [noMore,setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     const dispatch = useDispatch();
