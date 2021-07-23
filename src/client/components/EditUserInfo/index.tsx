@@ -85,33 +85,20 @@ interface UserProfileItem {
 
 export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,onUpdateUserInfo }): JSX.Element => {
   const [isShow, setVisible] = useState(visible)
-  const [imgUrl, setImgUrl] = useState('')
+
   const close = () => {
     setVisible(false)
     onClose(false)
   }
 
+  function afterUpload(imgUrl) {
+    console.log('imgUrl',imgUrl)
+ }
+
   useEffect(() => {
     setVisible(visible)
     onChange && onChange(visible)
   }, [visible])
-
-  const open = () => setVisible(true);
-  // const close = () => setVisible(false);
-        
-  function afterCropper(base64) {
-     console.log('base64',base64)
-  }
-  function afterUpload(imgUrl) {
-     console.log('imgUrl',imgUrl)
-     setImgUrl(imgUrl)
-  }
-  function cropperFile(file) {
-     console.log('file',file)
-  }
-  function beforeUpload(file) {
-     console.log('上传前file',file)
-  }
 
   function getStatus(meta, validating?) {
     if (meta.active && validating) {
@@ -124,8 +111,6 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,on
   }
 console.log('userinfo',userInfo);
   async function onSubmit(values: IUser) {
-    console.log('values', values)
-    values.faceUrl = imgUrl
     const formData: submitUserInfoData = {
       json_modify_self_user_profile_param: {
         user_profile_item_face_url: values.faceUrl,
@@ -142,7 +127,7 @@ console.log('userinfo',userInfo);
         })
       onUpdateUserInfo && onUpdateUserInfo()
       } else {
-         message.success({
+         message.error({
               content:'修改失败'
             })
       }
@@ -174,12 +159,7 @@ const {nickName,faceUrl,gender} = userInfo
                       <Form.Item
                         label="头像"
                       >
-                        {/* <Upload
-                          action="https://run.mocky.io/v3/68ed7204-0487-4135-857d-0e4366b2cfad"
-                        >
-                          <Button>点击上传</Button>
-                        </Upload> */}
-                        <ImgCropper afterCropper={afterCropper} afterUpload={afterUpload} cropperFile={cropperFile} beforeUpload={beforeUpload}></ImgCropper>
+                        <ImgCropper {...input} afterUpload={afterUpload}></ImgCropper>
                       </Form.Item>
                     )}
                   </Field>
