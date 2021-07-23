@@ -80,6 +80,9 @@ export const MessageInput = (props: Props): JSX.Element => {
     let editorInstance;
 
     const handleSendTextMsg = async () => {
+        if(editorStateDisabled(editorState.toText())){
+            return
+        }
         try {
             const text = editorState.toText()
             const atList = getAtList(text)
@@ -283,7 +286,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (e.keyCode === 13 || e.charCode === 13) {
             e.preventDefault();
             handleSendTextMsg();
-        } else if(e.keyCode === 229 && convType === 2) {
+        } else if((e.key === '@' || e.keyCode === 229) && convType === 2) {
             e.preventDefault();
             setAtPopup(true)
         }
@@ -385,6 +388,11 @@ export const MessageInput = (props: Props): JSX.Element => {
             ipcRenderer.removeAllListeners('screenShotUrl')
         }
     }, [])
+
+    const editorStateDisabled = (text)=>{
+        return !text.replace(/ /g,'').replace(/\n/g,'')
+    }
+
     return (
         <div className={`message-input ${isShutUpAll ? 'disabled-style' : ''}`}>
             {
@@ -423,7 +431,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 />
             </div>
             <div className="message-input__button-area">
-                <Button type="primary" onClick={handleSendTextMsg} disabled={editorState.toText() === ''}>发送</Button>
+                <Button type="primary" onClick={handleSendTextMsg} disabled={editorStateDisabled(editorState.toText())}>发送</Button>
             </div>
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
