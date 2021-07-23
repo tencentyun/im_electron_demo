@@ -10,6 +10,9 @@ import { changeFunctionTab } from '../../store/actions/ui';
 // eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
 
+import {filterGetDepartment,assemblyData} from '../../utils/orgin'
+import { setUnreadCount } from '../../store/actions/section';
+
 const tabs = [
     {id: 'verifyCodeLogin', label: '验证码登陆'},
     {id: 'passwordLogin', label: '密码登陆'}
@@ -34,9 +37,30 @@ export const LoginContent = (): JSX.Element => {
         const { data: { code,data,desc,json_param }} = await timRenderInstance.TIMLogin(params);
         console.log(code,data,desc,json_param);
         if(code === 0) {
-            dispatch(setIsLogInAction(true));
-            dispatch(changeFunctionTab('message'));
-            history.replace('/home/message');
+            //获取部门
+            filterGetDepartment({
+                DepId:"root_1"
+            },(data)=>{
+                let sectionData = assemblyData([data],'SubDepsInfoList','StaffInfoList','DepName','Uname')
+                window.localStorage.setItem('section',JSON.stringify(sectionData))
+                window.localStorage.setItem('uid',userID)
+                dispatch(setUnreadCount(assemblyData([data],'SubDepsInfoList','StaffInfoList','DepName','Uname')))
+                dispatch(setIsLogInAction(true));
+                dispatch(changeFunctionTab('message'));
+                history.replace('/home/message');
+            },userID)
+            // const  consoSection = await getDepartment({
+            //     DepId:"root_1"
+            // })
+            // if(consoSection.status == 200){
+            //     let sectionData = assemblyData([consoSection.data.DepInfo],'SubDepsInfoList','StaffInfoList','DepName','Uname')
+            //     window.localStorage.setItem('section',JSON.stringify(sectionData))
+            //     dispatch(setUnreadCount(assemblyData([consoSection.data.DepInfo],'SubDepsInfoList','StaffInfoList','DepName','Uname')))
+            //     dispatch(setIsLogInAction(true));
+            //     dispatch(changeFunctionTab('message'));
+            //     history.replace('/home/message');
+            // }
+            
         }
     }
 

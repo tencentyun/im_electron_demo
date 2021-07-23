@@ -7,13 +7,14 @@ import {
   GroupMemberListDrawerRecordsType,
 } from "./MemberListDrawer";
 import {
-  AddMemberRecordsType,
-  AddGroupMemberDialog,
-} from "./AddGroupMemberDialog";
-import {
   DeleteGroupMemberDialog,
   DeleteMemberRecordsType,
 } from "./DeleteGroupMember";
+
+import {
+  AddGroupMemberDialog,
+  AddMemberRecordsType
+}from '../../../components/pull/pull'
 
 export const GroupMember = (props: {
   userList: {

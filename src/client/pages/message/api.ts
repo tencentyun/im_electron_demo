@@ -76,7 +76,7 @@ type MemberInfo = {
   }[];
 };
 
-const getUserInfoList = async (userIdList: Array<string>) => {
+export const getUserInfoList = async (userIdList: Array<string>) => {
   const {
     data: { code, json_param },
   } = await timRenderInstance.TIMProfileGetUserProfileList({
@@ -322,13 +322,13 @@ export const deleteMsg = async ({ convId, convType, msgId }) => {
 };
 
 export const inviteMemberGroup = async (params: {
-  UID: string;
+  UIDS: Array<string>;
   groupId: string;
 }): Promise<any> => {
-  const { UID, groupId } = params;
+  const { UIDS, groupId } = params;
   const inviteParams = {
     group_invite_member_param_group_id: groupId,
-    group_invite_member_param_identifier_array: [UID],
+    group_invite_member_param_identifier_array: UIDS,
   };
   const { data } = await timRenderInstance.TIMGroupInviteMember({
     params: inviteParams,
