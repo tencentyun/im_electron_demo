@@ -12,9 +12,9 @@ import { setUserInfo } from '../../store/actions/user';
 import { loginParam } from 'im_electron_sdk/dist/interface';
 import {filterGetDepartment,assemblyData} from '../../utils/orgin'
 import { setUnreadCount } from '../../store/actions/section';
-import { getEncrptPwd } from '../../utils/addFriendForPoc'
+//import { getEncrptPwd } from '../../utils/addFriendForPoc'
 import { getUserLoginInfo } from '../../services/login'
-import { genTestUserSig } from './generateUserSig'
+//import { genTestUserSig } from './generateUserSig'
 const tabs = [
     // {id: 'verifyCodeLogin', label: '验证码登陆'},
     { id: 'passwordLogin', label: '密码登陆' }
