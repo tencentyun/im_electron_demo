@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { HashRouter as Router, Switch, Route } from "react-router-dom";
+import "tea-component/dist/tea.css";
+import {
+  HashRouter as Router,
+  Switch,
+  Route,
+  useHistory,
+} from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
 
 import store from "./store";
@@ -17,7 +23,6 @@ import {
   setUnreadCount,
   updateConversationList,
   markConvLastMsgIsReaded,
-  replaceConversaionList,
   updateCurrentSelectedConversation,
 } from "./store/actions/conversation";
 import {
@@ -29,16 +34,14 @@ import {
   markeMessageAsRevoke,
   markMessageAsReaded,
 } from "./store/actions/message";
+import { setIsLogInAction, userLogout } from "./store/actions/login";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
-const App = () => {
+export const App = () => {
   const dispatch = useDispatch();
 
-  const { currentSelectedConversation } = useSelector(
-    (state: State.RootState) => state.conversation
-  );
-
+  const history = useHistory();
   const initIMSDK = async () => {
     if (!isInited) {
       // const privite = await timRenderInstance.callExperimentalAPI({
@@ -58,7 +61,7 @@ const App = () => {
         if (data === 0) {
           isInited = true;
           console.log("初始化成功");
-          initListeners.bind(this)((callback) => {
+          initListeners((callback) => {
             const { data, type } = callback;
             console.info(
               "======================== 接收到IM事件 start =============================="
@@ -102,42 +105,58 @@ const App = () => {
               case "TIMSetGroupTipsEventCallback":
                 _handleGroupInfoModify(data);
                 break;
+              /**
+               * 被挤下线
+               */
+              case "TIMSetKickedOfflineCallback":
+                _handleKickedout();
+                break;
             }
           });
         }
       });
     }
   };
+  const _handleKickedout = async () => {
+    dispatch(userLogout());
+    history.replace("/login");
+    dispatch(setIsLogInAction(false));
+  };
   const _handleGroupInfoModify = async (data) => {
     const response = await getConversionList();
-    dispatch(replaceConversaionList(response));
-    if (response.length) {
+    dispatch(updateConversationList(response));
+    if (response?.length) {
       const newConversaionItem = response.find(
-        (v) => v.conv_id === currentSelectedConversation.conv_id
+        (v) => v.conv_id === data.group_tips_elem_group_id
       );
-      dispatch(
-        updateCurrentSelectedConversation(newConversaionItem || response[0])
-      );
+      if (newConversaionItem) {
+        dispatch(updateCurrentSelectedConversation(newConversaionItem));
+      }
     }
-    console.log("TIMSetGroupTipsEventCallback", data);
   };
   const handleMessageSendFailed = (convList) => {
     const failedList = convList.reduce((acc, cur) => {
-        if(cur.conv_last_msg && cur?.conv_last_msg.message_status === 3) {
-            return {
-                ...acc,
-                [cur.conv_id]: [...[acc[cur.conv_id]], cur.conv_last_msg].filter(x => x)
-            }
-        }
+      if (cur.conv_last_msg && cur?.conv_last_msg.message_status === 3) {
+        return {
+          ...acc,
+          [cur.conv_id]: [...[acc[cur.conv_id]], cur.conv_last_msg].filter(
+            (x) => x
+          ),
+        };
+      }
     }, {});
 
+    if (!failedList) return;
+
     for (const i in failedList) {
-        dispatch(reciMessage({
-            convId: i,
-            messages: failedList[i]
-        }))
+      dispatch(
+        reciMessage({
+          convId: i,
+          messages: failedList[i],
+        })
+      );
     }
-};
+  };
   const _handleUnreadChange = (unreadCount) => {
     dispatch(setUnreadCount(unreadCount));
   };
@@ -236,19 +255,19 @@ const App = () => {
   return (
     <div id="app-container">
       <ToolsBar></ToolsBar>
-      <Router>
-        <Switch>
-          <Route path="/home" component={Home}></Route>
-          <Route path="/" component={Login} />
-        </Switch>
-      </Router>
+      <Switch>
+        <Route path="/home" component={Home}></Route>
+        <Route path="/" component={Login} />
+      </Switch>
     </div>
   );
 };
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <Router>
+      <App />
+    </Router>
   </Provider>,
   document.getElementById("root")
 );
