@@ -81,18 +81,18 @@ export const MessageInput = (props: Props): JSX.Element => {
     let editorInstance;
 
     const handleSendTextMsg = async () => {
-        if(editorStateDisabled(editorState.toText())){
+        if(editorStateDisabled(editorState?.toText())){
             return
         }
         try {
-            const text = editorState.toText()
+            const text = editorState?.toText()
             const atList = getAtList(text)
             const { data: { code, json_params, desc } } = await sendTextMsg({
                 convId,
                 convType,
                 messageElementArray: [{
                     elem_type: 0,
-                    text_elem_content: editorState.toText(),
+                    text_elem_content: editorState?.toText(),
                 }],
                 userId,
                 messageAtArray: atList
@@ -419,9 +419,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                 {
 
                     FEATURE_LIST[convType].map(({ id, content }) => (
-                        <Bubble content={content}>
+                        <Bubble content={content} key={id}>
                             <span
-                                key={id}
                                 className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
 
                                 onClick={() => handleFeatureClick(id)}
@@ -445,7 +444,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 />
             </div>
             <div className="message-input__button-area">
-                <Button type="primary" onClick={handleSendTextMsg} disabled={editorStateDisabled(editorState.toText())}>发送</Button>
+                <Button type="primary" onClick={handleSendTextMsg} disabled={editorStateDisabled(editorState?.toText())}>发送</Button>
             </div>
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
