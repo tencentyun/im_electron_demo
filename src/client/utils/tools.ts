@@ -1,4 +1,4 @@
-import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG } from "../../const/const";
+import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG } from "../../app/const/const";
 
 import { ipcRenderer, remote } from 'electron';
 

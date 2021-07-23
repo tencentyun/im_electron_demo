@@ -4,6 +4,7 @@ import { LoadingTip } from 'tea-component';
 
 interface Props extends React.HTMLAttributes<HTMLElement> {
   loading?: boolean;
+  style?: React.CSSProperties;
   children:
     | React.ReactNode
     | React.ReactFragment
@@ -14,12 +15,13 @@ interface Props extends React.HTMLAttributes<HTMLElement> {
 }
 
 export const LoadingContainer = (props: Props): JSX.Element => {
-  const { loading } = props;
+  const { loading, style = {} } = props;
   const _loading = !!loading;
 
   return (
     <div
       className={`loading-container ${ _loading ? 'is-loading' : ''}`}
+      style={style}
     >
       <div className="loading-container--modal">
         <LoadingTip className="loading-container--modal__tip"></LoadingTip>
