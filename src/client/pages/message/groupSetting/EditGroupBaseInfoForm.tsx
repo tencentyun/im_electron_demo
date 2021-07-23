@@ -44,7 +44,7 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
   // eslint-disable-next-line
   const _handlerSubmit = async (formValue: FormValue) => {
     console.log('formValue', formValue)
-    formValue.groupFaceUrl = imgUrl
+    // formValue.groupFaceUrl = imgUrl
     console.log('imgUrl', imgUrl)
     try {
       await onSubmit(formValue);
@@ -117,14 +117,14 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
       >
         上传头像
       </Button> */}
-      <ImgCropper isShowCropper={false} afterCropper={afterCropper} afterUpload={afterUpload} cropperFile={cropperFile} beforeUpload={beforeUpload}></ImgCropper>
-                      <Input
+      <ImgCropper {...input} isShowCropper={true} ></ImgCropper>
+                      {/* <Input
                         {...input}
                         placeholder="请输入群头像地址"
                         size="full"
                         style={{ display: "none" }}
                         disabled={submitting}
-                      />
+                      /> */}
                     </Form.Item>
                   )}
                 </Field>

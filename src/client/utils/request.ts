@@ -81,6 +81,7 @@ request.interceptors.request.use(
 request.interceptors.response.use(
     async (response: AxiosResponse) => {
         const res: ResponseData = response.data;
+
         const { code, ErrorCode } = res;
         console.log('response', response);
         // 自定义状态码验证
