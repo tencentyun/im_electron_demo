@@ -17,8 +17,8 @@ export const DEFAULT_USER_SIG = 'eJwtzNsKgkAUheF3meuQ7eichC60SCwJonqA0Em2WowH0oz
 
 
 
-// export const DEFAULT_USERID = 'mimi';
-// export const DEFAULT_USER_SIG = 'eJwtzEELgjAYxvHvsmsh22tbKnSI6KYhLIQdl1vxJquxlgXRd8-U4-N74P8hx1ImvQ2kIJBQshw3GnuLeMaRHTqc-WE67T0aUrAVpSxbpxymx749Bjs45xwopZNGdH8TIDKRpZzPFbwM2VPfLlQFwe1YrXMWjVR5dY*6breHa4PlXoFs8PmKqtuQ7w-tTTFt';
+export const DEFAULT_USERID = 'mimi';
+export const DEFAULT_USER_SIG = 'eJwtzEELgjAYxvHvsmsh22tbKnSI6KYhLIQdl1vxJquxlgXRd8-U4-N74P8hx1ImvQ2kIJBQshw3GnuLeMaRHTqc-WE67T0aUrAVpSxbpxymx749Bjs45xwopZNGdH8TIDKRpZzPFbwM2VPfLlQFwe1YrXMWjVR5dY*6breHa4PlXoFs8PmKqtuQ7w-tTTFt';
 
 // export const DEFAULT_USERID = 'mimimi';
 // export const DEFAULT_USER_SIG = 'eJyrVgrxCdYrSy1SslIy0jNQ0gHzM1NS80oy0zLBwrmZIAiVKU7JTiwoyExRsjI0MTAwtDA3NjWCyKRWFGQWpQLFTU1NjQwMDCCiJZm5IDEzIzMLMwtzQwuoKZnpQIPD-bz8tcuLqvwjA41CnUti9H19jZ1cC5Nd-XwNTcxNIs0yii21XXMKKso8fW2VagGQHjFo';

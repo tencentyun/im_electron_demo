@@ -11,7 +11,6 @@ module.exports = {
     call: './call.tsx'
   } ,
   target: 'electron-renderer',
-  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -46,14 +45,6 @@ module.exports = {
         ],
       }
     ]
-  },
-  devServer: {
-    contentBase: path.join(__dirname, '../../bundle'),
-    historyApiFallback: true,
-    compress: true,
-    hot: true,
-    port: 3000,
-    publicPath: '/',
   },
   output: {
     path: path.resolve(__dirname, '../../bundle'),
