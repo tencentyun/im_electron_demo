@@ -25,6 +25,7 @@ import timeFormat from '../../utils/timeFormat';
 import { EmptyResult } from './searchMessage/EmptyResult';
 import { Myloader } from '../../components/skeleton';
 import { replaceRouter } from '../../store/actions/ui';
+import { getUserTypeQuery } from '../../services/userType'
 
 export const Message = (): JSX.Element => {
     const [isLoading, setLoadingStatus ] = useState(false);

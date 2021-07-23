@@ -373,6 +373,42 @@ export const MessageView = (props: Props): JSX.Element => {
             dispatch(addMoreMessage(payload));
         }
     }
+    // 从发送消息时间开始算起，两分钟内可以编辑
+    const isTimeoutFun = (time) => {
+        const now = new Date()
+        if (parseInt(now.getTime() / 1000) - time > 2 * 60) {
+            return false
+        } else {
+            return true
+        }
+    }
+
+    const reEdit = (data) => {
+        setEditorState(ContentUtils.insertText(editorState, data))
+    }
+
+    // console.warn('查看当前会话所有消息',messageList)
+    const getMenuItemData = () => {
+        const { elem_type, custom_elem_data = '' } = currMenuMessage.message_elem_array[0];
+        // elemtype:1图片, 3 自定义消息为CUST_EMOJI类型
+        const isEmoji = elem_type === 1 || onIsCustEmoji(elem_type, custom_elem_data)
+        let menuData = RIGHT_CLICK_MENU_LIST
+        if (!isEmoji) {
+            // 过滤添加到表情MenuItem
+            menuData = menuData.filter(item => item.id !== 'addCustEmoji')
+        }
+        return menuData
+    }
+    const getMenuItem = () => {
+        const menuData = getMenuItemData()
+        return menuData.map(({ id, text }) => {
+            return (
+                <Item key={id} onClick={(e) => handlRightClick(e, id)}>
+                    {text}
+                </Item>
+            )
+        })
+    }
     return (
         <div className="message-view" ref={messageViewRef}>
             
