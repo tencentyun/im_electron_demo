@@ -51,7 +51,7 @@
     "node-gyp": "^7.1.2"
   },
   "dependencies": {
-    "im_electron_sdk": "^1.0.29",
+    "im_electron_sdk": "^1.0.30",
     "trtc-electron-sdk": "^8.6.102-beta.0"
   }
 }
