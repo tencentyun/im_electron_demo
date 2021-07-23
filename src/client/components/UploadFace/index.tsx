@@ -22,6 +22,7 @@ function dataURLtoBlob(file, cb) {
 }
 
 interface IRes {
+  upload_url: string,
   download_url: string;
   data: any
 }
@@ -65,6 +66,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
 
   useEffect(() => {
     if (prop.isShowCropper) {
+      debugger
       dataURLtoBlob(selectFile, url => {
         if (selectFile.type === 'image/gif') {
           setImgUrl('')
@@ -83,7 +85,6 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   useEffect(() => {
     setCropper(instance)
   }, [instance])
-
 
 
   // 确定裁剪
@@ -141,6 +142,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
     }
     return new Blob([ab], { type: 'image/jpeg' })
   }
+  
   // 上传逻辑
   const handleUpload = (base64Data) => {
     return new Promise((resolve, reject) => {
@@ -155,6 +157,8 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       }).then(res => {
         console.log(res)
         const { upload_url } = res.data
+        console.log(111111)
+        console.log(upload_url)
         let fr = new FileReader();
         fr.readAsDataURL(fileObj);
         fr.addEventListener(
@@ -217,7 +221,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   return (
     <>
       <Upload
-        action="###"
+        action="http://106.52.191.170:80/5,09fd7e99966f"
         onStart={handleOnStart}
         beforeUpload={handleBeforeUpload}
       >

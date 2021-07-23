@@ -1,15 +1,15 @@
 declare namespace State {
     export type RootState = {
         login: {
-            isLogin: boolean;
+            isLogin: boolean
         },
-        userInfo: userInfo,
-        conversation: conversation,
-        historyMessage: historyMessage,
+        userInfo: userInfo
+        conversation: conversation
+        historyMessage: historyMessage
         section:section
         userTypeList: Array<userTypeData>
         ui: ui
-        groupDrawer: GroupDrawer,
+        groupDrawer: GroupDrawer
     }
     export type GroupDrawer = {
         toolsDrawerVisible: boolean;
