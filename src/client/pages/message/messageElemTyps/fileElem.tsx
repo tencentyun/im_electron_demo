@@ -32,9 +32,9 @@ export const FileElem = (props: any): JSX.Element => {
             </div>
         )
     };
-    const downloadPic = (url, name) => {
-        // console.log(url, name, '=++++++++++++++++++++++++++++++++++++++++')
-        downloadFilesByUrl(url, name)
+    const downloadPic = (file_url, file_name) => {
+        const params = {file_url,file_name}
+        downloadFilesByUrl(params)
     }
     const savePic = () => {
         // 大图、原图、缩略图
