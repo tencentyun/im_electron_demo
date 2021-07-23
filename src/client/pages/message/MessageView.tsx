@@ -42,7 +42,9 @@ const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 type Props = {
     messageList: Array<State.message>,
     editorState,
-    setEditorState
+    setEditorState,
+    convType: number,
+    convId: string
 }
 
 const RIGHT_CLICK_MENU_LIST = [{
@@ -74,7 +76,7 @@ const RIGHT_CLICK_MENU_LIST = [{
 
 
 export const MessageView = (props: Props): JSX.Element => {
-    const { messageList, editorState, setEditorState } = props;
+    const { messageList, editorState, setEditorState, convType, convId } = props;
     const messageViewRef = useRef(null);
     const [isTransimitPopup, setTransimitPopup] = useState(false);
     const [isMultiSelect, setMultiSelect] = useState(false);
@@ -91,6 +93,25 @@ export const MessageView = (props: Props): JSX.Element => {
         setAnchor('')
         setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     }, [messageList.length])
+
+    const getNewGroupInfo = () => {
+        let newGroupInfo:any = localStorage.getItem('newGroupInfo')
+        newGroupInfo = newGroupInfo ? JSON.parse(newGroupInfo):[]
+        const length = messageList.length;
+        const isGroupInfo = newGroupInfo.find((item)=> item.key === convId)
+        if(length === 3  && messageList[0].message_elem_array[0].elem_type === 8 &&!isGroupInfo){
+            newGroupInfo.push({
+                key:messageList[0].message_elem_array[0].group_report_elem_group_id,
+                value:messageList[0].message_elem_array[0].group_report_elem_op_user
+            })
+            localStorage.setItem('newGroupInfo', JSON.stringify(newGroupInfo))
+            return ''
+        }else{
+            return isGroupInfo?`${isGroupInfo.value}创建了群聊`:''
+        }
+        
+    }
+
     const handleRevokeMsg = async (params) => {
         const { convId, msgId, convType } = params;
         const code = await revokeMsg({
@@ -299,6 +320,8 @@ export const MessageView = (props: Props): JSX.Element => {
                 break;
             case 8:
                 resp = <GroupSysElm { ...res }/>  
+                // resp = <div>群组系统通知{res.group_report_elem_op_user}: 创建了群聊</div>
+                //resp = null
                 break;
             case 9:
                 resp = <VideoElem {...res} />
@@ -410,6 +433,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     )
                 })
             }
+            {convType === 2?<div className="message-view__newgroup">{getNewGroupInfo()}</div>:<></>}
             <Menu
                 id={MESSAGE_MENU_ID}
                 theme={theme.light}

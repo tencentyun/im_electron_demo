@@ -2,7 +2,6 @@
 export const PURCHASE_LINK = 'https://buy.cloud.tencent.com/avc';
 export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service'
 
-export const SDK_APPID = '1400187352'
 // The config of login page
 
 // The config of login page xingchenhe 私有云测试专用，其他人请不要用这个，需要生成账号找xingchenhe
@@ -19,8 +18,20 @@ export const SDK_APPID = '1400187352'
 
 
 
-// export const DEFAULT_USERID = 'mimi';
-// export const DEFAULT_USER_SIG = 'eJwtzEELgjAYxvHvsmsh22tbKnSI6KYhLIQdl1vxJquxlgXRd8-U4-N74P8hx1ImvQ2kIJBQshw3GnuLeMaRHTqc-WE67T0aUrAVpSxbpxymx749Bjs45xwopZNGdH8TIDKRpZzPFbwM2VPfLlQFwe1YrXMWjVR5dY*6breHa4PlXoFs8PmKqtuQ7w-tTTFt';
+/**
+ * 
+ * 
+ * 私有化开发环境（poc环境）
+ * 
+ */
+// 私有化tim base url
+export const TIM_BASE_URL = ''
+export const SDKAPPID = 1400187352
+export const SECRETKEY = 'f442d0cca069bbcc8ced55f4f113b965999b928c78e3cd83495728133a06f4cb' // 不可外传仅本次测试使用
+export const HUA_RUN_LOGIN_TEST = 'http://10.241.24.31:39021/commonauthservice_crbk/ws/OIDAuthService/userLogin'
+export const HUA_RUN_LOGIN_PROD = 'https://ldapservice.crc.com.cn/commonauthservice_new/ws/OIDAuthService/userLogin'
+export const HUA_RUN_SYSTEMID = 'P001'
+export const HUA_RUN_PUBLIC_KEY = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCexy/ucx2Z6FmK14NsTmIvVpIXjXwlgTJLlNlNACdnbMOGVkz4wC7wd9QeY/Nf+RwElNfF4Xmk82zwgq0FPjoZPMOgrlnmSuBTd8o8mfGOG0A8UBdMoeV9ZXyI8UxE//Zus1zsQwaGc1RTo4v2s4f8QcZm+JOpcUtoyvjBXqD7TQIDAQAB'
 
 // export const DEFAULT_USERID = 'mimimi';
 // export const DEFAULT_USER_SIG = 'eJyrVgrxCdYrSy1SslIy0jNQ0gHzM1NS80oy0zLBwrmZIAiVKU7JTiwoyExRsjI0MTAwtDA3NjWCyKRWFGQWpQLFTU1NjQwMDCCiJZm5IDEzIzMLMwtzQwuoKZnpQIPD-bz8tcuLqvwjA41CnUti9H19jZ1cC5Nd-XwNTcxNIs0yii21XXMKKso8fW2VagGQHjFo';

@@ -41,6 +41,12 @@
         color: #999;
         cursor: default;
     }
+
+    &__newgroup{
+        text-align: center;
+        color: #bbb;
+    }
+
     &__item {
         display: flex;
         flex-direction: row;

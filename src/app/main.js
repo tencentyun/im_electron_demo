@@ -55,7 +55,7 @@ const createWindow = () => {
 
   // use for developments
   mainWindow.webContents.openDevTools();
-  mainWindow.loadURL(`http://localhost:3000`);
+  //mainWindow.loadURL(`http://localhost:3000`);
   // 注册截图快捷键
   globalShortcut.register('CommandOrControl+Alt+C', () => {
     clipboard.clear()
