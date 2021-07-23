@@ -194,7 +194,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
         beforeUpload={handleBeforeUpload}
       >
         {
-          cropperUrl ? <img src={cropperUrl} alt="" style={{ width: '100px', height: '100px', }} /> : <Button className="upload-btn" loading={uploading}>点击上传</Button>
+          cropperUrl ? <img src={cropperUrl} alt="" style={{ width: '100px', height: '100px', }} /> : <Button className="upload-btn" loading={uploading} onClick={e=>e.preventDefault()}>点击上传</Button>
         }
       </Upload>
       {
