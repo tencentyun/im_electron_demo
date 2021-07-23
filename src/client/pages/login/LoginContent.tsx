@@ -7,6 +7,7 @@ import { DEFAULT_USERID, DEFAULT_USER_SIG, SDKAPPID, SECRETKEY, HUA_RUN_SYSTEMID
 import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
 import { changeFunctionTab } from '../../store/actions/ui';
+import { setUserInfo } from '../../store/actions/user';
 // eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
 import { getEncrptPwd } from '../../utils/addFriendForPoc'
@@ -180,6 +181,9 @@ export const LoginContent = (): JSX.Element => {
         console.log(code,data,desc,json_param);
         if(code === 0) {
             dispatch(setIsLogInAction(true));
+            dispatch(setUserInfo({
+                userId: userID
+            }));
             dispatch(changeFunctionTab('message'));
             history.replace('/home/message');
         }

@@ -19,7 +19,7 @@ export const Profile = (): JSX.Element => {
     const getSelfInfo = async ()=>{
         const {data: {code, json_param}} = await timRenderInstance.TIMProfileGetUserProfileList({
             json_get_user_profile_list_param: {
-                friendship_getprofilelist_param_identifier_array: [sdkAppid]
+                friendship_getprofilelist_param_identifier_array: [userId]
             },
         });
         if (code === 0) {

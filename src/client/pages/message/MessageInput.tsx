@@ -65,6 +65,7 @@ const FEATURE_LIST = {
 }
 export const MessageInput = (props: Props): JSX.Element => {
     const { convId, convType, isShutUpAll, editorState, setEditorState } = props;
+    const [ isDraging, setDraging] = useState(false);
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
@@ -113,7 +114,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         const file = e.dataTransfer?.files[0]
         const iterator = file.type.matchAll(/(\w+)\//g)
         const type = iterator.next().value[1]
-        switch (type) {
+        setDraging(false);
+        switch(type) {
             case "image":
                 sendImageMessage(file)
                 break
@@ -127,6 +129,15 @@ export const MessageInput = (props: Props): JSX.Element => {
                 sendFileMessage(file)
         }
     }
+
+    const handleDragEnter = e => {
+        setDraging(true);
+    };
+
+    const handleDragLeave = () => {
+        setDraging(false);
+    }
+
     const handleSendPhotoMessage = () => {
         imagePicker.current.click();
     }
@@ -355,7 +366,10 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     useEffect(() => {
         setEditorState(ContentUtils.clear(editorState))
-    }, [convId, convType])
+    }, [convId, convType]);
+
+    const shutUpStyle = isShutUpAll ? 'disabled-style' : '';
+    const dragEnterStyle = isDraging ? 'draging-style' : '';
 
     useEffect(() => {
         ipcRenderer.on('screenShotUrl', (e, { data, url }) => {
@@ -386,7 +400,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }, [])
     return (
-        <div className={`message-input ${isShutUpAll ? 'disabled-style' : ''}`}>
+        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyPress={ handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
                 atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
             }
