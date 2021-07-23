@@ -1,18 +1,23 @@
-import { CHANGE_TOOLS_TYPE } from "../actions/groupDrawer";
+import { CHANGE_DRAWER_VISIBLE, CHNAGE_TOOLS_TAB } from "../actions/groupDrawer";
 
 const initState = {
-  tools_tab: "",
+  toolsDrawerVisible: false,
+  toolsTab: '',
 };
 
 const GroupDrawerReducer = (state = initState, action: { type: any; payload: any }) => {
   const { type, payload } = action;
   switch (type) {
-    case CHANGE_TOOLS_TYPE:
+    case CHANGE_DRAWER_VISIBLE:
       return {
         ...state,
-        tools_tab: payload,
+        toolsDrawerVisible: payload,
       };
-
+    case CHNAGE_TOOLS_TAB:
+      return {
+        ...state,
+        toolsTab: payload,
+      }
     default:
       return state;
   }

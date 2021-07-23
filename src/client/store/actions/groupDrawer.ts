@@ -1,6 +1,12 @@
-export const CHANGE_TOOLS_TYPE = "CHANGE_TOOLS_TYPE";
+export const CHANGE_DRAWER_VISIBLE = "CHANGE_DRAWER_VISIBLE";
+export const CHNAGE_TOOLS_TAB = "CHNAGE_TOOLS_TAB";
 
 export const changeToolsTab = (payload: string) : State.actcionType<string> => ({
-  type: CHANGE_TOOLS_TYPE,
+  type: CHNAGE_TOOLS_TAB,
+  payload
+})
+
+export const changeDrawersVisible = (payload: boolean) : State.actcionType<string> => ({
+  type: CHANGE_DRAWER_VISIBLE,
   payload
 })

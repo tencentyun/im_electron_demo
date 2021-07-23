@@ -19,24 +19,20 @@ export const GroupSetting = (props: {
 }): JSX.Element => {
   const { conversationInfo, close } = props;
   const groupId = conversationInfo.conv_id;
+  const groupDetail: Partial<State.conversationItem['conv_profile']> = conversationInfo.conv_profile || {};
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
   console.log('userId', userId)
 
   const { value, loading, retry } = useAsyncRetryFunc(async () => {
-    const [r1, r2] = await Promise.all([
-      getGroupMemberInfoList({
-        groupId,
-      }),
-      getGroupInfoList([groupId]),
-    ]);
-
-    return { memberList: r1, groupDetail: r2[0] || [] };
+   
+    return await getGroupMemberInfoList({
+      groupId,
+    })
   }, [groupId]);
 
-  const memberList = value?.memberList || [];
-  const groupDetail = value?.groupDetail || {};
+  const memberList = value|| [];
 
   console.log("groupDetail", groupDetail);
 

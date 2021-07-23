@@ -64,7 +64,7 @@ const createWindow = () => {
 
   // mainWindow.loadURL(
   //   url.format({
-  //       pathname: path.join(__dirname, '../bundle/index.html'),
+  //       pathname: path.join(__dirname, '../../bundle/index.html'),
   //       protocol: 'file:',
   //       slashes: true
   //   })

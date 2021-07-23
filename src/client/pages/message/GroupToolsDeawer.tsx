@@ -16,39 +16,34 @@ export const GroupToolsDrawer = (props: {
   onSuccess?: () => void;
   onClose?: () => void;
   popupContainer?: HTMLElement;
-  dialogRef: DialogRef<GroupToolsgRecordsType>;
+  visible: boolean;
+  conversationInfo: State.conversationItem;
+  toolId: string;
 }): JSX.Element => {
-  const { onClose, dialogRef, popupContainer } = props;
+  const { onClose, popupContainer, visible, conversationInfo, toolId } = props;
+
+  console.log("visible", visible);
 
   const { currentSelectedConversation } = useSelector(
     (state: State.RootState) => state.conversation
   );
 
-  const [visible, setShowState, defaultForm] =
-    useDialog<GroupToolsgRecordsType>(dialogRef, {
-      toolId: "setting",
-    });
-
   const DisplayComponent = {
     setting: GroupSetting,
     announcement: GroupAccountecmentSetting,
-  }[defaultForm.toolId];
-
-  const memberNum =
-    defaultForm.conversationInfo?.conv_profile?.group_detial_info_member_num ||
-    0;
+  }[toolId];
 
   const close = () => {
-    setShowState(false);
-    onClose();
+    onClose?.();
   };
+
+  console.log("toolsTab", toolId);
 
   const getTitleAndSubTitle = (toolsId: string) => {
     let title = "";
     let subTitle = "";
     const memberNum =
-      defaultForm.conversationInfo?.conv_profile
-        ?.group_detial_info_member_num || 0;
+      conversationInfo?.conv_profile?.group_detial_info_member_num || 0;
     switch (toolsId) {
       case "setting":
         title = "设置";
@@ -62,7 +57,7 @@ export const GroupToolsDrawer = (props: {
     return { title, subTitle };
   };
 
-  const { title, subTitle } = getTitleAndSubTitle(defaultForm.toolId);
+  const { title, subTitle } = getTitleAndSubTitle(toolId);
 
   useEffect(() => {
     if (visible) {
@@ -84,15 +79,15 @@ export const GroupToolsDrawer = (props: {
       popupContainer={popupContainer}
       onClose={close}
     >
-      {/* <GroupSetting
-        close={close}
-        conversationInfo={defaultForm.conversationInfo}
-      /> */}
-
-      <DisplayComponent
-        close={close}
-        conversationInfo={defaultForm.conversationInfo}
-      />
+      {toolId === "setting" && (
+        <GroupSetting close={close} conversationInfo={conversationInfo} />
+      )}
+      {toolId === "announcement" && (
+        <GroupAccountecmentSetting
+          close={close}
+          conversationInfo={conversationInfo}
+        />
+      )}
     </Drawer>
   );
 };

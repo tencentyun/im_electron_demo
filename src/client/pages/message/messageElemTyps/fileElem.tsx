@@ -107,6 +107,5 @@ export const FileElem = (props: any): JSX.Element => {
             </div>
         )
     };
-
     return item();
 }

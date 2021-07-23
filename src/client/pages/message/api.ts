@@ -267,13 +267,12 @@ export const markMessageAsRead = async (
   last_message_id
 ) => {
   const {
-    data: { code, json_params, desc },
+    data: { code, json_param, desc },
   } = await timRenderInstance.TIMMsgReportReaded({
     conv_type: conv_type,
     conv_id: conv_id,
-    message_id: last_message_id,
   });
-  return { code, desc, json_params };
+  return { code, desc, json_param };
 };
 
 export const sendMsg = async ({

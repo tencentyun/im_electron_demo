@@ -10,7 +10,8 @@ declare namespace State {
         groupDrawer: GroupDrawer,
     }
     export type GroupDrawer = {
-        tools_tab: 'setting' | 'announcement';
+        toolsDrawerVisible: boolean;
+        toolsTab: 'setting' | 'announcement';
     }
     export type functionTab = 'message' | 'relationship'
     export type ui = {

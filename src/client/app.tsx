@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { HashRouter as Router, Switch, Route, useHistory } from "react-router-dom";
+import "tea-component/dist/tea.css";
+import {
+  HashRouter as Router,
+  Switch,
+  Route,
+  useHistory,
+} from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
 
 import store from "./store";
@@ -38,7 +44,7 @@ let isInited = false;
 export const App = () => {
   const dispatch = useDispatch();
 
- const history = useHistory()
+  const history = useHistory();
   const initIMSDK = async () => {
     if (!isInited) {
       // const privite = await timRenderInstance.callExperimentalAPI({
@@ -111,9 +117,9 @@ export const App = () => {
               /**
                * 被挤下线
                */
-                case "TIMSetKickedOfflineCallback":
-                    _handleKickedout();
-                    break;
+              case "TIMSetKickedOfflineCallback":
+                  _handleKickedout();
+                  break;
               }
           });
         }
@@ -133,20 +139,20 @@ export const App = () => {
   }
   
   const _handleKickedout = async () => {
-        dispatch(userLogout());
-        history.replace('/login');
-        dispatch(setIsLogInAction(false));
-  }
+    dispatch(userLogout());
+    history.replace("/login");
+    dispatch(setIsLogInAction(false));
+  };
   const _handleGroupInfoModify = async (data) => {
     const response = await getConversionList();
     dispatch(updateConversationList(response));
     if (response?.length) {
       const newConversaionItem = response.find(
-        (v) => v.conv_id === data.group_tips_elem_group_id.conv_id
+        (v) => v.conv_id === data.group_tips_elem_group_id
       );
-      dispatch(
-        updateCurrentSelectedConversation(newConversaionItem || response[0])
-      );
+      if (newConversaionItem) {
+        dispatch(updateCurrentSelectedConversation(newConversaionItem));
+      }
     }
   };
   const handleMessageSendFailed = (convList) => {
@@ -160,6 +166,8 @@ export const App = () => {
         };
       }
     }, {});
+
+    if (!failedList) return;
 
     for (const i in failedList) {
       dispatch(
@@ -192,7 +200,6 @@ export const App = () => {
     }
   };
   const _handleConversaion = (conv) => {
-    
     const { type, data } = conv;
     switch (type) {
       /**
@@ -276,19 +283,19 @@ export const App = () => {
   return (
     <div id="app-container">
       <ToolsBar></ToolsBar>
-        <Switch>
-          <Route path="/home" component={Home}></Route>
-          <Route path="/" component={Login} />
-        </Switch>
+      <Switch>
+        <Route path="/home" component={Home}></Route>
+        <Route path="/" component={Login} />
+      </Switch>
     </div>
   );
 };
 
 ReactDOM.render(
   <Provider store={store}>
-      <Router>
-          <App />
-      </Router>
+    <Router>
+      <App />
+    </Router>
   </Provider>,
   document.getElementById("root")
 );
