@@ -116,6 +116,23 @@
             border: 1px solid #EEEEEE;
             display: flex;
             cursor: pointer;
+            &___close {
+                width: 18px;
+                height: 18px;
+                margin-left: 9px;
+                margin-top: 28px;
+            }
+            &___open, &___download {
+                width: 18px;
+                height: 18px;
+                margin-left: 10px;
+                margin-top: 35px;
+                background-image: url('../../assets/icon/file-message.svg');;
+            }
+            &___download {
+                background-image: url('../../assets/icon/download.svg');
+            }
+            
             &___ext{
                 width: 50px;
                 height: 70px;

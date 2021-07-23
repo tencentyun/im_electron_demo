@@ -83,6 +83,13 @@ type MemberInfo = {
   }[];
 };
 
+type CancelSendMsgParams = {
+  conv_id: string,
+  conv_type: number,
+  message_id: string,
+  user_data: string
+}
+
 const getUserInfoList = async (userIdList: Array<string>) => {
   const {
     data: { code, json_param },
@@ -312,6 +319,17 @@ export const sendCustomMsg = (params: SendMsgParams<CustomMsg>): Promise<MsgResp
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
+export const cancelSendMsg = async (params: CancelSendMsgParams): Promise<MsgResponse> => {
+  const {conv_id, conv_type, message_id, user_data } = params
+  const res = await timRenderInstance.TIMMsgCancelSend({
+    conv_id,
+    conv_type,
+    message_id,
+    user_data
+  });
+  return res
+}
+
 
 export const getConversionList = async () => {
   const {

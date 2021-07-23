@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
-import { reciMessage } from '../../store/actions/message'
+import { reciMessage, updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
@@ -10,6 +10,7 @@ import BraftEditor, { EditorState } from 'braft-editor'
 import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
 import './message-input.scss';
+import { setPathToLS } from '../../utils/messageUtils';
 
 type Props = {
     convId: string,
@@ -127,6 +128,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         videoPicker.current.click();
     }
     const sendImageMessage = async (file) => {
+        if(!file) return false;
         if (file) {
             const { data: { code, desc, json_params } } = await sendImageMsg({
                 convId,
@@ -150,6 +152,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const sendFileMessage = async (file) => {
+        if(!file) return false;
         const { data: { code, desc, json_params } } = await sendFileMsg({
             convId,
             convType,
@@ -163,6 +166,36 @@ export const MessageInput = (props: Props): JSX.Element => {
         });
 
         if (code === 0) {
+            dispatch(updateMessages({
+                convId,
+                message: JSON.parse(json_params)
+            }))
+            setPathToLS(file.path)
+        } else {
+            message.error({content: `消息发送失败 ${desc}`})
+        }
+    }
+
+    const sendVideoMessage = async (file) => {
+        if(!file) return false;
+        const { data: { code, json_params, desc } } = await sendVideoMsg({
+            convId,
+            convType,
+            messageElementArray: [{
+                elem_type: 9,
+                video_elem_video_type: "MP4",
+                video_elem_video_size: file.size,
+                video_elem_video_duration: 10,
+                video_elem_video_path: file.value,
+                video_elem_image_type: "png",
+                video_elem_image_size: 10000,
+                video_elem_image_width: 200,
+                video_elem_image_height: 80,
+                video_elem_image_path: "./cover.png"
+            }],
+            userId,
+        });
+        if (code === 0) {
             dispatch(reciMessage({
                 convId,
                 messages: [JSON.parse(json_params)]
@@ -172,37 +205,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
 
-    const sendVideoMessage = async (file) => {
-        if(file){
-            const { data: { code, json_params, desc } } = await sendVideoMsg({
-                convId,
-                convType,
-                messageElementArray: [{
-                    elem_type: 9,
-                    video_elem_video_type: "MP4",
-                    video_elem_video_size: file.size,
-                    video_elem_video_duration: 10,
-                    video_elem_video_path: file.value,
-                    video_elem_image_type: "png",
-                    video_elem_image_size: 10000,
-                    video_elem_image_width: 200,
-                    video_elem_image_height: 80,
-                    video_elem_image_path: "./cover.png"
-                }],
-                userId,
-            });
-            if (code === 0) {
-                dispatch(reciMessage({
-                    convId,
-                    messages: [JSON.parse(json_params)]
-                }))
-            } else {
-                message.error({content: `消息发送失败 ${desc}`})
-            }
-        }
-    }
-
     const sendSoundMessage = async (file) => {
+        if(!file) return false;
         const { data: { code, json_params } } = await sendSoundMsg({
             convId,
             convType,

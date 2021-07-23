@@ -2,7 +2,8 @@ import { ActionTypeEnum, Action } from "../actions/message";
 import { addTimeDivider } from "../../utils/addTimeDivider";
 
 const initState = {
-  historyMessageList: new Map()
+  historyMessageList: new Map(),
+  uploadProgressList: new Map()
 }
 
 const messageReducer = (state = initState, action: Action): State.historyMessage => {
@@ -25,10 +26,12 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
       const history = state.historyMessageList.get(payload.convId);
       const baseTime = history && history.length > 0 ? history[0].message_client_time : 0;
       const timeDividerResult = addTimeDivider(payload.messages, baseTime).reverse();
-      return {
+       
+      const ret = {
         ...state,
         historyMessageList: state.historyMessageList.set(payload.convId, timeDividerResult.concat(history))
       }
+      return ret
     }
 
     case ActionTypeEnum.MARKE_MESSAGE_AS_REVOKED: {
@@ -78,6 +81,35 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
         state.historyMessageList.set(convId, messageList);
       });
       return state;
+    }
+
+    case ActionTypeEnum.UPDATE_MESSAGES: {
+      let matched = false;
+      const oldMessageList = state.historyMessageList.get(payload.convId);
+      const newMessageList = oldMessageList.map(oldMessage => {
+        if(oldMessage.message_msg_id === payload.message.message_msg_id) {
+          console.log(oldMessage, payload.message)
+          matched = true
+          return payload.message
+        } else {
+          return oldMessage
+        }
+      });
+      if(!matched) newMessageList.unshift(payload.message)
+       
+      const ret = {
+        ...state,
+        historyMessageList: state.historyMessageList.set(payload.convId, newMessageList)
+      }
+      return ret
+    }
+
+    case ActionTypeEnum.UPDATE_MESSAGE_ELEM_PROGRESS: {
+      const { messageId, index, cur_size, total_size } = payload
+      return {
+        ...state,
+        uploadProgressList: state.uploadProgressList.set(`${messageId}_${index}`, {cur_size, total_size})
+      }
     }
 
     default:

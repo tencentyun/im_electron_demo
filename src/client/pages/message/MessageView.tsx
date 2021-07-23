@@ -72,6 +72,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const [noMore,setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     const dispatch = useDispatch();
     const [anchor , setAnchor] = useState('')
+    
     useEffect(() => {
         if(!anchor){
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
@@ -218,7 +219,7 @@ export const MessageView = (props: Props): JSX.Element => {
         console.log(item);
     }
 
-    const displayDiffMessage = (element) => {
+    const displayDiffMessage = (message, element, index) => {
         const { elem_type, ...res } = element;
         let resp
         switch (elem_type) {
@@ -235,7 +236,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <CustomElem { ...res }/>
                 break;
             case 4:
-                resp = <FileElem { ...res }/>
+                resp = <FileElem message={message} element={element} index={index}/>
                 break;
             case 5:
                 resp = <GroupTipsElemItem { ...res }/> 
@@ -301,7 +302,6 @@ export const MessageView = (props: Props): JSX.Element => {
     }
     return (
         <div className="message-view" ref={messageViewRef}>
-            
             {
                messageList && messageList.length > 0 &&
                 messageList.map(item => {
@@ -341,13 +341,12 @@ export const MessageView = (props: Props): JSX.Element => {
                                                 <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                                     
                                                     {
-                                                        displayDiffMessage(elment)
+                                                        displayDiffMessage(item, elment, index)
                                                     }
                                                 </div>
                                             )
                                         })
                                     }
-                                    {/* <div>1111, {message_status}</div> */}
                                     {
                                         shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
                                         isMessageSendFailed &&  <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />

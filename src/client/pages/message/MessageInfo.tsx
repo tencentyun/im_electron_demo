@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Avatar } from "../../components/avatar/avatar";
 import { getMsgList, markMessageAsRead } from "./api";
@@ -40,7 +40,6 @@ export const MessageInfo = (
     (state: State.RootState) => state.historyMessage
   );
   const msgList = historyMessageList.get(conv_id);
-
   const getDisplayConvInfo = () => {
     const info: Info = {
       faceUrl: "",

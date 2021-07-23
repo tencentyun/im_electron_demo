@@ -1,4 +1,4 @@
-import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG } from "../../const/const";
+import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST } from "../../const/const";
 
 import  { ipcRenderer, remote } from 'electron';
 
@@ -36,11 +36,18 @@ const downloadFilesByUrl = (url)=>{
         params:url
     })
 }
+const checkFileExist = (path) =>{
+    ipcRenderer.send(RENDERPROCESSCALL,{
+        type:CHECK_FILE_EXIST,
+        params:path
+    })
+}
 export {
     isWin,
     minSizeWin,
     maxSizeWin,
     closeWin,
     showDialog,
-    downloadFilesByUrl
+    downloadFilesByUrl,
+    checkFileExist
 }

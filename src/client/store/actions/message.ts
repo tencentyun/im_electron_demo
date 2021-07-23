@@ -3,7 +3,9 @@ const RECI_MESSAGE = "RECI_MESSAGE";
 const DELETE_MESSAGE = "DELETE_MESSAGE";
 const MARKE_MESSAGE_AS_REVOKED = "MARKE_MESSAGE_AS_REVOKED";
 const MARKE_MESSAGE_AS_READED = "MARKE_MESSAGE_AS_READED";
-const ADD_MORE_MESSAGE = "ADD_MORE_MESSAGE"
+const ADD_MORE_MESSAGE = "ADD_MORE_MESSAGE";
+const UPDATE_MESSAGES = "UPDATE_MESSAGES"
+const UPDATE_MESSAGE_ELEM_PROGRESS = "UPDATE_MESSAGE_ELEM_PROGRESS"
 
 export enum ActionTypeEnum {
     ADD_MESSAGE = "ADD_MESSAGE",
@@ -11,12 +13,14 @@ export enum ActionTypeEnum {
     MARKE_MESSAGE_AS_REVOKED = "MARKE_MESSAGE_AS_REVOKED",
     DELETE_MESSAGE = "DELETE_MESSAGE",
     MARKE_MESSAGE_AS_READED = "MARKE_MESSAGE_AS_READED",
-    ADD_MORE_MESSAGE = "ADD_MORE_MESSAGE"
+    ADD_MORE_MESSAGE = "ADD_MORE_MESSAGE",
+    UPDATE_MESSAGES = "UPDATE_MESSAGES",
+    UPDATE_MESSAGE_ELEM_PROGRESS = "UPDATE_MESSAGE_ELEM_PROGRESS"
 }
 
 export type Action = {
     type: ActionTypeEnum,
-    payload: Payload & ReciMessagePayload & UpdateMessagePayload & DeleteMessagePayload & MarkeMessageAsReadedPayload
+    payload: Payload & ReciMessagePayload & UpdateMessagePayload & UpdateMessageElemProgressPayload & UpdateMessagesPayload & DeleteMessagePayload & MarkeMessageAsReadedPayload
 }
 
 type AddMoreMessage = {
@@ -31,6 +35,18 @@ type Payload = {
 type ReciMessagePayload  = {
     convId: string;
     messages: State.message[]
+}
+
+type UpdateMessagesPayload  = {
+    convId: string;
+    message: State.message;
+}
+
+type UpdateMessageElemProgressPayload = {
+    messageId: string;
+    index: number;
+    cur_size: number;
+    total_size: number;
 }
 
 type UpdateMessagePayload= {
@@ -76,3 +92,13 @@ export const addMoreMessage = (payload: AddMoreMessage) : State.actcionType<AddM
     type: ADD_MORE_MESSAGE,
     payload
 })
+
+export const updateMessages = (payload: UpdateMessagesPayload) : State.actcionType<UpdateMessagesPayload> => ({
+    type: UPDATE_MESSAGES,
+    payload
+});
+
+export const updateMessageElemProgress = (payload: UpdateMessageElemProgressPayload) : State.actcionType<UpdateMessageElemProgressPayload> => ({
+    type: UPDATE_MESSAGE_ELEM_PROGRESS,
+    payload
+});
