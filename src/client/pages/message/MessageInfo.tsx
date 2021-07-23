@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ipcRenderer } from "electron";
 
 import { Avatar } from "../../components/avatar/avatar";
@@ -43,7 +43,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   );
 
   const msgList = historyMessageList.get(conv_id);
-
   const getDisplayConvInfo = () => {
     const info: Info = {
       faceUrl: "",

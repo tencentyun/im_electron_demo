@@ -4,6 +4,7 @@ const MINSIZEWIN = 'MINSIZEWIN';
  const CLOSE = 'CLOSE';
  const SHOWDIALOG = 'SHOWDIALOG';
  const DOWNLOADFILE = 'DOWNLOADFILE';
+ const CHECK_FILE_EXIST = 'CHECK_FILE_EXIST';
 
 module.exports = {
     MINSIZEWIN,
@@ -11,5 +12,6 @@ module.exports = {
     MAXSIZEWIN,
     CLOSE,
     SHOWDIALOG,
-    DOWNLOADFILE
+    DOWNLOADFILE,
+    CHECK_FILE_EXIST
 }

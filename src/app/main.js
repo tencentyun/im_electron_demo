@@ -13,6 +13,7 @@ let ipc;
 // });
 // 公有云 sdkappid
 new TimMain({
+  // sdkappid: 1400529075
   sdkappid: 1400187352
 });
 

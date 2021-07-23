@@ -33,6 +33,9 @@ import {
   reciMessage,
   markeMessageAsRevoke,
   markMessageAsReaded,
+  addMoreMessage,
+  updateMessages,
+  updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
 // eslint-disable-next-line import/no-unresolved
@@ -106,17 +109,35 @@ export const App = () => {
                 _handleGroupInfoModify(data);
                 break;
               /**
+               * 元素上传进度回调
+               */
+              case "TIMSetMsgElemUploadProgressCallback":
+                _handleElemUploadProgres(data);
+                break;
+              /**
                * 被挤下线
                */
               case "TIMSetKickedOfflineCallback":
-                _handleKickedout();
-                break;
-            }
+                  _handleKickedout();
+                  break;
+              }
           });
         }
       });
     }
   };
+  const _handleElemUploadProgres = ({message, index, cur_size, total_size, user_data}) => {
+    const ramdon = Math.random()
+    if(ramdon > 0.8) {
+      dispatch(updateMessageElemProgress({
+        messageId: message.message_msg_id,
+        index,
+        cur_size,
+        total_size
+      }));
+    }
+  }
+  
   const _handleKickedout = async () => {
     dispatch(userLogout());
     history.replace("/login");
@@ -222,6 +243,13 @@ export const App = () => {
       const convList = await addProfileForConversition(conversationList);
       dispatch(updateConversationList(convList));
       handleMessageSendFailed(convList);
+      if(conversationList[0]?.conv_last_msg?.message_status === 1) {
+        dispatch(updateMessages({
+          convId: conversationList[0].conv_id,
+          message: conversationList[0].conv_last_msg
+        }))
+      }
+      
     }
   };
 

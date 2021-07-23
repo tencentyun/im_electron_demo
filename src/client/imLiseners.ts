@@ -86,8 +86,18 @@ export default function initListeners(callback:InitListenersCallback){
     * 设置消息元素上传进度回调。当消息内包含图片、声音、文件、视频元素时，ImSDK会上传这些文件，并触发此接口设置的回调，用户可以根据回调感知上传的进度
     */
     timRenderInstance.TIMSetMsgElemUploadProgressCallback({
-        callback:()=>{
-
+        callback:(args)=>{
+            const [message, index, cur_size, total_size, user_data] = args 
+            callback({
+                type: 'TIMSetMsgElemUploadProgressCallback',
+                data: {
+                    message: JSON.parse(message),
+                    index,
+                    cur_size,
+                    total_size,
+                    user_data
+                }
+            })
         },
         user_data: "test"
     })

@@ -45,10 +45,12 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
         setGroupList(groupList)
     }
     useEffect(() => {
-        getUserList()
-        setTimeout(() => {
-            getGroupList()
-        }, 0)   
+        if(search.trim() !== "") {
+            getUserList()
+            setTimeout(() => {
+                getGroupList()
+            }, 0) 
+        }
     }, [search])
     const setValue = (value) => {
         setSearch(value);
