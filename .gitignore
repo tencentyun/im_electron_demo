@@ -89,3 +89,4 @@ package-lock.json
 
 # Electron-Forge
 out/
+package-lock.json
