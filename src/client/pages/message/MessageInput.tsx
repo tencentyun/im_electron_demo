@@ -67,11 +67,12 @@ const FEATURE_LIST = {
 }
 export const MessageInput = (props: Props): JSX.Element => {
     const { convId, convType, isShutUpAll, editorState, setEditorState } = props;
-    const [ isDraging, setDraging] = useState(false);
-    const [ activeFeature, setActiveFeature ] = useState('');
-    const [ atPopup, setAtPopup ] = useState(false);
-    const [ isEmojiPopup, setEmojiPopup ] = useState(false);
-    const [ isRecordPopup, setRecordPopup ] = useState(false);
+    const [isDraging, setDraging] = useState(false);
+    const [activeFeature, setActiveFeature] = useState('');
+    const [atPopup, setAtPopup] = useState(false);
+    const [isEmojiPopup, setEmojiPopup] = useState(false);
+    const [isRecordPopup, setRecordPopup] = useState(false);
+    const [shotKeyTip, setShotKeyTip] = useState('按Ctrl+Enter键发送消息');
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -83,18 +84,18 @@ export const MessageInput = (props: Props): JSX.Element => {
     let editorInstance;
     // const enterSend = localStorage.getItem('sendType') || '1'
     const handleSendTextMsg = async () => {
-        if(editorStateDisabled(editorState.toText())){
+        if (editorStateDisabled(editorState?.toText())) {
             return
         }
         try {
-            const text = editorState.toText()
+            const text = editorState?.toText()
             const atList = getAtList(text)
             const { data: { code, json_params, desc } } = await sendTextMsg({
                 convId,
                 convType,
                 messageElementArray: [{
                     elem_type: 0,
-                    text_elem_content: editorState.toText(),
+                    text_elem_content: editorState?.toText(),
                 }],
                 userId,
                 messageAtArray: atList
@@ -120,7 +121,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         const iterator = file.type.matchAll(/(\w+)\//g)
         const type = iterator.next().value[1]
         setDraging(false);
-        switch(type) {
+        switch (type) {
             case "image":
                 sendImageMessage(file)
                 break
@@ -157,7 +158,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         videoPicker.current.click();
     }
     const sendImageMessage = async (file) => {
-        console.log(file, '发送文件')
+        // console.log(file, '发送文件')
         if (file) {
             const { data: { code, desc, json_params } } = await sendImageMsg({
                 convId,
@@ -297,8 +298,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
     const handleOnkeyPress = (e) => {
         // console.log(localStorage.getItem('sendType') || '1')
-        const type = localStorage.getItem('sendType') || '1'
-        if (type == '1') {
+        const type = localStorage.getItem('sendType') || '0'
+        if (type == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 // setEditorState(editorState.toText() + '\n')
@@ -335,8 +336,8 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handleSendCustEmojiMessage = async (url) => {
         try {
-        
-            const { data: { code, json_params,desc } } = await sendCustomMsg({
+
+            const { data: { code, json_params, desc } } = await sendCustomMsg({
                 convId,
                 convType,
                 messageElementArray: [{
@@ -353,14 +354,14 @@ export const MessageInput = (props: Props): JSX.Element => {
                     messages: [JSON.parse(json_params)]
                 }))
             } else {
-                message.error({content: `消息发送失败 ${desc}`})
+                message.error({ content: `消息发送失败 ${desc}` })
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
         }
     }
 
-    const onEmojiPopupCallback = (id, type='') => {
+    const onEmojiPopupCallback = (id, type = '') => {
         resetState()
         if (type === CUSTEMOJI) {
             // 发送自定义表情
@@ -394,19 +395,21 @@ export const MessageInput = (props: Props): JSX.Element => {
         <List type="option" style={{ width: '200px', background: '#ffffff' }}>
             <List.Item onClick={() => changeSendShotcut('1')} style={{ display: 'flex' }}>
                 {
-                    localStorage.getItem('sendType') == '1' ? <img className="chooseImg" src={chooseImg}></img> : null
+                    localStorage.getItem('sendType') == '1' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
                 }
-                按Enter键发送消息
+                按Ctrl+Enter键发送消息
             </List.Item>
             <List.Item onClick={() => changeSendShotcut('0')} style={{ display: 'flex' }}>
                 {
-                    localStorage.getItem('sendType') == '0' ? <img className="chooseImg" src={chooseImg}></img> : null
+                    localStorage.getItem('sendType') == '0' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
                 }
-                按Ctrl+Enter键发送消息
+                按Enter键发送消息
             </List.Item>
         </List>
     );
     const changeSendShotcut = index => {
+        const tip = index == '1' ? '按Ctrl+Enter键发送消息' : '按Enter键发送消息'
+        setShotKeyTip(tip)
         localStorage.setItem('sendType', index)
         // console.log(localStorage.getItem('sendType'))
     }
@@ -446,12 +449,12 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }, [])
 
-    const editorStateDisabled = (text)=>{
-        return !text.replace(/ /g,'').replace(/\n/g,'')
+    const editorStateDisabled = (text) => {
+        return !text.replace(/ /g, '').replace(/\n/g, '')
     }
 
     return (
-        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyPress={ handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
+        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyPress={handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
                 atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
             }
@@ -462,9 +465,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                 {
 
                     FEATURE_LIST[convType].map(({ id, content }) => (
-                        <Bubble content={content}>
+                        <Bubble content={content} key={id}>
                             <span
-                                key={id}
                                 className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
 
                                 onClick={() => handleFeatureClick(id)}
@@ -488,7 +490,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 />
             </div>
             <span className="message-input__button-area">
-                <Button type="primary" onClick={handleSendTextMsg} disabled={editorState.toText() === ''}>发送</Button>
+                <Button type="primary" title={shotKeyTip} onClick={handleSendTextMsg} disabled={editorStateDisabled(editorState?.toText())}>发送</Button>
             </span>
             {/* <span className="message-input__down" title='切换发送消息快捷键'></span> */}
             <Dropdown
@@ -499,10 +501,12 @@ export const MessageInput = (props: Props): JSX.Element => {
                 onOpen={() => console.log('open')}
                 onClose={() => console.log("close")}
                 placement='left-end'
+                placementOffset='100'
                 boxSizeSync
             >
                 {menu}
             </Dropdown>
+
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }

@@ -168,7 +168,7 @@ export const MessageInfo = (
             <MessageView messageList={msgList || []} convId={conv_id} convType={conv_type} editorState={editorState} setEditorState={setEditorState}/>
           </div>
           <div className="message-info__content--input">
-            <MessageInput convId={conv_id} convType={conv_type}  isShutUpAll={isShutUpAll}/>
+          <MessageInput convId={conv_id} convType={conv_type}  isShutUpAll={isShutUpAll} editorState={editorState} setEditorState={setEditorState}/>
           </div>
         </section>
       </div>

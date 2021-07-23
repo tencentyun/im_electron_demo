@@ -13,6 +13,7 @@ import {
   message
 } from "tea-component";
 import { Form as FinalForm, Field } from "react-final-form";
+import ImgCropper from "../../components/UploadFace";
 
 const genderMap = {
   '1': '男',
@@ -84,16 +85,20 @@ interface UserProfileItem {
 
 export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,onUpdateUserInfo }): JSX.Element => {
   const [isShow, setVisible] = useState(visible)
+
   const close = () => {
     setVisible(false)
     onClose(false)
   }
 
+  function afterUpload(imgUrl) {
+    console.log('imgUrl',imgUrl)
+ }
+
   useEffect(() => {
     setVisible(visible)
     onChange && onChange(visible)
   }, [visible])
-
 
   function getStatus(meta, validating?) {
     if (meta.active && validating) {
@@ -114,6 +119,7 @@ console.log('userinfo',userInfo);
       },
       user_data: ''
     }
+    console.log('formData', formData)
      const {data: {code}} = await timRenderInstance.TIMProfileModifySelfUserProfile(formData)
       if (code === 0) {
         message.success({
@@ -121,7 +127,7 @@ console.log('userinfo',userInfo);
         })
       onUpdateUserInfo && onUpdateUserInfo()
       } else {
-         message.success({
+         message.error({
               content:'修改失败'
             })
       }
@@ -145,18 +151,15 @@ const {nickName,faceUrl,gender} = userInfo
               <form onSubmit={handleSubmit}>
                 <Form>
                   <Field
-                    name="avatar"
+                    name="faceUrl"
                     validateFields={[]}
                   >
                     {({ input, meta }) => (
+                      
                       <Form.Item
                         label="头像"
                       >
-                        <Upload
-                          action="https://run.mocky.io/v3/68ed7204-0487-4135-857d-0e4366b2cfad"
-                        >
-                          <Button>点击上传</Button>
-                        </Upload>
+                        <ImgCropper {...input} afterUpload={afterUpload}></ImgCropper>
                       </Form.Item>
                     )}
                   </Field>
