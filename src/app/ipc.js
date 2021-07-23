@@ -1,7 +1,7 @@
 // import { BrowserWindow } from "electron";
 const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG } = require("./const/const");
 const { dialog } = require('electron')
-const { ipcMain } = require('electron')
+const { ipcMain, BrowserWindow } = require('electron')
 const fs = require('fs')
 const path = require('path')
 const http = require('http')
@@ -33,6 +33,24 @@ class IPC {
                     break;
             }
         })
+
+        ipcMain.on('openCallWindow', (event, data) => {
+            const callWindow = new BrowserWindow({
+                height: 600,
+                width: 800, 
+                show: true,
+                webPreferences: {
+                    webSecurity: true,
+                    nodeIntegration: true,
+                    nodeIntegrationInWorker: true,
+                    enableRemoteModule: true,
+                    contextIsolation: false,
+                }
+            });
+            callWindow.removeMenu();
+            callWindow.loadURL("http://localhost:3000/call.html");
+            callWindow.webContents.openDevTools();
+        });
     }
     minsizewin(){
         this.win.minimize()
