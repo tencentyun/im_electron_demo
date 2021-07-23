@@ -6,8 +6,13 @@ declare namespace State {
         userInfo: userInfo,
         conversation: conversation,
         historyMessage: historyMessage,
-        ui: ui,
         userTypeList: Array<userTypeData>
+        ui: ui
+        groupDrawer: GroupDrawer,
+    }
+    export type GroupDrawer = {
+        toolsDrawerVisible: boolean;
+        toolsTab: 'setting' | 'announcement';
     }
     export type functionTab = 'message' | 'relationship'
     export type userTypeData = {
@@ -15,7 +20,8 @@ declare namespace State {
         To_Account: string
     }
     export type ui = {
-        function_tab: functionTab
+        function_tab: functionTab,
+        replace_router: boolean
     }
     export type historyMessage = {
         historyMessageList:Map<string, Array<message>>

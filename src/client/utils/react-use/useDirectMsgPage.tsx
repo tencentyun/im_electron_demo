@@ -2,7 +2,7 @@
 import { useLocation, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateCurrentSelectedConversation, updateConversationList } from '../../store/actions/conversation';
-import { changeFunctionTab } from '../../store/actions/ui';
+import { changeFunctionTab, replaceRouter } from '../../store/actions/ui';
 
 type Params = {
     profile: State.userProfile & State.groupProfile,
@@ -44,6 +44,10 @@ export const useMessageDirect = () => {
             dispatch(updateCurrentSelectedConversation(emptyConv));
         }
         beforeDirect && beforeDirect();
-        !pathname.includes('/home/message') && history.replace('/home/message');
+        const isMessagePage = pathname.includes('/home/message')
+        if(!isMessagePage) {
+            dispatch(replaceRouter(true))
+            history.replace('/home/message');
+        }
     }
 }

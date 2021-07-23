@@ -6,6 +6,9 @@
 // install package
 npm install
 
+cd src/client
+npm install
+
 // run 
 npm run start
 ```

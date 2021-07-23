@@ -8,8 +8,8 @@ import {
     animation
 } from 'react-contexify';
 import './message-view.scss';
-import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, TextMsg } from './api';
-import { markeMessageAsRevoke, deleteMessage, reciMessage } from '../../store/actions/message';
+import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, TextMsg, getMsgList } from './api';
+import { markeMessageAsRevoke, deleteMessage, reciMessage,  addMoreMessage } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import {
     getMessageId,
@@ -33,6 +33,9 @@ import { ContentUtils } from 'braft-utils'
 import { Icon, message } from 'tea-component';
 import { custEmojiUpsert } from '../../services/custEmoji'
 import type { custEmojiUpsertParams } from '../../services/custEmoji'
+import { addTimeDivider } from '../../utils/addTimeDivider';
+import { HISTORY_MESSAGE_COUNT } from '../../constants';
+import { GroupSysElm } from './messageElemTyps/groupSystemElem';
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -71,18 +74,24 @@ const RIGHT_CLICK_MENU_LIST = [{
 
 
 
+
 export const MessageView = (props: Props): JSX.Element => {
     const { messageList, editorState, setEditorState, convType, convId } = props;
     const messageViewRef = useRef(null);
     const [isTransimitPopup, setTransimitPopup] = useState(false);
     const [isMultiSelect, setMultiSelect] = useState(false);
     const [forwardType, setForwardType] = useState<ForwardType>(ForwardType.divide);
-    const [seletedMessage, setSeletedMessage] = useState<State.message[]>([]);
+    const [seletedMessage, setSeletedMessage] = useState<State.message[]>([]);f
     const [currMenuMessage, setCurrMenuMessage] = useState<State.message>(); // 当前右击菜单消息
-
+    const [noMore,setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     const dispatch = useDispatch();
+    const [anchor , setAnchor] = useState('')
     useEffect(() => {
-        messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
+        if(!anchor){
+            messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
+        }
+        setAnchor('')
+        setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     }, [messageList.length])
 
     const getNewGroupInfo = () => {
@@ -310,8 +319,9 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <div>位置消息</div>
                 break;
             case 8:
+                resp = <GroupSysElm { ...res }/>  
                 // resp = <div>群组系统通知{res.group_report_elem_op_user}: 创建了群聊</div>
-                resp = null
+                //resp = null
                 break;
             case 9:
                 resp = <VideoElem {...res} />
@@ -331,50 +341,45 @@ export const MessageView = (props: Props): JSX.Element => {
         }
         return resp;
     }
-
-    // 从发送消息时间开始算起，两分钟内可以编辑
-    const isTimeoutFun = (time) => {
-        const now = new Date()
-        if (parseInt(now.getTime() / 1000) - time > 2 * 60) {
-            return false
-        } else {
-            return true
+    const validatelastMessage = (messageList:State.message[])=>{
+        let msg:State.message;
+        for(let i = messageList.length-1;i>-1;i--){
+            if(messageList[i].message_msg_id){
+                msg = messageList[i];
+                break;
+            }
         }
+        return msg;
     }
-
-    const reEdit = (data) => {
-        setEditorState(ContentUtils.insertText(editorState, data))
-    }
-
-    // console.warn('查看当前会话所有消息',messageList)
-    const getMenuItemData = () => {
-        const { elem_type, custom_elem_data = '' } = currMenuMessage.message_elem_array[0];
-        // elemtype:1图片, 3 自定义消息为CUST_EMOJI类型
-        const isEmoji = elem_type === 1 || onIsCustEmoji(elem_type, custom_elem_data)
-        let menuData = RIGHT_CLICK_MENU_LIST
-        if (!isEmoji) {
-            // 过滤添加到表情MenuItem
-            menuData = menuData.filter(item => item.id !== 'addCustEmoji')
+    const getMoreMsg = async () => {
+        if(!noMore){
+            
+            const msg:State.message = validatelastMessage(messageList)
+            if(!msg){
+                return
+            }
+            const { message_conv_id,message_conv_type,message_msg_id  } = msg;
+            const messageResponse = await getMsgList(message_conv_id, message_conv_type,message_msg_id);
+            if(messageResponse.length>0){
+                setAnchor(message_msg_id) 
+            }else{
+                setNoMore(true)
+            }
+            const addTimeDividerResponse = addTimeDivider(messageResponse.reverse());
+            const payload = {
+                convId: message_conv_id,
+                messages: addTimeDividerResponse.reverse(),
+            };
+            dispatch(addMoreMessage(payload));
         }
-        return menuData
-    }
-    const getMenuItem = () => {
-        const menuData = getMenuItemData()
-        return menuData.map(({ id, text }) => {
-            return (
-                <Item key={id} onClick={(e) => handlRightClick(e, id)}>
-                    {text}
-                </Item>
-            )
-        })
     }
     return (
         <div className="message-view" ref={messageViewRef}>
             
             {
-                messageList && messageList.length > 0 &&
-                messageList.map(item => {
-                    if (!item) {
+               messageList && messageList.length > 0 &&
+                messageList.map((item, index) => {
+                    if(!item){
                         return null
                     }
                     if (item.isTimeDivider) {
@@ -390,7 +395,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self && !isMessageSendFailed;
                     const seleted = seletedMessage.findIndex(i => getMessageId(i) === getMessageId(item)) > -1
                     return (
-                        <React.Fragment key={message_msg_id}>
+                        <React.Fragment key={index}>
                             {
                                 message_status === 6 ? (
                                     <div className="message-view__item is-revoked" >
@@ -453,6 +458,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     </div>
                 </div>
             }
+            <div className={`showMore ${noMore ? 'no-more': ''}`} onClick={getMoreMsg}>{noMore ? '没有更多了': '查看更多'}</div>
         </div>
     )
 };
