@@ -143,7 +143,25 @@ export const LoginContent = (): JSX.Element => {
     const [userID, setUserID] = useState(DEFAULT_USERID);
     const [usersig, setUserSig] = useState(DEFAULT_USER_SIG);
     const isDisablelogin = activedTab === 'passwordLogin' && userID && usersig;
-
+    console.log("自动更新1")
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log("自动更新2")
+      const { ipcRenderer } = require('electron');
+      ipcRenderer.on('message', (event, { message, data }) => {
+        console.log("自动更新进入")
+        console.log(message, data);
+        switch (message) {
+          case 'isUpdateNow':
+            if (confirm('发现有新版本，是否现在更新？')) {
+              ipcRenderer.send('updateNow');
+            }
+            break;
+          default:
+            //document.querySelector('h1').innerHTML = message;
+            break;
+        }
+      })
+    })
     const customizeTabBarRender = (children: JSX.Element) => {
         return <a className="customize-tab-bar">{children}</a>
     }

@@ -1,21 +1,17 @@
-const {
-  app,
-  BrowserWindow,
-  ipcRenderer
-} = require('electron');
+const { app, BrowserWindow, clipboard, globalShortcut, ipcMain, shell } = require('electron');
 const path = require('path');
 const url = require('url');
 const TimMain = require('im_electron_sdk/dist/main');
+const fs = require('fs')
+const { autoUpdater } = require('electron-updater')
+//const feedUrl = `http://oaim.crbank.com.cn:30003/_download/`
+const feedUrl = `http://localhost/`
 
 const IPC = require('./ipc');
-
+const child_process = require('child_process')
 
 let ipc;
-// 私有化 sdkappid
-// new TimMain({
-//   sdkappid: 1400529075
-// });
-// 公有云 sdkappid
+const downloadUrl = app.getPath('downloads')
 new TimMain({
   sdkappid: 1400187352
 });
@@ -55,20 +51,93 @@ const createWindow = () => {
 
     if (!ipc) ipc = new IPC(mainWindow);
 
-    // use for developments
-
   })
 
-  mainWindow.on('focus', function () {
-    mainWindow.webContents.send('storagePath', {
-      path: path.join(process.cwd(), '/download/')
+  // use for developments
+  mainWindow.webContents.openDevTools();
+  //mainWindow.loadURL(`http://localhost:3000`);
+  // 注册截图快捷键
+  globalShortcut.register('CommandOrControl+Alt+C', () => {
+    clipboard.clear()
+    const url = downloadUrl + '\\screenShot.png'
+    child_process.exec('start C:\\Users\\admin\\Desktop\\demo\\cut.exe', () => {
+      let pngs = clipboard.readImage().toPNG()
+      fs.writeFile(url, pngs, (err) => {
+        fs.readFile(url, (err, data) => {
+          mainWindow.webContents.send('screenShotUrl', { data, url })
+        })
+      })
     })
   })
 
+  let sendUpdateMessage = (message, data) => {
+    mainWindow.webContents.send('message', { message, data });
+  };
 
+  let checkForUpdates = () => {
+    console.log(feedUrl)
+    autoUpdater.setFeedURL(feedUrl);
 
-  mainWindow.loadURL(`http://localhost:3000`);
-  mainWindow.webContents.openDevTools();
+    autoUpdater.on('error', function (message) {
+      sendUpdateMessage('error', message)
+    });
+    autoUpdater.on('checking-for-update', function (message) {
+      sendUpdateMessage('checking-for-update', message)
+    });
+    autoUpdater.on('update-available', function (message) {
+      sendUpdateMessage('update-available', message)
+    });
+    autoUpdater.on('update-not-available', function (message) {
+      sendUpdateMessage('update-not-available', message)
+    });
+
+    // 更新下载进度事件
+    autoUpdater.on('download-progress', function (progressObj) {
+      console.log(progressObj)
+      sendUpdateMessage('downloadProgress', progressObj)
+    })
+    autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
+      ipcMain.on('updateNow', (e, arg) => {
+        //some code here to handle event
+        autoUpdater.quitAndInstall();
+      })
+      sendUpdateMessage('isUpdateNow');
+    });
+
+    ipcMain.on('updateNow', (e, arg) => {
+      //some code here to handle event
+      autoUpdater.quitAndInstall();
+    })
+
+    //执行自动更新检查
+    autoUpdater.checkForUpdates();
+  };
+  setTimeout(checkForUpdates, 1000)
+
+  // 接受截图事件
+  ipcMain.on('SCREENSHOT', function () { //news 是自定义的命令 ，只要与页面发过来的命令名字统一就可以
+    //接收到消息后的执行程序
+    // child_process.exec(path.join(process.cwd(), '/resources/extraResources', 'cut.exe'), () => {
+    //   let pngs = clipboard.readImage().toPNG()
+    //   mainWindow.webContents.send('screenShotUrl', { pngs })
+    // })
+    // 截图存放临时地址
+    const url = downloadUrl + '\\screenShot.png'
+    child_process.exec('start C:\\Users\\admin\\Desktop\\demo\\cut.exe', () => {
+      let pngs = clipboard.readImage().toPNG()
+      fs.writeFile(url, pngs, (err) => {
+        fs.readFile(url, (err, data) => {
+          mainWindow.webContents.send('screenShotUrl', { data, url })
+        })
+      })
+    })
+  })
+  ipcMain.on('OPENFILE', function (event, filename) {
+    const name = filename.filename
+    const localUrl = path.join(process.cwd(), '/download/', name)
+    console.log(localUrl, '++++++++++++++++++++++++++++++++++++++++++++==', downloadUrl)
+    shell.openPath(localUrl)
+  })
   // ***use for production***
 
   // mainWindow.loadURL(
