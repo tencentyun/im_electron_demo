@@ -6,6 +6,7 @@ declare namespace State {
         userInfo: userInfo,
         conversation: conversation,
         historyMessage: historyMessage,
+        section:section
         userTypeList: Array<userTypeData>
         ui: ui
         groupDrawer: GroupDrawer,
@@ -23,6 +24,11 @@ declare namespace State {
         function_tab: functionTab,
         replace_router: boolean
     }
+    
+    export type section = {
+        section: Array<object>
+    }
+
     export type historyMessage = {
         historyMessageList:Map<string, Array<message>>
     }
@@ -128,6 +134,7 @@ declare namespace State {
     export type userInfo = {
         userId: string,
         faceUrl: string,
+        gender:string,
         nickName: string,
         role: number,
         gender: number

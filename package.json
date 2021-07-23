@@ -58,6 +58,8 @@
     "braft-editor": "^2.3.9",
     "concurrently": "^6.2.0",
     "electron-squirrel-startup": "^1.0.0",
+    "element-react": "^1.4.34",
+    "element-theme-default": "^1.4.13",
     "electron-updater": "^4.3.9",
     "file-loader": "^6.2.0",
     "final-form": "^4.20.2",
