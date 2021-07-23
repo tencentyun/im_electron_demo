@@ -3,6 +3,7 @@ const RECI_MESSAGE = "RECI_MESSAGE";
 const DELETE_MESSAGE = "DELETE_MESSAGE";
 const MARKE_MESSAGE_AS_REVOKED = "MARKE_MESSAGE_AS_REVOKED";
 const MARKE_MESSAGE_AS_READED = "MARKE_MESSAGE_AS_READED";
+const ADD_MORE_MESSAGE = "ADD_MORE_MESSAGE"
 
 export enum ActionTypeEnum {
     ADD_MESSAGE = "ADD_MESSAGE",
@@ -10,6 +11,7 @@ export enum ActionTypeEnum {
     MARKE_MESSAGE_AS_REVOKED = "MARKE_MESSAGE_AS_REVOKED",
     DELETE_MESSAGE = "DELETE_MESSAGE",
     MARKE_MESSAGE_AS_READED = "MARKE_MESSAGE_AS_READED",
+    ADD_MORE_MESSAGE = "ADD_MORE_MESSAGE"
 }
 
 export type Action = {
@@ -17,6 +19,10 @@ export type Action = {
     payload: Payload & ReciMessagePayload & UpdateMessagePayload & DeleteMessagePayload & MarkeMessageAsReadedPayload
 }
 
+type AddMoreMessage = {
+    convId: string;
+    messages: State.message[]
+}
 
 type Payload = {
     convId: string;
@@ -41,6 +47,11 @@ type MarkeMessageAsReadedPayload = {
     convIds: [string]
 }
 
+export const getUserStatus = (payload: Payload) : State.actcionType<Payload> => ({
+    type: ADD_MESSAGE,
+    payload
+});
+
 export const addMessage = (payload: Payload) : State.actcionType<Payload> => ({
     type: ADD_MESSAGE,
     payload
@@ -63,5 +74,10 @@ export const deleteMessage = (payload: DeleteMessagePayload) : State.actcionType
 
 export const markMessageAsReaded = (payload: MarkeMessageAsReadedPayload) : State.actcionType<MarkeMessageAsReadedPayload> => ({
     type: MARKE_MESSAGE_AS_READED,
+    payload
+})
+
+export const addMoreMessage = (payload: AddMoreMessage) : State.actcionType<AddMoreMessage> => ({
+    type: ADD_MORE_MESSAGE,
     payload
 })

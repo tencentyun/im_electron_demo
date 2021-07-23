@@ -21,12 +21,28 @@
     padding: 20px;
     height: 36px;
     border-bottom: 1px solid #eee;
-
+    
     &--avatar {
+      position: relative;
       display: flex;
       align-items: center;
     }
+    &--type {
+      position: absolute;
+      bottom: 0;
+      left: 24px;
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #09f175;
+      cursor: pointer;
+      margin-left: 3px;
+    }
 
+    &--typeoff {
+      background-color: #adadad;
+    }
     &--name {
       font-size: 16px;
       font-weight: 500;

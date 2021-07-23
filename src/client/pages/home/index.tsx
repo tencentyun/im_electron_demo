@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, Switch, Route } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, Switch, Route, useLocation } from 'react-router-dom';
 
 
 import { Message } from '../message/index';
@@ -40,11 +40,24 @@ const navList = [
 export const Home = (): JSX.Element => {
     const { function_tab } = useSelector((state: State.RootState) => state.ui);
 
+    const location =  useLocation();
+    const path = location?.pathname;
+
+    const currentId = {
+        '/home/message': 'message',
+        '/home/connection': 'contacts',
+        '/home/setting': 'settings',
+    }[path] || 'message';
+
     const dispatch = useDispatch();
     
     const addActiveClass = (id: string) : string => function_tab === id ? 'is-active' : '';
 
     const handleLinkClick = (id: string) => dispatch(changeFunctionTab(id));
+
+    useEffect(() => {
+        dispatch(changeFunctionTab(currentId))
+    }, [])
 
     return <div className="home">
         

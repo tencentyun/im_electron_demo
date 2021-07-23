@@ -1,8 +1,13 @@
 import { Checkbox, message } from "tea-component";
-import React, { useEffect, useState } from "react";
-import { modifyGroupInfo } from "../api";
+import React from "react";
+import { getConversionList, modifyGroupInfo } from "../api";
 
 import "./group-all-mute.scss";
+import {
+  updateCurrentSelectedConversation,
+  updateConversationList,
+} from "../../../store/actions/conversation";
+import { useDispatch, useSelector } from "react-redux";
 
 export const GroupAllMute = (props: {
   muteFlag: boolean;
@@ -13,6 +18,25 @@ export const GroupAllMute = (props: {
 }): JSX.Element => {
   const { muteFlag, groupId, userIdentity, onRefresh } = props;
 
+  const dispatch = useDispatch();
+
+  const { currentSelectedConversation } = useSelector(
+    (state: State.RootState) => state.conversation
+  );
+
+  const updateConversation = async () => {
+    const response = await getConversionList();
+    dispatch(updateConversationList(response));
+    if (response.length) {
+      const currentConversationItem = response.find(
+        (v) => v.conv_id === currentSelectedConversation.conv_id
+      );
+      if (currentConversationItem) {
+        dispatch(updateCurrentSelectedConversation(currentConversationItem));
+      }
+    }
+  };
+
   const handleChange = async (value: boolean) => {
     try {
       await modifyGroupInfo({
@@ -20,6 +44,7 @@ export const GroupAllMute = (props: {
         modifyParams: { group_modify_info_param_is_shutup_all: value },
       });
       message.success({ content: value ? "全体禁言" : "取消全体禁言" });
+      await updateConversation();
       await onRefresh();
     } catch (e) {
       console.log(e);

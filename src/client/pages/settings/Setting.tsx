@@ -15,12 +15,12 @@ type Props = RouteComponentProps
 const settingsConfig = [
     {
         id: 'accountSetting',
-        name: '账号设置',
+        name: '设置',
     },
-    {
-        id: 'commonSetting',
-        name: '通用设置',
-    },
+    // {
+    //     id: 'commonSetting',
+    //     name: '通用设置',
+    // },
     {
         id: 'fileManager',
         name: '文件管理',

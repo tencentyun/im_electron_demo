@@ -22,10 +22,10 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
           }
         case UPDATE_CONVERSATIONLIST: {
             // 会话按是否置顶、时间排序
+            // eslint-disable-next-line no-case-declarations
             const listCopy = [...state.conversationList]
             for(let i = 0;i<action.payload.length;i++){
                 const { conv_id } = action.payload[i];
-                console.log(listCopy.length)
                 const conv_index = listCopy.findIndex((item)=>{return item.conv_id === conv_id})
                 if(conv_index>-1){
                     console.log('更新会话')
@@ -60,7 +60,9 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
             const convIds = payload.map((element : State.MessageReceipt)  => element.msg_receipt_conv_id);
             catchList.forEach(item => {
                 if(convIds.includes(item.conv_id)) {
-                    item.conv_last_msg.message_is_peer_read = true;
+                    if(item.conv_last_msg){
+                        item.conv_last_msg.message_is_peer_read = true;
+                    }
                 }
             })
 

@@ -104,7 +104,7 @@ export default function initListeners(callback:InitListenersCallback){
         callback:(args)=>{
             callback({
                 type: 'TIMSetGroupTipsEventCallback',
-                data: JSON.parse(args)
+                data:  JSON.parse(args[0])
             })
         },
         user_data: "test"
@@ -207,8 +207,11 @@ export default function initListeners(callback:InitListenersCallback){
     *    如果需要，则再次调用login强制上线，设备2的登录的实例将会收到 TIMKickedOfflineCallback 回调。
     */
     timRenderInstance.TIMSetKickedOfflineCallback({
-        callback:()=>{
-
+        callback:(...args)=>{
+            callback({
+                type: 'TIMSetKickedOfflineCallback',
+                data: args
+            })
         }
     })
 

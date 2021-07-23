@@ -1,5 +1,25 @@
 .message-input {
     height: 100%;
+    position: relative;
+
+    &.disabled-style {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+
+    &.draging-style {
+        opacity: 0.7;
+        &::after {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 1px dashed #666;
+
+        }
+    }
 
     &__feature-area {
         // height: 30px;
@@ -61,7 +81,13 @@
                     background-image: url('../../assets/icon/phone-active.svg');
                 }
             }
+            &.screen-shot {
+                background-image: url('../../assets/icon/screen-shot.svg');
 
+                &.is-active {
+                    background-image: url('../../assets/icon/screen-shot.svg');
+                }
+            }
             &.more {
                 background-image: url('../../assets/icon/more.svg');
                 &.is-active {

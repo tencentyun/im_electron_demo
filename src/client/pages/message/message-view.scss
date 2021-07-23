@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column-reverse;
     height: 100%;
-    overflow-y: scroll;
+    overflow-y: overlay;
     overflow-x: hidden;
     padding: 0 20px 20px 20px;
     box-sizing: border-box;
@@ -30,12 +30,33 @@
         width: 8px;
         background-color:transparent;
     }
+    .showMore {
+        text-align: center;
+        color: blue;
+        font-size: 12px;
+        line-height: 20px;
+        cursor: pointer;
+    }
+    .no-more.showMore{
+        color: #999;
+        cursor: default;
+    }
+
+    &__newgroup{
+        text-align: center;
+        color: #bbb;
+    }
 
     &__item {
         display: flex;
         flex-direction: row;
         margin-top: 20px;
         
+        &--withdraw{
+            margin-left: 5px;
+            color: blue;
+            cursor: pointer;
+        }
 
         &.is-self {
             flex-direction: row-reverse;
@@ -51,12 +72,16 @@
             }
         }
 
+        &--element {
+            max-width: 80%;
+        }
+
         &--time-divider {
             margin: 20px 0;
             text-align: center;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 400;
-            color: #000000;
+            color: #bbb;
             line-height: 20px;
         }
 
@@ -79,6 +104,62 @@
         }
         &--blank {
             width: 40%;
+        }
+        &--voice {
+            // width: 100px;
+            // height: 44px;
+            background: #ECEEF2;
+            border-radius: 2px 8px 8px 8px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            &:hover {
+                opacity: 0.7;
+            }
+            &___icon {
+                display: inline-block;
+                vertical-align: middle;
+                height: 20px;
+                width: 20px;
+                background: url("../../assets/icon/record.png");
+                background-size: 20px 20px;
+                background-repeat: no-repeat;
+                background-position: 0 0;
+                margin-left: 16px;
+                margin-right: 10px;
+            }
+            &___icon.playing {
+                display: inline-block;
+                vertical-align: middle;
+                height: 20px;
+                width: 20px;
+                background: url("../../assets/icon/record-play.png");
+                background-size: 20px 20px;
+                background-repeat: no-repeat;
+                background-position: 0 0;
+                margin-left: 16px;
+                margin-right: 10px;
+            }
+            &___time {
+                display: inline-block;
+                vertical-align: middle;
+                width: 20px;
+                height: 20px;
+                font-size: 14px;
+                font-weight: 400;
+                color: #000000;
+                line-height: 20px;
+            }
+        }
+        &--group-sys {
+            display: inline-block;
+            padding: 12px;
+            font-size: 14px;
+            border-radius: 2px 8px 8px 8px;
+            background: #ECEEF2;
+            vertical-align: middle;
+            word-wrap: normal;
+            word-break: break-all;
         }
         &--text {
             display: inline-block;
@@ -167,6 +248,11 @@
             background-repeat: no-repeat;
             background-position: center;
             align-self: flex-end;
+            margin-right: 4px;
+        }
+
+        &--element-icon-error {
+            align-self: center;
             margin-right: 4px;
         }
 
