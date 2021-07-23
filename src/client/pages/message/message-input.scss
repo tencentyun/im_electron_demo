@@ -1,15 +1,5 @@
 .message-input {
     height: 100%;
-    // .tea-overlay{
-    //     .tea-dropdown-box{
-    //         max-width: none !important;
-    //     }
-    // }
-
-    // .tea-dropdown-box{
-    //     max-width: none;
-    //     background: red;
-    // }
     &.disabled-style {
         pointer-events: none;
         opacity: 0.7;
@@ -127,21 +117,10 @@
         right: 20px;
         bottom: 20px;
     }
+    .chooseImg {
+        
+    }
 }
 // div.bf-content {
 //     font-size: 14px;
 // }
-
-
-:global(.tea-dropdown-box){
-    max-width: none;
-    background: red;
-}
-:global(#tea-overlay-root){
-    &.tea-overlay {
-        &.tea-dropdown-box{
-            max-width: none !important;
-            background: red;
-        }
-    }
-}

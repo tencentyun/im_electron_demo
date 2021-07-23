@@ -11,6 +11,8 @@ import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
 import './message-input.scss';
 import { ipcRenderer, clipboard } from 'electron'
+import chooseImg from '../../assets/icon/choose.png'
+import { string } from 'prop-types';
 type Props = {
     convId: string,
     convType: number,
@@ -280,7 +282,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        console.log(localStorage.getItem('sendType') || '1')
+        // console.log(localStorage.getItem('sendType') || '1')
         const type = localStorage.getItem('sendType') || '1'
         if (type == '1') {
             // enter发送
@@ -344,13 +346,23 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const menu = close => (
         <List type="option" style={{ width: '200px', background: '#ffffff' }}>
-            <List.Item onClick={() => changeSendShotcut(1)}><img src='../../assets/icon/choose.svg'></img> 按Enter键发送消息</List.Item>
-            <List.Item onClick={() => changeSendShotcut(2)}><img src='../../assets/icon/choose.svg'></img> 按Ctrl+Enter键发送消息</List.Item>
+            <List.Item onClick={() => changeSendShotcut('1')} style={{ display: 'flex' }}>
+                {
+                    localStorage.getItem('sendType') == '1' ? <img className="chooseImg" src={chooseImg}></img> : null
+                }
+                按Enter键发送消息
+            </List.Item>
+            <List.Item onClick={() => changeSendShotcut('0')} style={{ display: 'flex' }}>
+                {
+                    localStorage.getItem('sendType') == '0' ? <img className="chooseImg" src={chooseImg}></img> : null
+                }
+                按Ctrl+Enter键发送消息
+            </List.Item>
         </List>
     );
-    const changeSendShotcut = (index) => {
-        const sendType = index == 1 ? '1' : '0'
-        localStorage.setItem('sendType', sendType)
+    const changeSendShotcut = index => {
+        localStorage.setItem('sendType', index)
+        // console.log(localStorage.getItem('sendType'))
     }
     useEffect(() => {
         setEditorState(ContentUtils.clear(editorState))
@@ -430,7 +442,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 className="message-input__down"
                 button=""
                 appearance="button"
-                onOpen={() => console.log("open")}
+                onOpen={() => console.log('open')}
                 onClose={() => console.log("close")}
                 placement='left-end'
                 boxSizeSync
