@@ -16,7 +16,7 @@ import { emojiMap, emojiName, emojiUrl } from '../emoji-map'
 import { getCustEmoji, custEmojiUpsert }  from '../../../services/custEmoji'
 import type { getCustEmojiType, custEmojiUpsertParams }  from '../../../services/custEmoji'
 import { getLoginUserID } from '../api';
-import { message } from 'tea-component';
+import { message, StatusTip } from 'tea-component';
 import { throttle } from '../../../utils/tools'
 
 interface EmojiPopupProps {
@@ -34,6 +34,7 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
     const [custEmojiList, setCustEmojiList] = useState([])
     const [page, setPage] = useState(1)
     const [isFinalPage, setIsFinalPage] = useState(false)
+    const [loadStatus, setLoadStatus] = useState('init')
     
     useEffect(() => {
         document.addEventListener('click', handlePopupClick);
@@ -68,6 +69,7 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
         }
         setPage(page)
         try {
+            setLoadStatus('loading')
             const userId = await getLoginUserID()
             const params:getCustEmojiType = {
                 uid: userId,
@@ -75,6 +77,7 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
                 limit
             }
             const data = await getCustEmoji(params)
+            setLoadStatus('complete')
             if (data.ErrorCode !== 0) {
                 return
             }
@@ -86,7 +89,7 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
             }
             setIsFinalPage(dataList.length < limit)
         } catch(e){
-            console.log(e)
+            setLoadStatus('complete')
         }
     }
     const handleCustEmojiShow = async () => {
@@ -122,6 +125,16 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
             message.error({ content: '删除错误' })
         }
     }
+
+    const getLoadingStatus = () => {
+        if (loadStatus === 'loading') {
+            return <StatusTip.LoadingTip/>
+        } else {
+            if (loadStatus ==='complete' && !custEmojiList.length) {
+                return <StatusTip.EmptyTip emptyText="您还没有添加表情"/>
+            }
+        }
+    }
     return (
             <div ref={refPopup} className="emoji-popup">
                 { 
@@ -134,13 +147,28 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
                     </div>
                 }
                 {
-                    isShowCustEmoji && <div ref={refCustEmoji} onScrollCapture={hanldeScrollCustEmoji} className="emojis emojis-cust">
-                        {
-                            custEmojiList.map((v, i) => <span key={i} onClick={() => callback(v.sticker_url, CUSTEMOJI)}  onContextMenu={(e) => { handleContextMenuEvent(e, v.id) }}>
-                                < img src={v.sticker_url} title="发送" />
-                            </span>)
-                        }
-                    </div>
+                    isShowCustEmoji &&
+                        <div 
+                            ref={refCustEmoji}
+                            className="emojis emojis-cust"
+                            onScrollCapture={hanldeScrollCustEmoji}
+                        >
+                            {
+                                custEmojiList.map((v, i) =>
+                                    <span
+                                        key={i}
+                                        className="cust-span"
+                                        onClick={() => callback(v.sticker_url, CUSTEMOJI)}
+                                        onContextMenu={(e) => { handleContextMenuEvent(e, v.id) }}
+                                    >
+                                        < img src={v.sticker_url} title="发送" />
+                                    </span>
+                                )
+                            }
+                            {
+                                getLoadingStatus()
+                            }
+                        </div>
                 }
                 {
                     isShowCustEmoji && <Menu

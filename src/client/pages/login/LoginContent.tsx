@@ -7,6 +7,7 @@ import { DEFAULT_USERID, DEFAULT_USER_SIG, SDKAPPID, SECRETKEY, HUA_RUN_SYSTEMID
 import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
 import { changeFunctionTab } from '../../store/actions/ui';
+import { setUserInfo } from '../../store/actions/user';
 // eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
 import { getEncrptPwd } from '../../utils/addFriendForPoc'
@@ -143,7 +144,25 @@ export const LoginContent = (): JSX.Element => {
     const [userID, setUserID] = useState(DEFAULT_USERID);
     const [usersig, setUserSig] = useState(DEFAULT_USER_SIG);
     const isDisablelogin = activedTab === 'passwordLogin' && userID && usersig;
-
+    console.log("自动更新1")
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log("自动更新2")
+      const { ipcRenderer } = require('electron');
+      ipcRenderer.on('message', (event, { message, data }) => {
+        console.log("自动更新进入")
+        console.log(message, data);
+        switch (message) {
+          case 'isUpdateNow':
+            if (confirm('发现有新版本，是否现在更新？')) {
+              ipcRenderer.send('updateNow');
+            }
+            break;
+          default:
+            //document.querySelector('h1').innerHTML = message;
+            break;
+        }
+      })
+    })
     const customizeTabBarRender = (children: JSX.Element) => {
         return <a className="customize-tab-bar">{children}</a>
     }
@@ -162,6 +181,9 @@ export const LoginContent = (): JSX.Element => {
         console.log(code,data,desc,json_param);
         if(code === 0) {
             dispatch(setIsLogInAction(true));
+            dispatch(setUserInfo({
+                userId: userID
+            }));
             dispatch(changeFunctionTab('message'));
             history.replace('/home/message');
         }

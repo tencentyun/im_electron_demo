@@ -24,11 +24,12 @@ import { addMessage } from '../../store/actions/message';
 import timeFormat from '../../utils/timeFormat';
 import { EmptyResult } from './searchMessage/EmptyResult';
 import { Myloader } from '../../components/skeleton';
-import { getUserTypeQuery } from '../../services/userType'
+import { replaceRouter } from '../../store/actions/ui';
 
 export const Message = (): JSX.Element => {
     const [isLoading, setLoadingStatus ] = useState(false);
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
+    const { replace_router } = useSelector((state:State.RootState)=>state.ui)
     const dialogRef = useDialogRef();
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
 
@@ -69,13 +70,18 @@ export const Message = (): JSX.Element => {
             if (currentSelectedConversation === null) {
                 dispatch(updateCurrentSelectedConversation(response[0]))
             }
+        }else{
+            dispatch(updateCurrentSelectedConversation(null))
         }
     }
     useEffect(() => {
-        conversationList.length === 0 && setLoadingStatus(true);
-        if(conversationList.length === 0){
+        if(!replace_router){
+            conversationList.length === 0 && setLoadingStatus(true);
             getData();
+        }else{
+            dispatch(replaceRouter(false))
         }
+        
     }, []);
     
     useEffect(() => {
@@ -90,11 +96,17 @@ export const Message = (): JSX.Element => {
         }
     }, [currentSelectedConversation]);
 
+    useEffect(()=>{
+        if(currentSelectedConversation===null && conversationList.length > 0){
+            dispatch(updateCurrentSelectedConversation(conversationList[0]))
+        }
+    },[conversationList.length])
+
     useEffect(() => {
         if(currentSelectedConversation?.conv_id) {
             const ref = getRef(currentSelectedConversation.conv_id);
             // @ts-ignore
-            ref.current.scrollIntoViewIfNeeded();
+            ref?.current?.scrollIntoViewIfNeeded();
         }
     }, [currentSelectedConversation] );
 
@@ -102,8 +114,8 @@ export const Message = (): JSX.Element => {
 
     const handleSearchBoxClick = () => dialogRef.current.open();
 
-    const getLastMsgInfo = (lastMsg,conv_type,conv_group_at_info_array) => {
-        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read } = lastMsg;
+    const getLastMsgInfo = (lastMsg:State.message,conv_type,conv_group_at_info_array) => {
+        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read,message_is_read } = lastMsg;
         const { user_profile_nick_name } = message_sender_profile;
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
         const firstMsg = message_elem_array[0];
@@ -125,9 +137,11 @@ export const Message = (): JSX.Element => {
         }[firstMsg.elem_type];
         const hasAtMessage = conv_group_at_info_array && conv_group_at_info_array.length;
         const atDisPlayMessage = hasAtMessage && conv_group_at_info_array.pop().conv_group_at_info_at_type === 1 ? "@我" : "@所有人"
+        const isRead = message_is_from_self && message_is_peer_read || !message_is_from_self && message_is_read
         return <React.Fragment>
+            
             {
-               conv_type === 1 ? <span className={`icon ${message_is_peer_read ? 'is-read' : ''}`} /> : null
+               <span className={`icon ${isRead ? 'is-read' : ''}`} />
             }
             {
                 conv_type && hasAtMessage ? <span className="at-msg">{atDisPlayMessage}</span> : null
@@ -160,7 +174,6 @@ export const Message = (): JSX.Element => {
         // const sdkappid = "1400529075";
         const uid = "YANGGUANG37";
         const To_Account = ["denny1", "denny2"];
-        console.warn({ uid, To_Account }, '发送参数')
         conversationList.forEach((i) => {
             if (i.conv_type === 1) {
                 To_Account.push(i.conv_id)
@@ -168,7 +181,7 @@ export const Message = (): JSX.Element => {
         })
         // console.warn(conversationList, To_Account, '入参单个参数')
         getUserTypeQuery({ uid, To_Account }).then(data => {
-            console.warn(data, "获取联系人在线状态返回参数")
+            // console.warn(data, "获取联系人在线状态返回参数")
             if (data.ErrorCode === 0) {
                 console.warn(1)
                 dispatch(getUserType(data.queryResult))
@@ -336,9 +349,9 @@ export const Message = (): JSX.Element => {
             {
                 currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : <div className="empty"><EmptyResult contentText="暂无历史消息" /></div>
             }
-            {
+            {/* {
                 currentSelectedConversation && currentSelectedConversation.conv_type === 2 ? <GroupToolBar conversationInfo={currentSelectedConversation} /> : <></>
-            }
+            } */}
             {/* 音视频通话面板 */}
         </div>
     )
