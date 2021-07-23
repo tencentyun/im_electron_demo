@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ipcRenderer } from "electron";
 
 import { Avatar } from "../../components/avatar/avatar";
 import { getMsgList, markMessageAsRead } from "./api";
@@ -121,6 +122,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));
+  
+  const handleOpenCallWindow = () => {
+    ipcRenderer.send("openCallWindow");
+  }
 
   const popupContainer = document.getElementById("messageInfo");
 
@@ -173,7 +178,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 {nickName || conv_id}
               </span>
             </div>
-            {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
+            <div>
+              {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
+              <span className="message-info-view__header--video" onClick={handleOpenCallWindow} />
+            </div>
           </header>
           <section className="message-info-view__content">
             <div className="message-info-view__content--view">
