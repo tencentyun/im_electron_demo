@@ -160,22 +160,21 @@ export const Message = (): JSX.Element => {
         // const sdkappid = "1400529075";
         const uid = "YANGGUANG37";
         const To_Account = ["denny1", "denny2"];
-        console.warn({ uid, To_Account }, '发送参数')
         conversationList.forEach((i) => {
             if (i.conv_type === 1) {
                 To_Account.push(i.conv_id)
             }
         })
         // console.warn(conversationList, To_Account, '入参单个参数')
-        // getUserTypeQuery({ uid, To_Account }).then(data => {
-        //     console.warn(data, "获取联系人在线状态返回参数")
-        //     if (data.ErrorCode === 0) {
-        //         console.warn(1)
-        //         dispatch(getUserType(data.queryResult))
-        //     }
-        // }).catch(err => {
-        //     console.warn('返回错误信息', err)
-        // })
+        getUserTypeQuery({ uid, To_Account }).then(data => {
+            // console.warn(data, "获取联系人在线状态返回参数")
+            if (data.ErrorCode === 0) {
+                console.warn(1)
+                dispatch(getUserType(data.queryResult))
+            }
+        }).catch(err => {
+            console.warn('返回错误信息', err)
+        })
     }
     
     const pingConv = (conv: State.conversationItem, isPinned: boolean) => {

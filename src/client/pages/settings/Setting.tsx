@@ -21,10 +21,10 @@ const settingsConfig = [
     //     id: 'commonSetting',
     //     name: '通用设置',
     // },
-    // {
-    //     id: 'fileManager',
-    //     name: '文件管理',
-    // },
+    {
+        id: 'fileManager',
+        name: '文件管理',
+    },
     {
         id: 'connectUs',
         name: '联系我们',

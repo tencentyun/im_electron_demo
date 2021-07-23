@@ -3,6 +3,9 @@ const path = require('path');
 const url = require('url');
 const TimMain = require('im_electron_sdk/dist/main');
 const fs = require('fs')
+const { autoUpdater } = require('electron-updater')
+//const feedUrl = `http://oaim.crbank.com.cn:30003/_download/`
+const feedUrl = `http://localhost/`
 
 const IPC = require('./ipc');
 const child_process = require('child_process')
@@ -66,6 +69,51 @@ const createWindow = () => {
       })
     })
   })
+
+  let sendUpdateMessage = (message, data) => {
+    mainWindow.webContents.send('message', { message, data });
+  };
+
+  let checkForUpdates = () => {
+    console.log(feedUrl)
+    autoUpdater.setFeedURL(feedUrl);
+
+    autoUpdater.on('error', function (message) {
+      sendUpdateMessage('error', message)
+    });
+    autoUpdater.on('checking-for-update', function (message) {
+      sendUpdateMessage('checking-for-update', message)
+    });
+    autoUpdater.on('update-available', function (message) {
+      sendUpdateMessage('update-available', message)
+    });
+    autoUpdater.on('update-not-available', function (message) {
+      sendUpdateMessage('update-not-available', message)
+    });
+
+    // 更新下载进度事件
+    autoUpdater.on('download-progress', function (progressObj) {
+      console.log(progressObj)
+      sendUpdateMessage('downloadProgress', progressObj)
+    })
+    autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
+      ipcMain.on('updateNow', (e, arg) => {
+        //some code here to handle event
+        autoUpdater.quitAndInstall();
+      })
+      sendUpdateMessage('isUpdateNow');
+    });
+
+    ipcMain.on('updateNow', (e, arg) => {
+      //some code here to handle event
+      autoUpdater.quitAndInstall();
+    })
+
+    //执行自动更新检查
+    autoUpdater.checkForUpdates();
+  };
+  setTimeout(checkForUpdates, 1000)
+
   // 接受截图事件
   ipcMain.on('SCREENSHOT', function () { //news 是自定义的命令 ，只要与页面发过来的命令名字统一就可以
     //接收到消息后的执行程序
