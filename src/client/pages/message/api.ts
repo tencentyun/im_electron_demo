@@ -510,7 +510,7 @@ export const modifyGroupInfo = async (params: {
   const modifyFlags = Object.keys(modifyParams).map(
     (key) => modifyFlagMap[key]
   );
-
+  console.log('修改群参数', modifyParams)
   const fetchList = modifyFlags.map((currentFlag) =>
     timRenderInstance.TIMGroupModifyGroupInfo({
       params: {
