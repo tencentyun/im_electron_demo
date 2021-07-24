@@ -4,7 +4,7 @@
   "description": "IM client",
   "main": "app.tsx",
   "scripts": {
-    "build:react": "cross-env NODE_ENV=production webpack --config webpack.react.config.js --mode production",
+    "build:react": "cross-env NODE_ENV=production webpack --config webpack.prod.config.js --mode production",
     "dev:react": "cross-env NODE_ENV=development webpack server --config webpack.react.config.js --mode development"
   },
   "devDependencies": {
