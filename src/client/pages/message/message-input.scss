@@ -104,6 +104,11 @@
             height: 100%;
             border: none;
         }
+        .public-DraftEditor-content{
+            div{
+                display: inline-block;
+            }
+        }
     }
 
     &__button-area {

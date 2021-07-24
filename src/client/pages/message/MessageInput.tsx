@@ -70,6 +70,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ isRecordPopup, setRecordPopup ] = useState(false);
+    const [ isTextNullEmpty, setIsTextNullEmpty ] = useState(true);
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -363,7 +364,9 @@ export const MessageInput = (props: Props): JSX.Element => {
         setActiveFeature("")
     }
 
-    const editorChange = (editorState) => {
+    const editorChange = (editorState,a,b) => {
+        console.warn(editorState.toHTML())
+        setIsTextNullEmpty(editorStateDisabled(editorState.toText()))
         setEditorState(editorState)
     }
 
@@ -444,7 +447,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 />
             </div>
             <div className="message-input__button-area">
-                <Button type="primary" onClick={handleSendTextMsg} disabled={editorStateDisabled(editorState?.toText())}>发送</Button>
+                <Button type="primary" onClick={handleSendTextMsg} disabled={isTextNullEmpty}>发送</Button>
             </div>
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
