@@ -95,7 +95,7 @@ export const MessageInput = (props: Props): JSX.Element => {
           sdkappid: 1400187352,
           uid: "tetetetetetet",
           file_type: 1,
-        //   file_name: "headUrl/" + fileObj.name,
+          file_name: "headUrl/" + new Date().getTime() + 'screenShot.png',
           Duration: 900,
           upload_method: 0,
         })
@@ -105,10 +105,6 @@ export const MessageInput = (props: Props): JSX.Element => {
           console.log(111111);
           console.log(upload_url);
           let fr = new FileReader();
-        //   fr.readAsDataURL(fileObj);
-          fr.addEventListener(
-            "load",
-            () => {
               axios
                 .put(upload_url, convertBase64UrlToBlob(base64Data), {
                   headers: {
@@ -117,6 +113,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 })
                 .then(() => {
                   const { download_url } = res.data;
+                  resolve(res.data.ci_url)
                 })
                 .catch((err) => {
                   reject(err);
@@ -124,9 +121,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 .finally(() => {
                     
                 });
-            },
-            false
-          );
         })
         .catch((err) => {
           reject(err);
@@ -137,27 +131,58 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handleSendTextMsg = async () => {
         console.warn(editorState?.toHTML())
-
-        const htmlText = editorState.toHTML();
-        const imgSrc = htmlText.match(/<img [^>]*src=['"]([^'"]+)[^>]*>/g)
-        if(imgSrc && imgSrc.length >0){
-            imgSrc.forEach((i)=>{
-                // aaa(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,''))
-            })
-        }
-
+        
         if (editorStateDisabled(editorState?.toText())) {
             return
         }
+        let toTextContent = editorState?.toText()
+
+        const htmlText = editorState.toHTML();
+        const imgSrc = htmlText.match(/<img [^>]*src=['"]([^'"]+)[^>]*>/g)
+        
+
+        if(imgSrc && imgSrc.length >0){
+            let formatText = [];
+            let textContent = htmlText.match(/<p>((\w|\W)*?)<\/p>/g)
+            if(textContent && textContent.length > 0){
+                formatText = textContent.map(item => {
+                    return item.replace(/<p>/g,'').replace(/<\/p>/g,'').replace(/<br\/>/g,'\n')
+                });
+            }
+            // imgSrc.forEach(async (i,index)=>{
+            //     await handleUpload(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,'')).then(src=>{
+            //         formatText.splice((index * 2)+1,0,`<img src="${src}" />`)
+            //     })
+            //     // aaa(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,''))
+            // })
+
+            const getImgsUrl = async ()=>{
+                return new Promise(async (resolve, reject) => {
+                    for (let i = 0; i < imgSrc.length; i++) {
+                        await handleUpload(imgSrc[i].replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,'')).then(src=>{
+                            formatText.splice((i * 2)+1,0,`<img src="${src}" />`)
+                        })
+                    }
+                    resolve(false);
+                })
+            }
+            await getImgsUrl().then(res=>{
+            })
+            toTextContent = formatText.join('')
+        }
+
+
+        
         try {
-            const text = editorState?.toText()
-            const atList = getAtList(text)
+            // const text = editorState?.toText()
+            const atList = getAtList(toTextContent)
             const { data: { code, json_params, desc } } = await sendTextMsg({
                 convId,
                 convType,
                 messageElementArray: [{
                     elem_type: 0,
-                    text_elem_content: editorState?.toText(),
+                    // text_elem_content: editorState?.toText(),
+                    text_elem_content: toTextContent,
                 }],
                 userId,
                 messageAtArray: atList
