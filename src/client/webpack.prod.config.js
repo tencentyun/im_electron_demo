@@ -11,7 +11,6 @@ module.exports = {
     call: './call.tsx'
   } ,
   target: 'electron-renderer',
-  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -46,34 +45,6 @@ module.exports = {
         ],
       }
     ]
-  },
-  devServer: {
-    contentBase: path.join(__dirname, '../../bundle'),
-    historyApiFallback: true,
-    compress: true,
-    hot: true,
-    port: 3000,
-    publicPath: '/',
-    proxy: {
-      '/api': {
-        target: 'http://106.52.161.51:30006/',
-        secure: false,
-        pathRewrite: {
-          '^/api':''
-        },
-        changeOrigin:true
-      },
-      '/sticker': {
-        target: 'http://106.52.161.51:30006/',
-        secure: false,
-        changeOrigin:true
-      },
-      '/status': {
-        target: 'http://106.52.161.51:30006/',
-        secure: false,
-        changeOrigin:true
-      }
-    }
   },
   output: {
     path: path.resolve(__dirname, '../../bundle'),
