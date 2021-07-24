@@ -9,7 +9,8 @@
     "build": "npm run build:react && electron-builder -w",
     "build:react": "cd ./src/client && npm run build:react",
     "dev:electron": "electron .",
-    "dev:react": "cd ./src/client && npm run dev:react"
+    "dev:react": "cd ./src/client && npm run dev:react",
+    "dev": "npm run start && npm run dev:react"
   },
   "keywords": [],
   "author": {

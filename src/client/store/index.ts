@@ -3,7 +3,6 @@ import login from './reucers/login';
 import userInfo from './reucers/user';
 import conversation from './reucers/conversation'
 import historyMessage from './reucers/historyMessage'
-import section from './reucers/section'
 import ui from './reucers/ui'
 import userTypeList from './reucers/userTypeList'
 import groupDrawer  from './reucers/groupDrawer';
@@ -15,7 +14,7 @@ const rootReducer = (state, action) => {
       return appReducer(undefined, action)
     }
     return appReducer(state, action)
-  }
+}
 
 const store = createStore(rootReducer);
 

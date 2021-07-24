@@ -12,6 +12,7 @@ import { GroupIntroduction } from "./GroupIntroduction";
 import { GroupMember } from "./GroupMember";
 import { GroupNameCard } from "./GroupNameCard";
 import { GroupOperator } from "./GroupOperator";
+import { GroupJoinOption } from "./GroupJoinOption";
 
 export const GroupSetting = (props: {
   conversationInfo: State.conversationItem;
@@ -84,6 +85,15 @@ export const GroupSetting = (props: {
         userId={userId}
         onRefresh={retry}
       />
+      <Divider />
+      {
+        groupDetail.group_detial_info_group_type === 0 &&
+        <GroupJoinOption
+          joinOption={groupDetail.group_detial_info_add_option}
+          groupId={groupDetail.group_detial_info_group_id}
+          onRefresh={retry}
+        />
+      }
       <Divider />
       <GroupNameCard
         nameCard={currentUserSetting.group_member_info_name_card}
