@@ -20,7 +20,7 @@ export const getConvId = (convItem: ConvItem): string => {
 }
 export const getConvType = (convItem: ConvItem): TIMConvType => {
     const item = convItem as State.FriendProfile
-    return item.friend_profile_identifier ? TIMConvType.kTIMConv_C2C : TIMConvType.kTIMConv_Group
+    return (item.friend_profile_identifier || item.friend_profile_user_profile?.user_profile_identifier) ? TIMConvType.kTIMConv_C2C : TIMConvType.kTIMConv_Group
 }
 export const getMergeMessageTitle = (message: State.message): string => {
     const groupTitle: string = "群聊"
