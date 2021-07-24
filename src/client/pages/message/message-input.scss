@@ -117,6 +117,10 @@
         .public-DraftEditorPlaceholder-root {
            font-size: 14px;
         }
+        .bf-controlbar{
+            height: 0;
+            overflow: hidden;
+        }
     }
 
     &__button-area {
