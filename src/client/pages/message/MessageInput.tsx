@@ -298,7 +298,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        // console.log(localStorage.getItem('sendType') || '1')
         const type = localStorage.getItem('sendType') || '0'
         if (type == '0') {
             // enter发送
@@ -309,7 +308,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
                 handleSendTextMsg();
-            } else if (e.key === "@" && convType === 2) {
+            } else if ((e.key === "@" || e.keyCode === 229) && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
             }
@@ -320,7 +319,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 handleSendTextMsg();
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 console.log('换行', '----------------------', editorState)
-            } else if (e.key === "@" && convType === 2) {
+            } else if ((e.key === "@" || e.keyCode === 229) && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
             }
