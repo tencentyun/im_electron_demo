@@ -12,6 +12,7 @@ import 'braft-editor/dist/index.css'
 import './message-input.scss';
 import { ipcRenderer, clipboard } from 'electron'
 import chooseImg from '../../assets/icon/choose.png'
+import { store } from '../../../app/storage/store'
 import { string } from 'prop-types';
 type Props = {
     convId: string,
@@ -65,6 +66,7 @@ const FEATURE_LIST_C2C = [{
 const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
+
 export const MessageInput = (props: Props): JSX.Element => {
     const { convId, convType, isShutUpAll, editorState, setEditorState } = props;
     const [isDraging, setDraging] = useState(false);
@@ -72,7 +74,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [atPopup, setAtPopup] = useState(false);
     const [isEmojiPopup, setEmojiPopup] = useState(false);
     const [isRecordPopup, setRecordPopup] = useState(false);
-    const [shotKeyTip, setShotKeyTip] = useState('按Ctrl+Enter键发送消息');
+    const [shotKeyTip, setShotKeyTip] = useState('按Enter键发送消息');
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -82,7 +84,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
     let editorInstance;
-    // const enterSend = localStorage.getItem('sendType') || '1'
     const handleSendTextMsg = async () => {
         if (editorStateDisabled(editorState?.toText())) {
             return
@@ -297,8 +298,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        // console.log(localStorage.getItem('sendType') || '1')
-        const type = localStorage.getItem('sendType') || '0'
+        // const type = localStorage.getItem('sendType') || '0'
+        const type = store.get('sendType') || '0'
         if (type == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
@@ -395,13 +396,13 @@ export const MessageInput = (props: Props): JSX.Element => {
         <List type="option" style={{ width: '200px', background: '#ffffff' }}>
             <List.Item onClick={() => changeSendShotcut('1')} style={{ display: 'flex' }}>
                 {
-                    localStorage.getItem('sendType') == '1' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
+                    store.get('sendType') == '1' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
                 }
                 按Ctrl+Enter键发送消息
             </List.Item>
             <List.Item onClick={() => changeSendShotcut('0')} style={{ display: 'flex' }}>
                 {
-                    localStorage.getItem('sendType') == '0' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
+                    store.get('sendType') == '0' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
                 }
                 按Enter键发送消息
             </List.Item>
@@ -410,7 +411,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const changeSendShotcut = index => {
         const tip = index == '1' ? '按Ctrl+Enter键发送消息' : '按Enter键发送消息'
         setShotKeyTip(tip)
-        localStorage.setItem('sendType', index)
+        store.set('sendType', index)
         // console.log(localStorage.getItem('sendType'))
     }
     useEffect(() => {
@@ -421,6 +422,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const dragEnterStyle = isDraging ? 'draging-style' : '';
 
     useEffect(() => {
+        setShotKeyTip(store.get('sendType') == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
         ipcRenderer.on('screenShotUrl', (e, { data, url }) => {
             if (data.length == 0) {
                 message.error({ content: '已取消截图' })

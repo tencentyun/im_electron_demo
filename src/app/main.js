@@ -1,4 +1,5 @@
 const { app, BrowserWindow, clipboard, globalShortcut, ipcMain, shell } = require('electron');
+
 const path = require('path');
 const url = require('url');
 const TimMain = require('im_electron_sdk/dist/main');
