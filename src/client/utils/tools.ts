@@ -55,6 +55,35 @@ const throttle = (fn, delay) => {
         }
     }
 }
+
+//file对象转换为Blob对象 
+const dataURLtoBlob = (file) => {
+    return new Promise((resolve, reject) => {
+        if (!file) {
+            reject('file is null')
+        }
+        if (window.FileReader) {
+            var fr = new FileReader();
+            fr.readAsDataURL(file);
+            fr.onloadend = function (e) {
+                resolve(e.target.result)
+            }
+        } else {
+            reject('window.FileReader is undefined')
+        }
+    })
+}
+const convertBase64UrlToBlob = (urlData) => {
+    // 去掉url的头，并转换为byte
+    let bytes = window.atob(urlData.split(',')[1])
+    let ab = new ArrayBuffer(bytes.length)
+    let ia = new Uint8Array(ab)
+    for (let i = 0; i < bytes.length; i++) {
+        ia[i] = bytes.charCodeAt(i)
+    }
+    return new Blob([ab], { type: 'image/jpeg' })
+}
+
 export {
     isWin,
     minSizeWin,
@@ -62,5 +91,7 @@ export {
     closeWin,
     showDialog,
     downloadFilesByUrl,
-    throttle
+    throttle,
+    dataURLtoBlob,
+    convertBase64UrlToBlob
 }

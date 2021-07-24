@@ -13,6 +13,8 @@ import './message-input.scss';
 import { ipcRenderer, clipboard } from 'electron'
 import chooseImg from '../../assets/icon/choose.png'
 import { string } from 'prop-types';
+import axios from "axios";
+import { convertBase64UrlToBlob } from "../../utils/tools";
 type Props = {
     convId: string,
     convType: number,
@@ -84,7 +86,66 @@ export const MessageInput = (props: Props): JSX.Element => {
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
     let editorInstance;
     // const enterSend = localStorage.getItem('sendType') || '1'
+
+     // 上传逻辑
+  const handleUpload = (base64Data) => {
+    return new Promise((resolve, reject) => {
+      axios
+        .post("/api/im_cos_msg/pre_sig", {
+          sdkappid: 1400187352,
+          uid: "tetetetetetet",
+          file_type: 1,
+        //   file_name: "headUrl/" + fileObj.name,
+          Duration: 900,
+          upload_method: 0,
+        })
+        .then((res) => {
+          console.log(res);
+          const { upload_url } = res.data;
+          console.log(111111);
+          console.log(upload_url);
+          let fr = new FileReader();
+        //   fr.readAsDataURL(fileObj);
+          fr.addEventListener(
+            "load",
+            () => {
+              axios
+                .put(upload_url, convertBase64UrlToBlob(base64Data), {
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                  },
+                })
+                .then(() => {
+                  const { download_url } = res.data;
+                })
+                .catch((err) => {
+                  reject(err);
+                })
+                .finally(() => {
+                    
+                });
+            },
+            false
+          );
+        })
+        .catch((err) => {
+          reject(err);
+          
+        });
+    });
+  };
+
     const handleSendTextMsg = async () => {
+        console.warn(editorState?.toHTML())
+
+        const htmlText = editorState.toHTML();
+        const imgSrc = htmlText.match(/<img [^>]*src=['"]([^'"]+)[^>]*>/g)
+        if(imgSrc && imgSrc.length >0){
+            imgSrc.forEach((i)=>{
+                // aaa(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,''))
+            })
+        }
+
         if (editorStateDisabled(editorState?.toText())) {
             return
         }
@@ -308,7 +369,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
                 handleSendTextMsg();
-            } else if ((e.key === "@" || e.keyCode === 229) && convType === 2) {
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
             }
@@ -319,7 +380,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 handleSendTextMsg();
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 console.log('换行', '----------------------', editorState)
-            } else if ((e.key === "@" || e.keyCode === 229) && convType === 2) {
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
             }
@@ -485,7 +546,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
-                    controls={[]}
+                    // controls={[]}
                     ref={instance => editorInstance = instance}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     placeholder={placeHolderText}
