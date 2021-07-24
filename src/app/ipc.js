@@ -1,7 +1,7 @@
 // import { BrowserWindow } from "electron";
 const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG } = require("./const/const");
-const { dialog, clipboard, globalShortcut } = require('electron')
-const { ipcMain } = require('electron')
+const { dialog } = require('electron')
+const { ipcMain, BrowserWindow } = require('electron')
 const fs = require('fs')
 const path = require('path')
 const http = require('http')
@@ -33,6 +33,24 @@ class IPC {
                     break;
             }
         })
+
+        ipcMain.on('openCallWindow', (event, data) => {
+            const callWindow = new BrowserWindow({
+                height: 600,
+                width: 800, 
+                show: true,
+                webPreferences: {
+                    webSecurity: true,
+                    nodeIntegration: true,
+                    nodeIntegrationInWorker: true,
+                    enableRemoteModule: true,
+                    contextIsolation: false,
+                }
+            });
+            callWindow.removeMenu();
+            callWindow.loadURL("http://localhost:3000/call.html");
+            callWindow.webContents.openDevTools();
+        });
     }
     minsizewin () {
         this.win.minimize()
@@ -46,36 +64,31 @@ class IPC {
     showDialog () {
         child_process.exec(`start "" ${path.resolve(process.cwd(), './download/')}`);
     }
-    downloadFilesByUrl ({ url, name }) {
-        console.log(url, '1111111111111111111', name)
+    downloadFilesByUrl (params) {
+        const { file_url, file_name } = params
         const cwd = process.cwd();
         const downloadDicPath = path.resolve(cwd, './download/')
         if (!fs.existsSync(downloadDicPath)) {
             fs.mkdirSync(downloadDicPath)
         }
-
-        const urlArr = url.split("/");
         const options = {
-            // host: url.parse(url).host,
-            // port: 80,
-            // path: url.parse(url).pathname
-            host: urlArr[2],
+            host: url.parse(file_url).host,
             port: 80,
-            path: urlArr[3]
+            path: url.parse(file_url).pathname
         };
-        console.log(options, 'options')
-        if (!fs.existsSync(path.resolve(downloadDicPath, name))) {
-            var file = fs.createWriteStream(path.resolve(downloadDicPath, name));
+        if (!fs.existsSync(path.resolve(downloadDicPath, file_name))) {
+            var file = fs.createWriteStream(path.resolve(downloadDicPath, file_name));
             http.get(options, (res) => {
                 res.on('data', function (data) {
                     file.write(data);
                 }).on('end', function () {
                     file.end();
+                    console.log(file_name + ' downloaded to ' + downloadDicPath);
                 });
             });
         } else {
             // 已存在
-            console.log(path.resolve(downloadDicPath, name), '已存在，不下载')
+            console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
         }
     }
 }

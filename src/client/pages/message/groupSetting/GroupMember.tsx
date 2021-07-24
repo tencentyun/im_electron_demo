@@ -8,10 +8,6 @@ import {
   GroupMemberListDrawerRecordsType,
 } from "./MemberListDrawer";
 import {
-  AddMemberRecordsType,
-  AddGroupMemberDialog,
-} from "./AddGroupMemberDialog";
-import {
   DeleteGroupMemberDialog,
   DeleteMemberRecordsType,
 } from "./DeleteGroupMember";
@@ -19,6 +15,11 @@ import { getUserTypeQuery } from "../../../services/userType";
 import { Bubble, Button, Icon } from "tea-component";
 import timRenderInstance from "../../../utils/timRenderInstance";
 import { DEFAULT_USERID } from "../../../constants";
+
+import {
+  AddGroupMemberDialog,
+  AddMemberRecordsType
+}from '../../../components/pull/pull'
 
 export const GroupMember = (props: {
   userList: {
