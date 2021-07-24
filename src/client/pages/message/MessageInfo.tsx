@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Avatar } from "../../components/avatar/avatar";
-import { getMsgList, markMessageAsRead } from "./api";
+import { getMsgList, markMessageAsRead, inviteMemberGroup } from "./api";
 import { MessageInput } from "./MessageInput";
 import { MessageView } from "./MessageView";
 
@@ -9,7 +9,13 @@ import "./message-info.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "../../store/actions/message";
 
+import {
+  AddGroupMemberDialog,
+  AddMemberRecordsType
+}from '../../components/pull/pull'
+
 import { AddUserPopover } from "./AddUserPopover";
+
 import { useDialogRef } from "../../utils/react-use/useDialog";
 import { addTimeDivider } from "../../utils/addTimeDivider";
 import BraftEditor, { EditorState } from 'braft-editor'
@@ -29,13 +35,15 @@ export const MessageInfo = (
   const { conv_id, conv_type, conv_profile } = props;
   const {
     group_detial_info_group_type: groupType,
-    group_detial_info_add_option: addOption,
+    group_detial_info_add_option: addOption
   } = conv_profile;
 
   const groupSettingRef = useDialogRef<GroupSettingRecordsType>();
 
   const popupContainer = document.getElementById("messageInfo");
   const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all;
+
+  const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
 
   const { historyMessageList } = useSelector(
     (state: State.RootState) => state.historyMessage
@@ -93,7 +101,16 @@ export const MessageInfo = (
     handleMsgReaded();
     // }
   };
-
+  const reloct = (value:Array<string>)=> {
+    try{
+      if(value.length){
+        console.log(conv_id,value)
+         inviteMemberGroup({groupId:conv_id, UIDS:value})
+      }
+    }catch(e){
+      console.log(e.message);
+    }
+  }
   const { faceUrl, nickName } = getDisplayConvInfo();
   const dispatch = useDispatch();
   
@@ -161,7 +178,9 @@ export const MessageInfo = (
               </span>:null
             }
           </div>
-          {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
+          {
+            canInviteMember && <span className="add-icon"  onClick={() => addMemberDialogRef.current.open({ groupId:conv_id })}/>
+          }
         </header>
         <section className="message-info__content">
           <div className="message-info__content--view">
@@ -172,6 +191,10 @@ export const MessageInfo = (
           </div>
         </section>
       </div>
+      <AddGroupMemberDialog
+        dialogRef={addMemberDialogRef}
+        onSuccess={(value) =>reloct(value)}
+      />
       <GroupSettingDrawer
         popupContainer={popupContainer}
         dialogRef={groupSettingRef}

@@ -85,8 +85,11 @@ request.interceptors.response.use(
         const { code, ErrorCode } = res;
         console.log('response', response);
         // 自定义状态码验证
-        if (code !== 0 && +ErrorCode !== 0) {
-            return Promise.reject(response);
+        if (code && code !== 0 && ErrorCode && +ErrorCode !== 0) {
+            return Promise.reject({
+                response,
+                message: 'CustomError',
+            });
         }
         return response;
     },

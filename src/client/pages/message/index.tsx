@@ -93,7 +93,7 @@ export const Message = (): JSX.Element => {
         if (currentSelectedConversation?.conv_id) {
             const ref = getRef(currentSelectedConversation.conv_id);
             // @ts-ignore
-            ref.current.scrollIntoViewIfNeeded();
+            ref?.current?.scrollIntoViewIfNeeded();
         }
     }, [currentSelectedConversation]);
 

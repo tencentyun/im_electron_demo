@@ -54,7 +54,12 @@
                     background:  url('../../assets/icon/message-active.svg');
                 }
             }
-
+            &.organization {
+                background: url('../../assets/icon/message.svg');
+                &.is-active {
+                    background:  url('../../assets/icon/message-active.svg');
+                }
+            }
             &.contacts {
                 background: url('../../assets/icon/contacts.svg');
                 &.is-active {
