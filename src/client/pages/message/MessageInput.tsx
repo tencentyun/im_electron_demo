@@ -73,6 +73,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [isEmojiPopup, setEmojiPopup] = useState(false);
     const [isRecordPopup, setRecordPopup] = useState(false);
     const [shotKeyTip, setShotKeyTip] = useState('按Ctrl+Enter键发送消息');
+    const [ isTextNullEmpty, setIsTextNullEmpty ] = useState(true);
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -387,7 +388,9 @@ export const MessageInput = (props: Props): JSX.Element => {
         setActiveFeature("")
     }
 
-    const editorChange = (editorState) => {
+    const editorChange = (editorState,a,b) => {
+        console.warn(editorState.toHTML())
+        setIsTextNullEmpty(editorStateDisabled(editorState.toText()))
         setEditorState(editorState)
     }
 
@@ -489,11 +492,11 @@ export const MessageInput = (props: Props): JSX.Element => {
                     placeholder={placeHolderText}
                 />
             </div>
-            <span className="message-input__button-area">
-                <Button type="primary" title={shotKeyTip} onClick={handleSendTextMsg} disabled={editorStateDisabled(editorState?.toText())}>发送</Button>
-            </span>
-            {/* <span className="message-input__down" title='切换发送消息快捷键'></span> */}
-            <Dropdown
+            <div className="message-input__button-area">
+                <Button type="primary" title={shotKeyTip} onClick={handleSendTextMsg} disabled={isTextNullEmpty}>发送</Button>
+            </div>
+             {/* <span className="message-input__down" title='切换发送消息快捷键'></span> */}
+             <Dropdown
                 clickClose={true}
                 className="message-input__down"
                 button=""
@@ -506,7 +509,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             >
                 {menu}
             </Dropdown>
-
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }
