@@ -63,6 +63,14 @@
                 }
             }
 
+            &.video {
+                background-image: url('../../assets/icon/msg-video.svg');
+
+                &.is-active {
+                    background-image: url('../../assets/icon/msg-video.svg');
+                }
+            }
+
             &.file {
                 background-image: url('../../assets/icon/file-message.svg');
 

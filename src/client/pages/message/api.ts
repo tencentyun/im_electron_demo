@@ -419,7 +419,6 @@ export const searchGroup = async (params: {
   console.log("searchGroup", JSON.parse(json_param || "[]"));
   return JSON.parse(json_param || "[]");
 };
-
 export const searchFriends = async (params: {
   keyWords: string;
 }): Promise<any> => {

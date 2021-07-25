@@ -133,24 +133,27 @@ const createWindow = () => {
   // 注册截图快捷键
   globalShortcut.register("CommandOrControl+Alt+C", () => {
     clipboard.clear();
-    // const url = downloadUrl + "\\screenShot.png";
-    // child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe", () => {
-    //   let pngs = clipboard.readImage().toPNG();
-    //   fs.writeFile(url, pngs, (err) => {
-    //     fs.readFile(url, (err, data) => {
-    //       mainWindow.webContents.send("screenShotUrl", { data, url });
-    //     });
-    //   });
-    // });
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(path.join(process.cwd(), '/resources/extraResources', 'cut.exe'), () => {
+    child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe", () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
           mainWindow.webContents.send("screenShotUrl", { data, url });
         });
       });
-    })
+    });
+    // const url = downloadUrl + "\\screenShot.png";
+    // child_process.exec(path.join(process.cwd(), '/resources/extraResources', 'cut.exe'), () => {
+    //   let pngs = clipboard.readImage().toPNG();
+    //   fs.writeFile(url, pngs, (err) => {
+    //     fs.readFile(url, (err, data) => {
+    //       mainWindow.webContents.send("screenShotUrl", {
+    //         data,
+    //         url
+    //       });
+    //     });
+    //   });
+    // })
   });
   // 防止同时打开多个客户端
   const gotTheLock = app.requestSingleInstanceLock()
@@ -170,7 +173,10 @@ const createWindow = () => {
     })
   }
   let sendUpdateMessage = (message, data) => {
-    mainWindow.webContents.send("message", { message, data });
+    mainWindow.webContents.send("message", {
+      message,
+      data
+    });
   };
   // 自动更新升级
   let checkForUpdates = () => {
@@ -232,7 +238,10 @@ const createWindow = () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
-          mainWindow.webContents.send("screenShotUrl", { data, url });
+          mainWindow.webContents.send("screenShotUrl", {
+            data,
+            url
+          });
         });
       });
     })
