@@ -15,10 +15,6 @@
       height: 36px;
       border-bottom: 1px solid #eee;
 
-      &--typeoff {
-        background-color: #adadad;
-      }
-
       &--type {
         position: absolute;
         bottom: 0;
@@ -31,6 +27,11 @@
         cursor: pointer;
         margin-left: 3px;
       }
+      
+      &--typeoff {
+        background-color: #adadad;
+      }
+
 
       &--avatar {
         position: relative;
