@@ -84,6 +84,19 @@ const convertBase64UrlToBlob = (urlData) => {
     return new Blob([ab], { type: 'image/jpeg' })
 }
 
+/**
+ * 文字高亮
+ */
+const highlightText = (text, content, color = '#006eff') => {
+    if (!text) {
+      return content
+    }
+    if (!content || !content.includes(text)) {
+      return content
+    }
+    return content.replaceAll(text, `<span style='color: ${color}'>${text}</span>`)
+}
+
 export {
     isWin,
     minSizeWin,
@@ -93,5 +106,6 @@ export {
     downloadFilesByUrl,
     throttle,
     dataURLtoBlob,
-    convertBase64UrlToBlob
+    convertBase64UrlToBlob,
+    highlightText
 }
