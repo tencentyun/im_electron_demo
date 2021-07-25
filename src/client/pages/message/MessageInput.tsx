@@ -132,7 +132,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handleSendTextMsg = async () => {
         console.warn(editorState?.toHTML())
         
-        if (editorStateDisabled(editorState?.toText())) {
+        if (editorStateDisabled(editorState)) {
             return
         }
         let toTextContent = editorState?.toText()
@@ -475,7 +475,7 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const editorChange = (editorState,a,b) => {
         console.warn(editorState.toHTML())
-        setIsTextNullEmpty(editorStateDisabled(editorState.toText()))
+        setIsTextNullEmpty(editorStateDisabled(editorState))
         setEditorState(editorState)
     }
 
@@ -538,7 +538,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }, [])
 
     const editorStateDisabled = (text) => {
-        return !text.replace(/ /g, '').replace(/\n/g, '')
+        return (!text?.toText().replace(/ /g, '').replace(/\n/g, '') && text?.toHTML().indexOf('<img src=') === -1)
     }
 
     return (

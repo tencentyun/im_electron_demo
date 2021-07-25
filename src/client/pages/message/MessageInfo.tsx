@@ -178,7 +178,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     }
     return buuer
   };
-
+  
   return (
     <>
       <div className="message-info">
@@ -205,13 +205,13 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 userID={conv_id}
                 groupID={conv_id}
               />
-               <span className="message-info__header--name">
+               <span className="message-info-view__header--name">
                   {nickName || conv_id}
                 </span>
                 {
                   conv_type === 1 ?
                   <span title={isOnInternet()?'在线':'离线'} 
-                    className={['message-info__header--type', !isOnInternet()?'message-info__header--typeoff': ''].join(' ')}
+                    className={['message-info-view__header--type', !isOnInternet()?'message-info-view__header--typeoff': ''].join(' ')}
                   >
                   </span>:null
                 }
