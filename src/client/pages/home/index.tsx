@@ -14,6 +14,7 @@ import { UnreadCount } from './unreadCount';
 import { Profile } from './profile';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeFunctionTab } from '../../store/actions/ui';
+import { Organization } from '../organization/organization';
 
 const navList = [
     {
@@ -39,6 +40,11 @@ const navList = [
         address: '/home/official',
 
     },
+    {
+        id: 'organization',
+        title: '组织架构',
+        address: '/home/organization',
+    }
     // {
     //     id: 'settings',
     //     title: '设置',
@@ -101,6 +107,7 @@ export const Home = (): JSX.Element => {
                 <Route path="/home/calendar" component={CalendarComponent}></Route>
                 <Route path="/home/official" component={OfficialComponent}></Route>
                 <Route path="/home/setting" component={Setting}></Route>
+                <Route path="/home/organization" component={Organization}></Route>
             </Switch>
         </div>
     </div>

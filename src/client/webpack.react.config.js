@@ -6,11 +6,15 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
     mainFields: ['main', 'module', 'browser'],
   },
-  entry: './src/renderer.ts',
+  entry: {
+    main: './app.tsx',
+    call: './call.tsx'
+  } ,
   target: 'electron-renderer',
   devtool: 'source-map',
   module: {
-    rules: [{
+    rules: [
+      {
         test: /\.(js|ts)$/,
         exclude: /node_modules/,
         use: {
@@ -44,7 +48,7 @@ module.exports = {
     ]
   },
   devServer: {
-    contentBase: path.join(__dirname, './bundle'),
+    contentBase: path.join(__dirname, '../../bundle'),
     historyApiFallback: true,
     compress: true,
     hot: true,
@@ -53,39 +57,44 @@ module.exports = {
     proxy: {
       '/api': {
         target: 'http://106.52.161.51:30006/',
-        secure: false, // http请求https，这里需设置成false,
+        secure: false,
         pathRewrite: {
-          "^/api": ""
+          '^/api':''
         },
-        changeOrigin: true // 一些服务器防止爬虫会设置origin,
+        changeOrigin:true
       },
       '/sticker': {
         target: 'http://106.52.161.51:30006/',
-        secure: false, // http请求https，这里需设置成false,
-        changeOrigin: true // 一些服务器防止爬虫会设置origin,
+        secure: false,
+        changeOrigin:true
       },
       '/status': {
         target: 'http://106.52.161.51:30006/',
-        secure: false, // http请求https，这里需设置成false,
-        changeOrigin: true // 一些服务器防止爬虫会设置origin,
+        secure: false,
+        changeOrigin:true
       }
     }
   },
   output: {
-    path: path.resolve(__dirname, './bundle'),
-    filename: 'js/[name].js',
-    publicPath: './',
+    path: path.resolve(__dirname, '../../bundle'),
+    filename: '[name].js',
+    chunkFilename: '[id].[chunkhash].js'
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Im electron demo',
-      // Load a custom template (lodash by default)
-      template: 'index.html'
+        chunks: ['main'],
+        template: 'index.html',
+        filename: 'index.html'
+      }),
+    new HtmlWebpackPlugin({
+      chunks: ['call'],
+      template: 'call.html',
+      filename: 'call.html'
     })
   ],
   node: {
     global: true,
-    __dirname: true,
-    __filename: true
+      __dirname: true,
+      __filename: true
   }
 };

@@ -1,9 +1,29 @@
 .message-input {
     height: 100%;
-
+    position: relative;
+    .tea-overlay {
+        left: 800px;
+    }
+    .tea-dropdown-btn.tea-dropdown__header{
+        padding-left: 0;
+    }
     &.disabled-style {
         pointer-events: none;
         opacity: 0.7;
+    }
+
+    &.draging-style {
+        opacity: 0.7;
+        &::after {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 1px dashed #666;
+
+        }
     }
 
     &__feature-area {
@@ -66,7 +86,13 @@
                     background-image: url('../../assets/icon/phone-active.svg');
                 }
             }
+            &.screen-shot {
+                background-image: url('../../assets/icon/screen-shot.svg');
 
+                &.is-active {
+                    background-image: url('../../assets/icon/screen-shot.svg');
+                }
+            }
             &.more {
                 background-image: url('../../assets/icon/more.svg');
                 &.is-active {
@@ -83,15 +109,36 @@
             height: 100%;
             border: none;
         }
+        .public-DraftEditor-content{
+            div{
+                display: inline-block;
+            }
+        }    
+        .public-DraftEditorPlaceholder-root {
+           font-size: 14px;
+        }
+        .bf-controlbar{
+            height: 0;
+            overflow: hidden;
+        }
     }
 
     &__button-area {
         position: absolute;
-        right: 20px;
+        right: 44px;
         bottom: 20px;
         z-index: 1;
     }
-
+    &__down {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        z-index: 1;
+        // background: url('../../assets/icon/down.svg') center no-repeat;
+        // padding: 14px;
+        // border: 1px solid #eee;
+        // cursor: pointer;
+    }
     &__at-popup {
         position: absolute;
         right: 20px;
@@ -102,6 +149,9 @@
         position: absolute;
         right: 20px;
         bottom: 20px;
+    }
+    .chooseImg {
+
     }
 }
 // div.bf-content {

@@ -13,7 +13,7 @@
   }
 
   & .tea-drawer__body {
-    padding: 0;
+    padding: 0 0 20px 0;
     & .tea-drawer__body-inner {
       padding: 20px;
       height: 100%;
@@ -21,10 +21,10 @@
       overflow-x: hidden;
 
       &:hover {
-        &::-webkit-scrollbar {
-          width: 8px;
-          background-color: #fff;
-        }
+        // &::-webkit-scrollbar {
+        //   width: 8px;
+        //   background-color: #fff;
+        // }
       }
       &::-webkit-scrollbar {
         width: 0px;

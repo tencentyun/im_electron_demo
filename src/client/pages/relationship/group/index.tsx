@@ -12,7 +12,7 @@ export const Group = (): JSX.Element => {
   }, []);
 
   return (
-    <LoadingContainer loading={loading}>
+    <LoadingContainer loading={loading} style={{ height: "100%" }}>
       <div className="group">
         <Title onRefresh={retry} />
         <GroupList value={value} onRefresh={retry} />

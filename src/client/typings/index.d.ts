@@ -1,13 +1,19 @@
 declare namespace State {
     export type RootState = {
         login: {
-            isLogin: boolean;
+            isLogin: boolean
         },
-        userInfo: userInfo,
-        conversation: conversation,
-        historyMessage: historyMessage,
-        ui: ui,
+        userInfo: userInfo
+        conversation: conversation
+        historyMessage: historyMessage
+        section:section
         userTypeList: Array<userTypeData>
+        ui: ui
+        groupDrawer: GroupDrawer
+    }
+    export type GroupDrawer = {
+        toolsDrawerVisible: boolean;
+        toolsTab: 'setting' | 'announcement';
     }
     export type functionTab = 'message' | 'relationship'
     export type userTypeData = {
@@ -15,8 +21,14 @@ declare namespace State {
         To_Account: string
     }
     export type ui = {
-        function_tab: functionTab
+        function_tab: functionTab,
+        replace_router: boolean
     }
+    
+    export type section = {
+        section: Array<object>
+    }
+
     export type historyMessage = {
         historyMessageList:Map<string, Array<message>>
     }
@@ -122,6 +134,7 @@ declare namespace State {
     export type userInfo = {
         userId: string,
         faceUrl: string,
+        gender:string,
         nickName: string,
         role: number,
         gender: number

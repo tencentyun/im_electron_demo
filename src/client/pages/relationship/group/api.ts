@@ -10,10 +10,12 @@ export type GroupList = {
 
 interface createGroupParams {
   groupName: string;
-  groupAnnouncement: string;
+  groupIntroduction?: string;
+  groupAnnouncement?: string;
   joinGroupMode: string;
   groupMember: string;
   groupType: string;
+  groupAvatarUrl: string;
 }
 
 export const getJoinedGroupList = async (): Promise<GroupList> => {
@@ -47,9 +49,11 @@ export const createGroup = async (params: createGroupParams): Promise<any> => {
   const {
     groupName,
     groupMember,
+    groupIntroduction,
     groupAnnouncement,
     groupType,
     joinGroupMode,
+    groupAvatarUrl
   } = params;
   const createParams = {
     create_group_param_add_option: Number(joinGroupMode),
@@ -61,9 +65,11 @@ export const createGroup = async (params: createGroupParams): Promise<any> => {
     ],
     create_group_param_group_name: groupName,
     create_group_param_group_type: Number(groupType),
-    create_group_param_notification: groupAnnouncement,
+    create_group_param_face_url: groupAvatarUrl,
+    ...(groupIntroduction && {create_group_param_introduction: groupIntroduction}),
+    ...(groupAnnouncement && {create_group_param_notification: groupAnnouncement})
   };
-
+  console.log('创建群参数',createParams )
   const { data } = await timRenderInstance.TIMGroupCreate({
     params: createParams,
   });

@@ -1,6 +1,8 @@
 import React from 'react';
 import noResultImg from '../../../../assets/icon/no-result.png';
 
+
+
 import './empty-result.scss';
 
 export const EmptyResult = ({contentText = ''}) => (

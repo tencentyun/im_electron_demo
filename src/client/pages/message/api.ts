@@ -1,3 +1,4 @@
+import { HISTORY_MESSAGE_COUNT } from "../../constants";
 import timRenderInstance from "../../utils/timRenderInstance";
 
 type SendMsgParams<T> = {
@@ -83,7 +84,7 @@ type MemberInfo = {
   }[];
 };
 
-const getUserInfoList = async (userIdList: Array<string>) => {
+export const getUserInfoList = async (userIdList: Array<string>) => {
   const {
     data: { code, json_param },
   } = await timRenderInstance.TIMProfileGetUserProfileList({
@@ -253,17 +254,16 @@ export const TIMMsgSetGroupReceiveMessageOpt = async (group_id, opt) => {
   });
 };
 
-export const getMsgList = async (convId, convType) => {
+export const getMsgList = async (convId, convType,lastMsg=null) => {
   const {
     data: { json_params },
   } = await timRenderInstance.TIMMsgGetMsgList({
     conv_id: convId,
     conv_type: convType,
     params: {
-      msg_getmsglist_param_last_msg: null,
-      msg_getmsglist_param_count: 100,
+      msg_getmsglist_param_last_msg: lastMsg,
+      msg_getmsglist_param_count: HISTORY_MESSAGE_COUNT,
     },
-    user_data: "123",
   });
 
   return JSON.parse(json_params);
@@ -275,13 +275,12 @@ export const markMessageAsRead = async (
   last_message_id
 ) => {
   const {
-    data: { code, json_params, desc },
+    data: { code, json_param, desc },
   } = await timRenderInstance.TIMMsgReportReaded({
     conv_type: conv_type,
     conv_id: conv_id,
-    message_id: last_message_id,
   });
-  return { code, desc, json_params };
+  return { code, desc, json_param };
 };
 
 export const sendMsg = async ({
@@ -371,13 +370,13 @@ export const deleteMsg = async ({ convId, convType, msgId }) => {
 };
 
 export const inviteMemberGroup = async (params: {
-  UID: string;
+  UIDS: Array<string>;
   groupId: string;
 }): Promise<any> => {
-  const { UID, groupId } = params;
+  const { UIDS, groupId } = params;
   const inviteParams = {
     group_invite_member_param_group_id: groupId,
-    group_invite_member_param_identifier_array: [UID],
+    group_invite_member_param_identifier_array: UIDS,
   };
   const { data } = await timRenderInstance.TIMGroupInviteMember({
     params: inviteParams,
@@ -511,7 +510,7 @@ export const modifyGroupInfo = async (params: {
   const modifyFlags = Object.keys(modifyParams).map(
     (key) => modifyFlagMap[key]
   );
-
+  console.log('修改群参数', modifyParams)
   const fetchList = modifyFlags.map((currentFlag) =>
     timRenderInstance.TIMGroupModifyGroupInfo({
       params: {

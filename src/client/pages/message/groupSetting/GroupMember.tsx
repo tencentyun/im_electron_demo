@@ -1,21 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { useDialogRef } from "../../../utils/react-use/useDialog";
 import { Avatar } from "../../../components/avatar/avatar";
-import { useMessageDirect } from '../../../utils/react-use/useDirectMsgPage';
+import { useMessageDirect } from "../../../utils/react-use/useDirectMsgPage";
 import "./group-member.scss";
 import {
   GroupMemberListDrawer,
   GroupMemberListDrawerRecordsType,
 } from "./MemberListDrawer";
 import {
-  AddMemberRecordsType,
-  AddGroupMemberDialog,
-} from "./AddGroupMemberDialog";
-import {
   DeleteGroupMemberDialog,
   DeleteMemberRecordsType,
 } from "./DeleteGroupMember";
-import { getUserTypeQuery } from '../../../services/userType'
+import { getUserTypeQuery } from "../../../services/userType";
+
+import {
+  AddGroupMemberDialog,
+  AddMemberRecordsType
+}from '../../../components/pull/pull'
+
+import { GroupMemberBubble } from "./GroupMemberBubble";
+import { getLoginUserID } from '../api';
 
 export const GroupMember = (props: {
   userList: {
@@ -23,6 +27,7 @@ export const GroupMember = (props: {
     user_profile_nick_name: string;
     group_member_info_member_role: number;
     user_profile_identifier: string;
+    user_profile_gender: string;
   }[];
   onRefresh: () => Promise<any>;
   userIdentity: number;
@@ -35,11 +40,10 @@ export const GroupMember = (props: {
     userList,
     groupId,
     groupType,
-    groupAddOption,
-    userId,
     userIdentity,
     onRefresh,
   } = props;
+
 
   const popupContainer = document.getElementById("messageInfo");
 
@@ -74,47 +78,49 @@ export const GroupMember = (props: {
     directToMsgPage({
       convType: 1,
       profile: profile,
-    })
+    });
   };
   useEffect(() => {
     getUsetGroupStatus();
   }, [userList]);
 
-  const [ userGroupType, setUserGroupType ] = useState([]);
+  const [userGroupType, setUserGroupType] = useState([]);
 
   // 获取当前群内好友状态
-  const getUsetGroupStatus = () => {
+  const getUsetGroupStatus = async () => {
     if (userList.length <= 0) {
-      return
+      return;
     }
     // const sdkappid = "1400529075";
-    const uid = "YANGGUANG37";
+    // const uid = "YANGGUANG37";
+    const uid = await getLoginUserID();
     const To_Account = ["denny1", "denny2"];
     userList.forEach((i) => {
-        To_Account.push(i.user_profile_identifier)
-    })
+      To_Account.push(i.user_profile_identifier);
+    });
 
-    getUserTypeQuery({ uid, To_Account }).then(data => {
-      if (data.ErrorCode === 0) {
-        console.warn(1)
-        setUserGroupType(data.queryResult)
-      }
-    }).catch(err => {
-      console.warn('返回错误信息', err)
-    })
-  }
-
-  const isOnInternet = (id)=>{
-    let buuer = false;
-    userGroupType.forEach(i=>{
-      if(i.To_Account === id && i.Status === 'Online'){
-        buuer = true 
-      }
-    })
-    return buuer
+    getUserTypeQuery({ uid, To_Account })
+      .then((data) => {
+        if (data.ErrorCode === 0) {
+          console.warn(1);
+          setUserGroupType(data.queryResult);
+        }
+      })
+      .catch((err) => {
+        console.warn("返回错误信息", err);
+      });
   };
 
-  console.warn('所有群成员', userList, '获取的群状态数据', userGroupType)
+  const isOnInternet = (id) => {
+    let buuer = false;
+    userGroupType.forEach((i) => {
+      if (i.To_Account === id && i.Status === "Online") {
+        buuer = true;
+      }
+    });
+    return buuer;
+  };
+  console.warn("所有群成员", userList, "获取的群状态数据", userGroupType);
 
   return (
     <>
@@ -135,17 +141,36 @@ export const GroupMember = (props: {
         </div>
         <div className="group-member--avatar">
           {userList?.slice(0, 15)?.map((v, index) => (
-            <div className="group-member--avatar-box" key={`${v.user_profile_face_url}-${index}`} onDoubleClick={() => { handleMsgGroupRead(v) }}>
-              <Avatar
-                key={`${v.user_profile_face_url}-${index}`}
-                url={v.user_profile_face_url}
-                nickName={v.user_profile_nick_name}
-                userID={v.user_profile_identifier}
+            <div
+              className="group-member--avatar-box"
+              key={`${v.user_profile_face_url}-${index}`}
+              onDoubleClick={(e) => {
+                handleMsgGroupRead(v);
+              }}
+            >
+              <GroupMemberBubble
+                user={v}
+                children={
+                  <>
+                    <Avatar
+                      url={v.user_profile_face_url}
+                      nickName={v.user_profile_nick_name}
+                      userID={v.user_profile_identifier}
+                    />
+                  </>
+                }
               />
-              <span title={isOnInternet(v.user_profile_identifier) ? '在线' : '离线'}
-                  className={['group-member--avatar-type', !isOnInternet(v.user_profile_identifier) ? 'group-member--avatar-typeoff' : ''].join(' ')}
-                >
-              </span>
+              <span
+                title={
+                  isOnInternet(v.user_profile_identifier) ? "在线" : "离线"
+                }
+                className={[
+                  "group-member--avatar-type",
+                  !isOnInternet(v.user_profile_identifier)
+                    ? "group-member--avatar-typeoff"
+                    : "",
+                ].join(" ")}
+              ></span>
             </div>
           ))}
           {canInviteMember && (
