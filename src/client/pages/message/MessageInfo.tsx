@@ -49,6 +49,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   );
   const userTypeList = useSelector((state: State.RootState) => state.userTypeList);
   const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
+  const [ isPress, setIsPress] = useState(false)
+  const [ editorHeight, seteditorHeight] = useState(250)
   
   const { toolsTab, toolsDrawerVisible } = useSelector(
     (state: State.RootState) => state.groupDrawer
@@ -179,9 +181,29 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     return buuer
   };
 
+  // 滑动高度判断赋值
+  const adjustHeight = (e)=>{
+    if(isPress){
+      let maxHeight = document.documentElement.clientHeight
+      let height = maxHeight - e.clientY
+      if(height < 170){
+        height = 170
+      }else if(height > maxHeight - 150){
+        height = maxHeight - 150
+      }
+      seteditorHeight(height)
+    }
+  }
+
+  const sliderStyle = ()=>{
+    return {
+      'height': editorHeight + 'px'
+    }
+  }
+
   return (
     <>
-      <div className="message-info">
+      <div className="message-info" onMouseMove={adjustHeight} onMouseUp={()=>setIsPress(false)}>
         <div className="message-info-view" id="messageInfo">
           <header className="message-info-view__header">
             <div
@@ -205,13 +227,13 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 userID={conv_id}
                 groupID={conv_id}
               />
-               <span className="message-info__header--name">
+               <span className="message-info-view__header--name">
                   {nickName || conv_id}
                 </span>
                 {
                   conv_type === 1 ?
                   <span title={isOnInternet()?'在线':'离线'} 
-                    className={['message-info__header--type', !isOnInternet()?'message-info__header--typeoff': ''].join(' ')}
+                    className={['message-info-view__header--type', !isOnInternet()?'message-info-view__header--typeoff': ''].join(' ')}
                   >
                   </span>:null
                 }
@@ -225,7 +247,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
             <div className="message-info-view__content--view">
             <MessageView messageList={msgList || []} convId={conv_id} convType={conv_type} editorState={editorState} setEditorState={setEditorState}/>
             </div>
-            <div className="message-info-view__content--input">
+            <div className="message-info-view__content--slider" 
+              onMouseDown={()=>setIsPress(true)} 
+              ></div>
+            <div style={{ ...sliderStyle() }}  className="message-info-view__content--input">
               <MessageInput
                 convId={conv_id}
                 convType={conv_type}

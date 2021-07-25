@@ -1,29 +1,18 @@
 /* eslint-disable */
-import React, { useState, useRef, useEffect } from "react";
-import ReactDOM from 'react-dom';
+import React, { useState, useEffect } from "react";
 import { Button, Upload, message } from 'tea-component';
 import Cropper, { ReactCropperProps } from 'react-cropper';
-import "cropperjs/dist/cropper.css"
 import axios from 'axios'
 import './index.scss'
+import "cropperjs/dist/cropper.css"
+import { dataURLtoBlob, convertBase64UrlToBlob } from '../../utils/tools'
 
-
-//file对象转换为Blob对象 
-
-function dataURLtoBlob(file, cb) {
-  if (!file) return
-  if (window.FileReader) {
-    var fr = new FileReader();
-    fr.readAsDataURL(file);
-    fr.onloadend = function (e) {
-      cb && cb(e.target.result)
-    }
-  }
-}
+const imgStyle = { width: '60px', height: '60px', cursor: 'pointer'}
 
 interface IRes {
+  upload_url: string;
   download_url: string;
-  data: any
+  data: any;
 }
 
 // 组件默认属性
@@ -33,11 +22,11 @@ const defaultImgCropperProp: ImgCropperProp = {
     aspectRatio: 1,
     guides: false,
     style: {
-      width: '100%',
-      height: '200px',
-    }
+      width: "100%",
+      height: "200px",
+    },
   },
-}
+};
 
 interface ImgCropperProp {
   afterCropper?: (imgUrl?: string) => void;
@@ -50,24 +39,9 @@ interface ImgCropperProp {
   onChange?: (imgUrl?: string) => void;
 }
 
-function getBlob(file) {
-     const [blob, setBlob] = useState(null);
-  if (window.FileReader) {
-    var fr = new FileReader();
-    fr.readAsDataURL(file);
-    fr.onloadend = function (e) {
-      setBlob(e.target.result)
-    }
-  }
-
-  return blob
-}
-
-
 const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   prop = Object.assign({}, defaultImgCropperProp, prop)
-  console.log('prop',prop)
-  const { value, onChange } = prop
+  const { value, onChange, cropperOption, isShowCropper } = prop
   const [uploading, setUploading] = useState(null);
   const [imgUrl, setImgUrl] = useState(null);
   const [cropperUrl, setropperUrl] = useState(null);
@@ -76,96 +50,77 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   const [_val, setVal] = useState(value)
   let instance = null ,fileObj = null
 
-  useEffect(() => {
+  const onSetImgUrl = async (file) =>{
     if (prop.isShowCropper) {
-      console.log('fileObj', fileObj, 'selectFile', selectFile);
-      console.log('window.FileReader && fileObj', window.FileReader && fileObj);
-      console.log('window.FileReader', window.FileReader);
-      //     if (window.FileReader && selectFile) {
-       
-      //   var fr = new FileReader();
-      //   fr.readAsDataURL(selectFile);
-      //       fr.onloadend = (e) => {
-      //         console.log('e');
-      //      if (selectFile.type === 'image/gif') {
-      //         setImgUrl('')
-      //       } else {
-
-      //         setImgUrl(e.target.result)
-      //       }
-      //   }
-      // }
+      const url = await dataURLtoBlob(file)
+      if (file.type === 'image/gif') {
+        setImgUrl('')
+      } else {
+        setImgUrl(url)
+      }
     }
-      // console.log('getBlob(selectFile)',getBlob(selectFile));
+  }
 
-  }, [selectFile])
+  // useEffect(() => {
+  //   if(prop.value){
+  //     onChange?.(prop.value)
+  //   }else{
+  //     onChange?.(_val)
+  //   }
+  //   console.log('_val', _val)
+  // }, [_val])
 
   useEffect(() => {
-    onChange?.(_val)
-    console.log('_val', _val)
-  }, [_val])
-
-  useEffect(() => {
-    setCropper(instance)
-  }, [instance])
-
+    setCropper(instance);
+  }, [instance]);
 
 
   // 确定裁剪
   function confirmCopper() {
     if (imgUrl) {
-      let base64Data = cropper.getCroppedCanvas().toDataURL()
-      prop.afterCropper?.(base64Data)
-      const fileType = selectFile ? '.' + selectFile.type.split('/')[1] : 'png'
-      const newFileName = new Date().getTime().toString() + Math.floor(Math.random() * 1000000).toString() + fileType
+      let base64Data = cropper.getCroppedCanvas().toDataURL();
+      prop.afterCropper?.(base64Data);
+      const fileType = selectFile ? "." + selectFile.type.split("/")[1] : "png";
+      const newFileName =
+        new Date().getTime().toString() +
+        Math.floor(Math.random() * 1000000).toString() +
+        fileType;
       fileObj = new File([base64Data], newFileName, {
         type: selectFile.type,
-      })
-      prop.cropperFile?.(fileObj)
+      });
+      prop.cropperFile?.(fileObj);
       handleUpload(base64Data).then((res: IRes) => {
-        const { download_url } = res
-        prop.afterUpload?.(download_url)
-        setVal(download_url)
+        const { download_url } = res;
+        prop.afterUpload?.(download_url);
+        setVal(download_url);
         if (!prop.isShowCropper) {
-          setropperUrl(download_url)
-          return
+          setropperUrl(download_url);
+          return;
         }
-  
-      })
+      });
     }
   }
 
-  function handleImg() {
-  console.log('   fileObj = file',    fileObj)
+  function handleOnStart() {
     if(!fileObj) return
     if (fileObj.type === 'image/gif') {
       var reader = new FileReader()
       reader.readAsDataURL(fileObj)
       reader.onload = () => {
-        let base64 = reader.result
-        console.log('base64')
+        let base64 = reader.result;
+        console.log("base64");
         handleUpload(base64).then((res: IRes) => {
           const { download_url } = res
           setImgUrl('')
           setVal(download_url)
           setropperUrl(download_url)
+          prop.afterUpload?.(download_url)
         })
       }
       return
     } 
-  
   }
 
-
-  const convertBase64UrlToBlob = (urlData) => {
-    let bytes = window.atob(urlData.split(',')[1]) // 去掉url的头，并转换为byte
-    let ab = new ArrayBuffer(bytes.length)
-    let ia = new Uint8Array(ab)
-    for (let i = 0; i < bytes.length; i++) {
-      ia[i] = bytes.charCodeAt(i)
-    }
-    return new Blob([ab], { type: 'image/jpeg' })
-  }
   // 上传逻辑
   const handleUpload = (base64Data) => {
     return new Promise((resolve, reject) => {
@@ -204,23 +159,16 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
             })
           },
           false
-        );
-
+        )
       }).catch(err => {
         reject(err)
         setUploading(false)
       })
     })
-
   }
-
 
   //用户选择文件 
   function handleBeforeUpload(file, fileList, isAccepted) {
-    console.log('handleBeforeUpload')
- 
-    console.log('handleBeforeUpload',file)
-   
     const is2m = (file as File).size/1024 /1024> 2
     if(is2m){
       message.warning({content:'图片不能大于2m'})
@@ -228,53 +176,69 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
     }
     fileObj = file
     setSelectFile(fileObj)
+    onSetImgUrl(fileObj)
     prop.beforeUpload?.(fileObj)
     return true
   }
-
-  function handleOnStart() {
-    console.log('handleOnStart')
-    handleImg()
-  }
-
-  const { cropperOption, isShowCropper } = prop
-
+  const successChange = () => {
+    if (prop.value) {
+      onChange?.(prop.value);
+    } else {
+      onChange?.(_val);
+    }
+  };
   return (
     <>
       <Upload
-        action="###"
+        action={prop.value}
         onStart={handleOnStart}
+        method={"put"}
+        onSuccess={successChange}
         beforeUpload={handleBeforeUpload}
       >
-        {
-          cropperUrl ? <img src={cropperUrl} alt="" style={{ width: '100px', height: '100px', }} /> :  _val? '':<Button htmlType="button" className="upload-btn" loading={uploading}>点击上传</Button>
-        }
-        {
-          !cropperUrl && !imgUrl && _val ? (<img src={_val} alt="无法加载" style={{ width: '100px', height: '100px', }} />) : <div>暂无头像</div>
-        }
+        {cropperUrl ? (
+          <img
+            src={cropperUrl}
+            alt=""
+            style={imgStyle}
+          />
+        ) : _val ? (
+          ""
+        ) : (
+          <Button htmlType="button" className="upload-btn" loading={uploading}>
+            点击上传
+          </Button>
+        )}
+        {!cropperUrl && !imgUrl && _val ? (
+          <img
+            src={_val}
+            alt="无法加载"
+            style={imgStyle}
+          />
+        ) : (
+          <div>暂无头像</div>
+        )}
       </Upload>
       {
-        isShowCropper && <div>
-          {
-
-            imgUrl ?
-
-              (<Cropper
-                {...cropperOption}
-                src={imgUrl}
-                onInitialized={(instance) => {
-                  setCropper(instance);
-                }}
-              />) : ''}
-          {
-            imgUrl && <div> <Button className="confirmCopper-btn" loading={uploading} htmlType="button" onClick={confirmCopper}>确定</Button> </div>
-          }
-
+        isShowCropper && imgUrl && <div>
+            <Cropper
+              {...cropperOption}
+              src={imgUrl}
+              onInitialized={(instance) => {
+                setCropper(instance);
+              }}
+            />
+            <Button
+              className="confirmCopper-btn"
+              loading={uploading}
+              htmlType="button"
+              onClick={confirmCopper}>
+                确定
+            </Button>
         </div>
       }
-
     </>
   );
 };
 
-export default ImgCropper
+export default ImgCropper;

@@ -1,13 +1,13 @@
 import { Button, PopConfirm } from "tea-component";
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   updateCurrentSelectedConversation,
   replaceConversaionList,
 } from "../../../store/actions/conversation";
 
 import { useDialogRef } from "../../../utils/react-use/useDialog";
-import { quitGroup } from "../../relationship/group/api";
+import { quitGroup, deleteGroup } from "../../relationship/group/api";
 import { getConversionList, TIMConvDelete } from "../api";
 import "./group-operator.scss";
 import {
@@ -31,6 +31,7 @@ export const GroupOperator = (props: {
 }): JSX.Element => {
   const { groupId, userId, groupType, groupOwner, close, onRefresh, userList } = props;
   const [quitLoading, setQuitLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -38,9 +39,10 @@ export const GroupOperator = (props: {
 
   const isOwner = groupOwner === userId;
 
+  // 是群主并且非私有群可以解散
+  const canDeleteGroup = groupOwner === userId && groupType !== 1;
   // 私有群全员可退出群聊 其他群只有非群主可以退出
-  const canQuitGroup = groupType === 1 || !isOwner;
-
+  const canQuitGroup = isOwner === true || groupType === undefined ? false : groupType === 1 || !isOwner
   // 只有群主可以进行群转让 直播群不可以转让
   const canTransferGroup = isOwner && ![3,4].includes(groupType);
 
@@ -71,6 +73,18 @@ export const GroupOperator = (props: {
     setQuitLoading(false);
   };
 
+  const handleDeleteGroup = async () => {
+    try {
+      setDeleteLoading(true);
+      await deleteGroup(groupId);
+      await updateConversationListAndCurrentSelectConveration();
+      close();
+    } catch (e) {
+      console.log(e.message);
+    }
+    setDeleteLoading(false);
+  };
+
   return (
     <>
       <div className="group-operator">
@@ -97,6 +111,33 @@ export const GroupOperator = (props: {
           >
             <Button type="error" className="group-operator--btn">
               退出群组
+            </Button>
+          </PopConfirm>
+        )}
+        <div className="group-operator--divider" />
+        {canDeleteGroup && (
+          <PopConfirm
+            title="确认要解散群聊吗?"
+            footer={(close) => (
+              <>
+                <Button
+                  type="link"
+                  loading={deleteLoading}
+                  onClick={() => {
+                    handleDeleteGroup();
+                    close();
+                  }}
+                >
+                  确认
+                </Button>
+                <Button type="text" onClick={close}>
+                  取消
+                </Button>
+              </>
+            )}
+          >
+            <Button type="error" className="group-operator--btn">
+            解散群聊
             </Button>
           </PopConfirm>
         )}
