@@ -4,6 +4,9 @@ import { Link, Switch, Route, useLocation } from 'react-router-dom';
 
 import { Message } from '../message/index';
 import { RelationShip } from '../relationship/relationship';
+import { CalendarComponent } from '../calendar/index';
+import { OfficialComponent } from '../official/index';
+
 import { Setting } from '../settings/Setting';
 
 import './home.scss';
@@ -24,6 +27,18 @@ const navList = [
         address: '/home/connection',
 
     },
+    {
+        id: 'calendar',
+        title: '日历',
+        address: '/home/calendar',
+
+    },
+    {
+        id: 'official',
+        title: '公众号',
+        address: '/home/official',
+
+    },
     // {
     //     id: 'settings',
     //     title: '设置',
@@ -40,6 +55,8 @@ export const Home = (): JSX.Element => {
     const currentId = {
         '/home/message': 'message',
         '/home/connection': 'contacts',
+        '/home/calendar': 'calendars',
+        '/home/official': 'officials',
         '/home/setting': 'settings',
     }[path] || 'message';
 
@@ -81,6 +98,8 @@ export const Home = (): JSX.Element => {
             <Switch>
                 <Route path="/home/message" component={Message}></Route>
                 <Route path="/home/connection" component={RelationShip}></Route>
+                <Route path="/home/calendar" component={CalendarComponent}></Route>
+                <Route path="/home/official" component={OfficialComponent}></Route>
                 <Route path="/home/setting" component={Setting}></Route>
             </Switch>
         </div>
