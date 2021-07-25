@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message, Bubble, Dropdown, List } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
-import { reciMessage } from '../../store/actions/message'
+import { reciMessage, updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup, CUSTEMOJI } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
@@ -15,6 +15,8 @@ import chooseImg from '../../assets/icon/choose.png'
 import { string } from 'prop-types';
 import axios from "axios";
 import { convertBase64UrlToBlob } from "../../utils/tools";
+import { setPathToLS } from '../../utils/messageUtils';
+
 type Props = {
     convId: string,
     convType: number,
@@ -241,7 +243,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         videoPicker.current.click();
     }
     const sendImageMessage = async (file) => {
-        // console.log(file, '发送文件')
+        if(!file) return false;
         if (file) {
             const { data: { code, desc, json_params } } = await sendImageMsg({
                 convId,
@@ -265,6 +267,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const sendFileMessage = async (file) => {
+        if(!file) return false;
         const { data: { code, desc, json_params } } = await sendFileMsg({
             convId,
             convType,
@@ -276,12 +279,13 @@ export const MessageInput = (props: Props): JSX.Element => {
             }],
             userId,
         });
-
+        console.log(file,1111)
         if (code === 0) {
-            dispatch(reciMessage({
+            dispatch(updateMessages({
                 convId,
-                messages: [JSON.parse(json_params)]
+                message: JSON.parse(json_params)
             }))
+            setPathToLS(file.path)
         } else {
             message.error({ content: `消息发送失败 ${desc}` })
         }
@@ -318,6 +322,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const sendSoundMessage = async (file) => {
+        if(!file) return false;
         const { data: { code, json_params } } = await sendSoundMsg({
             convId,
             convType,

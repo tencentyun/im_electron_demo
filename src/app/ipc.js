@@ -31,6 +31,8 @@ class IPC {
                 case DOWNLOADFILE:
                     this.downloadFilesByUrl(params);
                     break;
+                case CHECK_FILE_EXIST:
+                    this.checkFileExist(params)
             }
         })
 
@@ -90,6 +92,9 @@ class IPC {
             // 已存在
             console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
         }
+    }
+    checkFileExist(path) {
+        return fs.existsSync(path)
     }
 }
 
