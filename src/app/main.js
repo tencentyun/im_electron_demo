@@ -131,7 +131,7 @@ const createWindow = () => {
   //   }
   // })
   // 注册截图快捷键
-  globalShortcut.register("CommandOrControl+Alt+C", () => {
+  globalShortcut.register("CommandOrControl+Shift+X", () => {
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
     child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe", () => {
