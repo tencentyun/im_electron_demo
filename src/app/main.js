@@ -1,9 +1,18 @@
-const { app, BrowserWindow, clipboard, globalShortcut, ipcMain, shell } = require('electron');
+const {
+  app,
+  BrowserWindow,
+  clipboard,
+  globalShortcut,
+  ipcMain,
+  shell
+} = require('electron');
 const path = require('path');
 const url = require('url');
 const TimMain = require('im_electron_sdk/dist/main');
 const fs = require('fs')
-const { autoUpdater } = require('electron-updater')
+const {
+  autoUpdater
+} = require('electron-updater')
 //const feedUrl = `http://oaim.crbank.com.cn:30003/_download/`
 const feedUrl = `http://localhost/`
 
@@ -64,14 +73,20 @@ const createWindow = () => {
       let pngs = clipboard.readImage().toPNG()
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
-          mainWindow.webContents.send('screenShotUrl', { data, url })
+          mainWindow.webContents.send('screenShotUrl', {
+            data,
+            url
+          })
         })
       })
     })
   })
 
   let sendUpdateMessage = (message, data) => {
-    mainWindow.webContents.send('message', { message, data });
+    mainWindow.webContents.send('message', {
+      message,
+      data
+    });
   };
 
   let checkForUpdates = () => {
@@ -127,7 +142,10 @@ const createWindow = () => {
       let pngs = clipboard.readImage().toPNG()
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
-          mainWindow.webContents.send('screenShotUrl', { data, url })
+          mainWindow.webContents.send('screenShotUrl', {
+            data,
+            url
+          })
         })
       })
     })

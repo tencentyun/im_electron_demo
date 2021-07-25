@@ -53,3 +53,14 @@ export const getMergeMessageAbstactArray = (messageGroup: State.message[]): stri
     })
     return ret;
 }
+
+/**
+ * 
+ * @param limitSize 所要限定的文件大小
+ * @param file 文件对象
+ * @returns boolean  true 符合限定的大小，反之不符合
+ */
+export const judgeFileSize = (limitSize: number, file: File) => {
+    const { size } = file
+    return limitSize >= size / 1024 / 1024
+}

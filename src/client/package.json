@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "braft-editor": "^2.3.9",
+    "dplayer": "^1.26.0",
     "final-form": "^4.20.2",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",

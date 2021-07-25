@@ -46,4 +46,4 @@ export const DEFAULT_USER_SIG = 'eJwtzMsOgjAQheF36VZDplNaK4kbFrpRMdUEt8ZWHbzQAGk
 
 // export const DEFAULT_USERID = '940928'; 
 // export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
-export const HISTORY_MESSAGE_COUNT = 100
+export const HISTORY_MESSAGE_COUNT = 10
