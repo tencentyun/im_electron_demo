@@ -520,7 +520,6 @@ export const modifyGroupInfo = async (params: {
       },
     })
   );
-
   const results = await Promise.all(fetchList);
   if (!results.find((item) => item?.data?.code !== 0)) {
     return {};

@@ -78,6 +78,18 @@ export const GroupSetting = (props: {
         groupAddOption={groupDetail.group_detial_info_add_option}
         userIdentity={currentUserSetting.group_member_info_member_role}
       />
+      {
+        groupDetail.group_detial_info_group_type === 0 &&
+        <>
+          <Divider />
+          <GroupJoinOption
+            joinOption={groupDetail.group_detial_info_add_option}
+            groupId={groupDetail.group_detial_info_group_id}
+            userIdentity={currentUserSetting.group_member_info_member_role}
+            onRefresh={retry}
+          />
+        </>
+      }
       <Divider />
       <GroupFlagMessage
         flagMsg={currentUserSetting.group_member_info_msg_flag}
@@ -85,15 +97,6 @@ export const GroupSetting = (props: {
         userId={userId}
         onRefresh={retry}
       />
-      <Divider />
-      {
-        groupDetail.group_detial_info_group_type === 0 &&
-        <GroupJoinOption
-          joinOption={groupDetail.group_detial_info_add_option}
-          groupId={groupDetail.group_detial_info_group_id}
-          onRefresh={retry}
-        />
-      }
       <Divider />
       <GroupNameCard
         nameCard={currentUserSetting.group_member_info_name_card}
