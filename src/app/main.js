@@ -1,4 +1,4 @@
-const { app, BrowserWindow, clipboard, globalShortcut, ipcMain, shell, Tray,nativeImage } = require('electron');
+const { app, BrowserWindow, clipboard, globalShortcut, ipcMain, shell, Tray, nativeImage } = require('electron');
 
 const path = require('path');
 const url = require('url');
@@ -133,15 +133,24 @@ const createWindow = () => {
   // 注册截图快捷键
   globalShortcut.register("CommandOrControl+Alt+C", () => {
     clipboard.clear();
+    // const url = downloadUrl + "\\screenShot.png";
+    // child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe", () => {
+    //   let pngs = clipboard.readImage().toPNG();
+    //   fs.writeFile(url, pngs, (err) => {
+    //     fs.readFile(url, (err, data) => {
+    //       mainWindow.webContents.send("screenShotUrl", { data, url });
+    //     });
+    //   });
+    // });
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe", () => {
+    child_process.exec(path.join(process.cwd(), '/resources/extraResources', 'cut.exe'), () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
           mainWindow.webContents.send("screenShotUrl", { data, url });
         });
       });
-    });
+    })
   });
   // 防止同时打开多个客户端
   const gotTheLock = app.requestSingleInstanceLock()
@@ -218,20 +227,25 @@ const createWindow = () => {
   ipcMain.on("SCREENSHOT", function () {
     //news 是自定义的命令 ，只要与页面发过来的命令名字统一就可以
     //接收到消息后的执行程序
-    // child_process.exec(path.join(process.cwd(), '/resources/extraResources', 'cut.exe'), () => {
-    //   let pngs = clipboard.readImage().toPNG()
-    //   mainWindow.webContents.send('screenShotUrl', { pngs })
-    // })
-    // 截图存放临时地址
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe", () => {
+    child_process.exec(path.join(process.cwd(), '/resources/extraResources', 'cut.exe'), () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
           mainWindow.webContents.send("screenShotUrl", { data, url });
         });
       });
-    });
+    })
+    // 截图存放临时地址
+    // const url = downloadUrl + "\\screenShot.png";
+    // child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe", () => {
+    //   let pngs = clipboard.readImage().toPNG();
+    //   fs.writeFile(url, pngs, (err) => {
+    //     fs.readFile(url, (err, data) => {
+    //       mainWindow.webContents.send("screenShotUrl", { data, url });
+    //     });
+    //   });
+    // });
   });
   // 打开文件
   ipcMain.on("OPENFILE", function (event, filename) {
