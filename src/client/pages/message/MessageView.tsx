@@ -386,7 +386,7 @@ export const MessageView = (props: Props): JSX.Element => {
     // 从发送消息时间开始算起，两分钟内可以编辑
     const isTimeoutFun = (time) => {
         const now = new Date()
-        if (parseInt(now.getTime() / 1000) - time > 2 * 60) {
+        if (now.getTime() / 1000 - time > 2 * 60) {
             return false
         } else {
             return true
@@ -406,6 +406,10 @@ export const MessageView = (props: Props): JSX.Element => {
         if (!isEmoji) {
             // 过滤添加到表情MenuItem
             menuData = menuData.filter(item => item.id !== 'addCustEmoji')
+        }
+        if(new Date().getTime() / 1000 - currMenuMessage.message_client_time > 120){
+            // 超时则过滤撤回按钮
+            menuData = menuData.filter(item => item.id !== 'revoke')
         }
         return menuData
     }
