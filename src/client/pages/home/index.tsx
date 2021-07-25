@@ -24,11 +24,6 @@ const navList = [
         title: '通讯录',
         address: '/home/connection',
 
-    },
-    {
-        id: 'organization',
-        title: '组织架构',
-        address: '/home/organization',
     }
     // {
     //     id: 'settings',

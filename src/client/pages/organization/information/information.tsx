@@ -22,6 +22,7 @@ interface Props{
 export const Informathion = (props: Props): JSX.Element => {
     // const { staffData }  = props;
     const  { staffData} = Object.assign({}, props);
+    console.log(staffData)
     const dispatch = useDispatch();
     const fillStyle = { width: '100%' };
     const directToMsgPage = useMessageDirect();

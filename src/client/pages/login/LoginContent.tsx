@@ -8,6 +8,7 @@ import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
 import { changeFunctionTab } from '../../store/actions/ui';
 import { setUserInfo } from '../../store/actions/user';
+import { loginUser } from '../../store/actions/loginUser';
 // eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
 import {filterGetDepartment,assemblyData} from '../../utils/orgin'
@@ -182,17 +183,22 @@ export const LoginContent = (): JSX.Element => {
         const { data: { code,data,desc,json_param }} = await timRenderInstance.TIMLogin(params);
         console.log(code,data,desc,json_param);
         if(code === 0) {
+            dispatch(loginUser({
+                userId: userID,
+                userSig:usersig
+            }))
             //获取部门
             filterGetDepartment({
                 DepId:"root_1"
             },(data)=>{
-                let sectionData = assemblyData([data],'SubDepsInfoList','StaffInfoList','DepName','Uname')
+                let sectionData = assemblyData([data],'SubDepsInfoList','StaffInfoList','DepName','Uname')[0].children
                 window.localStorage.setItem('section',JSON.stringify(sectionData))
                 window.localStorage.setItem('uid',userID)
+
                 dispatch(setUserInfo({
                     userId: userID
                 }));
-                dispatch(setUnreadCount(assemblyData([data],'SubDepsInfoList','StaffInfoList','DepName','Uname')))
+                dispatch(setUnreadCount(assemblyData([data],'SubDepsInfoList','StaffInfoList','DepName','Uname')[0].children))
                 dispatch(setIsLogInAction(true));
                 dispatch(changeFunctionTab('message'));
                 history.replace('/home/message');

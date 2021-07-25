@@ -25,7 +25,7 @@ export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service
  * 
  */
 // 私有化tim base url
-export const TIM_BASE_URL = ''
+export const TIM_BASE_URL = 'http://106.52.161.51'
 export const SDKAPPID = 1400187352
 export const SECRETKEY = 'f442d0cca069bbcc8ced55f4f113b965999b928c78e3cd83495728133a06f4cb' // 不可外传仅本次测试使用
 export const HUA_RUN_LOGIN_TEST = 'http://10.241.24.31:39021/commonauthservice_crbk/ws/OIDAuthService/userLogin'

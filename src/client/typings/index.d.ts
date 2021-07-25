@@ -9,6 +9,7 @@ declare namespace State {
         section:section
         userTypeList: Array<userTypeData>
         ui: ui
+        loginUser:loginUser
         groupDrawer: GroupDrawer,
     }
     export type GroupDrawer = {
@@ -27,6 +28,11 @@ declare namespace State {
     
     export type section = {
         section: Array<object>
+    }
+
+    export type loginUser = {
+        userId:string,
+        userSig:string 
     }
 
     export type historyMessage = {
