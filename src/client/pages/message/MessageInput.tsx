@@ -140,40 +140,36 @@ export const MessageInput = (props: Props): JSX.Element => {
         const htmlText = editorState.toHTML();
         const imgSrc = htmlText.match(/<img [^>]*src=['"]([^'"]+)[^>]*>/g)
         
-
-        if(imgSrc && imgSrc.length >0){
-            let formatText = [];
-            let textContent = htmlText.match(/<p>((\w|\W)*?)<\/p>/g)
-            if(textContent && textContent.length > 0){
-                formatText = textContent.map(item => {
-                    return item.replace(/<p>/g,'').replace(/<\/p>/g,'').replace(/<br\/>/g,'\n')
-                });
-            }
-            // imgSrc.forEach(async (i,index)=>{
-            //     await handleUpload(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,'')).then(src=>{
-            //         formatText.splice((index * 2)+1,0,`<img src="${src}" />`)
-            //     })
-            //     // aaa(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,''))
-            // })
-
-            const getImgsUrl = async ()=>{
-                return new Promise(async (resolve, reject) => {
-                    for (let i = 0; i < imgSrc.length; i++) {
-                        await handleUpload(imgSrc[i].replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,'')).then(src=>{
-                            formatText.splice((i * 2)+1,0,`<img src="${src}" />`)
-                        })
-                    }
-                    resolve(false);
-                })
-            }
-            await getImgsUrl().then(res=>{
-            })
-            toTextContent = formatText.join('')
-        }
-
-
-        
         try {
+            if(imgSrc && imgSrc.length >0){
+                let formatText = [];
+                let textContent = htmlText.match(/<p>((\w|\W)*?)<\/p>/g)
+                if(textContent && textContent.length > 0){
+                    formatText = textContent.map(item => {
+                        return item.replace(/<p>/g,'').replace(/<\/p>/g,'').replace(/<br\/>/g,'\n')
+                    });
+                }
+                // imgSrc.forEach(async (i,index)=>{
+                //     await handleUpload(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,'')).then(src=>{
+                //         formatText.splice((index * 2)+1,0,`<img src="${src}" />`)
+                //     })
+                //     // aaa(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,''))
+                // })
+
+                const getImgsUrl = async ()=>{
+                    return new Promise(async (resolve, reject) => {
+                        for (let i = 0; i < imgSrc.length; i++) {
+                            await handleUpload(imgSrc[i].replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,'')).then(src=>{
+                                formatText.splice((i * 2)+1,0,`<img src="${src}" />`)
+                            })
+                        }
+                        resolve(false);
+                    })
+                }
+                await getImgsUrl()
+                toTextContent = formatText.join('')
+            }        
+       
             // const text = editorState?.toText()
             const atList = getAtList(toTextContent)
             const { data: { code, json_params, desc } } = await sendTextMsg({
