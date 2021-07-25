@@ -14,6 +14,7 @@ import { Avatar } from "../../../components/avatar/avatar";
 import { searchFriends, searchGroup } from "../api"
 import { debounce } from 'lodash';
 import './forwardPopup.scss'
+import { useSelector } from 'react-redux';
 
 interface ForwardPopupProps {
     onSuccess: Function 
@@ -25,7 +26,7 @@ const getId = (item) => {
 }
 const getType = (item) => {
     if(!item) return false
-    return item.friend_profile_identifier ? 1 : 2
+    return (item.friend_profile_identifier || item.user_profile_identifier) ? 1 : 2
 }
 
 export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX.Element => {
@@ -35,7 +36,14 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
     const [groupList, setGroupList] = useState([])
     const [selectedList, setSelectedList] = useState([])
     const [search, setSearch] = useState("")
-    
+     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
+
+    const defaultConversationList = conversationList.map(item => {
+        const {conv_id,conv_type} = item
+        return {...item.conv_profile,conv_id,conv_type}
+    } )
+    console.log('defaultConversationList', defaultConversationList, conversationList);
+        
     const getUserList = async () => {
         const userList = await searchFriends({ keyWords: search })
         setUserList(userList)
@@ -74,6 +82,7 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
             selectedList.push(item)
             setSelectedList(Array.from(selectedList))
         }
+        console.log('selectedList',selectedList);
     }
     const handleItemClose = (e, conv_id, conv_type, item) => {
         e.stopPropagation();
@@ -90,6 +99,16 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
                         <Input className="forward-popup__search-list__input" type="search" placeholder="查找好友、群" onChange={handleInoputOnchange}/>
                         </div>
                         <div className="forward-popup__search-list__list customize-scroll-style">
+                            {
+                               (!search) &&  defaultConversationList.map((v,k) =>  <UserItem
+                                        key={k}
+                                        onItemClick={handleItemClick}
+                                        onRemove={handleItemClose}
+                                        seleted={selectedList.findIndex(item => getId(v) === getId(item)) > -1}
+                                        item={v}
+                                        hasSelectedIcon
+                                    />)
+                            }
                             { 
                                 userList.map((v, k) =>
                                     <UserItem
@@ -155,7 +174,7 @@ interface UserItemProps {
 export const UserItem: FC<UserItemProps> = ({ onItemClick, onRemove, seleted, item, hasCloseIcon, hasSelectedIcon }): JSX.Element => {
     const conv_type = getType(item)
     const conv_id = getId(item)
-    const name = item.group_detial_info_group_name || item.friend_profile_user_profile.user_profile_nick_name
+    const name = item.group_detial_info_group_name || item.friend_profile_user_profile?.user_profile_nick_name || item.user_profile_nick_name
     const url = item.friend_profile_user_profile?.user_profile_face_url || ""
     const typeName = conv_type === 1 ? "[好友] " : "[群] "
     return (
