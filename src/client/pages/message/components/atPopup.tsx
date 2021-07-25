@@ -33,7 +33,8 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element =
         setList(arr)
     }
     useEffect(() => {
-        setCoords({x: newCoords.x - 325, y: newCoords.y - 35})
+        // setCoords({x: newCoords.x - 325, y: newCoords.y - 35})
+        setCoords({x: newCoords.x - 325, y: 32})
         getData()
     }, [group_id])
 

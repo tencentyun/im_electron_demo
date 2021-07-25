@@ -12,14 +12,14 @@ import {
   DeleteMemberRecordsType,
 } from "./DeleteGroupMember";
 import { getUserTypeQuery } from "../../../services/userType";
-import { Bubble, Button, Icon } from "tea-component";
-import timRenderInstance from "../../../utils/timRenderInstance";
-import { DEFAULT_USERID } from "../../../constants";
 
 import {
   AddGroupMemberDialog,
   AddMemberRecordsType
 }from '../../../components/pull/pull'
+
+import { GroupMemberBubble } from "./GroupMemberBubble";
+import { getLoginUserID } from '../api';
 
 export const GroupMember = (props: {
   userList: {
@@ -40,13 +40,10 @@ export const GroupMember = (props: {
     userList,
     groupId,
     groupType,
-    groupAddOption,
-    userId,
     userIdentity,
     onRefresh,
   } = props;
 
-  const [sdkAppid] = useState(DEFAULT_USERID);
 
   const popupContainer = document.getElementById("messageInfo");
 
@@ -90,12 +87,13 @@ export const GroupMember = (props: {
   const [userGroupType, setUserGroupType] = useState([]);
 
   // 获取当前群内好友状态
-  const getUsetGroupStatus = () => {
+  const getUsetGroupStatus = async () => {
     if (userList.length <= 0) {
       return;
     }
     // const sdkappid = "1400529075";
-    const uid = "YANGGUANG37";
+    // const uid = "YANGGUANG37";
+    const uid = await getLoginUserID();
     const To_Account = ["denny1", "denny2"];
     userList.forEach((i) => {
       To_Account.push(i.user_profile_identifier);
@@ -122,21 +120,6 @@ export const GroupMember = (props: {
     });
     return buuer;
   };
-
-  const handleMsgReaded = async (UserId: Array<string>) => {
-    const {
-      data: { code, json_param },
-    } = await timRenderInstance.TIMProfileGetUserProfileList({
-      json_get_user_profile_list_param: {
-        friendship_getprofilelist_param_identifier_array: UserId,
-      },
-    });
-    directToMsgPage({
-      convType: 1,
-      profile: JSON.parse(json_param)[0],
-    });
-  };
-
   console.warn("所有群成员", userList, "获取的群状态数据", userGroupType);
 
   return (
@@ -161,50 +144,22 @@ export const GroupMember = (props: {
             <div
               className="group-member--avatar-box"
               key={`${v.user_profile_face_url}-${index}`}
-              onDoubleClick={() => {
+              onDoubleClick={(e) => {
                 handleMsgGroupRead(v);
               }}
             >
-              <Bubble
-                placement={"right-start"}
-                content={
+              <GroupMemberBubble
+                user={v}
+                children={
                   <>
-                    <div className="card-content">
-                      <div className="main-info">
-                        <div className="info-item">
-                          <Avatar
-                            key={v.user_profile_face_url}
-                            url={v.user_profile_face_url}
-                            nickName={v.user_profile_nick_name}
-                            userID={v.user_profile_identifier}
-                          />
-                          <div className="nickname">{v.user_profile_nick_name || ''}</div>
-                        </div>
-                      </div>
-                      <div className="info-bar">
-                        <span className="info-key">姓名</span>
-                        <span className="info-val nickname">{v.user_profile_nick_name || ''}</span>
-                      </div>
-                      <div className="info-bar">
-                        <span className="info-key">性别</span>
-                        <span className="info-val">{v.user_profile_gender == '1' ? '男' : (v.user_profile_gender == '2' ? '女' : '暂无')}</span>
-                      </div>
-                      <div className="info-bar">
-                        <Button type="primary" onClick={() => handleMsgReaded([v.user_profile_identifier])} style={{ width: "100%" }}>
-                          发消息
-                        </Button>
-                      </div>
-                    </div>
+                    <Avatar
+                      url={v.user_profile_face_url}
+                      nickName={v.user_profile_nick_name}
+                      userID={v.user_profile_identifier}
+                    />
                   </>
                 }
-              >
-                <Avatar
-                  url={v.user_profile_face_url}
-                  nickName={v.user_profile_nick_name}
-                  userID={v.user_profile_identifier}
-                />
-                <span></span>
-              </Bubble>
+              />
               <span
                 title={
                   isOnInternet(v.user_profile_identifier) ? "在线" : "离线"

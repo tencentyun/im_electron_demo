@@ -386,7 +386,7 @@ export const MessageView = (props: Props): JSX.Element => {
     // 从发送消息时间开始算起，两分钟内可以编辑
     const isTimeoutFun = (time) => {
         const now = new Date()
-        if (parseInt(now.getTime() / 1000) - time > 2 * 60) {
+        if (now.getTime() / 1000 - time > 2 * 60) {
             return false
         } else {
             return true
@@ -407,6 +407,10 @@ export const MessageView = (props: Props): JSX.Element => {
             // 过滤添加到表情MenuItem
             menuData = menuData.filter(item => item.id !== 'addCustEmoji')
         }
+        if(new Date().getTime() / 1000 - currMenuMessage.message_client_time > 120){
+            // 超时则过滤撤回按钮
+            menuData = menuData.filter(item => item.id !== 'revoke')
+        }
         return menuData
     }
     const getMenuItem = () => {
@@ -418,6 +422,12 @@ export const MessageView = (props: Props): JSX.Element => {
                 </Item>
             )
         })
+    }
+
+    const reeditShowText = (item) => {
+        return (item.message_is_from_self && isTimeoutFun(item.message_client_time) &&
+        item.message_elem_array[0].elem_type === 0 && 
+        item.message_elem_array[0].text_elem_content.indexOf('<img src=') === -1) 
     }
     return (
         <div className="message-view" ref={messageViewRef}>
@@ -446,7 +456,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                 message_status === 6 ? (
                                     <div className="message-view__item is-revoked" >
                                         {`${revokedPerson} 撤回了一条消息`}
-                                        {(message_is_from_self && isTimeoutFun(message_client_time) && message_elem_array[0].elem_type === 0) ? <span className="message-view__item--withdraw" onClick={() => { reEdit(message_elem_array[0].text_elem_content) }}> 重新编辑</span> : <></>}
+                                        {reeditShowText(item) ? <span className="message-view__item--withdraw" onClick={() => { reEdit(message_elem_array[0].text_elem_content) }}> 重新编辑</span> : <></>}
                                     </div>
                                 ) :
                                     <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
