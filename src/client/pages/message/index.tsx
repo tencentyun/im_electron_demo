@@ -27,8 +27,11 @@ import { Myloader } from '../../components/skeleton';
 import { replaceRouter } from '../../store/actions/ui';
 import { getUserTypeQuery } from '../../services/userType'
 
+let indervel = null
+
 export const Message = (): JSX.Element => {
     const [isLoading, setLoadingStatus ] = useState(false);
+    const [statusIndervel, setStatusIndervel ] = useState(1);
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
     const { replace_router } = useSelector((state:State.RootState)=>state.ui)
     const dialogRef = useDialogRef();
@@ -82,12 +85,17 @@ export const Message = (): JSX.Element => {
         }else{
             dispatch(replaceRouter(false))
         }
-        
+        indervel = setInterval(()=>{
+            setStatusIndervel(v=>v+1)
+        },1000*5)
+        return () => {
+            clearInterval(indervel)
+        }
     }, []);
     
     useEffect(() => {
         getUsetStatus();
-    }, [conversationList.length]);
+    }, [conversationList.length, statusIndervel]);
 
     useEffect(() => {
         if (currentSelectedConversation?.conv_id) {
