@@ -131,7 +131,7 @@ const InforItem : FC<InforItemInterface> =  ({accounts,callBack,rederBack}): JSX
                      </div>
                  </div>
             </div>
-        }
+        }   
         </>
     )
 }

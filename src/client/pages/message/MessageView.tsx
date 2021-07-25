@@ -9,7 +9,7 @@ import {
 } from 'react-contexify';
 import './message-view.scss';
 import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, TextMsg, getMsgList } from './api';
-import { markeMessageAsRevoke, deleteMessage, reciMessage,  addMoreMessage } from '../../store/actions/message';
+import { markeMessageAsRevoke, deleteMessage, reciMessage, addMoreMessage } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import {
     getMessageId,
@@ -33,6 +33,7 @@ import { ContentUtils } from 'braft-utils'
 import { Icon, message } from 'tea-component';
 import { custEmojiUpsert } from '../../services/custEmoji'
 import type { custEmojiUpsertParams } from '../../services/custEmoji'
+import { showDialog } from "../../utils/tools";
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
 import { GroupSysElm } from './messageElemTyps/groupSystemElem';
@@ -70,6 +71,10 @@ const RIGHT_CLICK_MENU_LIST = [{
 {
     id: 'multiSelect',
     text: '多选'
+},
+{
+    id: 'openFile',
+    text: '文件夹目录'
 }];
 
 
@@ -83,11 +88,11 @@ export const MessageView = (props: Props): JSX.Element => {
     const [forwardType, setForwardType] = useState<ForwardType>(ForwardType.divide);
     const [seletedMessage, setSeletedMessage] = useState<State.message[]>([]);
     const [currMenuMessage, setCurrMenuMessage] = useState<State.message>(); // 当前右击菜单消息
-    const [noMore,setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
+    const [noMore, setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     const dispatch = useDispatch();
-    const [anchor , setAnchor] = useState('')
+    const [anchor, setAnchor] = useState('')
     useEffect(() => {
-        if(!anchor){
+        if (!anchor) {
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
         }
         setAnchor('')
@@ -95,21 +100,21 @@ export const MessageView = (props: Props): JSX.Element => {
     }, [messageList.length])
 
     const getNewGroupInfo = () => {
-        let newGroupInfo:any = localStorage.getItem('newGroupInfo')
-        newGroupInfo = newGroupInfo ? JSON.parse(newGroupInfo):[]
+        let newGroupInfo: any = localStorage.getItem('newGroupInfo')
+        newGroupInfo = newGroupInfo ? JSON.parse(newGroupInfo) : []
         const length = messageList.length;
-        const isGroupInfo = newGroupInfo.find((item)=> item.key === convId)
-        if(length === 3  && messageList[0].message_elem_array[0].elem_type === 8 &&!isGroupInfo){
+        const isGroupInfo = newGroupInfo.find((item) => item.key === convId)
+        if (length === 3 && messageList[0].message_elem_array[0].elem_type === 8 && !isGroupInfo) {
             newGroupInfo.push({
-                key:messageList[0].message_elem_array[0].group_report_elem_group_id,
-                value:messageList[0].message_elem_array[0].group_report_elem_op_user
+                key: messageList[0].message_elem_array[0].group_report_elem_group_id,
+                value: messageList[0].message_elem_array[0].group_report_elem_op_user
             })
             localStorage.setItem('newGroupInfo', JSON.stringify(newGroupInfo))
             return ''
-        }else{
-            return isGroupInfo?`${isGroupInfo.value}创建了群聊`:''
+        } else {
+            return isGroupInfo ? `${isGroupInfo.value}创建了群聊` : ''
         }
-        
+
     }
 
     const handleRevokeMsg = async (params) => {
@@ -262,6 +267,9 @@ export const MessageView = (props: Props): JSX.Element => {
             case 'multiSelect':
                 handleMultiSelectMsg(data);
                 break;
+            case 'openFile':
+                handleOpenFile(data);
+                break;
         }
     }
 
@@ -289,7 +297,9 @@ export const MessageView = (props: Props): JSX.Element => {
     const handleMessageReSend = (item) => {
         console.log(item);
     }
-
+    const handleOpenFile = (item) => {
+        showDialog()
+    }
     const displayDiffMessage = (element) => {
         const { elem_type, ...res } = element;
         let resp
@@ -319,7 +329,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <div>位置消息</div>
                 break;
             case 8:
-                resp = <GroupSysElm { ...res }/>  
+                resp = <GroupSysElm {...res} />
                 // resp = <div>群组系统通知{res.group_report_elem_op_user}: 创建了群聊</div>
                 //resp = null
                 break;
@@ -341,10 +351,10 @@ export const MessageView = (props: Props): JSX.Element => {
         }
         return resp;
     }
-    const validatelastMessage = (messageList:State.message[])=>{
-        let msg:State.message;
-        for(let i = messageList.length-1;i>-1;i--){
-            if(messageList[i].message_msg_id){
+    const validatelastMessage = (messageList: State.message[]) => {
+        let msg: State.message;
+        for (let i = messageList.length - 1;i > -1;i--) {
+            if (messageList[i].message_msg_id) {
                 msg = messageList[i];
                 break;
             }
@@ -352,17 +362,17 @@ export const MessageView = (props: Props): JSX.Element => {
         return msg;
     }
     const getMoreMsg = async () => {
-        if(!noMore){
-            
-            const msg:State.message = validatelastMessage(messageList)
-            if(!msg){
+        if (!noMore) {
+
+            const msg: State.message = validatelastMessage(messageList)
+            if (!msg) {
                 return
             }
-            const { message_conv_id,message_conv_type,message_msg_id  } = msg;
-            const messageResponse = await getMsgList(message_conv_id, message_conv_type,message_msg_id);
-            if(messageResponse.length>0){
-                setAnchor(message_msg_id) 
-            }else{
+            const { message_conv_id, message_conv_type, message_msg_id } = msg;
+            const messageResponse = await getMsgList(message_conv_id, message_conv_type, message_msg_id);
+            if (messageResponse.length > 0) {
+                setAnchor(message_msg_id)
+            } else {
                 setNoMore(true)
             }
             const addTimeDividerResponse = addTimeDivider(messageResponse.reverse());
@@ -376,7 +386,7 @@ export const MessageView = (props: Props): JSX.Element => {
     // 从发送消息时间开始算起，两分钟内可以编辑
     const isTimeoutFun = (time) => {
         const now = new Date()
-        if (parseInt(now.getTime() / 1000) - time > 2 * 60) {
+        if (now.getTime() / 1000 - time > 2 * 60) {
             return false
         } else {
             return true
@@ -397,6 +407,10 @@ export const MessageView = (props: Props): JSX.Element => {
             // 过滤添加到表情MenuItem
             menuData = menuData.filter(item => item.id !== 'addCustEmoji')
         }
+        if(new Date().getTime() / 1000 - currMenuMessage.message_client_time > 120){
+            // 超时则过滤撤回按钮
+            menuData = menuData.filter(item => item.id !== 'revoke')
+        }
         return menuData
     }
     const getMenuItem = () => {
@@ -409,13 +423,19 @@ export const MessageView = (props: Props): JSX.Element => {
             )
         })
     }
+
+    const reeditShowText = (item) => {
+        return (item.message_is_from_self && isTimeoutFun(item.message_client_time) &&
+        item.message_elem_array[0].elem_type === 0 && 
+        item.message_elem_array[0].text_elem_content.indexOf('<img src=') === -1) 
+    }
     return (
         <div className="message-view" ref={messageViewRef}>
-            
+
             {
-               messageList && messageList.length > 0 &&
+                messageList && messageList.length > 0 &&
                 messageList.map((item, index) => {
-                    if(!item){
+                    if (!item) {
                         return null
                     }
                     if (item.isTimeDivider) {
@@ -436,7 +456,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                 message_status === 6 ? (
                                     <div className="message-view__item is-revoked" >
                                         {`${revokedPerson} 撤回了一条消息`}
-                                        {(message_is_from_self && isTimeoutFun(message_client_time) && message_elem_array[0].elem_type === 0) ? <span className="message-view__item--withdraw" onClick={() => { reEdit(message_elem_array[0].text_elem_content) }}> 重新编辑</span> : <></>}
+                                        {reeditShowText(item) ? <span className="message-view__item--withdraw" onClick={() => { reEdit(message_elem_array[0].text_elem_content) }}> 重新编辑</span> : <></>}
                                     </div>
                                 ) :
                                     <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
@@ -469,7 +489,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     )
                 })
             }
-            {convType === 2?<div className="message-view__newgroup">{getNewGroupInfo()}</div>:<></>}
+            {convType === 2 ? <div className="message-view__newgroup">{getNewGroupInfo()}</div> : <></>}
             <Menu
                 id={MESSAGE_MENU_ID}
                 theme={theme.light}
@@ -494,7 +514,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     </div>
                 </div>
             }
-            <div className={`showMore ${noMore ? 'no-more': ''}`} onClick={getMoreMsg}>{noMore ? '没有更多了': '查看更多'}</div>
+            <div className={`showMore ${noMore ? 'no-more' : ''}`} onClick={getMoreMsg}>{noMore ? '没有更多了' : '查看更多'}</div>
         </div>
     )
 };

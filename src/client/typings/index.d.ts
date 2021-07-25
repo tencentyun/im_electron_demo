@@ -1,7 +1,7 @@
 declare namespace State {
     export type RootState = {
         login: {
-            isLogin: boolean;
+            isLogin: boolean
         },
         userInfo: userInfo,
         conversation: conversation,

@@ -12,6 +12,7 @@ import { GroupIntroduction } from "./GroupIntroduction";
 import { GroupMember } from "./GroupMember";
 import { GroupNameCard } from "./GroupNameCard";
 import { GroupOperator } from "./GroupOperator";
+import { GroupJoinOption } from "./GroupJoinOption";
 
 export const GroupSetting = (props: {
   conversationInfo: State.conversationItem;
@@ -77,6 +78,18 @@ export const GroupSetting = (props: {
         groupAddOption={groupDetail.group_detial_info_add_option}
         userIdentity={currentUserSetting.group_member_info_member_role}
       />
+      {
+        groupDetail.group_detial_info_group_type === 0 &&
+        <>
+          <Divider />
+          <GroupJoinOption
+            joinOption={groupDetail.group_detial_info_add_option}
+            groupId={groupDetail.group_detial_info_group_id}
+            userIdentity={currentUserSetting.group_member_info_member_role}
+            onRefresh={retry}
+          />
+        </>
+      }
       <Divider />
       <GroupFlagMessage
         flagMsg={currentUserSetting.group_member_info_msg_flag}

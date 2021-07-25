@@ -1,11 +1,12 @@
-import { DialogRef, useDialog } from "../../utils/react-use/useDialog";
+import { useDialogRef } from "../../utils/react-use/useDialog";
 import { Drawer, H3 } from "tea-component";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import "./group-tool-drawer.scss";
 import { GroupSetting } from "./groupSetting/GroupSetting";
 import { GroupAccountecmentSetting } from "./groupAccountecmentSetting/GroupAccountecmentSetting";
 import { useSelector } from "react-redux";
+import { GroupProfileDrawer, GroupProfileRecordsType } from "./groupSetting/GroupProfileDrawer";
 
 export interface GroupToolsgRecordsType {
   conversationInfo: State.conversationItem;
@@ -21,7 +22,6 @@ export const GroupToolsDrawer = (props: {
   toolId: string;
 }): JSX.Element => {
   const { onClose, popupContainer, visible, conversationInfo, toolId } = props;
-
   console.log("visible", visible);
 
   const { currentSelectedConversation } = useSelector(
@@ -65,6 +65,11 @@ export const GroupToolsDrawer = (props: {
     }
   }, [currentSelectedConversation.conv_id]);
 
+  const profileDialogRef = useDialogRef<GroupProfileRecordsType>();
+  const groupDetail: Partial<State.conversationItem['conv_profile']> = conversationInfo?.conv_profile || {};
+  const { userId } = useSelector((state: State.RootState) => state.userInfo);
+  const isOwener = groupDetail.group_detial_info_owener_identifier === userId
+  
   return (
     <Drawer
       visible={visible}
@@ -72,6 +77,7 @@ export const GroupToolsDrawer = (props: {
         <div className="tool-drawer--title">
           <H3>{title}</H3>
           <span className="tool-drawer--title__sub">{subTitle}</span>
+          { isOwener && <span className="tool-drawer--modify__profile" onClick={() => profileDialogRef.current.open({ groupDetail })}>修改群资料</span>}
         </div>
       }
       outerClickClosable={false}
@@ -88,6 +94,12 @@ export const GroupToolsDrawer = (props: {
           conversationInfo={conversationInfo}
         />
       )}
+      { isOwener &&
+        <GroupProfileDrawer
+          popupContainer={popupContainer}
+          dialogRef={profileDialogRef}
+        />
+      }
     </Drawer>
   );
 };

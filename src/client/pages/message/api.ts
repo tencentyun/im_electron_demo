@@ -419,7 +419,6 @@ export const searchGroup = async (params: {
   console.log("searchGroup", JSON.parse(json_param || "[]"));
   return JSON.parse(json_param || "[]");
 };
-
 export const searchFriends = async (params: {
   keyWords: string;
 }): Promise<any> => {
@@ -510,7 +509,7 @@ export const modifyGroupInfo = async (params: {
   const modifyFlags = Object.keys(modifyParams).map(
     (key) => modifyFlagMap[key]
   );
-
+  console.log('修改群参数', modifyParams)
   const fetchList = modifyFlags.map((currentFlag) =>
     timRenderInstance.TIMGroupModifyGroupInfo({
       params: {
@@ -520,7 +519,6 @@ export const modifyGroupInfo = async (params: {
       },
     })
   );
-
   const results = await Promise.all(fetchList);
   if (!results.find((item) => item?.data?.code !== 0)) {
     return {};

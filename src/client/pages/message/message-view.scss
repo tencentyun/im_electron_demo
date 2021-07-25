@@ -45,6 +45,12 @@
     &__newgroup{
         text-align: center;
         color: #bbb;
+        margin-top: 20px;
+    }
+
+    &__newgroup{
+        text-align: center;
+        color: #bbb;
     }
 
     &__item {
@@ -174,6 +180,9 @@
                 display: inline-block;
                 vertical-align: middle;
             }
+        }
+        .dplayer-controller .dplayer-icons .dplayer-icon .dplayer-icon-content{
+            display: initial;
         }
         &--file {
             width: 236px;

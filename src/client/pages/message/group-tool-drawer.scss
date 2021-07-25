@@ -13,7 +13,7 @@
   }
 
   & .tea-drawer__body {
-    padding: 0;
+    padding: 0 0 20px 0;
     & .tea-drawer__body-inner {
       padding: 20px;
       height: 100%;
@@ -50,5 +50,11 @@
       font-weight: 400;
       color: #999999;
     }
+  }
+  .tool-drawer--modify__profile{
+    margin-left: 15px;
+    color: #006eff;
+    font-size: 12px;
+    cursor: pointer;
   }
 }

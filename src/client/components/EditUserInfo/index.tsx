@@ -111,6 +111,7 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,on
   }
 console.log('userinfo',userInfo);
   async function onSubmit(values: IUser) {
+    console.log(11111)
     const formData: submitUserInfoData = {
       json_modify_self_user_profile_param: {
         user_profile_item_face_url: values.faceUrl,
