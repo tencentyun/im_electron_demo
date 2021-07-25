@@ -111,7 +111,10 @@ export const Message = (): JSX.Element => {
         }
     }, [currentSelectedConversation] );
 
-    const handleConvListClick = convInfo => dispatch(updateCurrentSelectedConversation(convInfo));
+    const handleConvListClick = convInfo => {
+        console.log(convInfo,'7777777777777777777777777777777777')
+        dispatch(updateCurrentSelectedConversation(convInfo));
+    }
 
     const handleSearchBoxClick = () => dialogRef.current.open();
 

@@ -90,6 +90,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
         try {
             const text = editorState?.toText()
+            console.log(text, '发送内容')
             const atList = getAtList(text)
             const { data: { code, json_params, desc } } = await sendTextMsg({
                 convId,
@@ -298,14 +299,11 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        // const type = localStorage.getItem('sendType') || '0'
         const type = store.get('sendType') || '0'
         if (type == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
-                // setEditorState(editorState.toText() + '\n')
-                // editorState.toText() += '\n'
-                console.log('换行', '----------------------', editorState)
+                // console.log('换行', '----------------------', editorState)
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
                 handleSendTextMsg();
@@ -319,7 +317,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 e.preventDefault();
                 handleSendTextMsg();
             } else if (e.keyCode == 13 || e.charCode === 13) {
-                console.log('换行', '----------------------', editorState)
+                // console.log('换行', '----------------------', editorState)
             } else if (e.key === "@" && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
@@ -388,9 +386,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         setActiveFeature("")
     }
 
-    const editorChange = (editorState,a,b) => {
-        console.warn(editorState.toHTML())
-        setIsTextNullEmpty(editorStateDisabled(editorState.toText()))
+    const editorChange = (editorState) => {
         setEditorState(editorState)
     }
 
@@ -422,7 +418,17 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const shutUpStyle = isShutUpAll ? 'disabled-style' : '';
     const dragEnterStyle = isDraging ? 'draging-style' : '';
-
+    const hooks = {
+        // 'change-block-type': ({ href, target }) => {
+        //     alert(111)
+        //     href = href.indexOf('http') === 0 ? href : `http://${href}`
+        //     console.log(href, '=====__________')
+        //     return { href, target }
+        // }
+        'change-block-type': () => {
+            alert(111)
+        }
+    }
     useEffect(() => {
         setShotKeyTip(store.get('sendType') == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
         ipcRenderer.on('screenShotUrl', (e, { data, url }) => {
@@ -458,7 +464,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     return (
-        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyPress={handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
+        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
                 atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
             }
@@ -491,13 +497,14 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ref={instance => editorInstance = instance}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     placeholder={placeHolderText}
+                    hooks={hooks}
                 />
             </div>
-            <div className="message-input__button-area">
-                <Button type="primary" title={shotKeyTip} onClick={handleSendTextMsg} disabled={isTextNullEmpty}>发送</Button>
-            </div>
-             {/* <span className="message-input__down" title='切换发送消息快捷键'></span> */}
-             <Dropdown
+            <span className="message-input__button-area">
+                <Button type="primary" title={shotKeyTip} onClick={handleSendTextMsg} disabled={editorStateDisabled(editorState?.toText())}>发送</Button>
+            </span>
+            {/* <span className="message-input__down" title='切换发送消息快捷键'></span> */}
+            <Dropdown
                 clickClose={true}
                 className="message-input__down"
                 button=""
@@ -510,6 +517,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             >
                 {menu}
             </Dropdown>
+
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }
