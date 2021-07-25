@@ -7,7 +7,7 @@ import './index.scss'
 import "cropperjs/dist/cropper.css"
 import { dataURLtoBlob, convertBase64UrlToBlob } from '../../utils/tools'
 
-const imgStyle = { width: '60px', height: '60px',}
+const imgStyle = { width: '60px', height: '60px', cursor: 'pointer'}
 
 interface IRes {
   upload_url: string;

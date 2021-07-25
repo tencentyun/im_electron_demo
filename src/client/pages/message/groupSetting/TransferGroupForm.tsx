@@ -2,7 +2,7 @@ import { SearchBox, Radio, Button } from "tea-component";
 import React, { useState } from "react";
 import "./tranfer-group-form.scss";
 import { Avatar } from "../../../components/avatar/avatar";
-import { throttle } from "../../../utils/tools"
+import { throttle, highlightText } from "../../../utils/tools"
 export interface FormValue {
   UID: string;
 }
@@ -20,10 +20,12 @@ interface Props {
   onClose?: () => void;
 }
 
+
 export const TransferGroupForm = (props: Props): JSX.Element => {
   const { onSubmit, onSuccess, onError, userList } = props;
   const [selectedUserId, setSelectedUserId] = useState('')
   const [searchData, setSearchData] = useState(userList)
+  const [searchText, setSearchText] = useState('')
   // eslint-disable-next-line
   const handlerSubmit = async () => {
     try {
@@ -36,12 +38,13 @@ export const TransferGroupForm = (props: Props): JSX.Element => {
     }
   };
   const onSearch = throttle((value) => {
+    setSearchText(value)
     let dataList = userList
     if (value) {
       dataList = dataList.filter(item => item.user_profile_nick_name.includes(value) || item.user_profile_identifier.includes(value))
     }
     setSearchData(dataList)
-  }, 300)
+  }, 400)
   const onChange = (e) => {
     setSelectedUserId(e)
   }
@@ -65,7 +68,8 @@ export const TransferGroupForm = (props: Props): JSX.Element => {
                     url={v.user_profile_face_url}
                   />
                   <span className="group-member--name">
-                    {v.user_profile_nick_name}({v.user_profile_identifier})
+                    <span dangerouslySetInnerHTML={{ __html: highlightText(searchText, v.user_profile_nick_name)}}></span>
+                    <span dangerouslySetInnerHTML={{ __html: highlightText(searchText, v.user_profile_identifier)}}></span>
                   </span>
                 </div>
               </Radio>
