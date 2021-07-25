@@ -41,7 +41,7 @@ const FEATURE_LIST_GROUP = [{
     content: '语音'
 }, {
     id: 'screen-shot',
-    content: '截图(Ctrl + Alt + C)'
+    content: '截图(Ctrl + Shift + X)'
 }, {
     id: 'more',
     content: '更多'
@@ -60,7 +60,7 @@ const FEATURE_LIST_C2C = [{
     content: '语音'
 }, {
     id: 'screen-shot',
-    content: '截图(Ctrl + Alt + C)'
+    content: '截图(Ctrl + Shift + X)'
 }, {
     id: 'more',
     content: '更多'
