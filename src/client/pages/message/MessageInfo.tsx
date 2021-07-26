@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { ipcRenderer } from "electron";
+import React, { useEffect } from "react";
 import { message } from 'tea-component';
 
 import { Avatar } from "../../components/avatar/avatar";
@@ -14,6 +13,7 @@ import { updateCallingStatus } from "../../store/actions/ui";
 
 import { AddUserPopover } from "./AddUserPopover";
 import { addTimeDivider } from "../../utils/addTimeDivider";
+import { openCallWindow, callWindowCloseListiner } from "../../utils/tools";
 
 import {
   changeDrawersVisible,
@@ -134,12 +134,22 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       message.warning({content: '正在通话中'});
       return;
     }
+    
     dispatch(updateCallingStatus({
       callingId: conv_id,
       callingType: conv_type
     }));
-    ipcRenderer.send("openCallWindow");
+    openCallWindow({});
   }
+
+  useEffect(() => {
+    callWindowCloseListiner(() => {
+      dispatch(updateCallingStatus({
+        callingId: '',
+        callingType: 0
+      }));
+    });
+  }, [])
 
   const popupContainer = document.getElementById("messageInfo");
 
