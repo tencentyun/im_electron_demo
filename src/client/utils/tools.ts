@@ -111,5 +111,9 @@ export {
     closeWin,
     showDialog,
     downloadFilesByUrl,
-    checkFileExist
+    checkFileExist,
+    throttle,
+    dataURLtoBlob,
+    convertBase64UrlToBlob,
+    highlightText
 }
