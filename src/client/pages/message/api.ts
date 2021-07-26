@@ -438,7 +438,6 @@ export const searchGroup = async (params: {
   console.log("searchGroup", JSON.parse(json_param || "[]"));
   return JSON.parse(json_param || "[]");
 };
-
 export const searchFriends = async (params: {
   keyWords: string;
 }): Promise<any> => {
@@ -539,7 +538,6 @@ export const modifyGroupInfo = async (params: {
       },
     })
   );
-
   const results = await Promise.all(fetchList);
   if (!results.find((item) => item?.data?.code !== 0)) {
     return {};

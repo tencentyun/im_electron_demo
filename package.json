@@ -10,7 +10,7 @@
     "build:react": "cd ./src/client && npm run build:react",
     "dev:electron": "electron .",
     "dev:react": "cd ./src/client && npm run dev:react",
-    "dev": "npm run dev:react && npm run start"
+    "dev": "npm run start && npm run dev:react"
   },
   "keywords": [],
   "author": {
@@ -23,8 +23,11 @@
       "bundle"
     ],
     "appId": "electron-sdk",
-    "mac": {},
+    "mac": {
+      "icon": "./src/client/assets/icon/favicon.icns"
+    },
     "win": {
+      "icon": "./src/client/assets/icon/windows.png",
       "target": [
         {
           "target": "nsis",
@@ -59,6 +62,7 @@
     "braft-editor": "^2.3.9",
     "concurrently": "^6.2.0",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
     "element-react": "^1.4.34",
     "element-theme-default": "^1.4.13",

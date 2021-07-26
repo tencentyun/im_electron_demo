@@ -1,6 +1,7 @@
 import { shell } from "electron";
 import React, { useEffect } from "react";
 import { downloadFilesByUrl, showDialog } from "../../../utils/tools";
+import {ImagePreview} from 'tea-component'
 
 export const PicElemItem = (props: any): JSX.Element => {
     const showPic = () => {
@@ -14,8 +15,13 @@ export const PicElemItem = (props: any): JSX.Element => {
     const item = ({ image_elem_thumb_url, image_elem_orig_url, image_elem_large_url }) => {
         const url = image_elem_thumb_url || image_elem_orig_url || image_elem_large_url
         return (
-            <div className="message-view__item--text text right-menu-item" onDoubleClick={showPic}>
-                <img src={url} style={{ maxWidth: '100%' }}></img>
+            <div className="message-view__item--text text right-menu-item111">
+                <ImagePreview
+                    previewSrc={url}
+                    previewTitle="预览"
+                >
+                {open => <a onClick={open}><img src={url} style={{ maxWidth: 450 }}></img></a>}
+                </ImagePreview>
             </div>
         )
     };

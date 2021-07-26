@@ -26,8 +26,11 @@ import { EmptyResult } from './searchMessage/EmptyResult';
 import { Myloader } from '../../components/skeleton';
 import { replaceRouter } from '../../store/actions/ui';
 import { getUserTypeQuery } from '../../services/userType'
+import { getLoginUserID } from './api';
 
 let indervel = null
+
+let uid = ''
 
 export const Message = (): JSX.Element => {
     const [isLoading, setLoadingStatus ] = useState(false);
@@ -78,6 +81,9 @@ export const Message = (): JSX.Element => {
             dispatch(updateCurrentSelectedConversation(null))
         }
     }
+    const getUid = async ()=>{
+        uid = await getLoginUserID()
+    }
     useEffect(() => {
         if(!replace_router){
             conversationList.length === 0 && setLoadingStatus(true);
@@ -88,6 +94,7 @@ export const Message = (): JSX.Element => {
         indervel = setInterval(()=>{
             setStatusIndervel(v=>v+1)
         },1000*5)
+        getUid()
         return () => {
             clearInterval(indervel)
         }
@@ -119,7 +126,10 @@ export const Message = (): JSX.Element => {
         }
     }, [currentSelectedConversation] );
 
-    const handleConvListClick = convInfo => dispatch(updateCurrentSelectedConversation(convInfo));
+    const handleConvListClick = convInfo => {
+        console.log(convInfo,'7777777777777777777777777777777777')
+        dispatch(updateCurrentSelectedConversation(convInfo));
+    }
 
     const handleSearchBoxClick = () => dialogRef.current.open();
 
@@ -175,13 +185,13 @@ export const Message = (): JSX.Element => {
     }
 
 
-    const getUsetStatus = () => {
+    const getUsetStatus = async () => {
         if(conversationList.length <= 0){
             return
         }
         // 获取当前对话标列表好友状态
         // const sdkappid = "1400529075";
-        const uid = "YANGGUANG37";
+        // const uid = "YANGGUANG37";
         const To_Account = ["denny1", "denny2"];
         conversationList.forEach((i) => {
             if (i.conv_type === 1) {
