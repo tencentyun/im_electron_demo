@@ -43,7 +43,7 @@ export const Informathion = (props: Props): JSX.Element => {
                     <div className="main-info">
 						<div className="mian-flex">
 							<p>{staffData.DEPT_NAME ? staffData.DEPT_NAME : staffData.Uname}</p>
-							<p>{staffData.DepName == "" ? "" : staffData.DepName.match(/[^\/]+$/)[0]}</p>
+							<p>{staffData.DepName == "" ? "" : staffData.DepName.match(/[^\/]+/)[0]}</p>
 						</div>
 						<div className="circle-name">{staffData.DEPT_NAME ? staffData.DEPT_NAME : staffData.Uname}</div>
 					</div>

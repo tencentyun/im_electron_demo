@@ -63,12 +63,7 @@
     "braft-editor": "^2.3.9",
     "concurrently": "^6.2.0",
     "electron-squirrel-startup": "^1.0.0",
-<<<<<<< HEAD
-    "element-react": "^1.4.34",
-    "element-theme-default": "^1.4.13",
-=======
     "electron-store": "^8.0.0",
->>>>>>> a616a429ec013295d43c8c0ad45e028cdfc38439
     "electron-updater": "^4.3.9",
     "element-react": "^1.4.34",
     "element-theme-default": "^1.4.13",

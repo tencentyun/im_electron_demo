@@ -35,6 +35,7 @@ export const Search : FC<TreeDynamic> = ({ callback,onClear,handleCallback,filte
 
     const filterSearchRectData = (nameText) =>{
             clearTimeout(settime)
+            if(nameText.trim() == "") onClear && onClear()
                 settime = setTimeout(async ()=>{
                     filterGetStAffPrefix({ Prefix:nameText,Limit:10 },(filterLoda)=>{
                         callback && ((filterLoda.length > 0) && callback(filterLoda[0],filterText))

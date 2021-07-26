@@ -11,15 +11,9 @@ import { setUserInfo } from '../../store/actions/user';
 import { loginUser } from '../../store/actions/loginUser';
 // eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
-<<<<<<< HEAD
 import {filterGetDepartment,assemblyData} from '../../utils/orgin'
 import { setUnreadCount } from '../../store/actions/section';
 import { getEncrptPwd } from '../../utils/addFriendForPoc'
-=======
-import { filterGetDepartment, assemblyData } from '../../utils/orgin'
-import { setUnreadCount } from '../../store/actions/section';
-//import { getEncrptPwd } from '../../utils/addFriendForPoc'
->>>>>>> a616a429ec013295d43c8c0ad45e028cdfc38439
 import { getUserLoginInfo } from '../../services/login'
 //import { genTestUserSig } from './generateUserSig'
 const tabs = [
@@ -189,10 +183,10 @@ export const LoginContent = (): JSX.Element => {
         const { data: { code,data,desc,json_param }} = await timRenderInstance.TIMLogin(params);
         console.log(code,data,desc,json_param);
         if(code === 0) {
-            dispatch(loginUser({
-                userId: userID,
-                userSig:usersig
-            }))
+            // dispatch(loginUser({
+            //     userId: userID,
+            //     userSig:usersig
+            // }))
             //获取部门
             filterGetDepartment({
                 DepId:"root_1"
@@ -200,7 +194,7 @@ export const LoginContent = (): JSX.Element => {
                 let sectionData = assemblyData([data],'SubDepsInfoList','StaffInfoList','DepName','Uname')[0].children
                 window.localStorage.setItem('section',JSON.stringify(sectionData))
                 window.localStorage.setItem('uid',userID)
-
+                window.localStorage.setItem('usersig',usersig)
                 dispatch(setUserInfo({
                     userId: userID
                 }));
