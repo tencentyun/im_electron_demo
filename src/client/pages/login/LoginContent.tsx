@@ -8,7 +8,7 @@ import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
 import { changeFunctionTab } from '../../store/actions/ui';
 import { setUserInfo } from '../../store/actions/user';
-// eslint-disable-next-line import/no-unresolved
+import { loginUser } from '../../store/actions/loginUser';
 import { loginParam } from 'im_electron_sdk/dist/interface';
 import {filterGetDepartment,assemblyData} from '../../utils/orgin'
 import { setUnreadCount } from '../../store/actions/section';

@@ -14,10 +14,9 @@ import { ipcRenderer, clipboard } from 'electron'
 import chooseImg from '../../assets/icon/choose.png'
 import { store } from '../../../app/storage/store'
 import { string } from 'prop-types';
-import { judgeFileSize } from '../../utils/messageUtils';
-
 import axios from "axios";
 import { convertBase64UrlToBlob } from "../../utils/tools";
+import { SDKAPPID } from '../../config/config'
 import { setPathToLS } from '../../utils/messageUtils';
 
 type Props = {
@@ -38,9 +37,6 @@ const FEATURE_LIST_GROUP = [{
     id: 'photo',
     content: '发图片'
 }, {
-    id: 'video',
-    content: '发视频'
-}, {
     id: 'file',
     content: '发文件'
 }, {
@@ -59,9 +55,6 @@ const FEATURE_LIST_C2C = [{
 }, {
     id: 'photo',
     content: '发图片'
-}, {
-    id: 'video',
-    content: '发视频'
 }, {
     id: 'file',
     content: '发文件'
@@ -104,7 +97,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         return new Promise((resolve, reject) => {
             axios
                 .post("/api/im_cos_msg/pre_sig", {
-                    sdkappid: 1400187352,
+                    sdkappid: SDKAPPID,
                     uid: "tetetetetetet",
                     file_type: 1,
                     file_name: "headUrl/" + new Date().getTime() + 'screenShot.png',
@@ -277,13 +270,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const sendFileMessage = async (file) => {
-         const size = 100
-            if (!judgeFileSize(size, file)) {
-                message.warning({
-                    content:`文件大小不能超过${size}M！`
-                })
-              return  
-            }
         const { data: { code, desc, json_params } } = await sendFileMsg({
             convId,
             convType,
@@ -305,12 +291,10 @@ export const MessageInput = (props: Props): JSX.Element => {
         } else {
             message.error({ content: `消息发送失败 ${desc}` })
         }
-    }  
+    }
+
     const sendVideoMessage = async (file) => {
-
-
         if (file) {
-            const video_elem_video_path = file.path.replace('\\\\','\/');
             const { data: { code, json_params, desc } } = await sendVideoMsg({
                 convId,
                 convType,
@@ -319,12 +303,12 @@ export const MessageInput = (props: Props): JSX.Element => {
                     video_elem_video_type: "MP4",
                     video_elem_video_size: file.size,
                     video_elem_video_duration: 10,
-                    video_elem_video_path: video_elem_video_path,
+                    video_elem_video_path: file.value,
                     video_elem_image_type: "png",
                     video_elem_image_size: 10000,
                     video_elem_image_width: 200,
                     video_elem_image_height: 80,
-                    video_elem_image_path: "C:/Users/wei/Downloads/Video/img1.png"
+                    video_elem_image_path: "./cover.png"
                 }],
                 userId,
             });
@@ -376,9 +360,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 break;
             case "photo":
                 handleSendPhotoMessage()
-                break;
-            case "video":
-                handleSendVideoMessage()
                 break;
             case "file":
                 handleSendFileMessage()

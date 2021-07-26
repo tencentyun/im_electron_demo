@@ -1,12 +1,14 @@
 import axios from 'axios'
-import { TIM_BASE_URL,SDKAPPID,UserID, UserSig} from '../config/config'
-import { callbackify } from 'util';
+import { UserID,UserSig} from '../config/config'
+import { TIM_BASE_URL,SDKAPPID} from '../constants/index'
+import { useSelector } from "react-redux";
+// const { userId,userSig } = useSelector((state: State.RootState) => state.loginUser);
 
 const  Lead = ['ZONGSHAOJUN', 'MALIMIN', 'TIANYU', 'XUYUHUA9', 'CHENFANGYUN', 'LUOLING41', 'CHENGSHAOKAI']
 // 获取全部部门
 const getAlldepartment = (data) => {
     return axios({
-        url: `${TIM_BASE_URL}/v4/org_svc/dep_page?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${UserID}&userSig =${UserSig}&random=${parseInt((Math.random()*100000000).toString())}`,
+        url: `${TIM_BASE_URL}/v4/org_svc/dep_page?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
         method: 'POST',
         data: data || {}
     })
@@ -15,7 +17,7 @@ const getAlldepartment = (data) => {
 // 查询部门信息
 const getDepartment  = (data) => {
     return axios({
-        url: `${TIM_BASE_URL}/v4/org_svc/dep_info?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${UserID}&userSig =${UserSig}&random=${parseInt((Math.random()*100000000).toString())}`,
+        url: `${TIM_BASE_URL}/v4/org_svc/dep_info?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
         method: 'POST',
         data: data || {}
     })
@@ -29,7 +31,10 @@ const filterGetDepartment = (data, callback, userId) => {
                 callback(res.data.DepInfo) 
             }else{
                 if(res.data.DepInfo.StaffInfoList && res.data.DepInfo.StaffInfoList.length > 0){
-                 let filterData =  res.data.DepInfo.StaffInfoList.filter(item => Lead.indexOf(item.Uid) !== -1)
+                 let filterData =  res.data.DepInfo.StaffInfoList.filter(item => {
+                     console.log(Lead.indexOf(item.Uid))
+                     return Lead.indexOf(item.Uid) <= -1
+                 }) 
                  res.data.DepInfo.StaffInfoList = filterData
                   callback(res.data.DepInfo)  
                 }else{
@@ -44,7 +49,7 @@ const filterGetDepartment = (data, callback, userId) => {
 // 新增职员
 const saveStaff  = (data) => {
     return axios({
-        url: `${TIM_BASE_URL}/v4/org_svc/add_staff?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${UserID}&userSig =${UserSig}&random=${parseInt((Math.random()*100000000).toString())}`,
+        url: `${TIM_BASE_URL}/v4/org_svc/add_staff?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
         method: 'POST',
         data: data || {}
     })
@@ -53,9 +58,33 @@ const saveStaff  = (data) => {
 // 前缀模糊查询职员列表
 const getstAffPrefix = (data) => {
     return axios({
-        url: `${TIM_BASE_URL}/v4/org_svc/staff_prefix?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${UserID}&userSig =${UserSig}&random=${parseInt((Math.random()*100000000).toString())}`,
+        url: `${TIM_BASE_URL}/v4/org_svc/staff_prefix?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${UserID}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
         method: 'POST',
         data: data || {}
+    })
+}
+
+// 前缀模糊查询职员列表
+const getAccountsList = (pagesize, pageNumber) => {
+    return axios({
+        url: `/user/list?limit=${pagesize}&page=${pageNumber}`,
+        method: 'GET',
+        data: {
+            limit:pagesize,
+            page:pageNumber
+        }
+    })
+}
+
+const getAccountsAdd = (foucs, id) => {
+    return axios({
+        url: `/user/add`,
+        method: 'POST',
+        data: {
+            foucs:foucs,
+            _id:id,
+            uid:window.localStorage.getItem('uid')
+        }
     })
 }
 
@@ -68,7 +97,7 @@ const filterGetStAffPrefix = (data, callback, userId)=> {
                 callback(StaffInfoList) 
             }else{
                 if(StaffInfoList && StaffInfoList.length > 0){
-                 let filterData =  StaffInfoList.filter(item => Lead.indexOf(item.Uid) !== -1)
+                 let filterData =  StaffInfoList.filter(item => Lead.indexOf(item.Uid) <= -1)
                  callback(filterData)  
                 }else{
                     callback(StaffInfoList) 
@@ -86,29 +115,31 @@ const  assemblyData = (data,childrenNode,itemChildren,labelNode,restLabel) =>{
     while (queue.length > 0) {
         ;[...queue].forEach((child, i) => {
             queue.shift()
-            child.DEPT_NAME = child[labelNode] == "" ? "" : child[labelNode].match(/[^\/]+$/)[0]
-            child.id = child.DepId
-            child.content = child[labelNode] == "" ? "" : child[labelNode].match(/[^\/]+$/)[0]
+            child.DEPT_NAME = child[labelNode] == "" ? "" : child[labelNode].match(/[^\/]+/)[0]
+            child.key = 'BM' + child.DepId  
+            child.title = child[labelNode] == "" ? "" : child[labelNode].match(/[^\/]+/)[0]
             child.children = []
             if(Array.isArray(child[childrenNode]) && child[childrenNode].length > 0){
                 for(let i = 0;i <child[childrenNode].length;i++){
                         if(!(child[childrenNode][i].SubId.length > 0)  && !(child[childrenNode][i].Uids.length > 0)){
-                            child[childrenNode][i].expandable = false
+                            child[childrenNode][i].isLeaf = true
                         }else{
-                            child[childrenNode][i].expandable = true
+                            child[childrenNode][i].isLeaf = false
                         }
-                        child[childrenNode][i].DEPT_NAME = child[childrenNode][i][labelNode] == "" ? "" : child[childrenNode][i][labelNode].match(/[^\/]+$/)[0]
-                        child[childrenNode][i].id = child[childrenNode][i].DepId
-                        child[childrenNode][i].content = child[childrenNode][i][labelNode] == "" ? "" : child[childrenNode][i][labelNode].match(/[^\/]+$/)[0]
+                        child[childrenNode][i].DEPT_NAME = child[childrenNode][i][labelNode] == "" ? "" : child[childrenNode][i][labelNode].match(/[^\/]+/)[0]
+                        child[childrenNode][i].key = 'BM' + child[childrenNode][i].DepId
+                        child[childrenNode][i].title = child[childrenNode][i][labelNode] == "" ? "" : child[childrenNode][i][labelNode].match(/[^\/]+/)[0]
                         child.children.push(child[childrenNode][i])
-                }
+                        
+                }  
             }
             if(Array.isArray(child[itemChildren]) && child[itemChildren].length > 0){
                 for(let i = 0;i <child[itemChildren].length;i++){
                         child[itemChildren][i].DEPT_NAME = child[itemChildren][i][restLabel]
                         child[itemChildren][i].UM_NUM = child[itemChildren][i].Uid
-                        child[itemChildren][i].id = child[itemChildren][i].Uid
-                        child[itemChildren][i].content = child[itemChildren][i][restLabel]
+                        child[itemChildren][i].isLeaf = true
+                        child[itemChildren][i].key = child[itemChildren][i].Uid
+                        child[itemChildren][i].title = child[itemChildren][i][restLabel]
                         child.children.push(child[itemChildren][i])
                 }
             }	
@@ -125,5 +156,7 @@ export {
     assemblyData,
     getstAffPrefix,
     filterGetStAffPrefix,
-    saveStaff
+    saveStaff,
+    getAccountsList,
+    getAccountsAdd
 }
