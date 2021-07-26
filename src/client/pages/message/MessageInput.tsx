@@ -12,6 +12,7 @@ import 'braft-editor/dist/index.css'
 import './message-input.scss';
 import { ipcRenderer, clipboard } from 'electron'
 import chooseImg from '../../assets/icon/choose.png'
+import { store } from '../../../app/storage/store'
 import { string } from 'prop-types';
 import axios from "axios";
 import { convertBase64UrlToBlob } from "../../utils/tools";
@@ -40,7 +41,7 @@ const FEATURE_LIST_GROUP = [{
     content: '语音'
 }, {
     id: 'screen-shot',
-    content: '截图(Ctrl + Alt + C)'
+    content: '截图(Ctrl + Shift + X)'
 }, {
     id: 'more',
     content: '更多'
@@ -59,7 +60,7 @@ const FEATURE_LIST_C2C = [{
     content: '语音'
 }, {
     id: 'screen-shot',
-    content: '截图(Ctrl + Alt + C)'
+    content: '截图(Ctrl + Shift + X)'
 }, {
     id: 'more',
     content: '更多'
@@ -67,6 +68,7 @@ const FEATURE_LIST_C2C = [{
 const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
+
 export const MessageInput = (props: Props): JSX.Element => {
     const { convId, convType, isShutUpAll, editorState, setEditorState } = props;
     const [isDraging, setDraging] = useState(false);
@@ -74,8 +76,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [atPopup, setAtPopup] = useState(false);
     const [isEmojiPopup, setEmojiPopup] = useState(false);
     const [isRecordPopup, setRecordPopup] = useState(false);
-    const [shotKeyTip, setShotKeyTip] = useState('按Ctrl+Enter键发送消息');
-    const [ isTextNullEmpty, setIsTextNullEmpty ] = useState(true);
+    const [shotKeyTip, setShotKeyTip] = useState('按Enter键发送消息');
+    const [isTextNullEmpty, setIsTextNullEmpty] = useState(true);
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -87,51 +89,51 @@ export const MessageInput = (props: Props): JSX.Element => {
     let editorInstance;
     // const enterSend = localStorage.getItem('sendType') || '1'
 
-     // 上传逻辑
-  const handleUpload = (base64Data) => {
-    return new Promise((resolve, reject) => {
-      axios
-        .post("/api/im_cos_msg/pre_sig", {
-          sdkappid: 1400187352,
-          uid: "tetetetetetet",
-          file_type: 1,
-          file_name: "headUrl/" + new Date().getTime() + 'screenShot.png',
-          Duration: 900,
-          upload_method: 0,
-        })
-        .then((res) => {
-          console.log(res);
-          const { upload_url } = res.data;
-          console.log(111111);
-          console.log(upload_url);
-          let fr = new FileReader();
-              axios
-                .put(upload_url, convertBase64UrlToBlob(base64Data), {
-                  headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                  },
+    // 上传逻辑
+    const handleUpload = (base64Data) => {
+        return new Promise((resolve, reject) => {
+            axios
+                .post("/api/im_cos_msg/pre_sig", {
+                    sdkappid: 1400187352,
+                    uid: "tetetetetetet",
+                    file_type: 1,
+                    file_name: "headUrl/" + new Date().getTime() + 'screenShot.png',
+                    Duration: 900,
+                    upload_method: 0,
                 })
-                .then(() => {
-                  const { download_url } = res.data;
-                  resolve(res.data.ci_url)
+                .then((res) => {
+                    console.log(res);
+                    const { upload_url } = res.data;
+                    console.log(111111);
+                    console.log(upload_url);
+                    let fr = new FileReader();
+                    axios
+                        .put(upload_url, convertBase64UrlToBlob(base64Data), {
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                            },
+                        })
+                        .then(() => {
+                            const { download_url } = res.data;
+                            resolve(res.data.ci_url)
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        })
+                        .finally(() => {
+
+                        });
                 })
                 .catch((err) => {
-                  reject(err);
-                })
-                .finally(() => {
-                    
+                    reject(err);
+
                 });
-        })
-        .catch((err) => {
-          reject(err);
-          
         });
-    });
-  };
+    };
 
     const handleSendTextMsg = async () => {
         console.warn(editorState?.toHTML())
-        
+
         if (editorStateDisabled(editorState)) {
             return
         }
@@ -139,14 +141,14 @@ export const MessageInput = (props: Props): JSX.Element => {
 
         const htmlText = editorState.toHTML();
         const imgSrc = htmlText.match(/<img [^>]*src=['"]([^'"]+)[^>]*>/g)
-        
+
         try {
-            if(imgSrc && imgSrc.length >0){
+            if (imgSrc && imgSrc.length > 0) {
                 let formatText = [];
                 let textContent = htmlText.match(/<p>((\w|\W)*?)<\/p>/g)
-                if(textContent && textContent.length > 0){
+                if (textContent && textContent.length > 0) {
                     formatText = textContent.map(item => {
-                        return item.replace(/<p>/g,'').replace(/<\/p>/g,'').replace(/<br\/>/g,'\n')
+                        return item.replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/<br\/>/g, '\n')
                     });
                 }
                 // imgSrc.forEach(async (i,index)=>{
@@ -156,11 +158,11 @@ export const MessageInput = (props: Props): JSX.Element => {
                 //     // aaa(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,''))
                 // })
 
-                const getImgsUrl = async ()=>{
+                const getImgsUrl = async () => {
                     return new Promise(async (resolve, reject) => {
-                        for (let i = 0; i < imgSrc.length; i++) {
-                            await handleUpload(imgSrc[i].replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,'')).then(src=>{
-                                formatText.splice((i * 2)+1,0,`<img src="${src}" />`)
+                        for (let i = 0;i < imgSrc.length;i++) {
+                            await handleUpload(imgSrc[i].replace(/<img src=/, '').replace(/\/>/, '').replace(/"/g, '')).then(src => {
+                                formatText.splice((i * 2) + 1, 0, `<img src="${src}" />`)
                             })
                         }
                         resolve(false);
@@ -168,8 +170,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }
                 await getImgsUrl()
                 toTextContent = formatText.join('')
-            }        
-       
+            }
+
             // const text = editorState?.toText()
             const atList = getAtList(toTextContent)
             const { data: { code, json_params, desc } } = await sendTextMsg({
@@ -380,17 +382,15 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        const type = localStorage.getItem('sendType') || '0'
+        const type = store.get('sendType') || '0'
         if (type == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
-                // setEditorState(editorState.toText() + '\n')
-                // editorState.toText() += '\n'
-                console.log('换行', '----------------------', editorState)
+                // console.log('换行', '----------------------', editorState)
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
                 handleSendTextMsg();
-            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+            } else if (e.key === "@" && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
             }
@@ -400,8 +400,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                 e.preventDefault();
                 handleSendTextMsg();
             } else if (e.keyCode == 13 || e.charCode === 13) {
-                console.log('换行', '----------------------', editorState)
-            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+                // console.log('换行', '----------------------', editorState)
+            } else if (e.key === "@" && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
             }
@@ -469,7 +469,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         setActiveFeature("")
     }
 
-    const editorChange = (editorState,a,b) => {
+    const editorChange = (editorState, a, b) => {
         console.warn(editorState.toHTML())
         setIsTextNullEmpty(editorStateDisabled(editorState))
         setEditorState(editorState)
@@ -479,13 +479,13 @@ export const MessageInput = (props: Props): JSX.Element => {
         <List type="option" style={{ width: '200px', background: '#ffffff' }}>
             <List.Item onClick={() => changeSendShotcut('1')} style={{ display: 'flex' }}>
                 {
-                    localStorage.getItem('sendType') == '1' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
+                    store.get('sendType') == '1' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
                 }
                 按Ctrl+Enter键发送消息
             </List.Item>
             <List.Item onClick={() => changeSendShotcut('0')} style={{ display: 'flex' }}>
                 {
-                    localStorage.getItem('sendType') == '0' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
+                    store.get('sendType') == '0' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
                 }
                 按Enter键发送消息
             </List.Item>
@@ -494,7 +494,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const changeSendShotcut = index => {
         const tip = index == '1' ? '按Ctrl+Enter键发送消息' : '按Enter键发送消息'
         setShotKeyTip(tip)
-        localStorage.setItem('sendType', index)
+        store.set('sendType', index)
         // console.log(localStorage.getItem('sendType'))
     }
     useEffect(() => {
@@ -503,8 +503,19 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const shutUpStyle = isShutUpAll ? 'disabled-style' : '';
     const dragEnterStyle = isDraging ? 'draging-style' : '';
-
+    const hooks = {
+        // 'change-block-type': ({ href, target }) => {
+        //     alert(111)
+        //     href = href.indexOf('http') === 0 ? href : `http://${href}`
+        //     console.log(href, '=====__________')
+        //     return { href, target }
+        // }
+        'change-block-type': () => {
+            alert(111)
+        }
+    }
     useEffect(() => {
+        setShotKeyTip(store.get('sendType') == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
         ipcRenderer.on('screenShotUrl', (e, { data, url }) => {
             if (data.length == 0) {
                 message.error({ content: '已取消截图' })
@@ -538,7 +549,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     return (
-        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyPress={handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
+        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
                 atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
             }
@@ -571,13 +582,14 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ref={instance => editorInstance = instance}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     placeholder={placeHolderText}
+                    hooks={hooks}
                 />
             </div>
-            <div className="message-input__button-area">
+            <span className="message-input__button-area">
                 <Button type="primary" title={shotKeyTip} onClick={handleSendTextMsg} disabled={isTextNullEmpty}>发送</Button>
-            </div>
-             {/* <span className="message-input__down" title='切换发送消息快捷键'></span> */}
-             <Dropdown
+            </span>
+            {/* <span className="message-input__down" title='切换发送消息快捷键'></span> */}
+            <Dropdown
                 clickClose={true}
                 className="message-input__down"
                 button=""
@@ -590,6 +602,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             >
                 {menu}
             </Dropdown>
+
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }

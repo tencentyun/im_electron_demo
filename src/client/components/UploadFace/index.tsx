@@ -74,6 +74,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
     setCropper(instance);
   }, [instance]);
 
+
   // 确定裁剪
   function confirmCopper() {
     if (imgUrl) {
@@ -134,8 +135,6 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       }).then(res => {
         console.log(res)
         const { upload_url } = res.data
-        console.log(111111)
-        console.log(upload_url)
         let fr = new FileReader();
         fr.readAsDataURL(fileObj);
         fr.addEventListener(

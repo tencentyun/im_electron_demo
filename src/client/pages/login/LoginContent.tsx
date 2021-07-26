@@ -10,7 +10,7 @@ import { changeFunctionTab } from '../../store/actions/ui';
 import { setUserInfo } from '../../store/actions/user';
 // eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
-import {filterGetDepartment,assemblyData} from '../../utils/orgin'
+import { filterGetDepartment, assemblyData } from '../../utils/orgin'
 import { setUnreadCount } from '../../store/actions/section';
 //import { getEncrptPwd } from '../../utils/addFriendForPoc'
 import { getUserLoginInfo } from '../../services/login'
@@ -148,46 +148,55 @@ export const LoginContent = (): JSX.Element => {
     const isDisablelogin = activedTab === 'passwordLogin' && userID && usersig;
     console.log("自动更新1")
     document.addEventListener('DOMContentLoaded', () => {
-      console.log("自动更新2")
-      const { ipcRenderer } = require('electron');
-      ipcRenderer.on('message', (event, { message, data }) => {
-        console.log("自动更新进入")
-        console.log(message, data);
-        switch (message) {
-          case 'isUpdateNow':
-            if (confirm('发现有新版本，是否现在更新？')) {
-              ipcRenderer.send('updateNow');
+        console.log("自动更新2")
+        const { ipcRenderer } = require('electron');
+        ipcRenderer.on('message', (event, { message, data }) => {
+            console.log("自动更新进入")
+            console.log(message, data);
+            switch (message) {
+                case 'isUpdateNow':
+                    if (confirm('发现有新版本，是否现在更新？')) {
+                        ipcRenderer.send('updateNow');
+                    }
+                    break;
+                default:
+                    //document.querySelector('h1').innerHTML = message;
+                    break;
             }
-            break;
-          default:
-            //document.querySelector('h1').innerHTML = message;
-            break;
-        }
-      })
+        })
     })
     const customizeTabBarRender = (children: JSX.Element) => {
         return <a className="customize-tab-bar">{children}</a>
     }
 
-    const handleTabChange = ({id}) => {
-        if(id === 'verifyCodeLogin') return message.warning({content: '敬请期待'});
+    const handleTabChange = ({ id }) => {
+        if (id === 'verifyCodeLogin') return message.warning({ content: '敬请期待' });
         setActivedTab(id);
     }
 
     const handleLoginClick = async () => {
-        const params:loginParam = {
+        const params: loginParam = {
             userID: userID,
             userSig: usersig
         }
-        const { data: { code,data,desc,json_param }} = await timRenderInstance.TIMLogin(params);
-        console.log(code,data,desc,json_param);
-        if(code === 0) {
-            dispatch(setIsLogInAction(true));
-            dispatch(setUserInfo({
-                userId: userID
-            }));
-            dispatch(changeFunctionTab('message'));
-            history.replace('/home/message');
+        const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
+        console.log(code, data, desc, json_param);
+        if (code === 0) {
+            //获取部门
+            filterGetDepartment({
+                DepId: "root_1"
+            }, (data) => {
+                let sectionData = assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')
+                window.localStorage.setItem('section', JSON.stringify(sectionData))
+                window.localStorage.setItem('uid', userID)
+                dispatch(setUserInfo({
+                    userId: userID
+                }));
+                dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')))
+                dispatch(setIsLogInAction(true));
+                dispatch(changeFunctionTab('message'));
+                history.replace('/home/message');
+            }, userID)
         }
     }
 
@@ -200,8 +209,8 @@ export const LoginContent = (): JSX.Element => {
                     <Input placeholder="请输入密码" className="login--input" />
                 </TabPanel>
                 <TabPanel id="passwordLogin">
-                    <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val)}} />
-                    <Input placeholder="请输入usersig"  value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />
+                    <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val) }} />
+                    <Input placeholder="请输入usersig" value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />
                 </TabPanel>
             </Tabs>
             <Checkbox display="block" value={false} className="login--auto">
