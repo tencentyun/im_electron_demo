@@ -8,7 +8,7 @@ import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
 import { changeFunctionTab } from '../../store/actions/ui';
 import { setUserInfo } from '../../store/actions/user';
-import { loginUser } from '../../store/actions/loginUser';
+// eslint-disable-next-line import/no-unresolved
 import { loginParam } from 'im_electron_sdk/dist/interface';
 import {filterGetDepartment,assemblyData} from '../../utils/orgin'
 import { setUnreadCount } from '../../store/actions/section';
@@ -73,7 +73,7 @@ export const LoginContent = (): JSX.Element => {
     }
 
     const handleLoginClick = async () => {
-        console.log(111222333)
+        debugger
         getEncrptPwd({
             Pwd: password
         }).then(getEncrptPwdRes => {
@@ -86,8 +86,7 @@ export const LoginContent = (): JSX.Element => {
                 asyuserind: null,
                 password: 'MTIzNDU2'
             }).then(async res => {
-                console.log(res)
-                const { USERLOGIN } = res.data
+                const { USERLOGIN } = res
                 const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
                 const params: loginParam = {
                     userID: USERLOGIN.toUpperCase(),
@@ -131,9 +130,9 @@ export const LoginContent = (): JSX.Element => {
                     <Input placeholder="请输入密码" value={password} className="login--input" onChange={(val) => setPassword(val)} />
                 </TabPanel>
             </Tabs>
-            {/* <Checkbox display="block" value={false} className="login--auto">
+            <Checkbox display="block" value={false} className="login--auto">
                 下次自动登录
-            </Checkbox> */}
+            </Checkbox>
             <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}> 登陆</Button>
         </div>
     )

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import "tea-component/dist/tea.css";
+import 'antd/dist/antd.css'
 import {
   HashRouter as Router,
   Switch,
@@ -34,6 +35,9 @@ import {
   reciMessage,
   markeMessageAsRevoke,
   markMessageAsReaded,
+  addMoreMessage,
+  updateMessages,
+  updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
 
@@ -47,19 +51,19 @@ export const App = () => {
 
   const initIMSDK = async () => {
     if (!isInited) {
-      // const privite = await timRenderInstance.callExperimentalAPI({
-      //     json_param: {
-      //         request_internal_operation: 'internal_operation_set_privatization_info',
-      //         request_set_privatization_info_param: {
-      //             server_address_array: [{
-      //                 server_address_ip: "106.55.144.99",// ip
-      //                 server_address_port: 80// 端口
-      //             }],
-      //             server_public_key: '0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f'// 公钥
-      //         }
-      //     }
-      // })
-      // console.log('私有化', privite)
+      const privite = await timRenderInstance.callExperimentalAPI({
+          json_param: {
+              request_internal_operation: 'internal_operation_set_custom_server_info',
+              request_set_custom_server_info_param: {
+                longconnection_address_array: [{
+                      server_address_ip: "oaim.uat.crbank.com.cn",// ip
+                      server_address_port: 30001// 端口
+                }],
+                server_public_key: '0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f'// 公钥
+              }
+          }
+      })
+      console.log('私有化', privite)
       timRenderInstance.TIMInit().then(async ({ data }) => {
 
         if (data === 0) {
@@ -110,17 +114,35 @@ export const App = () => {
                 _handleGroupInfoModify(data);
                 break;
               /**
+               * 元素上传进度回调
+               */
+              case "TIMSetMsgElemUploadProgressCallback":
+                _handleElemUploadProgres(data);
+                break;
+              /**
                * 被挤下线
                */
               case "TIMSetKickedOfflineCallback":
-                _handleKickedout();
-                break;
-            }
+                  _handleKickedout();
+                  break;
+              }
           });
         }
       });
     }
   };
+  const _handleElemUploadProgres = ({message, index, cur_size, total_size, user_data}) => {
+    const ramdon = Math.random()
+    if(ramdon > 0.8) {
+      dispatch(updateMessageElemProgress({
+        messageId: message.message_msg_id,
+        index,
+        cur_size,
+        total_size
+      }));
+    }
+  }
+  
   const _handleKickedout = async () => {
     dispatch(userLogout());
     history.replace("/login");
@@ -252,6 +274,13 @@ export const App = () => {
       const convList = await addProfileForConversition(conversationList);
       dispatch(updateConversationList(convList));
       handleMessageSendFailed(convList);
+      if(conversationList[0]?.conv_last_msg?.message_status === 1) {
+        dispatch(updateMessages({
+          convId: conversationList[0].conv_id,
+          message: conversationList[0].conv_last_msg
+        }))
+      }
+      
     }
   };
 

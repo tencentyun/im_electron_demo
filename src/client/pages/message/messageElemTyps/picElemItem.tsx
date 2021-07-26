@@ -1,10 +1,16 @@
+import { shell } from "electron";
 import React, { useEffect } from "react";
 import { downloadFilesByUrl, showDialog } from "../../../utils/tools";
 import {ImagePreview} from 'tea-component'
 
 export const PicElemItem = (props: any): JSX.Element => {
     const showPic = () => {
-        showDialog()
+        try {
+            const imageName = props.image_elem_large_id.match(/([\d|a-z]+\.\w+)$/)[1]
+            const path = process.cwd() + '/download/' + imageName
+            console.log(path)
+            shell.showItemInFolder(path)
+        } catch(e) {}
     }
     const item = ({ image_elem_thumb_url, image_elem_orig_url, image_elem_large_url }) => {
         const url = image_elem_thumb_url || image_elem_orig_url || image_elem_large_url

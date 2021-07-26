@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     Menu,
     Item,
@@ -32,11 +32,12 @@ import formateTime from '../../utils/timeFormat';
 import { ContentUtils } from 'braft-utils'
 import { Icon, message } from 'tea-component';
 import { custEmojiUpsert } from '../../services/custEmoji'
-import type { custEmojiUpsertParams } from '../../services/custEmoji'
+import  { custEmojiUpsertParams } from '../../services/custEmoji'
 import { showDialog } from "../../utils/tools";
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
 import { GroupSysElm } from './messageElemTyps/groupSystemElem';
+import { setCurrentReplyUser } from '../../store/actions/message'
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -181,8 +182,15 @@ export const MessageView = (props: Props): JSX.Element => {
         setSeletedMessage([message])
     }
 
-    const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
+    const handleReplyMsg = (params) => {
+        const { message } = params;
+        const { message_sender, message_sender_profile } = message
+        dispatch(setCurrentReplyUser({
+            profile: message_sender_profile
+        }))
+    }
 
+    const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
         const userId = await getLoginUserID()
         const isDivideSending = forwardType === ForwardType.divide
         const isCombineSending = !isDivideSending
@@ -262,7 +270,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 handleTransimitMsg(data);
                 break;
             case 'reply':
-                handleDeleteMsg(data);
+                handleReplyMsg(data);
                 break;
             case 'multiSelect':
                 handleMultiSelectMsg(data);
@@ -317,7 +325,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <CustomElem {...res} />
                 break;
             case 4:
-                resp = <FileElem {...res} />
+                resp = <FileElem message={message} element={element} index={index}/>
                 break;
             case 5:
                 resp = <GroupTipsElemItem {...res} />
@@ -431,7 +439,6 @@ export const MessageView = (props: Props): JSX.Element => {
     }
     return (
         <div className="message-view" ref={messageViewRef}>
-
             {
                 messageList && messageList.length > 0 &&
                 messageList.map((item, index) => {

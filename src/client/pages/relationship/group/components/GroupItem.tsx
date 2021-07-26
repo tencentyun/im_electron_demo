@@ -1,4 +1,4 @@
-import { Button, PopConfirm } from "tea-component";
+import { Button, PopConfirm, Tooltip } from "tea-component";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMessageDirect } from "../../../../utils/react-use/useDirectMsgPage";
@@ -118,9 +118,12 @@ export const GroupItem = (props: {
               </>
             )}
           >
-            <Button className="group-item--right__button" type="text">
+            <Tooltip title="解散群聊">
+               <div className="group-item--right__disslove"></div>
+            </Tooltip>
+            {/* <Button className="group-item--right__button" type="text">
               解散群聊
-            </Button>
+            </Button> */}
           </PopConfirm>
         )}
         {canQuitGroup && (
@@ -143,10 +146,10 @@ export const GroupItem = (props: {
                 </Button>
               </>
             )}
-          >
-            <Button className="group-item--right__button" type="text">
-              退出群聊
-            </Button>
+          > 
+             <Tooltip title="退出群聊">
+                <div className="group-item--right__button"></div>
+             </Tooltip>
           </PopConfirm>
         )}
       </div>
