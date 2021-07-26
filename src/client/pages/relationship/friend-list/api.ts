@@ -13,6 +13,7 @@ type FriendList = {
 
 export const getFriendList = async (): Promise<FriendList> => {
   const { data } = await timRenderInstance.TIMFriendshipGetFriendProfileList();
+  console.log('data', data)
   const { code, desc, json_params } = data;
   if (code === 0) {
     return JSON.parse(json_params);

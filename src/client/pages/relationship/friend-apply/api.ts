@@ -47,6 +47,7 @@ export const getFriendShipPendencyList = async (params: {
       friendship_get_pendency_list_param_limited_size: 100,
     },
   });
+
   const { code, desc, json_params } = data;
   if (code === 0) {
     const result: FriendShipPendency = JSON.parse(json_params) || {};
