@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import { FriendApply } from "./friend-apply";
-import { BuddyList } from "./buddy-list";
+import { FriendList } from "./friend-list";
 import { Group } from "./group";
 import "./relationship.scss";
 
 const navList = [
   {
-    id: 'buddy-list',
-    title: '好友列表'
+    id: "buddy-list",
+    title: "好友列表",
   },
   {
-    id: 'buddy-apply',
-    title: '好友申请',
+    id: "buddy-apply",
+    title: "好友申请",
   },
   {
     id: "group",
@@ -24,8 +24,8 @@ export const RelationShip = (): JSX.Element => {
 
   const DisplayComponent = {
     group: Group,
-    'buddy-apply': FriendApply,
-    'buddy-list': BuddyList
+    "buddy-apply": FriendApply,
+    "buddy-list": FriendList,
   }[activedId];
 
   const addActiveClass = (id: string): string =>
