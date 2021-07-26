@@ -1,8 +1,18 @@
 import React, { useState } from "react";
+import { BuddyApply } from "./buddy-apply";
+import { BuddyList } from "./buddy-list";
 import { Group } from "./group";
 import "./relationship.scss";
 
 const navList = [
+  {
+    id: 'buddy-list',
+    title: '好友列表'
+  },
+  {
+    id: 'buddy-apply',
+    title: '好友申请',
+  },
   {
     id: "group",
     title: "我的群组",
@@ -10,10 +20,12 @@ const navList = [
 ];
 
 export const RelationShip = (): JSX.Element => {
-  const [activedId, setActiveId] = useState("group");
+  const [activedId, setActiveId] = useState("buddy-list");
 
   const DisplayComponent = {
     group: Group,
+    'buddy-apply': BuddyApply,
+    'buddy-list': BuddyList
   }[activedId];
 
   const addActiveClass = (id: string): string =>
