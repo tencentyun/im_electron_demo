@@ -13,12 +13,13 @@ const joinOptions = [
 export const GroupJoinOption = (props: {
   joinOption: number;
   groupId: string;
+  userIdentity: number;
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
-  const { joinOption, groupId, onRefresh } = props;
+  const { joinOption, groupId, userIdentity, onRefresh } = props;
   console.log('入群参数，', joinOption)
   const [join, setJoin] = useState(joinOption)
-
+  const canEdit = [2, 3].includes(userIdentity);
   useEffect(()=>{
     setJoin(joinOption)
   }, [joinOption])
@@ -47,6 +48,7 @@ export const GroupJoinOption = (props: {
         size="full"
         type="simulate"
         appearance="button"
+        disabled={!canEdit}
         className="group-flag-message--select"
         value={"" + join}
         onChange={(value) => handleChange(Number(value))}
