@@ -185,7 +185,7 @@ export const App = () => {
     handleNotify(messages)
   };
   const handleNotify = (messages) => {
-    console.log(showApp, '[[[[[[[[[[[[[[[')
+    // console.log(showApp, '[[[[[[[[[[[[[[[')
     if (showApp) {
       return
     }
@@ -196,9 +196,20 @@ export const App = () => {
       body: (messages[0].message_elem_array[0].text_elem_content).substring(0, 15)
     })
     // ipcRenderer.send('asynchronous-message', 'setTaryTitle')
-    notification.onclick = () => {
+    notification.onclick = async () => {
       ipcRenderer.send('asynchronous-message', 'openWindow')
       // dispatch(updateCurrentSelectedConversation(messages));
+      const response = await getConversionList();
+      dispatch(updateConversationList(response));
+      console.log(response, '对话列表。。。。。。。。。。。。。。。。。。。')
+      if (response?.length) {
+        const newConversaionItem = response.find(
+          (v) => v.conv_id === messages[0].message_conv_id
+        );
+        if (newConversaionItem) {
+          dispatch(updateCurrentSelectedConversation(newConversaionItem));
+        }
+      }
       notification.close()
     }
   }
@@ -280,9 +291,9 @@ export const App = () => {
   };
   const ipcRendererLister = (event, data) => {
     if (event) {
-      console.log('changedata:', data)
+      // console.log('changedata:', data)
       showApp = data
-      console.log(showApp, 'showApp')
+      // console.log(showApp, 'showApp')
     }
   }
 

@@ -83,7 +83,7 @@ request.interceptors.response.use(
         const res: ResponseData = response.data;
 
         const { code, ErrorCode } = res;
-        console.log('response', response);
+        // console.log('response', response);
         // 自定义状态码验证
         if (code && code !== 0 && ErrorCode && +ErrorCode !== 0) {
             return Promise.reject({
