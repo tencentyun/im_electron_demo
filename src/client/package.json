@@ -1,7 +1,6 @@
 {
   "name": "client",
   "version": "1.0.0",
-  "productName": "华润银行即时通讯（内测版）",
   "description": "IM client",
   "main": "app.tsx",
   "scripts": {
