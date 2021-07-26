@@ -76,29 +76,28 @@ export const LoginContent = (): JSX.Element => {
         console.log(111222333)
         getEncrptPwd({
             Pwd: password
-        }).then(getEncrptPwdRes => {
+        }).then( async getEncrptPwdRes  => {
             const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
-            var xmlhttp = new XMLHttpRequest()  // 创建异步请求
-            xmlhttp.open('GET','http://oaim.uat.crbank.com.cn:30002/commonauthservice_crbk/ws/OIDAuthService/userLogin?systemid=P001&userName=XUZEMIN&userPass=ZR52IydJwzb2McsIPFVLZy2BghnMDwHpF9Qmf4AQjFMiwYEEJGYeSfTqZ3%2FGXSBmVb6TNuGwvSwdSxiT9YeUwzuqZv%2BRGqwPh%2BLpvoj2Fb2OLw%2FDdzFmpUrlsRl3EBTPxgHqdzk0iWmVNiQE0h36RVO%2BH3ZIN69zkyuGH18HaZ8%3D&password=MTIzNDU2',true)  // 使用GET方法获取hello.txt文件
-            xmlhttp.send()  // 发送异步请求
-            console.log(xmlhttp)
-            getUserLoginInfo({
-                systemid: HUA_RUN_SYSTEMID,
-                userName: userID.toUpperCase(),
-                userPass: Encypt,
-                asyuserind: null,
-                password: 'MTIzNDU2'
-            }).then(async res => {
-                console.log(res)
-                const { USERLOGIN } = res.data
+            console.log(Encypt)
+            // getUserLoginInfo({
+            //     systemid: HUA_RUN_SYSTEMID,
+            //     userName: userID.toUpperCase(),
+            //     userPass: Encypt,
+            //     asyuserind: null,
+            //     password: 'MTIzNDU2'
+            // }).then(async res => {
+                const USERLOGIN = 'XUZEMIN'
+                console.log(2232323)
                 const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
                 const params: loginParam = {
                     userID: USERLOGIN.toUpperCase(),
                     userSig: userSig
                 }
+                console.log(887655)
                 const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
                 console.log(code, data, desc, json_param);
-                if(code === 0) {
+                console.log(5456456456)
+                //if(code === 0) {
                     // dispatch(loginUser({
                     //     userId: userID,
                     //     userSig:usersig
@@ -119,13 +118,13 @@ export const LoginContent = (): JSX.Element => {
                         dispatch(changeFunctionTab('message'));
                         history.replace('/home/message');
                     },userID)
-                }
-            }).catch(err => {
-                const { ERRCODE } = err.data
-                message.error({
-                    content: "登录失败：" + err.message || errType(ERRCODE),
-                })
-            })
+                //}
+            // }).catch(err => {
+            //     const { ERRCODE } = err.data
+            //     message.error({
+            //         content: "登录失败：" + err.message || errType(ERRCODE),
+            //     })
+            // })
         }).catch(err => {
             message.error({
                 content: "登录失败：" + err.message || err.ErrorInfo,

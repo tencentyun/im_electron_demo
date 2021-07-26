@@ -18,6 +18,8 @@ import { convertBase64UrlToBlob } from "../../utils/tools";
 import { SDKAPPID } from '../../config/config'
 import { setPathToLS } from '../../utils/messageUtils';
 
+let store = '1'
+
 type Props = {
     convId: string,
     convType: number,
@@ -483,13 +485,13 @@ export const MessageInput = (props: Props): JSX.Element => {
         <List type="option" style={{ width: '200px', background: '#ffffff' }}>
             <List.Item onClick={() => changeSendShotcut('1')} style={{ display: 'flex' }}>
                 {
-                    store.get('sendType') == '1' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
+                    store === '1' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
                 }
                 按Ctrl+Enter键发送消息
             </List.Item>
             <List.Item onClick={() => changeSendShotcut('0')} style={{ display: 'flex' }}>
                 {
-                    store.get('sendType') == '0' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
+                    store === '0' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
                 }
                 按Enter键发送消息
             </List.Item>
@@ -519,7 +521,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
     useEffect(() => {
-        setShotKeyTip(store.get('sendType') == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
+        setShotKeyTip(store == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
         ipcRenderer.on('screenShotUrl', (e, { data, url }) => {
             if (data.length == 0) {
                 message.error({ content: '已取消截图' })

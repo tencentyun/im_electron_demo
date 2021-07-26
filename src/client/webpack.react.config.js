@@ -56,7 +56,7 @@ module.exports = {
     publicPath: '/',
     proxy: {
       '/commonauthservice_crbk': {
-        target: 'http://10.241.24.31:39021/',
+        target: 'http://oaim.uat.crbank.com.cn:30002/',
         secure: false,
         changeOrigin:true
       },
@@ -75,6 +75,12 @@ module.exports = {
         secure: false, // http请求https，这里需设置成false,
         changeOrigin: true // 一些服务器防止爬虫会设置origin,
       },
+      '/v4': {
+        //target: 'http://106.52.161.51:30006/',
+        target: 'http://oaim.uat.crbank.com.cn:30002/',
+        secure: false, // http请求https，这里需设置成false,
+        changeOrigin: true // 一些服务器防止爬虫会设置origin,
+      },
       '/sticker': {
         //target: 'http://106.52.161.51:30006/',
         target: 'http://oaim.uat.crbank.com.cn:30002/',
@@ -83,7 +89,7 @@ module.exports = {
       },
       '/status': {
         //target: 'http://106.52.161.51:30006/',
-        target: 'http://oaim.uat.crbank.com.cn:30002/',
+        target: 'http://oaim.uat.crbank.com.cn:15000/',
         secure: false,
         changeOrigin:true
       }
