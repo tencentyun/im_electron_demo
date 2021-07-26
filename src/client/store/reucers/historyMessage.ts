@@ -75,7 +75,7 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
           return
         }
         messageList.forEach(item => {
-          if (item.message_is_from_self) {
+          if (item?.message_is_from_self) {
             item.message_is_peer_read = true;
           }
         });
