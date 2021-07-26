@@ -4,7 +4,7 @@ const path = require('path');
 const url = require('url');
 const TimMain = require('im_electron_sdk/dist/main');
 const fs = require('fs')
-const { autoUpdater } = require('electron-updater')
+//const { autoUpdater } = require('electron-updater')
 //const feedUrl = `http://oaim.crbank.com.cn:30003/_download/`
 const feedUrl = `http://localhost/`;
 
@@ -228,7 +228,7 @@ const createWindow = () => {
     //执行自动更新检查
     autoUpdater.checkForUpdates();
   };
-  setTimeout(checkForUpdates, 1000);
+  //setTimeout(checkForUpdates, 1000);
 
   // 接受截图事件
   ipcMain.on("SCREENSHOT", function () {

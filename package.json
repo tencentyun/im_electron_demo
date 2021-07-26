@@ -51,8 +51,7 @@
   "devDependencies": {
     "concurrently": "^6.2.0",
     "electron": "^13.1.5",
-    "electron-builder": "^22.11.7",
-    "node-gyp": "^7.1.2"
+    "electron-builder": "^22.11.7"
   },
   "dependencies": {
     "axios": "^0.21.1",
