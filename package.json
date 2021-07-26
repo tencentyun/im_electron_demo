@@ -1,5 +1,6 @@
 {
   "name": "im-electron-demo",
+  "productName": "IM Electron Demo",
   "version": "1.0.0",
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
@@ -9,7 +10,7 @@
     "build:react": "cd ./src/client && npm run build:react",
     "dev:electron": "electron .",
     "dev:react": "cd ./src/client && npm run dev:react",
-    "dev": "npm run start && npm run dev:react"
+    "dev": "npm run dev:react && npm run start"
   },
   "keywords": [],
   "author": {
@@ -22,8 +23,7 @@
       "bundle"
     ],
     "appId": "electron-sdk",
-    "mac": {
-    },
+    "mac": {},
     "win": {
       "target": [
         {
