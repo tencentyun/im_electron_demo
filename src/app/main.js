@@ -98,14 +98,14 @@ const createWindow = () => {
     if (!ipc) ipc = new IPC(mainWindow);
   });
 
-  //mainWindow.loadURL(`http://localhost:3000`);
-  mainWindow.loadURL(
-    url.format({
-      pathname: path.join(__dirname, "../../bundle/index.html"),
-      protocol: "file:",
-      slashes: true,
-    })
-  );
+  mainWindow.loadURL(`http://localhost:3000`);
+  // mainWindow.loadURL(
+  //   url.format({
+  //     pathname: path.join(__dirname, "../../bundle/index.html"),
+  //     protocol: "file:",
+  //     slashes: true,
+  //   })
+  // );
   // 通知消息
   // mainWindow.on('show', function () {
   //   mainWindow.webContents.send('mainProcessMessage', false)
