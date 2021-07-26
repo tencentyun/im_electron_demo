@@ -1,5 +1,7 @@
+@use 'sass:math';
+
 @function toRem($value) {
-    $remValue: ($value / 16) + rem; 
+    $remValue: math.div($value, 16) + rem; 
     @return $remValue;
 }
 

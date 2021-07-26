@@ -37,21 +37,41 @@ class IPC {
         })
 
         ipcMain.on('openCallWindow', (event, data) => {
+            const env = process.env?.NODE_ENV?.trim();
+            const isDev = env === 'development';
             const callWindow = new BrowserWindow({
                 height: 600,
                 width: 800, 
-                show: true,
+                show: false,
+                frame:false,
                 webPreferences: {
+                    parent: this.win,
                     webSecurity: true,
                     nodeIntegration: true,
                     nodeIntegrationInWorker: true,
                     enableRemoteModule: true,
                     contextIsolation: false,
-                }
+                },
             });
+            
             callWindow.removeMenu();
-            callWindow.loadURL("http://localhost:3000/call.html");
-            callWindow.webContents.openDevTools();
+
+           if(isDev) {
+                callWindow.loadURL("http://localhost:3000/call.html");
+                callWindow.webContents.openDevTools();
+           } else {
+                callWindow.loadURL(
+                    url.format({
+                        pathname: path.join(__dirname, '../../bundle/call.html'),
+                        protocol: 'file:',
+                        slashes: true
+                    })
+                );
+           }
+
+            callWindow.on('ready-to-show',() => {
+                callWindow.show();
+            });
         });
     }
     minsizewin(){
