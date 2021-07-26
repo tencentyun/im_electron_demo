@@ -16,7 +16,11 @@ declare namespace State {
     export type functionTab = 'message' | 'relationship'
     export type ui = {
         function_tab: functionTab,
-        replace_router: boolean
+        replace_router: boolean,
+        callingStatus: {
+            callingType: number,
+            callingId: string
+        }
     }
     export type historyMessage = {
         historyMessageList:Map<string, Array<message>>

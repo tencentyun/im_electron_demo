@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ipcRenderer } from "electron";
+import { message } from 'tea-component';
 
 import { Avatar } from "../../components/avatar/avatar";
 import { getMsgList, markMessageAsRead } from "./api";
@@ -9,6 +10,7 @@ import { MessageView } from "./MessageView";
 import "./message-info.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "../../store/actions/message";
+import { updateCallingStatus } from "../../store/actions/ui";
 
 import { AddUserPopover } from "./AddUserPopover";
 import { addTimeDivider } from "../../utils/addTimeDivider";
@@ -40,6 +42,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   );
   const { toolsTab, toolsDrawerVisible } = useSelector(
     (state: State.RootState) => state.groupDrawer
+  );
+
+  const { callingStatus: { callingId, callingType } } = useSelector(
+    (state: State.RootState) => state.ui
   );
 
   const msgList = historyMessageList.get(conv_id);
@@ -123,7 +129,15 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));
   
-  const handleOpenCallWindow = () => {
+  const handleOpenCallWindow = (conv_id: string, conv_type: number) => {
+    if(callingId) {
+      message.warning({content: '正在通话中'});
+      return;
+    }
+    dispatch(updateCallingStatus({
+      callingId: conv_id,
+      callingType: conv_type
+    }));
     ipcRenderer.send("openCallWindow");
   }
 
@@ -180,7 +194,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
             </div>
             <div>
               {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
-              <span className="message-info-view__header--video" onClick={handleOpenCallWindow} />
+              <span className={`message-info-view__header--video ${callingId === conv_id ? 'is-calling' : ''}`} onClick={() => handleOpenCallWindow(conv_id, conv_type)} />
             </div>
           </header>
           <section className="message-info-view__content">

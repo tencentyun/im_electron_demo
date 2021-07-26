@@ -72,6 +72,10 @@ class IPC {
             callWindow.on('ready-to-show',() => {
                 callWindow.show();
             });
+
+            callWindow.on('close', () => {
+                console.log("========close===========");
+            });
         });
     }
     minsizewin(){
