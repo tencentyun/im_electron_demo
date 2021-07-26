@@ -52,8 +52,8 @@ export const App = () => {
               request_internal_operation: 'internal_operation_set_custom_server_info',
               request_set_custom_server_info_param: {
                 longconnection_address_array: [{
-                      server_address_ip: "http://oaim.uat.crbank.com.cn",// ip
-                      server_address_port: 30002// 端口
+                      server_address_ip: "oaim.uat.crbank.com.cn",// ip
+                      server_address_port: 30001// 端口
                 }],
                 server_public_key: '0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f'// 公钥
               }

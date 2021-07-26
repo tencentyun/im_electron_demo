@@ -1,10 +1,4 @@
 import React, { useEffect } from "react";
-<<<<<<< HEAD
-import { downloadFilesByUrl } from "../../../utils/tools";
-import { ipcRenderer } from 'electron';
-export const FileElem = (props: any): JSX.Element => {
-    // console.log(props, '文件信息')
-=======
 import { useSelector } from "react-redux";
 import { downloadFilesByUrl, showDialog, checkFileExist } from "../../../utils/tools";
 import { cancelSendMsg } from "../api";
@@ -36,7 +30,6 @@ export const FileElem = (props: any): JSX.Element => {
             return process.cwd() + '/download/' + (match ? match[1] : "")
     }
     
->>>>>>> origin/main
     const calcuSize = () => {
         return (file_elem_file_size / (1024 * 1024)).toFixed(2)
     }
@@ -48,17 +41,6 @@ export const FileElem = (props: any): JSX.Element => {
         })
     }
     const displayName = () => {
-<<<<<<< HEAD
-        const { file_elem_file_name } = props;
-
-        return file_elem_file_name
-    }
-    const item = () => {
-
-        return (
-            <div className="message-view__item--file" onClick={showFile}>
-                <div className="message-view__item--file___ext">文件</div>
-=======
         return file_elem_file_name
     }
     const getFileTypeName = () => {
@@ -119,7 +101,6 @@ export const FileElem = (props: any): JSX.Element => {
         return (
             <div className="message-view__item--file" style={{background: backgroundStyle}} onDoubleClick={showFile}>
                 <div className="message-view__item--file___ext">{getFileTypeName()}</div>
->>>>>>> origin/main
                 <div className="message-view__item--file___content">
                     <div className="message-view__item--file___content____name">{displayName()}</div>
                     { getDetailText() }
@@ -130,22 +111,5 @@ export const FileElem = (props: any): JSX.Element => {
             </div>
         )
     };
-<<<<<<< HEAD
-    const downloadPic = (file_url, file_name) => {
-        const params = {file_url,file_name}
-        downloadFilesByUrl(params)
-    }
-    const savePic = () => {
-        // 大图、原图、缩略图
-        const { file_elem_url, file_elem_file_name } = props;
-        // console.log(file_elem_url, '图片下载地址', file_elem_file_name)
-        file_elem_url && downloadPic(file_elem_url, file_elem_file_name)
-    }
-    useEffect(() => {
-        savePic()
-    }, [])
-    //    console.log('fileElem',props)
-=======
->>>>>>> origin/main
     return item();
 }

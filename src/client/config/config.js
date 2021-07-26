@@ -12,7 +12,7 @@
 
 export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002'
 export const SDKAPPID = 1400529075
-export const SECRETKEY = '0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f' // 不可外传仅本次测试使用
+export const SECRETKEY = '08349186ecd23fafaf7f98ca0116077e5b507fceac558e3dbd32f0dfeb9393a9' // 不可外传仅本次测试使用
 // export const HUA_RUN_LOGIN_TEST = 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin'
 export const HUA_RUN_LOGIN_TEST = 'http://10.241.24.31:39021/commonauthservice_crbk/ws/OIDAuthService/userLogin'
 export const HUA_RUN_LOGIN_PROD = 'https://ldapservice.crc.com.cn/commonauthservice_new/ws/OIDAuthService/userLogin'
