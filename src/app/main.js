@@ -1,4 +1,4 @@
-const { app, BrowserWindow, clipboard, globalShortcut, ipcMain, shell, Tray, nativeImage } = require('electron');
+const { app, BrowserWindow, clipboard, globalShortcut, ipcMain, shell, Tray, nativeImage, Menu } = require('electron');
 
 const path = require('path');
 const url = require('url');
@@ -11,9 +11,9 @@ const feedUrl = `http://localhost/`;
 const IPC = require("./ipc");
 const child_process = require("child_process");
 let trayIcon = nativeImage.createFromPath(path.join(__dirname, '../client/assets/icon/notification.png'))
-
-let ipc;
-let appWindow;
+let forceQuit = false;
+let ipc, mainWindow;
+let toggle = false;
 const downloadUrl = app.getPath("downloads");
 new TimMain({
   sdkappid: 1400187352,
@@ -28,6 +28,8 @@ new TimMain({
 // app.on('window-all-closed', function () {
 //   if (process.platform !== 'darwin') app.quit()
 // })
+
+let appWindow;
 // 设置系统托盘
 const setAppTray = () => {
   // 托盘对象
@@ -43,35 +45,27 @@ const setAppTray = () => {
       }
     }
   ]
-
   // 系统托盘图标目录
-
   // trayIcon.setTemplateImage(true)
   // trayIcon.setSize(30,30)
-
   appTray = new Tray(trayIcon)
-
   // 图标的上下文菜单
   const contextMenu = Menu.buildFromTemplate(trayMenuTemplate)
-
   // 设置此托盘图标的悬停提示内容
   appTray.setToolTip('华润银行即时通讯')
-
   // 设置此图标的上下文菜单
   appTray.setContextMenu(contextMenu)
-
   appTray.on('click', () => {
-    if (appWindow && !forceQuit) {
-      appWindow.show()
+    console.log(mainWindow, forceQuit, '==========')
+    if (mainWindow && !forceQuit) {
+      mainWindow.show()
     }
   })
   return appTray;
 }
-
-
 const createWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     height: 640,
     width: 960,
     minWidth: 830,
@@ -91,12 +85,41 @@ const createWindow = () => {
 
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
-
     if (!ipc) ipc = new IPC(mainWindow);
   });
+  mainWindow.on('close', function (e) {
+    if (!forceQuit && appWindow && app) {
+      e.preventDefault();
+      try {
+        if (process.platform === 'darwin') {
+          app.hide()
+        } else {
+          mainWindow.hide()
+        }
+      } catch {
 
-  // use for developments
-  mainWindow.webContents.openDevTools();
+      }
+    }
+  })
+  mainWindow.on('show', function () {
+    num = 0
+    if (appTray) {
+      appTray.setTitle("");
+      hasFlash = false;
+      clearInterval(timer);
+      setTimeout(() => {
+        appTray.setImage(trayIcon)
+      }, 600)
+    }
+    mainWindow.flashFrame(false);
+  })
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.setTitle("华润银行即时通讯（内测版）")
+    mainWindow.show()
+    // 打开调试工具
+    mainWindow.webContents.openDevTools()
+    app.setAppUserModelId("华润银行即时通讯（内测版）")
+  })
   mainWindow.loadURL(`http://localhost:3000`);
   // mainWindow.loadURL(
   //   url.format({
@@ -114,6 +137,10 @@ const createWindow = () => {
     mainWindow.webContents.send('mainProcessMessage', false)
   })
   mainWindow.on('focus', function () {
+    clearInterval(timer);
+    setTimeout(() => {
+      appTray.setImage(trayIcon)
+    }, 600)
     mainWindow.webContents.send('mainProcessMessage', true)
   })
 
@@ -267,17 +294,92 @@ const createWindow = () => {
     // );
     shell.openPath(localUrl);
   });
-  ipcMain.on('asynchronous-message', function (event, arg) {
-    mainWindow.show()
-  });
   // ***use for production***
 };
-
-
+let num = 0;
+let hasFlash = false;
+app.on('click', () => {
+  if (appWindow) {
+    appWindow.show();
+  }
+})
+function setTaryTitle () {
+  num++;
+  appTray.setTitle(num === 0 ? '' : `${num}`);
+  mainWindow.flashFrame(true);
+  if (!hasFlash) {
+    trayFlash();
+  }
+}
+function changeWindow () {
+  if (appWindow) {
+    // 设置大小
+    appWindow.setSize(1000, 650)
+    // 居中
+    appWindow.center()
+    // 允许拖拽
+    appWindow.setResizable(true);
+  }
+}
+function reSizeWindow () {
+  if (appWindow) {
+    // 设置大小
+    appWindow.setSize(460, 358)
+    // 居中
+    appWindow.center()
+    // 允许拖拽
+    appWindow.setResizable(false);
+  }
+}
+function openWindow () {
+  if (mainWindow) {
+    mainWindow.show()
+    // if (!appWindow.isNormal()) {
+    // appWindow.restore();
+    // }
+  }
+}
+ipcMain.on('asynchronous-message', function (event, arg) {
+  const [type, data] = arg.split(',');
+  switch (type) {
+    case 'changeWindow':
+      changeWindow();
+      break;
+    case 'reSizeWindow':
+      reSizeWindow();
+      break;
+    case 'openWindow':
+      openWindow();
+      break;
+    case 'setTaryTitle':
+      if (process.platform == 'darwin') {
+        if (!appWindow.isVisible()) {
+          setTaryTitle();
+        }
+      } else {
+        setTaryTitle();
+      }
+      break;
+  }
+});
+let timer;
+function trayFlash () {
+  if (appTray) {
+    hasFlash = true;
+    timer = setInterval(() => {
+      toggle = !toggle
+      if (toggle) {
+        appTray.setImage(nativeImage.createEmpty())
+      } else {
+        appTray.setImage(trayIcon)
+      }
+    }, 600)
+  }
+}
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createWindow);
+// app.on("ready", createWindow);
 app.whenReady().then(() => {
   const template = [
 
@@ -286,13 +388,16 @@ app.whenReady().then(() => {
   Menu.setApplicationMenu(menu);
 
   appTray = setAppTray();
-
+  console.log(BrowserWindow.getAllWindows().length, '=======----')
   if (BrowserWindow.getAllWindows().length === 0) {
     appWindow = createWindow()
   }
 
 
 })
+app.on('before-quit', () => {
+  forceQuit = true;
+});
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.

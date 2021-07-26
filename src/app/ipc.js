@@ -37,7 +37,7 @@ class IPC {
         ipcMain.on('openCallWindow', (event, data) => {
             const callWindow = new BrowserWindow({
                 height: 600,
-                width: 800, 
+                width: 800,
                 show: true,
                 webPreferences: {
                     webSecurity: true,
@@ -59,7 +59,7 @@ class IPC {
         this.win.maximize()
     }
     close () {
-        this.win.close()
+        this.win.hide()
     }
     showDialog () {
         child_process.exec(`start "" ${path.resolve(process.cwd(), './download/')}`);

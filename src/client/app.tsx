@@ -185,23 +185,23 @@ export const App = () => {
     handleNotify(messages)
   };
   const handleNotify = (messages) => {
-    // console.log(showApp, '[[[[[[[[[[[[[[[')
+    console.log(showApp, '[[[[[[[[[[[[[[[')
     if (showApp) {
       return
     }
-    console.log(messages[0].message_elem_array[0], '通知消息------------------------------------', messages)
+    // console.log(messages[0].message_elem_array[0], '通知消息------------------------------------', messages)
     const notification = new window.Notification('收到新消息', {
       icon: 'http://oaim.crbank.com.cn:30003/emoji/notification.png',
       // body: replaceAll(message.message_elem_array[0], '&nbsp;', ' ').substring(0, 15)
       body: (messages[0].message_elem_array[0].text_elem_content).substring(0, 15)
     })
-    // ipcRenderer.send('asynchronous-message', 'setTaryTitle')
+    ipcRenderer.send('asynchronous-message', 'setTaryTitle')
     notification.onclick = async () => {
       ipcRenderer.send('asynchronous-message', 'openWindow')
       // dispatch(updateCurrentSelectedConversation(messages));
       const response = await getConversionList();
       dispatch(updateConversationList(response));
-      console.log(response, '对话列表。。。。。。。。。。。。。。。。。。。')
+      // console.log(response, '对话列表。。。。。。。。。。。。。。。。。。。')
       if (response?.length) {
         const newConversaionItem = response.find(
           (v) => v.conv_id === messages[0].message_conv_id
@@ -291,7 +291,7 @@ export const App = () => {
   };
   const ipcRendererLister = (event, data) => {
     if (event) {
-      // console.log('changedata:', data)
+      console.log('changedata:', data)
       showApp = data
       // console.log(showApp, 'showApp')
     }
@@ -308,7 +308,7 @@ export const App = () => {
   }, [])
   return (
     <div id="app-container">
-      <ToolsBar></ToolsBar>
+      {/* <ToolsBar></ToolsBar> */}
       <Switch>
         <Route path="/home" component={Home}></Route>
         <Route path="/" component={Login} />
