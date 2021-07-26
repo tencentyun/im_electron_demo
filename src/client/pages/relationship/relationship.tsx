@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BuddyApply } from "./buddy-apply";
+import { FriendApply } from "./friend-apply";
 import { BuddyList } from "./buddy-list";
 import { Group } from "./group";
 import "./relationship.scss";
@@ -24,7 +24,7 @@ export const RelationShip = (): JSX.Element => {
 
   const DisplayComponent = {
     group: Group,
-    'buddy-apply': BuddyApply,
+    'buddy-apply': FriendApply,
     'buddy-list': BuddyList
   }[activedId];
 
