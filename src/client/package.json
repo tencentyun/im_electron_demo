@@ -37,6 +37,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
+    "antd": "^4.16.8",
     "braft-editor": "^2.3.9",
     "dplayer": "^1.26.0",
     "final-form": "^4.20.2",
