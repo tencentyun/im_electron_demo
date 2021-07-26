@@ -2,11 +2,12 @@ import React from "react";
 import { decodeText } from "../../../utils/decodeText";
 
 const formatText = (data) => {
-   return data?.text?.replaceAll(/\n/g,'<br/>')
-   .replace(/<img /g,'xxxxx')
+    console.warn(data?.text)
+   return data?.text?.replace(/<img /g,'xxxxx')
    .replace(/ >/g,'YYYYY')
    .replaceAll(/ /g,'&nbsp')
    .replace(/<\/?.+?\/?>/g,'')
+   .replaceAll(/\n/g,'<br/>')
    .replace(/xxxxx/g,'<img ')
    .replace(/YYYYY/g,' >')
 }
