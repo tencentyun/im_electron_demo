@@ -74,6 +74,20 @@
                     background:  url('../../assets/icon/settings-active.svg');
                 }
             }
+            &.calendar {
+                
+                background: url('../../assets/icon/calendar.svg');
+                &.is-active {
+                    background:  url('../../assets/icon/calendar-active.svg');
+                }
+            }
+            &.official {
+                
+                background: url('../../assets/icon/official.svg');
+                &.is-active {
+                    background:  url('../../assets/icon/official-active.svg');
+                }
+            }
            
         }
     }
