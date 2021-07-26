@@ -22,7 +22,7 @@ export interface FormValue {
   groupAnnouncement: string;
   groupIntroduction: string;
   joinGroupMode: string;
-  groupMember: string;
+  groupMember?: string;
   groupType: string;
   groupAvatarUrl: string;
 }
@@ -135,18 +135,10 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
               <Field
                 name="groupMember"
                 disabled={submitting}
-                validateOnBlur
-                validateFields={[]}
-                validate={(value) => validateOldValue(value, "管理员UID")}
               >
                 {({ input, meta }) => (
                   <Form.Item
-                    required
                     label="设置管理员"
-                    status={getStatus(meta, validating)}
-                    message={
-                      getStatus(meta, validating) === "error" && meta.error
-                    }
                   >
                     <Input
                       {...input}
