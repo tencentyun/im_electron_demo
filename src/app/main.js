@@ -138,10 +138,7 @@ const createWindow = () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
-          mainWindow.webContents.send("screenShotUrl", {
-            data,
-            url
-          });
+          mainWindow.webContents.send("screenShotUrl", { data, url });
         });
       });
     });
