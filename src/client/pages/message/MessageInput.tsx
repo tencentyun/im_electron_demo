@@ -6,6 +6,7 @@ import { reciMessage, updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
+import { Menu } from '../../components/menu';
 import BraftEditor, { EditorState } from 'braft-editor'
 import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
@@ -16,6 +17,7 @@ type Props = {
     convId: string,
     convType: number,
     isShutUpAll: boolean,
+    handleOpenCallWindow: (callType: string) => void;
 }
 
 const FEATURE_LIST_GROUP = [{
@@ -40,9 +42,10 @@ const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType, isShutUpAll } = props;
+    const { convId, convType, isShutUpAll, handleOpenCallWindow } = props;
     const [ isDraging, setDraging] = useState(false);
     const [ activeFeature, setActiveFeature ] = useState('');
+    const [ shouldShowCallMenu, setShowCallMenu] = useState(false);
     const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ isRecordPopup, setRecordPopup ] = useState(false);
@@ -230,7 +233,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEmojiPopup(true)
     }
     const handleSendPhoneMessage = ()=> {
-        
+        setShowCallMenu(true);
     }
     const handleFeatureClick = (featureId) => {
         switch (featureId) {
@@ -290,6 +293,11 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
 
+    const handleCallMenuClick = (item) => {
+        if(item) handleOpenCallWindow(item.id);
+        setShowCallMenu(false);
+    };
+
     const resetState = () => {
         setAtPopup(false)
         setEmojiPopup(false)
@@ -316,6 +324,9 @@ export const MessageInput = (props: Props): JSX.Element => {
             <div className="message-input__feature-area">
                 {
                     isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
+                }
+                {
+                    shouldShowCallMenu && <Menu options={[{text: '语音通话', id: 'voiceCall' }, {text: '视频通话', id: 'videoCall' }]} onSelect={handleCallMenuClick}/>
                 }
                 {
 
