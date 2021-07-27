@@ -1,5 +1,6 @@
 import { ConvItem } from "../pages/message/type"
 
+const TEMP_PATH_NAME_GROUP = "TEMP_PATH_NAME_GROUP"
 export enum TIMConvType {
     kTIMConv_Invalid, // 无效会话
     kTIMConv_C2C,     // 个人会话
@@ -63,4 +64,17 @@ export const getMergeMessageAbstactArray = (messageGroup: State.message[]): stri
 export const judgeFileSize = (limitSize: number, file: File) => {
     const { size } = file
     return limitSize >= size / 1024 / 1024
+}
+export const setPathToLS = (path: string): void => {
+    if(!path) return
+    const pathGroup: Array<string> = JSON.parse(localStorage.getItem(TEMP_PATH_NAME_GROUP) || "[]")
+    if(pathGroup.indexOf(path) === -1) {
+        pathGroup.push(path)
+    }
+    localStorage.setItem(TEMP_PATH_NAME_GROUP, JSON.stringify(pathGroup))
+}
+export const checkPathInLS = (path: string) => {
+    const pathGroup: Array<string> = JSON.parse(localStorage.getItem(TEMP_PATH_NAME_GROUP) || "[]")
+    if(pathGroup.length && pathGroup.indexOf(path) > -1) return true
+    return false
 }

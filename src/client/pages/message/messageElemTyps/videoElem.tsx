@@ -37,8 +37,6 @@ export const VideoElem = (props: any): JSX.Element => {
             </div>
         )
     };
-
-
-    // console.log('视频消息', props)
+    // console.log('视频消息',props)
     return item()
 }

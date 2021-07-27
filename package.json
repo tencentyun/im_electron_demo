@@ -68,7 +68,6 @@
     "element-theme-default": "^1.4.13",
     "file-loader": "^6.2.0",
     "final-form": "^4.20.2",
-    "im_electron_sdk": "^1.0.29",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
     "qs": "^6.5.2",
@@ -84,6 +83,7 @@
     "redux": "^4.1.0",
     "sass": "^1.35.1",
     "tea-component": "^2.6.22",
+    "im_electron_sdk": "^1.0.33",
     "trtc-electron-sdk": "^8.6.102-beta.0"
   }
 }

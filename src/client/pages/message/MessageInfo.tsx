@@ -57,7 +57,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   );
 
   const msgList = historyMessageList.get(conv_id);
-
   const getDisplayConvInfo = () => {
     const info: Info = {
       faceUrl: "",
