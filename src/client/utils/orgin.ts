@@ -56,7 +56,7 @@ const saveStaff  = (data) => {
 // 前缀模糊查询职员列表
 const getstAffPrefix = (data) => {
     return axios({
-        url: `${TIM_BASE_URL}/v4/org_svc/staff_prefix?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
+        url: `${TIM_BASE_URL}/v4/org_svc/staff_prefix?sdkappid=${SDKAPPID}&contentType=json&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
         method: 'POST',
         data: data || {}
     })
