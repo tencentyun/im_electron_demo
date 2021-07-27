@@ -6,8 +6,9 @@ import axios from 'axios'
 import './index.scss'
 import "cropperjs/dist/cropper.css"
 import { dataURLtoBlob, convertBase64UrlToBlob } from '../../utils/tools'
+import { SDKAPPID } from '../../config/config'
 
-const imgStyle = { width: '60px', height: '60px', cursor: 'pointer'}
+const imgStyle = { width: '60px', height: '60px', cursor: 'pointer' }
 
 interface IRes {
   upload_url: string;
@@ -48,9 +49,9 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   const [cropper, setCropper] = useState<Cropper>(null);
   const [selectFile, setSelectFile] = useState(null);
   const [_val, setVal] = useState(value)
-  let instance = null ,fileObj = null
+  let instance = null, fileObj = null
 
-  const onSetImgUrl = async (file) =>{
+  const onSetImgUrl = async (file) => {
     if (prop.isShowCropper) {
       const url = await dataURLtoBlob(file)
       if (file.type === 'image/gif') {
@@ -73,6 +74,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   useEffect(() => {
     setCropper(instance);
   }, [instance]);
+
 
   // 确定裁剪
   function confirmCopper() {
@@ -101,7 +103,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   }
 
   function handleOnStart() {
-    if(!fileObj) return
+    if (!fileObj) return
     if (fileObj.type === 'image/gif') {
       var reader = new FileReader()
       reader.readAsDataURL(fileObj)
@@ -117,7 +119,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
         })
       }
       return
-    } 
+    }
   }
 
   // 上传逻辑
@@ -125,43 +127,52 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
     return new Promise((resolve, reject) => {
       setUploading(true)
       axios.post('/api/im_cos_msg/pre_sig', {
-        sdkappid: 1400187352,
+        sdkappid: SDKAPPID,
         uid: "tetetetetetet",
         file_type: 1,
-        file_name: 'headUrl/'+fileObj.name,
+        file_name: 'headUrl/' + fileObj.name,
         Duration: 900,
         'upload_method': 0,
       }).then(res => {
-        console.log(res)
-        const { upload_url } = res.data
-        console.log(111111)
-        console.log(upload_url)
-        let fr = new FileReader();
-        fr.readAsDataURL(fileObj);
-        fr.addEventListener(
-          "load",
-          () => {
-            axios.put(upload_url, convertBase64UrlToBlob(base64Data), {
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-              }
-            }).then(() => {
-              const { download_url } = res.data
-              setVal(download_url)
-              setImgUrl('')
-              resolve(res.data)
-              message.success({
-                content: "上传成功",
-              }) 
-            }).catch(err => {
-              reject(err)
-            }).finally(()=>{
-              setUploading(false)
-            })
-          },
-          false
-        )
+        if (res.data.error_code === 0) {
+          console.log(res)
+          const { upload_url } = res.data
+          let fr = new FileReader();
+          fr.readAsDataURL(fileObj);
+          fr.addEventListener(
+            "load",
+            () => {
+              axios.put(upload_url, convertBase64UrlToBlob(base64Data), {
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                }
+              }).then((response) => {
+                const { download_url } = res.data
+                setVal(download_url)
+                setImgUrl('')
+                resolve(res.data)
+                message.success({
+                  content: "上传成功",
+                })
+              }).catch(err => {
+                reject(err)
+              }).finally(() => {
+                setUploading(false)
+              })
+            },
+            false
+          )
+        }
+
       }).catch(err => {
+        if (err !== '') {
+          message.error(err)
+        } else {
+          message.error({
+            content: "服务端错误",
+          })
+        }
+
         reject(err)
         setUploading(false)
       })
@@ -170,9 +181,9 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
 
   //用户选择文件 
   function handleBeforeUpload(file, fileList, isAccepted) {
-    const is2m = (file as File).size/1024 /1024> 2
-    if(is2m){
-      message.warning({content:'图片不能大于2m'})
+    const is2m = (file as File).size / 1024 / 1024 > 2
+    if (is2m) {
+      message.warning({ content: '图片不能大于2m' })
       return false
     }
     fileObj = file
@@ -222,20 +233,20 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       </Upload>
       {
         isShowCropper && imgUrl && <div>
-            <Cropper
-              {...cropperOption}
-              src={imgUrl}
-              onInitialized={(instance) => {
-                setCropper(instance);
-              }}
-            />
-            <Button
-              className="confirmCopper-btn"
-              loading={uploading}
-              htmlType="button"
-              onClick={confirmCopper}>
-                确定
-            </Button>
+          <Cropper
+            {...cropperOption}
+            src={imgUrl}
+            onInitialized={(instance) => {
+              setCropper(instance);
+            }}
+          />
+          <Button
+            className="confirmCopper-btn"
+            loading={uploading}
+            htmlType="button"
+            onClick={confirmCopper}>
+            确定
+          </Button>
         </div>
       }
     </>
