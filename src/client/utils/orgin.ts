@@ -1,13 +1,12 @@
 import axios from 'axios'
 import { TIM_BASE_URL,SDKAPPID} from '../constants/index'
-import { useSelector } from "react-redux";
 // const { userId,userSig } = useSelector((state: State.RootState) => state.loginUser);
 
 const  Lead = ['ZONGSHAOJUN', 'MALIMIN', 'TIANYU', 'XUYUHUA9', 'CHENFANGYUN', 'LUOLING41', 'CHENGSHAOKAI']
 // 获取全部部门
 const getAlldepartment = (data) => {
     return axios({
-        url: `${TIM_BASE_URL}/v4/org_svc/dep_page?sdkappid=${SDKAPPID}&contentType=json&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
+        url: `${TIM_BASE_URL}/v4/org_svc/dep_page?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
         method: 'POST',
         data: data || {}
     })
@@ -16,7 +15,7 @@ const getAlldepartment = (data) => {
 // 查询部门信息
 const getDepartment  = (data) => {
     return axios({
-        url: `${TIM_BASE_URL}/v4/org_svc/dep_info?sdkappid=${SDKAPPID}&contentType=json&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
+        url: `${TIM_BASE_URL}/v4/org_svc/dep_info?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
         method: 'POST',
         data: data || {}
     })
@@ -48,7 +47,7 @@ const filterGetDepartment = (data, callback, userId) => {
 // 新增职员
 const saveStaff  = (data) => {
     return axios({
-        url: `${TIM_BASE_URL}/v4/org_svc/add_staff?sdkappid=${SDKAPPID}&contentType=json&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
+        url: `${TIM_BASE_URL}/v4/org_svc/add_staff?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
         method: 'POST',
         data: data || {}
     })
@@ -66,7 +65,7 @@ const getstAffPrefix = (data) => {
 // 前缀模糊查询职员列表
 const getAccountsList = (pagesize, pageNumber) => {
     return axios({
-        url: `/user/list?limit=${pagesize}&page=${pageNumber}`,
+        url: `/huarun/user/list?limit=${pagesize}&page=${pageNumber}`,
         method: 'GET',
         data: {
             limit:pagesize,
@@ -77,7 +76,7 @@ const getAccountsList = (pagesize, pageNumber) => {
 
 const getAccountsAdd = (foucs, id) => {
     return axios({
-        url: `/user/add`,
+        url: `/huarun/user/add`,
         method: 'POST',
         data: {
             foucs:foucs,
