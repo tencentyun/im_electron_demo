@@ -1,5 +1,5 @@
 import  request from '../utils/request'
-import { SDKAPPID, TIM_BASE_URL } from '../constants/index'
+import { SDKAPPID } from '../constants/index'
 
 export type custEmojiUpsertParams = {
     uid: string; // 当前用户id
@@ -23,7 +23,7 @@ export type custEmojiReponseType = {
  */
 export async function custEmojiUpsert(data: custEmojiUpsertParams): Promise<any> {
     return request({
-        url: `${TIM_BASE_URL}/sticker/upsert`,
+        url: `/huarun/sticker/upsert`,
         method: 'POST',
         data: {
             sdkappid: SDKAPPID,
@@ -35,7 +35,7 @@ export async function custEmojiUpsert(data: custEmojiUpsertParams): Promise<any>
 // 获取自定义表情
 export async function getCustEmoji(params: getCustEmojiType): Promise<any> {
     return request({
-        url: `${TIM_BASE_URL}/sticker/list`,
+        url: `/huarun/sticker/list`,
         params: {
             sdkappid: SDKAPPID,
             ...params
