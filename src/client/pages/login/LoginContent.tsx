@@ -96,7 +96,8 @@ export const LoginContent = (): JSX.Element => {
                 console.log(887655)
                 const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
                 console.log(code, data, desc, json_param);
-                console.log(5456456456)
+                window.localStorage.setItem('uid',userID)
+                window.localStorage.setItem('usersig',Encypt)
                 //if(code === 0) {
                     // dispatch(loginUser({
                     //     userId: userID,

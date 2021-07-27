@@ -69,9 +69,9 @@ module.exports = {
         },
         changeOrigin:true
       },
-      '/user': {
+      '/huarun': {
         //target: 'http://106.52.161.51:30006/',
-        target: 'http://oaim.uat.crbank.com.cn:30002/',
+        target: 'http://oaim.uat.crbank.com.cn:30002',
         secure: false, // http请求https，这里需设置成false,
         changeOrigin: true // 一些服务器防止爬虫会设置origin,
       },
