@@ -41,6 +41,9 @@ const FEATURE_LIST_GROUP = [{
     id: 'file',
     content: '发文件'
 }, {
+    id: 'video',
+    content: '发视频'
+}, {
     id: 'phone',
     content: '语音'
 }, {
@@ -59,6 +62,9 @@ const FEATURE_LIST_C2C = [{
 }, {
     id: 'file',
     content: '发文件'
+}, {
+    id: 'video',
+    content: '发视频'
 }, {
     id: 'phone',
     content: '语音'
@@ -90,6 +96,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const soundPicker = React.useRef(null);
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
+    const [sendType, setSendType] = useState(null);
     let editorInstance;
     // const enterSend = localStorage.getItem('sendType') || '1'
 
@@ -247,7 +254,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         videoPicker.current.click();
     }
     const sendImageMessage = async (file) => {
-        if(!file) return false;
+        // console.log(file, '发送文件')
+        if (!file) return false;
         if (file) {
             const { data: { code, desc, json_params } } = await sendImageMsg({
                 convId,
@@ -271,6 +279,14 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const sendFileMessage = async (file) => {
+        const size = 100
+        if (!judgeFileSize(size, file)) {
+            message.warning({
+                content: `文件大小不能超过${size}M！`
+            })
+            return
+        }
+        if (!file) return false;
         const { data: { code, desc, json_params } } = await sendFileMsg({
             convId,
             convType,
@@ -282,7 +298,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             }],
             userId,
         });
-        console.log(file,1111)
+        console.log(file, 1111)
         if (code === 0) {
             dispatch(updateMessages({
                 convId,
@@ -325,7 +341,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const sendSoundMessage = async (file) => {
-        if(!file) return false;
+        if (!file) return false;
         const { data: { code, json_params } } = await sendSoundMsg({
             convId,
             convType,
@@ -365,6 +381,9 @@ export const MessageInput = (props: Props): JSX.Element => {
             case "file":
                 handleSendFileMessage()
                 break;
+            case "video":
+                handleSendVideoMessage()
+                break;
             case "voice":
                 handleSendSoundMessage()
                 break;
@@ -388,8 +407,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        const type = '0'
-        if (type == '0') {
+        // const type = sendType
+        if (sendType == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 // console.log('换行', '----------------------', editorState)
@@ -485,13 +504,13 @@ export const MessageInput = (props: Props): JSX.Element => {
         <List type="option" style={{ width: '200px', background: '#ffffff' }}>
             <List.Item onClick={() => changeSendShotcut('1')} style={{ display: 'flex' }}>
                 {
-                    store === '1' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
+                    sendType == '1' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
                 }
                 按Ctrl+Enter键发送消息
             </List.Item>
             <List.Item onClick={() => changeSendShotcut('0')} style={{ display: 'flex' }}>
                 {
-                    store === '0' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
+                    sendType == '0' ? <img className="chooseImg" src={chooseImg}></img> : <span style={{ padding: '0 10px' }}></span>
                 }
                 按Enter键发送消息
             </List.Item>
@@ -500,7 +519,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     const changeSendShotcut = index => {
         const tip = index == '1' ? '按Ctrl+Enter键发送消息' : '按Enter键发送消息'
         setShotKeyTip(tip)
-        store.set('sendType', index)
+        setSendType(index)
+        ipcRenderer.send('CHANGESTORE', sendType)
         // console.log(localStorage.getItem('sendType'))
     }
     useEffect(() => {
@@ -521,7 +541,11 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
     useEffect(() => {
-        setShotKeyTip(store == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
+        ipcRenderer.on('SENDSTORE', function (e, data) {
+            console.log(data, '------------------------------------')
+            setSendType(data)
+        })
+        setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
         ipcRenderer.on('screenShotUrl', (e, { data, url }) => {
             if (data.length == 0) {
                 message.error({ content: '已取消截图' })
