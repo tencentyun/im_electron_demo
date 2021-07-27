@@ -87,7 +87,7 @@ export default function initListeners(callback:InitListenersCallback){
     */
     timRenderInstance.TIMSetMsgElemUploadProgressCallback({
         callback:(args)=>{
-            const [message, index, cur_size, total_size, user_data] = args 
+            // const [message, index, cur_size, total_size, user_data] = args 
             // callback({
             //     type: 'TIMSetMsgElemUploadProgressCallback',
             //     data: {
