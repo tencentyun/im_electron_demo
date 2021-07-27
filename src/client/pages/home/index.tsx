@@ -94,7 +94,7 @@ export const Home = (): JSX.Element => {
                 <Link to="/home/setting" className={`nav--link settings ${addActiveClass('settings')}`} onClick={() => handleLinkClick('settings')} />
             </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', flexDirection: 'column',flex: 1 }}>
             <ToolsBar></ToolsBar>
             <div className="content">
                 <Switch>

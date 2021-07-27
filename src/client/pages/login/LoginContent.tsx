@@ -205,20 +205,12 @@ export const LoginContent = (): JSX.Element => {
         if (code === 0) {
             dispatch(setIsLogInAction(true));
             dispatch(setUserInfo({
-                userId: userID
+                userId: userID,
+                faceUrl: '', gender: '', nickName: '', role: null
             }));
             dispatch(changeFunctionTab('message'));
             history.replace('/home/message');
         }
-    }
-
-    const chkIt = (val: string) => {
-        console.log('val',!/^[A-Za-z0-9]+$/.test(val));
-        if (val.length > 0 && !/^[A-Za-z0-9]+$/.test(val)) {
-            message.warning({content:'不能输入中文！'})
-            return
-        }
-        setUserID(val)
     }
 
     return (
@@ -230,7 +222,7 @@ export const LoginContent = (): JSX.Element => {
                     <Input placeholder="请输入密码" className="login--input" />
                 </TabPanel>
                 <TabPanel id="passwordLogin">
-                    <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { chkIt(val) }} />
+                    <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val) }} />
                     <Input placeholder="请输入usersig" value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />
                 </TabPanel>
             </Tabs>
