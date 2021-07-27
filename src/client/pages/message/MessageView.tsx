@@ -325,7 +325,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <CustomElem {...res} />
                 break;
             case 4:
-                resp = <FileElem message={message} element={element} index={index}/>
+                resp = <FileElem message={message} element={element}/>
                 break;
             case 5:
                 resp = <GroupTipsElemItem {...res} />

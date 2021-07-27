@@ -29,13 +29,13 @@ export const OfficialComponent = (): JSX.Element => {
       <div className="relationship-content">
         <div className="loading-container">
           {
-            isShowIframe?<iframe src="http://localhost:8080"></iframe>: ''
+            isShowIframe?<iframe src="http://oaim.uat.crbank.com.cn:30002"></iframe>: ''
           }
         </div>
       </div>
     </div>: <div className="wrap_iframe">
             {
-              isShowIframe?<iframe src="http://localhost:8080"></iframe>: ''
+              isShowIframe?<iframe src="http://oaim.uat.crbank.com.cn:30002"></iframe>: ''
             }
           </div>
     }
