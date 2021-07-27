@@ -27,7 +27,6 @@ interface   SearchItem{
     dataList:Array<userInfor>
     intitData:Array<userInfor>
     callBack:Function
-    rederBack:Function
 } 
 
 const AccoutsItem:FC<listType> =  ({list,callBack}): JSX.Element => {
@@ -39,7 +38,7 @@ const AccoutsItem:FC<listType> =  ({list,callBack}): JSX.Element => {
     return(
         <>
          {      
-                list.map((item, index) => 
+              list  &&  list.map((item, index) => 
                     <div className={`accouts-item ${filterDataIndex == index ? 'active' : "" }`} key={index} onClick={ ()=>{handleItemClick(item,index)}}>
                     <div className='avent'>
                         {
@@ -136,7 +135,7 @@ const InforItem : FC<InforItemInterface> =  ({accounts,callBack,rederBack}): JSX
     )
 }
 
-const Search : FC<SearchItem> =  ({intitData,dataList,callBack,rederBack}): JSX.Element => {
+const Search : FC<SearchItem> =  ({intitData,dataList,callBack}): JSX.Element => {
     return(
         <section className='section-search'>
         <SearchBox
@@ -163,12 +162,7 @@ interface listOnly{
     callBack:Function
 }
 export const Accouts:FC<listOnly> = ({onlyFill,callBack}): JSX.Element => {
-    const [list,setList] = useState([{
-        username:"",
-        desc:"",
-        uid:'',
-        headurl:""
-    }])
+    const [list,setList] = useState([])
     const [intitData,setIntitData] = useState([])
     // const [ItemData,setItemData] = useState()
     const [clickItem,setClickItem] = useState({})
@@ -192,7 +186,7 @@ export const Accouts:FC<listOnly> = ({onlyFill,callBack}): JSX.Element => {
         callBack()
        let {data} = await getAccountsList( 100000,1)
        let { ActionStatus,ErrorInfo,ErrorCode,Data,Total }  =  data;
-       Data.forEach(element => {
+       Data?.forEach(element => {
            if(element.uid && element.uid !== ""){
                let splitEle = element.uid.split(',')
                if(splitEle.indexOf(window.localStorage.getItem('uid')) !== -1){
@@ -204,7 +198,7 @@ export const Accouts:FC<listOnly> = ({onlyFill,callBack}): JSX.Element => {
                }
            }
        });
-       setIntitData(JSON.parse(JSON.stringify(Data)))
+       setIntitData(Data ? JSON.parse(JSON.stringify(Data)) :  [])
        setList(Data)
     }
 

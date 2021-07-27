@@ -96,7 +96,8 @@ export const LoginContent = (): JSX.Element => {
                 console.log(887655)
                 const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
                 console.log(code, data, desc, json_param);
-                console.log(5456456456)
+                window.localStorage.setItem('uid',userID)
+                window.localStorage.setItem('usersig',Encypt)
                 //if(code === 0) {
                     // dispatch(loginUser({
                     //     userId: userID,
@@ -108,8 +109,6 @@ export const LoginContent = (): JSX.Element => {
                     },(data)=>{
                         let sectionData = assemblyData([data],'SubDepsInfoList','StaffInfoList','DepName','Uname')[0].children
                         window.localStorage.setItem('section',JSON.stringify(sectionData))
-                        window.localStorage.setItem('uid',userID)
-                        window.localStorage.setItem('usersig',Encypt)
                         dispatch(setUserInfo({
                             userId: userID
                         }));
