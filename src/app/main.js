@@ -18,7 +18,7 @@ let ipc, mainWindow;
 let toggle = false;
 const downloadUrl = app.getPath("downloads");
 new TimMain({
-  sdkappid: 1400187352,
+  sdkappid: 1400529075,
   // sdkappid: 1400529075
 });
 
@@ -260,7 +260,7 @@ const createWindow = () => {
     //执行自动更新检查
     autoUpdater.checkForUpdates();
   };
-  setTimeout(checkForUpdates, 1000);
+  //setTimeout(checkForUpdates, 1000);
   ipcMain.on('CHANGESTORE', function (event, data) {
     console.log(data)
     store.set('sendType', data)

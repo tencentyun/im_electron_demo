@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_USERID } from "../../constants";
+import { DEFAULT_USERID } from "../../constants/index";
 import timRenderInstance from "../../utils/timRenderInstance";
 import { setUserInfo } from "../../store/actions/user";
 import { Avatar } from "../../components/avatar/avatar";
