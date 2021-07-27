@@ -44,6 +44,10 @@ module.exports = {
         use: [
           'file-loader',
         ],
+      },
+      {
+        test: /\.node$/,
+        loader: 'native-ext-loader',
       }
     ]
   },

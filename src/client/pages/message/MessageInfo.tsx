@@ -14,6 +14,7 @@ import { updateCallingStatus } from "../../store/actions/ui";
 import { AddUserPopover } from "./AddUserPopover";
 import { addTimeDivider } from "../../utils/addTimeDivider";
 import { openCallWindow, callWindowCloseListiner } from "../../utils/tools";
+import trtcCheck from '../../utils/trtcCheck';
 
 import {
   changeDrawersVisible,
@@ -132,6 +133,11 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const handleOpenCallWindow = (callType) => {
     if(callingId) {
       message.warning({content: '正在通话中'});
+      return;
+    }
+
+    if(!trtcCheck.isCameraReady() && !trtcCheck.isMicReady()) {
+      message.warning({content: '找不到可用的摄像头和麦克风。请安装摄像头和麦克风后再试'});
       return;
     }
     
