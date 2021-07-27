@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { Radio } from 'tea-component';
 
 import './index.scss';
@@ -11,11 +11,25 @@ type OptionItem = {
 type Props = {
     isMultiSelect?: boolean,
     options: Array<OptionItem>,
-    onSelect?: (optionItem: OptionItem) => void
+    onSelect?: (optionItem: OptionItem | string) => void
 }
 
 export const Menu = (props: Props) => {
     const { isMultiSelect = false, options, onSelect } = props;
+
+    const handleClick = (e) => {
+        // console.log('handle click', e);
+        if(e.target.className.includes('menu-content')) return;
+        console.log('handle click', e, e.target);
+        onSelect('');
+    };
+
+    useEffect(() => {
+        document.addEventListener('click', handleClick);
+        return () => {
+            document.removeEventListener('click', handleClick);
+        }
+    }, []);
 
     const handleRadioButtonClick = (item: OptionItem) => {
         console.log(item);
@@ -29,10 +43,12 @@ export const Menu = (props: Props) => {
         {
             options.map(item => {
                 const { text, id } = item;
-                <li className="menu-content__item" key={id} onClick={() => handleItemClick(item)}>
-                    {isMultiSelect && <Radio onClick={() => handleRadioButtonClick(item)} />    }
-                    <span className="menu-content__item--text">{text}</span>
-                </li>
+                return (
+                    <li className="menu-content__item" key={id} onClick={() => handleItemClick(item)}>
+                        {isMultiSelect && <Radio onClick={() => handleRadioButtonClick(item)} />    }
+                        <span className="menu-content__item--text">{text}</span>
+                    </li>
+                )
             })
         }
     </div>
