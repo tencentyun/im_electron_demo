@@ -38,7 +38,7 @@ const AccoutsItem:FC<listType> =  ({list,callBack}): JSX.Element => {
     return(
         <>
          {      
-                list.map((item, index) => 
+              list  &&  list.map((item, index) => 
                     <div className={`accouts-item ${filterDataIndex == index ? 'active' : "" }`} key={index} onClick={ ()=>{handleItemClick(item,index)}}>
                     <div className='avent'>
                         {
