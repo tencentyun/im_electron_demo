@@ -98,7 +98,10 @@ export const MessageInput = (props: Props): JSX.Element => {
             const messageElementArray = [];
             const trimedText = text.trim();
             if(trimedText.length) {
-                messageElementArray.push(trimedText);
+                messageElementArray.push({
+                    elem_type: 0,
+                    text_elem_content: text,
+                });
             }
             if(imgSrcList?.length) {
                 messageElementArray.push( ...imgSrcList?.map(v => ({
@@ -108,8 +111,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 })));
             }
 
-            console.log('messageElementArray', messageElementArray)
-            debugger;
             const { data: { code, json_params, desc } } = await sendMsg({
                 convId,
                 convType,
