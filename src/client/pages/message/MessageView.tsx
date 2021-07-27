@@ -62,6 +62,20 @@ const RIGHT_CLICK_MENU_LIST = [{
     text: '多选'
 }];
 
+const RIGHT_CLICK_MENU_LIST_2 = [{
+    id: 'revoke',
+    text: '撤回'
+},
+{
+    id: 'delete',
+    text: '删除'
+},
+
+{
+    id: 'reply',
+    text: '回复'
+}];
+
 
 
 export const MessageView = (props: Props): JSX.Element => {
@@ -74,6 +88,8 @@ export const MessageView = (props: Props): JSX.Element => {
     const [noMore,setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     const dispatch = useDispatch();
     const [anchor , setAnchor] = useState('')
+
+    const [rightClickMenuList, setRightClickMenuList] = useState(RIGHT_CLICK_MENU_LIST);
     
     useEffect(() => {
         if(!anchor){
@@ -208,8 +224,16 @@ export const MessageView = (props: Props): JSX.Element => {
         }
     }
 
-    const handleContextMenuEvent = (e, message: State.message) => {
+    const handleContextMenuEvent = (e, message: State.message, element) => {
         e.preventDefault();
+        const { elem_type } = element;
+        //群系统消息 和 tips消息 不可转发
+        if([5,8].includes(elem_type)) {
+            setRightClickMenuList(RIGHT_CLICK_MENU_LIST_2);
+        } else {
+            setRightClickMenuList(RIGHT_CLICK_MENU_LIST)
+        }
+
         contextMenu.show({
             id: MESSAGE_MENU_ID,
             event: e,
@@ -349,7 +373,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                     {
                                         message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                             return (
-                                                <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item, elment) }}>
                                                     
                                                     {
                                                         displayDiffMessage(item, elment, index)
@@ -375,7 +399,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 animation={animation.fade}
             >
                 {
-                    RIGHT_CLICK_MENU_LIST.map(({ id, text }) => {
+                    rightClickMenuList.map(({ id, text }) => {
                         return (
                             <Item  key={id} onClick={(e) => handlRightClick(e, id)}>
                                 {text}
