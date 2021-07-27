@@ -111,9 +111,9 @@ export const App = () => {
               /**
                * 元素上传进度回调
                */
-              case "TIMSetMsgElemUploadProgressCallback":
-                _handleElemUploadProgres(data);
-                break;
+            //   case "TIMSetMsgElemUploadProgressCallback":
+            //     _handleElemUploadProgres(data);
+            //     break;
               /**
                * 被挤下线
                */
