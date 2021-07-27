@@ -1,7 +1,5 @@
 import axios from 'axios'
-import { UserID,UserSig} from '../config/config'
 import { TIM_BASE_URL,SDKAPPID} from '../constants/index'
-import { useSelector } from "react-redux";
 // const { userId,userSig } = useSelector((state: State.RootState) => state.loginUser);
 
 const  Lead = ['ZONGSHAOJUN', 'MALIMIN', 'TIANYU', 'XUYUHUA9', 'CHENFANGYUN', 'LUOLING41', 'CHENGSHAOKAI']
@@ -58,7 +56,7 @@ const saveStaff  = (data) => {
 // 前缀模糊查询职员列表
 const getstAffPrefix = (data) => {
     return axios({
-        url: `${TIM_BASE_URL}/v4/org_svc/staff_prefix?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${UserID}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
+        url: `${TIM_BASE_URL}/v4/org_svc/staff_prefix?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
         method: 'POST',
         data: data || {}
     })

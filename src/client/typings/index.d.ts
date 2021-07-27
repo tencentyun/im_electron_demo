@@ -37,6 +37,8 @@ declare namespace State {
 
     export type historyMessage = {
         historyMessageList:Map<string, Array<message>>
+        uploadProgressList:Map<string, any>
+        currentReplyUser: userProfile
     }
     export type conversation = {
         unreadCount: number,

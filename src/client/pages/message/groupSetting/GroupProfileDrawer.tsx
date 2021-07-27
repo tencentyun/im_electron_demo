@@ -2,14 +2,18 @@
  * 群主修改群资料， 消息提示方式与群名片 群成员可修改，不在此展示
  */
 import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
-import { Drawer, H3, message } from "tea-component";
-import { Form, Input, Button, Checkbox, Select } from "tea-component";
-import React, { useState, useEffect } from "react";
+import { Form, Input, Button, Checkbox, Select, Drawer, H3, message } from "tea-component";
+import React, { useState } from "react";
 import { Form as FinalForm, Field } from "react-final-form";
 import "./member-list-drawer.scss";
 import  ImgCropper  from "../../../components/UploadFace";
 import { getStatus } from "../../../utils/getStatus";
-import { modifyGroupInfo } from "../api";
+import { modifyGroupInfo, getConversionList } from "../api";
+import {
+  updateCurrentSelectedConversation,
+  updateConversationList,
+} from "../../../store/actions/conversation";
+import { useDispatch, useSelector } from "react-redux";
 
 export interface GroupProfileRecordsType {
   groupDetail: Partial<State.conversationItem['conv_profile']>;
@@ -25,7 +29,7 @@ const validateOldValue = async (value: string, label: string) => {
   if (!value) {
     return `${label}必填`;
   }
-};
+}
 
 export const GroupProfileDrawer = (props: {
   onSuccess?: () => void;
@@ -48,10 +52,35 @@ export const GroupProfileDrawer = (props: {
     group_detial_info_is_shutup_all
   } = groupDetail
 
+  const dispatch = useDispatch();
+  const { currentSelectedConversation } = useSelector(
+    (state: State.RootState) => state.conversation
+  )
+  const updateConversation = async () => {
+    const response = await getConversionList();
+    dispatch(updateConversationList(response));
+    if (response.length) {
+      const currentConversationItem = response.find(
+        (v) => v.conv_id === currentSelectedConversation.conv_id
+      );
+      if (currentConversationItem) {
+        dispatch(updateCurrentSelectedConversation(currentConversationItem));
+      }
+    }
+  };
+
    // eslint-disable-next-line
    const _handlerSubmit = async (formValue) => {
-    const { groupName, groupAnnouncement, groupIntroduction, group_detial_info_face_url, joinGroupMode, muteFlag} = formValue
+    const {
+      groupName,
+      groupAnnouncement,
+      groupIntroduction,
+      group_detial_info_face_url,
+      joinGroupMode,
+      muteFlag
+    } = formValue
     try {
+      // 获取修改的参数
       const modifyParams = {
         ...(group_detial_info_group_name != groupName && {group_modify_info_param_group_name: groupName} ),
         ...(group_detial_info_notification != groupAnnouncement && {group_modify_info_param_notification: groupAnnouncement} ),
@@ -67,6 +96,7 @@ export const GroupProfileDrawer = (props: {
           modifyParams,
         });
         message.success({ content: '修改成功' });
+        await updateConversation();
         onSuccess && onSuccess();
       }
       onClose()
