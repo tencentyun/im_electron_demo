@@ -12,12 +12,13 @@ import 'braft-editor/dist/index.css'
 import './message-input.scss';
 import { ipcRenderer, clipboard } from 'electron'
 import chooseImg from '../../assets/icon/choose.png'
-// import { store } from '../../../app/main'
 import { string } from 'prop-types';
 import axios from "axios";
 import { convertBase64UrlToBlob } from "../../utils/tools";
-import { judgeFileSize } from '../../utils/messageUtils';
+import { SDKAPPID } from '../../config/config'
 import { setPathToLS } from '../../utils/messageUtils';
+
+let store = '1'
 
 type Props = {
     convId: string,
@@ -104,7 +105,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         return new Promise((resolve, reject) => {
             axios
                 .post("/api/im_cos_msg/pre_sig", {
-                    sdkappid: 1400187352,
+                    sdkappid: SDKAPPID,
                     uid: "tetetetetetet",
                     file_type: 1,
                     file_name: "headUrl/" + new Date().getTime() + 'screenShot.png',
@@ -310,31 +311,32 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const sendVideoMessage = async (file) => {
-        if (!file) return false;
-        const { data: { code, json_params, desc } } = await sendVideoMsg({
-            convId,
-            convType,
-            messageElementArray: [{
-                elem_type: 9,
-                video_elem_video_type: "MP4",
-                video_elem_video_size: file.size,
-                video_elem_video_duration: 10,
-                video_elem_video_path: file.value,
-                video_elem_image_type: "png",
-                video_elem_image_size: 10000,
-                video_elem_image_width: 200,
-                video_elem_image_height: 80,
-                video_elem_image_path: "./cover.png"
-            }],
-            userId,
-        });
-        if (code === 0) {
-            dispatch(reciMessage({
+        if (file) {
+            const { data: { code, json_params, desc } } = await sendVideoMsg({
                 convId,
-                messages: [JSON.parse(json_params)]
-            }))
-        } else {
-            message.error({ content: `消息发送失败 ${desc}` })
+                convType,
+                messageElementArray: [{
+                    elem_type: 9,
+                    video_elem_video_type: "MP4",
+                    video_elem_video_size: file.size,
+                    video_elem_video_duration: 10,
+                    video_elem_video_path: file.value,
+                    video_elem_image_type: "png",
+                    video_elem_image_size: 10000,
+                    video_elem_image_width: 200,
+                    video_elem_image_height: 80,
+                    video_elem_image_path: "./cover.png"
+                }],
+                userId,
+            });
+            if (code === 0) {
+                dispatch(reciMessage({
+                    convId,
+                    messages: [JSON.parse(json_params)]
+                }))
+            } else {
+                message.error({ content: `消息发送失败 ${desc}` })
+            }
         }
     }
 

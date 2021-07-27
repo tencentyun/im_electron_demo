@@ -13,7 +13,7 @@ export const getMessageId = (message: State.message): string => {
 }
 export const getConvId = (convItem: ConvItem): string => {
     const item = convItem as State.groupProfile
-    if(item.group_detial_info_group_id) {
+    if (item.group_detial_info_group_id) {
         return item.group_detial_info_group_id
     } else {
         return (convItem as State.FriendProfile).friend_profile_identifier
@@ -55,6 +55,19 @@ export const getMergeMessageAbstactArray = (messageGroup: State.message[]): stri
     return ret;
 }
 
+export const setPathToLS = (path: string): void => {
+    if (!path) return
+    const pathGroup: Array<string> = JSON.parse(localStorage.getItem(TEMP_PATH_NAME_GROUP) || "[]")
+    if (pathGroup.indexOf(path) === -1) {
+        pathGroup.push(path)
+    }
+    localStorage.setItem(TEMP_PATH_NAME_GROUP, JSON.stringify(pathGroup))
+}
+export const checkPathInLS = (path: string) => {
+    const pathGroup: Array<string> = JSON.parse(localStorage.getItem(TEMP_PATH_NAME_GROUP) || "[]")
+    if (pathGroup.length && pathGroup.indexOf(path) > -1) return true
+    return false
+}
 /**
  * 
  * @param limitSize 所要限定的文件大小
@@ -64,17 +77,4 @@ export const getMergeMessageAbstactArray = (messageGroup: State.message[]): stri
 export const judgeFileSize = (limitSize: number, file: File) => {
     const { size } = file
     return limitSize >= size / 1024 / 1024
-}
-export const setPathToLS = (path: string): void => {
-    if(!path) return
-    const pathGroup: Array<string> = JSON.parse(localStorage.getItem(TEMP_PATH_NAME_GROUP) || "[]")
-    if(pathGroup.indexOf(path) === -1) {
-        pathGroup.push(path)
-    }
-    localStorage.setItem(TEMP_PATH_NAME_GROUP, JSON.stringify(pathGroup))
-}
-export const checkPathInLS = (path: string) => {
-    const pathGroup: Array<string> = JSON.parse(localStorage.getItem(TEMP_PATH_NAME_GROUP) || "[]")
-    if(pathGroup.length && pathGroup.indexOf(path) > -1) return true
-    return false
 }

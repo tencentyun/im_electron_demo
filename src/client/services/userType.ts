@@ -10,7 +10,7 @@ export type userTypeUpsertParams = {
  */
 export async function getUserTypeQuery(data: userTypeUpsertParams): Promise<any> {
     return request({
-        url: `${TIM_BASE_URL}/status/get?platform=10&websdkappid=537048168&v=1.7.3&sdkappid=${SDKAPPID}&contentType=json&apn=1&reqtime=${Date.now()}`,
+        url: `/status/get?platform=10&websdkappid=537048168&v=1.7.3&sdkappid=${SDKAPPID}&contentType=json&apn=1&reqtime=${Date.now()}`,
         method: 'POST',
         data: {
             sdkappid: SDKAPPID,

@@ -17,7 +17,6 @@ export const GroupJoinOption = (props: {
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
   const { joinOption, groupId, userIdentity, onRefresh } = props;
-  console.log('入群参数，', joinOption)
   const [join, setJoin] = useState(joinOption)
   const canEdit = [2, 3].includes(userIdentity);
   useEffect(()=>{

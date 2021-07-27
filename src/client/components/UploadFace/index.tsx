@@ -6,6 +6,7 @@ import axios from 'axios'
 import './index.scss'
 import "cropperjs/dist/cropper.css"
 import { dataURLtoBlob, convertBase64UrlToBlob } from '../../utils/tools'
+import { SDKAPPID } from '../../config/config'
 
 const imgStyle = { width: '60px', height: '60px', cursor: 'pointer'}
 
@@ -126,7 +127,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
     return new Promise((resolve, reject) => {
       setUploading(true)
       axios.post('/api/im_cos_msg/pre_sig', {
-        sdkappid: 1400187352,
+        sdkappid: SDKAPPID,
         uid: "tetetetetetet",
         file_type: 1,
         file_name: 'headUrl/'+fileObj.name,

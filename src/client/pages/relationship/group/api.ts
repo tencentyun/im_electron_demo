@@ -13,7 +13,7 @@ interface createGroupParams {
   groupIntroduction?: string;
   groupAnnouncement?: string;
   joinGroupMode: string;
-  groupMember: string;
+  groupMember?: string;
   groupType: string;
   groupAvatarUrl: string;
 }
@@ -57,12 +57,12 @@ export const createGroup = async (params: createGroupParams): Promise<any> => {
   } = params;
   const createParams = {
     create_group_param_add_option: Number(joinGroupMode),
-    create_group_param_group_member_array: [
+    ...(groupMember && { create_group_param_group_member_array: [
       {
         group_member_info_member_role: 1,
         group_member_info_identifier: groupMember,
       },
-    ],
+    ]}),
     create_group_param_group_name: groupName,
     create_group_param_group_type: Number(groupType),
     create_group_param_face_url: groupAvatarUrl,

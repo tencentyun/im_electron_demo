@@ -28,7 +28,6 @@
       "icon": "./src/client/assets/icon/favicon.icns"
     },
     "win": {
-      "icon": "./src/client/assets/icon/windows.png",
       "target": [
         {
           "target": "nsis",

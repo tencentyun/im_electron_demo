@@ -32,7 +32,7 @@ import formateTime from '../../utils/timeFormat';
 import { ContentUtils } from 'braft-utils'
 import { Icon, message } from 'tea-component';
 import { custEmojiUpsert } from '../../services/custEmoji'
-import type { custEmojiUpsertParams } from '../../services/custEmoji'
+import  { custEmojiUpsertParams } from '../../services/custEmoji'
 import { showDialog } from "../../utils/tools";
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
@@ -92,7 +92,6 @@ export const MessageView = (props: Props): JSX.Element => {
     const [noMore, setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     const dispatch = useDispatch();
     const [anchor, setAnchor] = useState('')
-    
     useEffect(() => {
         if (!anchor) {
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();

@@ -124,7 +124,7 @@ export const GroupMemberListDrawer = (props: {
       onClose={onClose}
     >
       {
-        searchData && searchData.length > 10 && <div className="member-list-search">
+        defaultForm?.memberList?.length > 10 && <div className="member-list-search">
         <SearchBox placeholder="请输入昵称" onChange={onSearch} onSearch={onSearch} onClear={() => onSearch('')} />
       </div>
       }
