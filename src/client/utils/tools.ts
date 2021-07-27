@@ -1,4 +1,4 @@
-import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST } from "../../app/const/const";
+import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY } from "../../app/const/const";
 
 import  { ipcRenderer, remote } from 'electron';
 
@@ -42,6 +42,15 @@ const checkFileExist = (path) =>{
         params:path
     })
 }
+
+const openCallWindow = (data) => {
+    ipcRenderer.send(OPEN_CALL_WINDOW, data);
+}
+
+const callWindowCloseListiner = (callback) => {
+    ipcRenderer.on(CALL_WINDOW_CLOSE_REPLY, callback);
+};
+
 export {
     isWin,
     minSizeWin,
@@ -49,5 +58,7 @@ export {
     closeWin,
     showDialog,
     downloadFilesByUrl,
-    checkFileExist
+    checkFileExist,
+    openCallWindow,
+    callWindowCloseListiner
 }
