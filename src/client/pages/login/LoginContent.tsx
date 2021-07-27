@@ -8,13 +8,13 @@ import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
 import { changeFunctionTab } from '../../store/actions/ui';
 import { setUserInfo } from '../../store/actions/user';
-// eslint-disable-next-line import/no-unresolved
+import { loginUser } from '../../store/actions/loginUser';
 import { loginParam } from 'im_electron_sdk/dist/interface';
 import { filterGetDepartment, assemblyData } from '../../utils/orgin'
 import { setUnreadCount } from '../../store/actions/section';
-//import { getEncrptPwd } from '../../utils/addFriendForPoc'
+import { getEncrptPwd } from '../../utils/addFriendForPoc'
 import { getUserLoginInfo } from '../../services/login'
-//import { genTestUserSig } from './generateUserSig'
+import { genTestUserSig } from './generateUserSig'
 const tabs = [
     // {id: 'verifyCodeLogin', label: '验证码登陆'},
     { id: 'passwordLogin', label: '密码登陆' }
@@ -65,7 +65,7 @@ interface IEncrptPwdRes {
 //     const dispatch = useDispatch();
 //     const history = useHistory();
 //     const [userID, setUserID] = useState(DEFAULT_USERID);
-//     const [password, setPassword] = useState('7798_test');
+//     const [password, setPassword] = useState('Qaz123456@1');
 //     const isDisablelogin = userID && password;
 
 //     const customizeTabBarRender = (children: JSX.Element) => {
@@ -73,11 +73,15 @@ interface IEncrptPwdRes {
 //     }
 
 //     const handleLoginClick = async () => {
+//         console.log(111222333)
 //         getEncrptPwd({
 //             Pwd: password
 //         }).then(getEncrptPwdRes => {
 //             const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
-
+//             var xmlhttp = new XMLHttpRequest()  // 创建异步请求
+//             xmlhttp.open('GET', 'http://oaim.uat.crbank.com.cn:30002/commonauthservice_crbk/ws/OIDAuthService/userLogin?systemid=P001&userName=XUZEMIN&userPass=ZR52IydJwzb2McsIPFVLZy2BghnMDwHpF9Qmf4AQjFMiwYEEJGYeSfTqZ3%2FGXSBmVb6TNuGwvSwdSxiT9YeUwzuqZv%2BRGqwPh%2BLpvoj2Fb2OLw%2FDdzFmpUrlsRl3EBTPxgHqdzk0iWmVNiQE0h36RVO%2BH3ZIN69zkyuGH18HaZ8%3D&password=MTIzNDU2', true)  // 使用GET方法获取hello.txt文件
+//             xmlhttp.send()  // 发送异步请求
+//             console.log(xmlhttp)
 //             getUserLoginInfo({
 //                 systemid: HUA_RUN_SYSTEMID,
 //                 userName: userID.toUpperCase(),
@@ -85,6 +89,7 @@ interface IEncrptPwdRes {
 //                 asyuserind: null,
 //                 password: 'MTIzNDU2'
 //             }).then(async res => {
+//                 console.log(res)
 //                 const { USERLOGIN } = res.data
 //                 const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
 //                 const params: loginParam = {
@@ -94,9 +99,27 @@ interface IEncrptPwdRes {
 //                 const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
 //                 console.log(code, data, desc, json_param);
 //                 if (code === 0) {
-//                     dispatch(setIsLogInAction(true));
-//                     dispatch(changeFunctionTab('message'));
-//                     history.replace('/home/message');
+//                     // dispatch(loginUser({
+//                     //     userId: userID,
+//                     //     userSig:usersig
+//                     // }))
+//                     //获取部门
+//                     filterGetDepartment({
+//                         DepId: "root_1"
+//                     }, (data) => {
+//                         let sectionData = assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children
+//                         window.localStorage.setItem('section', JSON.stringify(sectionData))
+//                         window.localStorage.setItem('uid', userID)
+//                         window.localStorage.setItem('usersig', Encypt)
+//                         dispatch(setUserInfo({
+//                             userId: userID,
+//                             faceUrl: '', gender: '', nickName: '', role: null
+//                         }));
+//                         dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children))
+//                         dispatch(setIsLogInAction(true));
+//                         dispatch(changeFunctionTab('message'));
+//                         history.replace('/home/message');
+//                     }, userID)
 //                 }
 //             }).catch(err => {
 //                 const { ERRCODE } = err.data
@@ -129,9 +152,9 @@ interface IEncrptPwdRes {
 //                     <Input placeholder="请输入密码" value={password} className="login--input" onChange={(val) => setPassword(val)} />
 //                 </TabPanel>
 //             </Tabs>
-//             <Checkbox display="block" value={false} className="login--auto">
+//             {/* <Checkbox display="block" value={false} className="login--auto">
 //                 下次自动登录
-//             </Checkbox>
+//             </Checkbox> */}
 //             <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}> 登陆</Button>
 //         </div>
 //     )
@@ -182,21 +205,13 @@ export const LoginContent = (): JSX.Element => {
         const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
         console.log(code, data, desc, json_param);
         if (code === 0) {
-            //获取部门
-            filterGetDepartment({
-                DepId: "root_1"
-            }, (data) => {
-                let sectionData = assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')
-                window.localStorage.setItem('section', JSON.stringify(sectionData))
-                window.localStorage.setItem('uid', userID)
-                dispatch(setUserInfo({
-                    userId: userID
-                }));
-                dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')))
-                dispatch(setIsLogInAction(true));
-                dispatch(changeFunctionTab('message'));
-                history.replace('/home/message');
-            }, userID)
+            dispatch(setIsLogInAction(true));
+            dispatch(setUserInfo({
+                userId: userID,
+                faceUrl: '', gender: '', nickName: '', role: null
+            }));
+            dispatch(changeFunctionTab('message'));
+            history.replace('/home/message');
         }
     }
 

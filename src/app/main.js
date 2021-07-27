@@ -1,10 +1,12 @@
-const { app, BrowserWindow, clipboard, globalShortcut, ipcMain, shell, Tray, nativeImage, Menu } = require('electron');
+const { app, BrowserWindow, clipboard, globalShortcut, ipcMain, shell, Tray, nativeImage, Menu, ipcRenderer } = require('electron');
 
 const path = require('path');
 const url = require('url');
 const TimMain = require('im_electron_sdk/dist/main');
 const fs = require('fs')
 const { autoUpdater } = require('electron-updater')
+const Store = require('electron-store');
+const store = new Store()
 //const feedUrl = `http://oaim.crbank.com.cn:30003/_download/`
 const feedUrl = `http://localhost/`;
 
@@ -83,6 +85,7 @@ const createWindow = () => {
   });
 
   global.WIN = mainWindow;
+  mainWindow.webContents.send('SENDSTORE', store.get('sendType') || '0')
 
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
@@ -102,6 +105,7 @@ const createWindow = () => {
       }
     }
   })
+
   mainWindow.on('show', function () {
     num = 0
     if (appTray) {
@@ -130,14 +134,15 @@ const createWindow = () => {
   //   })
   // );
   // 通知消息
-  // mainWindow.on('show', function () {
-  //   mainWindow.webContents.send('mainProcessMessage', false)
-  // })
+  mainWindow.on('show', function () {
+    console.log('mainWindow show')
+  })
   mainWindow.on('blur', function () {
     console.log('mainWindow blur')
     mainWindow.webContents.send('mainProcessMessage', false)
   })
   mainWindow.on('focus', function () {
+    mainWindow.webContents.send('SENDSTORE', store.get('sendType') || '0')
     clearInterval(timer);
     setTimeout(() => {
       appTray.setImage(trayIcon)
@@ -256,6 +261,11 @@ const createWindow = () => {
     autoUpdater.checkForUpdates();
   };
   setTimeout(checkForUpdates, 1000);
+  ipcMain.on('CHANGESTORE', function (event, data) {
+    console.log(data)
+    store.set('sendType', data)
+  })
+  console.log(store.get('sendType'), 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 
   // 接受截图事件
   ipcMain.on("SCREENSHOT", function () {
@@ -288,13 +298,9 @@ const createWindow = () => {
   ipcMain.on("OPENFILE", function (event, filename) {
     const name = filename.filename;
     const localUrl = path.join(process.cwd(), "/download/", name);
-    // console.log(
-    //   localUrl,
-    //   "++++++++++++++++++++++++++++++++++++++++++++==",
-    //   downloadUrl
-    // );
     shell.openPath(localUrl);
   });
+
   // ***use for production***
 };
 let num = 0;
@@ -415,6 +421,8 @@ app.on("activate", () => {
     createWindow();
   }
 });
+
+
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.

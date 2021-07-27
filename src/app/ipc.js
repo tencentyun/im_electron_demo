@@ -7,7 +7,6 @@ const path = require('path')
 const http = require('http')
 const url = require('url')
 const child_process = require('child_process')
-
 class IPC {
     win = null;
     constructor(win) {
@@ -93,9 +92,11 @@ class IPC {
             console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
         }
     }
-    checkFileExist(path) {
+    checkFileExist (path) {
         return fs.existsSync(path)
     }
 }
 
 module.exports = IPC;
+
+
