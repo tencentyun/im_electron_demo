@@ -39,11 +39,6 @@ const navList = [
         title: '公众号',
         address: '/home/official',
 
-    },
-    {
-        id: 'organization',
-        title: '组织架构',
-        address: '/home/organization',
     }
     // {
     //     id: 'settings',

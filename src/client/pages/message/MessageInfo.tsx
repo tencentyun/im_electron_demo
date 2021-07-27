@@ -13,7 +13,7 @@ import { addMessage } from "../../store/actions/message";
 import {
   AddGroupMemberDialog,
   AddMemberRecordsType
-}from '../../components/pull/pull'
+} from '../../components/pull/pull'
 
 import { AddUserPopover } from "./AddUserPopover";
 
@@ -57,7 +57,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   );
 
   const msgList = historyMessageList.get(conv_id);
-
   const getDisplayConvInfo = () => {
     const info: Info = {
       faceUrl: "",
@@ -77,7 +76,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   };
   const validatelastMessage = (messageList: State.message[]) => {
     let msg: State.message;
-    for (let i = 0; i < messageList.length; i++) {
+    for (let i = 0;i < messageList.length;i++) {
       // 筛选不是自己的且发送成功的消息
       if (
         messageList[i]?.message_msg_id &&
@@ -125,13 +124,13 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     handleMsgReaded();
     // }
   };
-  const reloct = (value:Array<string>)=> {
-    try{
-      if(value.length){
-        console.log(conv_id,value)
-         inviteMemberGroup({groupId:conv_id, UIDS:value})
+  const reloct = (value: Array<string>) => {
+    try {
+      if (value.length) {
+        console.log(conv_id, value)
+        inviteMemberGroup({ groupId: conv_id, UIDS: value })
       }
-    }catch(e){
+    } catch (e) {
       console.log(e.message);
     }
   }
@@ -146,7 +145,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));
-  
+
   const handleOpenCallWindow = () => {
     ipcRenderer.send("openCallWindow");
   }
@@ -172,11 +171,11 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   const isOnInternet = () => {
     let buuer = false;
-    for(const item in userTypeList){
-        // console.warn(userTypeList[item])
-        if(userTypeList[item].To_Account === conv_id && userTypeList[item].Status === 'Online'){
-          buuer = true
-        }
+    for (const item in userTypeList) {
+      // console.warn(userTypeList[item])
+      if (userTypeList[item].To_Account === conv_id && userTypeList[item].Status === 'Online') {
+        buuer = true
+      }
     }
     return buuer
   };
@@ -235,17 +234,20 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                   <span title={isOnInternet()?'在线':'离线'} 
                     className={['message-info-view__header--type', !isOnInternet()?'message-info-view__header--typeoff': ''].join(' ')}
                   >
-                  </span>:null
-                }
+                  </span> : null
+              }
             </div>
             <div>
-              {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
+              {/* {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>} */}
+              {
+                canInviteMember && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
+              }
               <span className="message-info-view__header--video" onClick={handleOpenCallWindow} />
             </div>
           </header>
           <section className="message-info-view__content">
             <div className="message-info-view__content--view">
-            <MessageView messageList={msgList || []} convId={conv_id} convType={conv_type} editorState={editorState} setEditorState={setEditorState}/>
+              <MessageView messageList={msgList || []} convId={conv_id} convType={conv_type} editorState={editorState} setEditorState={setEditorState} />
             </div>
             <div className="message-info-view__content--slider" 
               onMouseDown={()=>setIsPress(true)} 
@@ -269,6 +271,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
           />
         )}
       </div>
+      <AddGroupMemberDialog
+        dialogRef={addMemberDialogRef}
+        onSuccess={(value) => reloct(value)}
+      />
       <GroupToolsDrawer
         visible={toolsDrawerVisible}
         toolId={toolsTab}

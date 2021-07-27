@@ -4,7 +4,7 @@ import timRenderInstance from "../../utils/timRenderInstance";
 type SendMsgParams<T> = {
   convId: string;
   convType: number;
-  messageElementArray: [T];
+  messageElementArray: T[];
   userData?: string;
   userId: string;
   messageAtArray?: string[];
@@ -83,6 +83,14 @@ type MemberInfo = {
     group_member_info_identifier: string;
   }[];
 };
+
+
+type CancelSendMsgParams = {
+  conv_id: string,
+  conv_type: number,
+  message_id: string,
+  user_data: string
+}
 
 export const getUserInfoList = async (userIdList: Array<string>) => {
   const {
@@ -326,6 +334,17 @@ export const sendCustomMsg = (params: SendMsgParams<CustomMsg>): Promise<MsgResp
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
+export const cancelSendMsg = async (params: CancelSendMsgParams): Promise<MsgResponse> => {
+  const {conv_id, conv_type, message_id, user_data } = params
+  const res = await timRenderInstance.TIMMsgCancelSend({
+    conv_id,
+    conv_type,
+    message_id,
+    user_data
+  });
+  return res
+}
+
 
 export const getConversionList = async () => {
   const {
@@ -419,7 +438,6 @@ export const searchGroup = async (params: {
   console.log("searchGroup", JSON.parse(json_param || "[]"));
   return JSON.parse(json_param || "[]");
 };
-
 export const searchFriends = async (params: {
   keyWords: string;
 }): Promise<any> => {
@@ -520,7 +538,6 @@ export const modifyGroupInfo = async (params: {
       },
     })
   );
-
   const results = await Promise.all(fetchList);
   if (!results.find((item) => item?.data?.code !== 0)) {
     return {};

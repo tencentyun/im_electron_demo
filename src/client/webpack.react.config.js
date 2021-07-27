@@ -55,21 +55,41 @@ module.exports = {
     port: 3000,
     publicPath: '/',
     proxy: {
+      '/commonauthservice_crbk': {
+        target: 'http://oaim.uat.crbank.com.cn:30002/',
+        secure: false,
+        changeOrigin:true
+      },
       '/api': {
-        target: 'http://106.52.161.51:30006/',
+        //target: 'http://106.52.161.51:30006/',
+        target: 'http://oaim.uat.crbank.com.cn:30002/',
         secure: false,
         pathRewrite: {
           '^/api':''
         },
         changeOrigin:true
       },
+      '/user': {
+        //target: 'http://106.52.161.51:30006/',
+        target: 'http://oaim.uat.crbank.com.cn:30002/',
+        secure: false, // http请求https，这里需设置成false,
+        changeOrigin: true // 一些服务器防止爬虫会设置origin,
+      },
+      '/v4': {
+        //target: 'http://106.52.161.51:30006/',
+        target: 'http://oaim.uat.crbank.com.cn:30002/',
+        secure: false, // http请求https，这里需设置成false,
+        changeOrigin: true // 一些服务器防止爬虫会设置origin,
+      },
       '/sticker': {
-        target: 'http://106.52.161.51:30006/',
+        //target: 'http://106.52.161.51:30006/',
+        target: 'http://oaim.uat.crbank.com.cn:30002/',
         secure: false,
         changeOrigin:true
       },
       '/status': {
-        target: 'http://106.52.161.51:30006/',
+        //target: 'http://106.52.161.51:30006/',
+        target: 'http://oaim.uat.crbank.com.cn:15000/',
         secure: false,
         changeOrigin:true
       }

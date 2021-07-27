@@ -4,6 +4,9 @@
     .tea-overlay {
         left: 800px;
     }
+    .tea-btn{
+        line-height: normal;
+    }
     .tea-dropdown-btn.tea-dropdown__header{
         padding-left: 0;
     }
@@ -63,6 +66,14 @@
                 }
             }
 
+            &.video {
+                background-image: url('../../assets/icon/msg-video.svg');
+
+                &.is-active {
+                    background-image: url('../../assets/icon/msg-video.svg');
+                }
+            }
+
             &.file {
                 background-image: url('../../assets/icon/file-message.svg');
 
@@ -109,11 +120,7 @@
             height: 100%;
             border: none;
         }
-        .public-DraftEditor-content{
-            div{
-                display: inline-block;
-            }
-        }    
+   
         .public-DraftEditorPlaceholder-root {
            font-size: 14px;
         }

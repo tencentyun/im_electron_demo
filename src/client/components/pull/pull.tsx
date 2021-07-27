@@ -115,7 +115,6 @@ export const AddGroupMemberDialog = (props: {
     }
   };
 
- //const { section  } = useSelector((state: State.RootState) => state.section);
 
  const  searchStaff = (refData)=> {
     console.log("搜索触发",refData)

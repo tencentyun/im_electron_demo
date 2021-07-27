@@ -21,6 +21,11 @@ import {
 import { GroupMemberBubble } from "./GroupMemberBubble";
 import { getLoginUserID } from '../api';
 
+import {
+  AddGroupMemberDialog,
+  AddMemberRecordsType
+}from '../../../components/pull/pull'
+
 export const GroupMember = (props: {
   userList: {
     user_profile_face_url: string;

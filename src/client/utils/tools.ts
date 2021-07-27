@@ -1,4 +1,4 @@
-import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG } from "../../app/const/const";
+import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST } from "../../app/const/const";
 
 import { ipcRenderer, remote } from 'electron';
 
@@ -38,6 +38,14 @@ const downloadFilesByUrl = (params) => {
         params
     })
 }
+const checkFileExist = (path) =>{
+    ipcRenderer.send(RENDERPROCESSCALL,{
+        type:CHECK_FILE_EXIST,
+        params:path
+    })
+}
+
+
 const throttle = (fn, delay) => {
     let timer
     let t_start = Date.now()
@@ -96,7 +104,6 @@ const highlightText = (text, content, color = '#006eff') => {
     }
     return content.replaceAll(text, `<span style='color: ${color}'>${text}</span>`)
 }
-
 export {
     isWin,
     minSizeWin,
@@ -104,6 +111,7 @@ export {
     closeWin,
     showDialog,
     downloadFilesByUrl,
+    checkFileExist,
     throttle,
     dataURLtoBlob,
     convertBase64UrlToBlob,

@@ -22,6 +22,7 @@ interface Props{
 export const Informathion = (props: Props): JSX.Element => {
     // const { staffData }  = props;
     const  { staffData} = Object.assign({}, props);
+    console.log(staffData)
     const dispatch = useDispatch();
     const fillStyle = { width: '100%' };
     const directToMsgPage = useMessageDirect();
@@ -42,7 +43,7 @@ export const Informathion = (props: Props): JSX.Element => {
                     <div className="main-info">
 						<div className="mian-flex">
 							<p>{staffData.DEPT_NAME ? staffData.DEPT_NAME : staffData.Uname}</p>
-							<p>{staffData.DepName == "" ? "" : staffData.DepName.match(/[^\/]+$/)[0]}</p>
+							<p>{staffData.DepName == "" ? "" : staffData.DepName.match(/[^\/]+/)[0]}</p>
 						</div>
 						<div className="circle-name">{staffData.DEPT_NAME ? staffData.DEPT_NAME : staffData.Uname}</div>
 					</div>

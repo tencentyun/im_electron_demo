@@ -1,5 +1,6 @@
 import { ConvItem } from "../pages/message/type"
 
+const TEMP_PATH_NAME_GROUP = "TEMP_PATH_NAME_GROUP"
 export enum TIMConvType {
     kTIMConv_Invalid, // 无效会话
     kTIMConv_C2C,     // 个人会话
@@ -20,7 +21,7 @@ export const getConvId = (convItem: ConvItem): string => {
 }
 export const getConvType = (convItem: ConvItem): TIMConvType => {
     const item = convItem as State.FriendProfile
-    return item.friend_profile_identifier ? TIMConvType.kTIMConv_C2C : TIMConvType.kTIMConv_Group
+    return (item.friend_profile_identifier || item.friend_profile_user_profile?.user_profile_identifier) ? TIMConvType.kTIMConv_C2C : TIMConvType.kTIMConv_Group
 }
 export const getMergeMessageTitle = (message: State.message): string => {
     const groupTitle: string = "群聊"
@@ -52,4 +53,28 @@ export const getMergeMessageAbstactArray = (messageGroup: State.message[]): stri
         })
     })
     return ret;
+}
+
+export const setPathToLS = (path: string): void => {
+    if(!path) return
+    const pathGroup: Array<string> = JSON.parse(localStorage.getItem(TEMP_PATH_NAME_GROUP) || "[]")
+    if(pathGroup.indexOf(path) === -1) {
+        pathGroup.push(path)
+    }
+    localStorage.setItem(TEMP_PATH_NAME_GROUP, JSON.stringify(pathGroup))
+}
+export const checkPathInLS = (path: string) => {
+    const pathGroup: Array<string> = JSON.parse(localStorage.getItem(TEMP_PATH_NAME_GROUP) || "[]")
+    if(pathGroup.length && pathGroup.indexOf(path) > -1) return true
+    return false
+}
+/**
+ * 
+ * @param limitSize 所要限定的文件大小
+ * @param file 文件对象
+ * @returns boolean  true 符合限定的大小，反之不符合
+ */
+export const judgeFileSize = (limitSize: number, file: File) => {
+    const { size } = file
+    return limitSize >= size / 1024 / 1024
 }
