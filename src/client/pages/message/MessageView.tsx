@@ -328,6 +328,8 @@ export const MessageView = (props: Props): JSX.Element => {
                     const isMessageSendFailed = message_status === 3 && message_is_from_self;
                     const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self && !isMessageSendFailed;
                     const seleted = seletedMessage.findIndex(i => getMessageId(i) === getMessageId(item)) > -1
+                    const elemType = message_elem_array?.[0].elem_type; // 取message array的第一个判断消息类型
+                    const isNotGroupSysAndGroupTipsMessage =  ![5,8].includes(elemType); // 5,8作为群系统消息 不需要多选转发
                     return (
                         <React.Fragment key={index}>
                             {
@@ -337,7 +339,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                     </div>
                                 ) :
                                 <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
-                                    { isMultiSelect && (seleted ? 
+                                    { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ? 
                                         <Icon className="message-view__item--icon" type="success" /> : 
                                         <i className="message-view__item--icon-normal" ></i>)
                                     }
