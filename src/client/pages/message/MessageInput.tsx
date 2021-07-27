@@ -12,7 +12,6 @@ import 'braft-editor/dist/index.css'
 import './message-input.scss';
 import { ipcRenderer, clipboard } from 'electron'
 import chooseImg from '../../assets/icon/choose.png'
-import { store } from '../../../app/storage/store'
 import { string } from 'prop-types';
 import axios from "axios";
 import { convertBase64UrlToBlob } from "../../utils/tools";
@@ -387,7 +386,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        const type = store.get('sendType') || '0'
+        const type = '0'
         if (type == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {

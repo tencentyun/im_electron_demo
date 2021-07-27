@@ -1,15 +1,16 @@
 {
   "name": "im-electron-demo",
+  "productName": "IM Electron Demo",
   "version": "1.0.0",
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {
-    "start": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
+    "start": "concurrently \"npm run dev:electron\"",
     "build": "npm run build:react && electron-builder -w",
     "build:react": "cd ./src/client && npm run build:react",
     "dev:electron": "electron .",
     "dev:react": "cd ./src/client && npm run dev:react",
-    "dev": "npm run start && npm run dev:react"
+    "dev": "npm run dev:react && npm run start"
   },
   "keywords": [],
   "author": {
@@ -22,12 +23,8 @@
       "bundle"
     ],
     "appId": "electron-sdk",
-    "productName": "华润银行即时通讯（内测版）",
-    "mac": {
-      "icon": "./src/client/assets/icon/favicon.icns"
-    },
+    "mac": {},
     "win": {
-      "icon": "./src/client/assets/icon/windows.png",
       "target": [
         {
           "target": "nsis",
@@ -54,8 +51,7 @@
   "devDependencies": {
     "concurrently": "^6.2.0",
     "electron": "^13.1.5",
-    "electron-builder": "^22.11.7",
-    "node-gyp": "^7.1.2"
+    "electron-builder": "^22.11.7"
   },
   "dependencies": {
     "axios": "^0.21.1",

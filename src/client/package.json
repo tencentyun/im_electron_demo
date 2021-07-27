@@ -1,7 +1,6 @@
 {
   "name": "client",
-  "version": "1.0.0",
-  "productName": "华润银行即时通讯（内测版）",
+  "version": "3.3.3",
   "description": "IM client",
   "main": "app.tsx",
   "scripts": {
@@ -59,6 +58,6 @@
     "tea-component": "^2.6.22",
     "trtc-electron-sdk": "^8.6.102-beta.0"
   },
-  "author": "",
+  "author": "neiceban",
   "license": "ISC"
 }
