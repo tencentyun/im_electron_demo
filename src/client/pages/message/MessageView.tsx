@@ -308,7 +308,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const handleOpenFile = (item) => {
         showDialog()
     }
-    const displayDiffMessage = (element) => {
+    const displayDiffMessage = (element, index) => {
         const { elem_type, ...res } = element;
         let resp
         switch (elem_type) {
@@ -479,7 +479,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                                 return (
                                                     <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                                         {
-                                                            displayDiffMessage(elment)
+                                                            displayDiffMessage(elment, index)
                                                         }
                                                     </div>
                                                 )

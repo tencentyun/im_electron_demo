@@ -97,7 +97,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handleUpload = (base64Data) => {
         return new Promise((resolve, reject) => {
             axios
-                .post("/api/im_cos_msg/pre_sig", {
+                .post("http://oaim.uat.crbank.com.cn:30002/api/im_cos_msg/pre_sig", {
                     sdkappid: SDKAPPID,
                     uid: "tetetetetetet",
                     file_type: 1,

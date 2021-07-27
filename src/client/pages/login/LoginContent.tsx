@@ -102,14 +102,14 @@ export const LoginContent = (): JSX.Element => {
                     //     userId: userID,
                     //     userSig:usersig
                     // }))
+                    window.localStorage.setItem('uid',userID)
+                    window.localStorage.setItem('usersig',Encypt)
                     //获取部门
                     filterGetDepartment({
                         DepId:"root_1"
                     },(data)=>{
                         let sectionData = assemblyData([data],'SubDepsInfoList','StaffInfoList','DepName','Uname')[0].children
                         window.localStorage.setItem('section',JSON.stringify(sectionData))
-                        window.localStorage.setItem('uid',userID)
-                        window.localStorage.setItem('usersig',Encypt)
                         dispatch(setUserInfo({
                             userId: userID
                         }));
