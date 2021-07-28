@@ -375,5 +375,45 @@ export default function initListeners(callback:InitListenersCallback){
 
         }
     })
-    // timRenderInstance.
+    timRenderInstance.TIMOnInvited({
+        callback:(data)=>{
+            callback({
+                type: 'TIMOnInvited',
+                data: data
+            })
+        }
+    })
+    timRenderInstance.TIMOnRejected({
+        callback:(data)=>{
+            callback({
+                type: 'TIMOnRejected',
+                data: data
+            })
+        }
+    })
+    timRenderInstance.TIMOnAccepted({
+        callback:(data)=>{
+            callback({
+                type: 'TIMOnAccepted',
+                data: data
+            })
+        }
+    })
+    timRenderInstance.TIMOnCanceled({
+        callback:(data)=>{
+            callback({
+                type: 'TIMOnCanceled',
+                data: data
+            })
+        }
+    })
+    
+    timRenderInstance.TIMOnTimeout({
+        callback:(data)=>{
+            callback({
+                type: 'TIMOnTimeout',
+                data: data
+            })
+        }
+    })
 }
