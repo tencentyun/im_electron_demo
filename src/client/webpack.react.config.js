@@ -9,7 +9,7 @@ module.exports = {
   entry: {
     main: './app.tsx',
     call: './call.tsx'
-  } ,
+  },
   target: 'electron-renderer',
   devtool: 'source-map',
   module: {
@@ -58,16 +58,28 @@ module.exports = {
       '/commonauthservice_crbk': {
         target: 'http://oaim.uat.crbank.com.cn:30002/',
         secure: false,
-        changeOrigin:true
+        changeOrigin: true
       },
       '/api': {
         //target: 'http://106.52.161.51:30006/',
         target: 'http://oaim.uat.crbank.com.cn:30002/',
         secure: false,
         pathRewrite: {
-          '^/api':''
+          '^/api': ''
         },
-        changeOrigin:true
+        changeOrigin: true
+      },
+      '/user': {
+        //target: 'http://106.52.161.51:30006/',
+        target: 'http://oaim.uat.crbank.com.cn:30002/',
+        secure: false, // http请求https，这里需设置成false,
+        changeOrigin: true // 一些服务器防止爬虫会设置origin,
+      },
+      '/v4': {
+        //target: 'http://106.52.161.51:30006/',
+        target: 'http://oaim.uat.crbank.com.cn:30002/',
+        secure: false, // http请求https，这里需设置成false,
+        changeOrigin: true // 一些服务器防止爬虫会设置origin,
       },
       '/huarun': {
         //target: 'http://106.52.161.51:30006/',
@@ -85,13 +97,13 @@ module.exports = {
         //target: 'http://106.52.161.51:30006/',
         target: 'http://oaim.uat.crbank.com.cn:30002/',
         secure: false,
-        changeOrigin:true
+        changeOrigin: true
       },
       '/status': {
         //target: 'http://106.52.161.51:30006/',
-        target: 'http://oaim.uat.crbank.com.cn:15000/',
+        target: 'http://oaim.uat.crbank.com.cn:30002/',
         secure: false,
-        changeOrigin:true
+        changeOrigin: true
       }
     }
   },
@@ -102,10 +114,10 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-        chunks: ['main'],
-        template: 'index.html',
-        filename: 'index.html'
-      }),
+      chunks: ['main'],
+      template: 'index.html',
+      filename: 'index.html'
+    }),
     new HtmlWebpackPlugin({
       chunks: ['call'],
       template: 'call.html',
@@ -114,7 +126,7 @@ module.exports = {
   ],
   node: {
     global: true,
-      __dirname: true,
-      __filename: true
+    __dirname: true,
+    __filename: true
   }
 };

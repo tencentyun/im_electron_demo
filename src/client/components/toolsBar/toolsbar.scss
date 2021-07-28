@@ -1,12 +1,21 @@
 .windows {
-    height: 20px;
+    // height: 20px;
     padding: 5px 15px;
-    background-color: #F5F5F5;
+    background-color: #ffffff;
     display: flex;
     align-items: center;
     flex-direction: row-reverse;
     -webkit-app-region: drag;
-
+    position: relative;
+    ::after {
+        content: '';
+        position: absolute;
+        left: 256px;
+        height: 100%;
+        top: 0;
+        width: 1px;
+        background: #eee;
+    }
     .min-size,.max-size,.close-btn {
         cursor: pointer;
         -webkit-app-region: none;

@@ -22,7 +22,7 @@ export const GroupToolsDrawer = (props: {
   toolId: string;
 }): JSX.Element => {
   const { onClose, popupContainer, visible, conversationInfo, toolId } = props;
-  console.log("visible", visible);
+  // console.log("visible", visible);
 
   const { currentSelectedConversation } = useSelector(
     (state: State.RootState) => state.conversation
@@ -37,7 +37,7 @@ export const GroupToolsDrawer = (props: {
     onClose?.();
   };
 
-  console.log("toolsTab", toolId);
+  // console.log("toolsTab", toolId);
 
   const getTitleAndSubTitle = (toolsId: string) => {
     let title = "";

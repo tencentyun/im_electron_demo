@@ -7,7 +7,6 @@ const path = require('path')
 const http = require('http')
 const url = require('url')
 const child_process = require('child_process')
-
 class IPC {
     win = null;
     constructor(win) {
@@ -39,7 +38,7 @@ class IPC {
         ipcMain.on('openCallWindow', (event, data) => {
             const callWindow = new BrowserWindow({
                 height: 600,
-                width: 800, 
+                width: 800,
                 show: true,
                 webPreferences: {
                     webSecurity: true,
@@ -61,7 +60,7 @@ class IPC {
         this.win.maximize()
     }
     close () {
-        this.win.close()
+        this.win.hide()
     }
     showDialog () {
         child_process.exec(`start "" ${path.resolve(process.cwd(), './download/')}`);
@@ -93,9 +92,11 @@ class IPC {
             console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
         }
     }
-    checkFileExist(path) {
+    checkFileExist (path) {
         return fs.existsSync(path)
     }
 }
 
 module.exports = IPC;
+
+
