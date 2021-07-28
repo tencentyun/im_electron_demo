@@ -9,7 +9,7 @@ module.exports = {
   entry: {
     main: './app.tsx',
     call: './call.tsx'
-  } ,
+  },
   target: 'electron-renderer',
   module: {
     rules: [
@@ -53,10 +53,10 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-        chunks: ['main'],
-        template: 'index.html',
-        filename: 'index.html'
-      }),
+      chunks: ['main'],
+      template: 'index.html',
+      filename: 'index.html'
+    }),
     new HtmlWebpackPlugin({
       chunks: ['call'],
       template: 'call.html',
@@ -65,7 +65,7 @@ module.exports = {
   ],
   node: {
     global: true,
-      __dirname: true,
-      __filename: true
+    __dirname: true,
+    __filename: true
   }
 };

@@ -127,7 +127,7 @@ export const Message = (): JSX.Element => {
     }, [currentSelectedConversation] );
 
     const handleConvListClick = convInfo => {
-        console.log(convInfo,'7777777777777777777777777777777777')
+        // console.log(convInfo,'7777777777777777777777777777777777')
         dispatch(updateCurrentSelectedConversation(convInfo));
     }
 
@@ -309,7 +309,7 @@ export const Message = (): JSX.Element => {
     if (currentSelectedConversation === null) {
         return <EmptyResult contentText="暂无会话" />
     }
-    console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
+    // console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
     return (
         <div className="message-content">
             <div className="message-list">
