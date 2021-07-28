@@ -63,6 +63,7 @@ type MergeMsg = {
 };
   
 type CustomMsg = {
+  elem_type: number;
   custom_elem_data?:string;
   custom_elem_desc?:string;
   custom_elem_ext?:string;
@@ -448,7 +449,6 @@ export const getGroupMemberList = async (params: {
       group_get_members_info_list_param_group_id: groupId,
     },
   });
-  console.log("data", data);
   const { code, json_param } = data;
   if (code === 0) {
     const result = JSON.parse(json_param);

@@ -1,17 +1,27 @@
 import React, { useEffect } from "react";
 
 export const CustomElem = (props: any): JSX.Element => {
-    
-    const item = (props) => {
-        
+  console.log("props", props);
+
+  const item = (props) => {
+    const { custom_elem_data } = props;
+    const data = JSON.parse(custom_elem_data);
+    switch (data.businessID) {
+      case "group_create":
         return (
-            <div className="message-view__item--text text right-menu-item" >
-                {
-                    JSON.stringify(props)
-                }
-            </div>
-        )
-    };
-   
-    return item(props);
-}
+          <>
+            {data.opUser}
+            {data.content}
+          </>
+        );
+      default:
+        return <>{JSON.stringify(props)}</>;
+    }
+  };
+
+  return (
+    <div className="message-view__item--text text right-menu-item">
+      {item(props)}
+    </div>
+  );
+};

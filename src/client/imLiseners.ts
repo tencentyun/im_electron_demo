@@ -375,4 +375,5 @@ export default function initListeners(callback:InitListenersCallback){
 
         }
     })
+    // timRenderInstance.
 }
