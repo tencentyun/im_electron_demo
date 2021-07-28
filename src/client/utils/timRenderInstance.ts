@@ -1,6 +1,5 @@
 import TimRender from "im_electron_sdk/dist/renderer";
 import { message } from "tea-component";
-import { isNumber } from "lodash";
 
 let timRenderInstance: TimRender;
 

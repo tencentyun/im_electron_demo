@@ -139,8 +139,8 @@ export const Message = (): JSX.Element => {
         const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read,message_is_read } = lastMsg;
         const { user_profile_nick_name } = message_sender_profile;
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
-        const firstMsg = message_elem_array[0];
-        const displayTextMsg = message_status === 6 ? `${revokedPerson} 撤回了一条消息` : firstMsg?.text_elem_content;
+        const firstMsg = message_elem_array[0] || {};
+        const displayTextMsg  = message_status === 6 ? `${revokedPerson} 撤回了一条消息` : firstMsg && firstMsg.text_elem_content;
         const displayLastMsg = {
             '0': displayTextMsg,
             '1': '[图片]',

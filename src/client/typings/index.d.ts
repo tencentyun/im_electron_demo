@@ -23,7 +23,11 @@ declare namespace State {
     }
     export type ui = {
         function_tab: functionTab,
-        replace_router: boolean
+        replace_router: boolean,
+        callingStatus: {
+            callingType: number,
+            callingId: string
+        }
     }
     
     export type section = {

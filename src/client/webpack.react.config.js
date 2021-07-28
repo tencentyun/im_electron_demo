@@ -1,7 +1,20 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
+const webpack = require("webpack");
+const os = require('os');
+const targetPlatform = (function(){
+ let target = os.platform();
+ for (let i=0; i<process.argv.length; i++) {
+     if (process.argv[i].includes('--target_platform=')) {
+         target = process.argv[i].replace('--target_platform=', '');
+         break;
+     }
+ }
+ if (!['win32', 'darwin'].includes) target = os.platform();
+ return target;
+})();
 module.exports = {
+  lintOnSave: false,
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     mainFields: ['main', 'module', 'browser'],
@@ -14,6 +27,13 @@ module.exports = {
   devtool: 'source-map',
   module: {
     rules: [
+    //   { 
+    //     test: /\.node$/, 
+    //     loader: 'native-ext-loader', 
+    //     options: { 
+    //         rewritePath: targetPlatform === 'win32' ? './resources' : '../Resources' 
+    //     } 
+    // },
       {
         test: /\.(js|ts)$/,
         exclude: /node_modules/,
@@ -44,6 +64,10 @@ module.exports = {
         use: [
           'file-loader',
         ],
+      },
+      {
+        test: /\.node$/,
+        loader: 'native-ext-loader',
       }
     ]
   },
@@ -122,7 +146,8 @@ module.exports = {
       chunks: ['call'],
       template: 'call.html',
       filename: 'call.html'
-    })
+    }),
+    // new webpack.ExternalsPlugin("commonjs", ["ffi-napi","trtc-electron-sdk","im_electron_sdk"])
   ],
   node: {
     global: true,
