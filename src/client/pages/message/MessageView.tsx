@@ -251,8 +251,7 @@ export const MessageView = (props: Props): JSX.Element => {
             setRightClickMenuList(RIGHT_CLICK_MENU_LIST_2);
         } else if(groupType === 4) { // 互动直播群不进行多选
             setRightClickMenuList(RIGHT_CLICK_MENU_LIST_3)
-        }
-         else {
+        } else {
             setRightClickMenuList(RIGHT_CLICK_MENU_LIST)
         }
 
