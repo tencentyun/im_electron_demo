@@ -133,6 +133,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       axios.post(`${TIM_BASE_URL}/huarun/im_cos_msg/pre_sig`, {
         sdkappid: SDKAPPID,
         uid: uid,
+        userSig: userSig,
         file_type: 1,
         file_name: 'headUrl/' + fileObj.name,
         Duration: 900,

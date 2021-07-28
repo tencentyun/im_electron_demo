@@ -43,8 +43,8 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
 
   // eslint-disable-next-line
   const _handlerSubmit = async (formValue: FormValue) => {
-    console.log('formValue', formValue)
     formValue.groupFaceUrl = imgUrl
+    console.log('formValue', formValue)
     console.log('imgUrl', imgUrl)
     try {
       await onSubmit(formValue);
