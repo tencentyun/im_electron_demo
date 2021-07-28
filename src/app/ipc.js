@@ -38,13 +38,14 @@ class IPC {
         })
 
         ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
-            this.callWindow = this.createNewWindow();
+            this.callWindow = this.createNewWindow(data);
             this.callWindow.on('close', () => {
                 event.reply(CALL_WINDOW_CLOSE_REPLY);
             });
         });
     }
-    createNewWindow() {
+    createNewWindow(data) {
+        const params = JSON.stringify(data);
         const env = process.env?.NODE_ENV?.trim();
         const isDev = env === 'development';
         const callWindow = new BrowserWindow({
@@ -63,12 +64,12 @@ class IPC {
         });
         callWindow.removeMenu();
         if(isDev) {
-            callWindow.loadURL("http://localhost:3000/call.html");
+            callWindow.loadURL(`http://localhost:3000/call.html?data=${params}`);
             callWindow.webContents.openDevTools();
         } else {
             callWindow.loadURL(
                 url.format({
-                    pathname: path.join(__dirname, '../../bundle/call.html'),
+                    pathname: path.join(__dirname, `../../bundle/call.html?data=${params}`),
                     protocol: 'file:',
                     slashes: true
                 })

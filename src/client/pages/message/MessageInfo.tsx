@@ -146,7 +146,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       callingType: conv_type
     }));
     openCallWindow({
-      callType
+      callType,
+      conv_id,
+      convInfo: getDisplayConvInfo()
     });
   }
 
@@ -217,7 +219,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
           </header>
           <section className="message-info-view__content">
             <div className="message-info-view__content--view">
-              <MessageView messageList={msgList || []} />
+              <MessageView groupType={groupType} messageList={msgList || []} />
             </div>
             <div className="message-info-view__content--input">
               <MessageInput

@@ -39,6 +39,7 @@ const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
 type Props = {
     messageList: Array<State.message>
+    groupType: number;
 }
 
 const RIGHT_CLICK_MENU_LIST = [{
@@ -76,10 +77,27 @@ const RIGHT_CLICK_MENU_LIST_2 = [{
     text: '回复'
 }];
 
+const RIGHT_CLICK_MENU_LIST_3 = [{
+    id: 'revoke',
+    text: '撤回'
+},
+{
+    id: 'delete',
+    text: '删除'
+},
+{
+    id: 'transimit',
+    text: '转发'
+},
+{
+    id: 'reply',
+    text: '回复'
+}];
+
 
 
 export const MessageView = (props: Props): JSX.Element => {
-    const { messageList } = props;
+    const { messageList, groupType } = props;
     const messageViewRef = useRef(null);
     const [isTransimitPopup, setTransimitPopup] = useState(false);
     const [isMultiSelect, setMultiSelect] = useState(false);
@@ -227,9 +245,12 @@ export const MessageView = (props: Props): JSX.Element => {
     const handleContextMenuEvent = (e, message: State.message, element) => {
         e.preventDefault();
         const { elem_type } = element;
+        console.log('groupType', groupType);
         //群系统消息 和 tips消息 不可转发
         if([5,8].includes(elem_type)) {
             setRightClickMenuList(RIGHT_CLICK_MENU_LIST_2);
+        } else if(groupType === 4) { // 互动直播群不进行多选
+            setRightClickMenuList(RIGHT_CLICK_MENU_LIST_3)
         } else {
             setRightClickMenuList(RIGHT_CLICK_MENU_LIST)
         }
