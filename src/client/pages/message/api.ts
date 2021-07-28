@@ -448,7 +448,6 @@ export const getGroupMemberList = async (params: {
       group_get_members_info_list_param_group_id: groupId,
     },
   });
-  console.log("data", data);
   const { code, json_param } = data;
   if (code === 0) {
     const result = JSON.parse(json_param);
