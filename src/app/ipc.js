@@ -46,6 +46,7 @@ class IPC {
     }
     createNewWindow(data) {
         const params = JSON.stringify(data);
+        console.log('params sended', params);
         const env = process.env?.NODE_ENV?.trim();
         const isDev = env === 'development';
         const callWindow = new BrowserWindow({

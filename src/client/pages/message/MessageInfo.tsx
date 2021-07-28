@@ -145,10 +145,16 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       callingId: conv_id,
       callingType: conv_type
     }));
+
+    const {faceUrl, nickName} = getDisplayConvInfo();
     openCallWindow({
       callType,
-      conv_id,
-      convInfo: getDisplayConvInfo()
+      convId: encodeURIComponent(conv_id),
+      convInfo: {
+        faceUrl: encodeURIComponent(faceUrl),
+        nickName: encodeURIComponent(nickName),
+        convType: conv_type
+      } 
     });
   }
 

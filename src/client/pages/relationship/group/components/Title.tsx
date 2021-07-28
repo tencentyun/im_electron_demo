@@ -4,6 +4,8 @@ import { useDialogRef } from "../../../../utils/react-use/useDialog";
 import { GroupList } from "../api";
 import { CreateGroupDialog } from "./CreateGroupDialog";
 import "./title.scss";
+import { sendMsg } from "../../../message/api";
+import { useSelector } from "react-redux";
 
 const wait = (time) =>
   new Promise((reslove) => {
@@ -14,6 +16,7 @@ export const Title = (props: {
   onRefresh: () => Promise<GroupList>;
 }): JSX.Element => {
   const { onRefresh } = props;
+  const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
   const createGroupDialogRef = useDialogRef();
   return (
@@ -27,7 +30,7 @@ export const Title = (props: {
           <Button
             className="title--right__button"
             type="primary"
-            onClick={() => createGroupDialogRef.current.open()}
+            onClick={() => createGroupDialogRef.current.open({ userId })}
           >
             创建群聊
           </Button>

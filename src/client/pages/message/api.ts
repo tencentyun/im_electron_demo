@@ -63,6 +63,7 @@ type MergeMsg = {
 };
   
 type CustomMsg = {
+  elem_type: number;
   custom_elem_data?:string;
   custom_elem_desc?:string;
   custom_elem_ext?:string;

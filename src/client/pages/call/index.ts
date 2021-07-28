@@ -1,1 +1,1 @@
-export * from './CallContent';
+export * from './callContent/CallContent';

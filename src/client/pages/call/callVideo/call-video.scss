@@ -1,0 +1,38 @@
+.call-video {
+    width: 100%;
+    height: 100%;
+    background: #E8F2FF;
+    overflow: hidden;
+    position: relative;
+
+    &__empty {
+        margin: 0 auto;
+        width: 94px;
+        height: 88px;
+        background-image: url('../../../assets/icon/forbiden_video.svg');
+    }
+
+    .c2c-content {
+        width: 100%;
+        height: 100%;
+
+        &--self {
+            display: none;
+            height: 100%;
+        }
+
+        &--remote, &--none-video {
+            position: absolute;
+            width: 160px;
+            height: 120px;
+            top: 20px;
+            right: 40px;
+        }
+        
+        &--none-video {
+            z-index: 999;
+            background: black;
+        }
+    }
+
+}
