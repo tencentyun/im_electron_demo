@@ -8,7 +8,7 @@ import {
     animation
 } from 'react-contexify';
 import './message-view.scss';
-import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, TextMsg, getMsgList } from './api';
+import { revokeMsg, deleteMsg, sendMsg, sendMergeMsg, TextMsg, getMsgList } from './api';
 import { markeMessageAsRevoke, deleteMessage, reciMessage, addMoreMessage } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import {
@@ -32,7 +32,7 @@ import formateTime from '../../utils/timeFormat';
 import { ContentUtils } from 'braft-utils'
 import { Icon, message } from 'tea-component';
 import { custEmojiUpsert } from '../../services/custEmoji'
-import  { custEmojiUpsertParams } from '../../services/custEmoji'
+import { custEmojiUpsertParams } from '../../services/custEmoji'
 import { showDialog } from "../../utils/tools";
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
@@ -145,7 +145,7 @@ export const MessageView = (props: Props): JSX.Element => {
             return
         }
         try {
-            const userId = await getLoginUserID()
+            const userId = localStorage.getItem('uid')
             const emojiParams: custEmojiUpsertParams = {
                 uid: userId,
                 sticker_url,
@@ -191,7 +191,7 @@ export const MessageView = (props: Props): JSX.Element => {
     }
 
     const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
-        const userId = await getLoginUserID()
+        const userId = localStorage.getItem('uid')
         const isDivideSending = forwardType === ForwardType.divide
         const isCombineSending = !isDivideSending
         convItemGroup.forEach(async (convItem, k) => {
@@ -308,7 +308,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const handleOpenFile = (item) => {
         showDialog()
     }
-    const displayDiffMessage = (element) => {
+    const displayDiffMessage = (element, index) => {
         const { elem_type, ...res } = element;
         let resp
         switch (elem_type) {
@@ -325,7 +325,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <CustomElem {...res} />
                 break;
             case 4:
-                resp = <FileElem message={message} element={element}/>
+                resp = <FileElem message={message} element={element} />
                 break;
             case 5:
                 resp = <GroupTipsElemItem {...res} />
@@ -415,7 +415,7 @@ export const MessageView = (props: Props): JSX.Element => {
             // 过滤添加到表情MenuItem
             menuData = menuData.filter(item => item.id !== 'addCustEmoji')
         }
-        if(new Date().getTime() / 1000 - currMenuMessage.message_client_time > 120){
+        if (new Date().getTime() / 1000 - currMenuMessage.message_client_time > 120) {
             // 超时则过滤撤回按钮
             menuData = menuData.filter(item => item.id !== 'revoke')
         }
@@ -434,8 +434,8 @@ export const MessageView = (props: Props): JSX.Element => {
 
     const reeditShowText = (item) => {
         return (item.message_is_from_self && isTimeoutFun(item.message_client_time) &&
-        item.message_elem_array[0].elem_type === 0 && 
-        item.message_elem_array[0].text_elem_content.indexOf('<img src=') === -1) 
+            item.message_elem_array[0].elem_type === 0 &&
+            item.message_elem_array[0].text_elem_content.indexOf('<img src=') === -1)
     }
     return (
         <div className="message-view" ref={messageViewRef}>
@@ -479,7 +479,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                                 return (
                                                     <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                                         {
-                                                            displayDiffMessage(elment)
+                                                            displayDiffMessage(elment, index)
                                                         }
                                                     </div>
                                                 )

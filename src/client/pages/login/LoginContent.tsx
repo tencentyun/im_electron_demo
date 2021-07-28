@@ -10,7 +10,7 @@ import { changeFunctionTab } from '../../store/actions/ui';
 import { setUserInfo } from '../../store/actions/user';
 import { loginUser } from '../../store/actions/loginUser';
 import { loginParam } from 'im_electron_sdk/dist/interface';
-import {filterGetDepartment,assemblyData} from '../../utils/orgin'
+import { filterGetDepartment, assemblyData } from '../../utils/orgin'
 import { setUnreadCount } from '../../store/actions/section';
 import { getEncrptPwd } from '../../utils/addFriendForPoc'
 import { getUserLoginInfo } from '../../services/login'
@@ -76,7 +76,7 @@ export const LoginContent = (): JSX.Element => {
         console.log(111222333)
         getEncrptPwd({
             Pwd: password
-        }).then( async getEncrptPwdRes  => {
+        }).then(async getEncrptPwdRes => {
             const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
             console.log(Encypt)
             // getUserLoginInfo({
@@ -103,6 +103,8 @@ export const LoginContent = (): JSX.Element => {
                     //     userId: userID,
                     //     userSig:usersig
                     // }))
+                    window.localStorage.setItem('uid',userID)
+                    window.localStorage.setItem('usersig',Encypt)
                     //获取部门
                     filterGetDepartment({
                         DepId:"root_1"
@@ -168,43 +170,44 @@ export const LoginContent = (): JSX.Element => {
 //     const isDisablelogin = activedTab === 'passwordLogin' && userID && usersig;
 //     console.log("自动更新1")
 //     document.addEventListener('DOMContentLoaded', () => {
-//       console.log("自动更新2")
-//       const { ipcRenderer } = require('electron');
-//       ipcRenderer.on('message', (event, { message, data }) => {
-//         console.log("自动更新进入")
-//         console.log(message, data);
-//         switch (message) {
-//           case 'isUpdateNow':
-//             if (confirm('发现有新版本，是否现在更新？')) {
-//               ipcRenderer.send('updateNow');
+//         console.log("自动更新2")
+//         const { ipcRenderer } = require('electron');
+//         ipcRenderer.on('message', (event, { message, data }) => {
+//             console.log("自动更新进入")
+//             console.log(message, data);
+//             switch (message) {
+//                 case 'isUpdateNow':
+//                     if (confirm('发现有新版本，是否现在更新？')) {
+//                         ipcRenderer.send('updateNow');
+//                     }
+//                     break;
+//                 default:
+//                     //document.querySelector('h1').innerHTML = message;
+//                     break;
 //             }
-//             break;
-//           default:
-//             //document.querySelector('h1').innerHTML = message;
-//             break;
-//         }
-//       })
+//         })
 //     })
 //     const customizeTabBarRender = (children: JSX.Element) => {
 //         return <a className="customize-tab-bar">{children}</a>
 //     }
 
-//     const handleTabChange = ({id}) => {
-//         if(id === 'verifyCodeLogin') return message.warning({content: '敬请期待'});
+//     const handleTabChange = ({ id }) => {
+//         if (id === 'verifyCodeLogin') return message.warning({ content: '敬请期待' });
 //         setActivedTab(id);
 //     }
 
 //     const handleLoginClick = async () => {
-//         const params:loginParam = {
+//         const params: loginParam = {
 //             userID: userID,
 //             userSig: usersig
 //         }
-//         const { data: { code,data,desc,json_param }} = await timRenderInstance.TIMLogin(params);
-//         console.log(code,data,desc,json_param);
-//         if(code === 0) {
+//         const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
+//         console.log(code, data, desc, json_param);
+//         if (code === 0) {
 //             dispatch(setIsLogInAction(true));
 //             dispatch(setUserInfo({
-//                 userId: userID
+//                 userId: userID,
+//                 faceUrl: '', gender: '', nickName: '', role: null
 //             }));
 //             dispatch(changeFunctionTab('message'));
 //             history.replace('/home/message');
@@ -220,13 +223,13 @@ export const LoginContent = (): JSX.Element => {
 //                     <Input placeholder="请输入密码" className="login--input" />
 //                 </TabPanel>
 //                 <TabPanel id="passwordLogin">
-//                     <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val)}} />
-//                     <Input placeholder="请输入usersig"  value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />
+//                     <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val) }} />
+//                     <Input placeholder="请输入usersig" value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />
 //                 </TabPanel>
 //             </Tabs>
-//             <Checkbox display="block" value={false} className="login--auto">
+//             {/* <Checkbox display="block" value={false} className="login--auto">
 //                 下次自动登录
-//             </Checkbox>
+//             </Checkbox> */}
 //             <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}> 登陆</Button>
 //         </div>
 //     )
