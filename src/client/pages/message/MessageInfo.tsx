@@ -17,14 +17,10 @@ import {
 } from '../../components/pull/pull'
 
 import { AddUserPopover } from "./AddUserPopover";
-<<<<<<< HEAD
-=======
 import { addTimeDivider } from "../../utils/addTimeDivider";
 import { openCallWindow, callWindowCloseListiner } from "../../utils/tools";
->>>>>>> origin/main
 
 import { useDialogRef } from "../../utils/react-use/useDialog";
-import { addTimeDivider } from "../../utils/addTimeDivider";
 import BraftEditor, { EditorState } from 'braft-editor'
 import {
   changeDrawersVisible,
@@ -155,13 +151,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));
-<<<<<<< HEAD
-
-  const handleOpenCallWindow = () => {
-    ipcRenderer.send("openCallWindow");
-  }
-
-=======
   
   const handleOpenCallWindow = (callType) => {
     if(callingId) {
@@ -189,7 +178,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   const popupContainer = document.getElementById("messageInfo");
 
->>>>>>> origin/main
   useEffect(() => {
     setMessageRead();
   }, [msgList]);
@@ -278,16 +266,12 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
               }
             </div>
             <div>
-<<<<<<< HEAD
               {/* {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>} */}
               {
                 canInviteMember && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
               }
-              <span className="message-info-view__header--video" onClick={handleOpenCallWindow} />
-=======
-              {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
+              {/* <span className="message-info-view__header--video" onClick={handleOpenCallWindow} /> */}
               <span className={`message-info-view__header--video ${callingId === conv_id ? 'is-calling' : ''}`} onClick={() => handleOpenCallWindow('videoCall')} />
->>>>>>> origin/main
             </div>
           </header>
           <section className="message-info-view__content">
@@ -302,12 +286,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 convId={conv_id}
                 convType={conv_type}
                 isShutUpAll={isShutUpAll}
-<<<<<<< HEAD
                 editorState={editorState}
                 setEditorState={setEditorState}
-=======
                 handleOpenCallWindow={handleOpenCallWindow}
->>>>>>> origin/main
               />
             </div>
           </section>

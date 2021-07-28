@@ -92,7 +92,6 @@ const createWindow = () => {
   mainWindow.on("ready-to-show", () => {
     mainWindow.setTitle("IM Electron Demo")
     mainWindow.show();
-<<<<<<< HEAD
     // use for developments
     mainWindow.webContents.openDevTools();
 
@@ -273,23 +272,6 @@ const createWindow = () => {
     mainWindow.show()
   });
   // ***use for production***
-=======
-    if(!ipc) ipc = new IPC(mainWindow);
-  });
-
-  if(process.env?.NODE_ENV?.trim() === 'development') {
-    mainWindow.loadURL(`http://localhost:3000`);
-    mainWindow.webContents.openDevTools();
-  } else {
-    mainWindow.loadURL(
-      url.format({
-          pathname: path.join(__dirname, '../../bundle/index.html'),
-          protocol: 'file:',
-          slashes: true
-      })
-    );
-  }
->>>>>>> origin/main
 };
 
 

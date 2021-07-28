@@ -10,12 +10,8 @@ const child_process = require('child_process')
 
 class IPC {
     win = null;
-<<<<<<< HEAD
-    constructor(win) {
-=======
     callWindow = null;
     constructor(win){
->>>>>>> origin/main
         this.win = win;
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             // console.log("get message from render process", event.processId, data)
