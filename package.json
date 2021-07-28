@@ -25,10 +25,10 @@
     "productName": "华润银行即时通讯（内测版）",
     "appId": "electron-sdk",
     "mac": {
-      "icon": "./src/client/assets/icon/favicon.icns"
+      "icon": "./icon/favicon.icns"
     },
     "win": {
-      "icon": "./src/client/assets/icon/windows.png",
+      "icon": "./icon/windows.png",
       "target": [
         {
           "target": "nsis",

@@ -56,7 +56,8 @@
     "redux": "^4.1.0",
     "sass": "^1.35.1",
     "tea-component": "^2.6.22",
-    "trtc-electron-sdk": "^8.6.102-beta.0"
+    "trtc-electron-sdk": "^8.6.102-beta.0",
+    "viewerjs": "^1.10.0"
   },
   "author": "neiceban",
   "license": "ISC"
