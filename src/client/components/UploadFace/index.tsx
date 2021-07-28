@@ -52,6 +52,9 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   const [_val, setVal] = useState(value)
   let instance = null, fileObj = null
 
+  const userSig =localStorage.getItem('usersig')
+  const uid =localStorage.getItem('uid')
+
   const onSetImgUrl = async (file) => {
     if (prop.isShowCropper) {
       const url = await dataURLtoBlob(file)
@@ -129,11 +132,12 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       setUploading(true)
       axios.post(`${TIM_BASE_URLB}/v4/im_cos_msg/pre_sig`, {
         sdkappid: SDKAPPID,
-        uid: "tetetetetetet",
+        uid: uid,
         file_type: 1,
         file_name: 'headUrl/' + fileObj.name,
         Duration: 900,
         'upload_method': 0,
+        userSig: userSig
       }).then(res => {
         if (res.data.error_code === 0) {
           console.log(res)
