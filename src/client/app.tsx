@@ -40,6 +40,7 @@ import {
   updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
+let notificationpng = require('./assets/icon/notification.png')
 
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
@@ -213,7 +214,7 @@ export const App = () => {
     }
     // console.log(messages[0].message_elem_array[0], '通知消息------------------------------------', messages)
     const notification = new window.Notification('收到新消息', {
-      icon: 'http://oaim.crbank.com.cn:30003/emoji/notification.png',
+      icon: notificationpng,
       // body: replaceAll(message.message_elem_array[0], '&nbsp;', ' ').substring(0, 15)
       body: (messages[0].message_elem_array[0].text_elem_content).substring(0, 15)
     })
