@@ -34,9 +34,9 @@ export const TextElemItem = (props: any): JSX.Element => {
                     return <span key={index}>{text[index] ? <span style={{whiteSpace: 'pre'}}>{text[index]}</span> : <></>}
                         {urls[index] ? <ImagePreview
                             previewSrc={urls[index]}
-                            previewTitle="预览"
+                            previewTitle="预览s"
                         >
-                            {open => <a onClick={open}><img src={urls[index]} style={{ maxWidth: 450 }}></img></a>}
+                            {open => <a onClick={open}><img src={urls[index]} style={{ maxWidth: 178 }}></img></a>}
                         </ImagePreview> : <></>}
                     </span>
                 })}

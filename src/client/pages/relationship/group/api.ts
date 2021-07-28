@@ -8,12 +8,17 @@ export type GroupList = {
   group_base_info_group_type: number;
 }[];
 
-interface createGroupParams {
+export interface createGroupMemberParams {
+  group_member_info_member_role: number;
+  group_member_info_identifier: number & string
+}
+
+export interface createGroupParams {
   groupName: string;
   groupIntroduction?: string;
   groupAnnouncement?: string;
-  joinGroupMode: string;
-  groupMember?: string;
+  joinGroupMode?: string;
+  groupMember?: Array<createGroupMemberParams>;
   groupType: string;
   groupAvatarUrl: string;
 }
@@ -57,15 +62,10 @@ export const createGroup = async (params: createGroupParams): Promise<any> => {
   } = params;
   const createParams = {
     create_group_param_add_option: Number(joinGroupMode),
-    ...(groupMember && { create_group_param_group_member_array: [
-      {
-        group_member_info_member_role: 1,
-        group_member_info_identifier: groupMember,
-      },
-    ]}),
     create_group_param_group_name: groupName,
     create_group_param_group_type: Number(groupType),
     create_group_param_face_url: groupAvatarUrl,
+    ...(groupMember && groupMember.length && { create_group_param_group_member_array: groupMember}),
     ...(groupIntroduction && {create_group_param_introduction: groupIntroduction}),
     ...(groupAnnouncement && {create_group_param_notification: groupAnnouncement})
   };
@@ -75,9 +75,9 @@ export const createGroup = async (params: createGroupParams): Promise<any> => {
   });
 
   console.log('data', data)
-  const { code, desc } = data;
+  const { code, desc, json_param } = data;
   if (code === 0) {
-    return {};
+    return {json_param};
   }
   throw new Error(desc);
 };
