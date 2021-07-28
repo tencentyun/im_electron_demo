@@ -15,7 +15,6 @@ import {
 import { emojiMap, emojiName, emojiUrl } from '../emoji-map'
 import { getCustEmoji, custEmojiUpsert }  from '../../../services/custEmoji'
 import type { getCustEmojiType, custEmojiUpsertParams }  from '../../../services/custEmoji'
-import { getLoginUserID } from '../api';
 import { message, StatusTip } from 'tea-component';
 import { throttle } from '../../../utils/tools'
 
@@ -70,7 +69,7 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
         setPage(page)
         try {
             setLoadStatus('loading')
-            const userId = await getLoginUserID()
+            const userId = localStorage.getItem('uid')
             const params:getCustEmojiType = {
                 uid: userId,
                 page,
@@ -108,7 +107,7 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
 
     const handlDeleteClick =async (e) => {
         try {
-            const userId = await getLoginUserID()
+            const userId = localStorage.getItem('uid')
             const params: custEmojiUpsertParams = {
                 id: e.props.id,
                 op_type: 2,

@@ -18,7 +18,7 @@ let ipc, mainWindow;
 let toggle = false;
 const downloadUrl = app.getPath("downloads");
 new TimMain({
-  sdkappid: 1400187352,
+  sdkappid: 1400529075,
   // sdkappid: 1400529075
 });
 
@@ -125,14 +125,14 @@ const createWindow = () => {
     mainWindow.webContents.openDevTools()
     app.setAppUserModelId("华润银行即时通讯（内测版）")
   })
-  mainWindow.loadURL(`http://localhost:3000`);
-  // mainWindow.loadURL(
-  //   url.format({
-  //     pathname: path.join(__dirname, "../../bundle/index.html"),
-  //     protocol: "file:",
-  //     slashes: true,
-  //   })
-  // );
+  //mainWindow.loadURL(`http://localhost:3000`);
+  mainWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, "../../bundle/index.html"),
+      protocol: "file:",
+      slashes: true,
+    })
+  );
   // 通知消息
   mainWindow.on('show', function () {
     console.log('mainWindow show')
@@ -260,7 +260,7 @@ const createWindow = () => {
     //执行自动更新检查
     autoUpdater.checkForUpdates();
   };
-  setTimeout(checkForUpdates, 1000);
+  //setTimeout(checkForUpdates, 1000);
   ipcMain.on('CHANGESTORE', function (event, data) {
     console.log(data)
     store.set('sendType', data)

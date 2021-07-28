@@ -20,7 +20,7 @@ export const PicElemItem = (props: any): JSX.Element => {
                     previewSrc={url}
                     previewTitle="预览"
                 >
-                {open => <a onClick={open}><img src={url} style={{ maxWidth: 450 }}></img></a>}
+                {open => <a onClick={open}><img src={url} style={{ maxWidth: 178 }}></img></a>}
                 </ImagePreview>
             </div>
         )

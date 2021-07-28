@@ -6,7 +6,7 @@
   "main": "src/app/main.js",
   "scripts": {
     "start": "concurrently \"npm run dev:electron\"",
-    "build": "npm run build:react && electron-builder -w",
+    "build": "electron-builder -w",
     "build:react": "cd ./src/client && npm run build:react",
     "dev:electron": "electron .",
     "dev:react": "cd ./src/client && npm run dev:react",
