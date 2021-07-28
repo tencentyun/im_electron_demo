@@ -100,13 +100,17 @@ export const MessageInput = (props: Props): JSX.Element => {
     let editorInstance;
     // const enterSend = localStorage.getItem('sendType') || '1'
 
+    const userSig =localStorage.getItem('usersig')
+  const uid =localStorage.getItem('uid')
+
     // 上传逻辑
     const handleUpload = (base64Data) => {
         return new Promise((resolve, reject) => {
             axios
-                .post(`${TIM_BASE_URL}/v4/im_cos_msg/pre_sig`, {
+                .post(`${TIM_BASE_URL}/huarun/im_cos_msg/pre_sig`, {
                     sdkappid: SDKAPPID,
-                    uid: "tetetetetetet",
+                    uid: uid,
+                    userSig: userSig,
                     file_type: 1,
                     file_name: "headUrl/" + new Date().getTime() + 'screenShot.png',
                     Duration: 900,
@@ -114,19 +118,18 @@ export const MessageInput = (props: Props): JSX.Element => {
                 })
                 .then((res) => {
                     console.log(res);
-                    const { upload_url } = res.data;
+                    const { download_url } = res.data;
                     console.log(111111);
-                    console.log(upload_url);
-                    let fr = new FileReader();
+                    console.log(download_url);
                     axios
-                        .put(upload_url, convertBase64UrlToBlob(base64Data), {
+                        .put(download_url, convertBase64UrlToBlob(base64Data), {
                             headers: {
                                 "Content-Type": "application/x-www-form-urlencoded",
                             },
                         })
                         .then(() => {
                             const { download_url } = res.data;
-                            resolve(res.data.ci_url)
+                            resolve(download_url)
                         })
                         .catch((err) => {
                             reject(err);

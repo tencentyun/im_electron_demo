@@ -12,8 +12,8 @@ import { TIM_BASE_URL } from '../../constants/index'
 const imgStyle = { width: '60px', height: '60px', cursor: 'pointer' }
 
 interface IRes {
-  upload_url: string;
-  download_url: string;
+  download_url?: string;
+  upload_url?: string;
   data: any;
 }
 
@@ -130,28 +130,24 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   const handleUpload = (base64Data) => {
     return new Promise((resolve, reject) => {
       setUploading(true)
-      axios.post(`${TIM_BASE_URL}/v4/im_cos_msg/pre_sig`, {
+      axios.post(`${TIM_BASE_URL}/huarun/im_cos_msg/pre_sig`, {
         sdkappid: SDKAPPID,
         uid: uid,
+        userSig: userSig,
         file_type: 1,
         file_name: 'headUrl/' + fileObj.name,
         Duration: 900,
-        'upload_method': 0,
-        userSig: userSig
+        upload_method: 0,
       }).then(res => {
         if (res.data.error_code === 0) {
           console.log(res)
-          const { upload_url } = res.data
+          const { download_url } = res.data
           let fr = new FileReader();
           fr.readAsDataURL(fileObj);
           fr.addEventListener(
             "load",
             () => {
-              axios.put(upload_url, convertBase64UrlToBlob(base64Data), {
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                }
-              }).then((response) => {
+              axios.put(download_url, convertBase64UrlToBlob(base64Data)).then((response) => {
                 const { download_url } = res.data
                 setVal(download_url)
                 setImgUrl('')
@@ -186,11 +182,11 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
 
   //用户选择文件 
   function handleBeforeUpload(file, fileList, isAccepted) {
-    const is2m = (file as File).size / 1024 / 1024 > 2
-    if (is2m) {
-      message.warning({ content: '图片不能大于2m' })
-      return false
-    }
+    // const is2m = (file as File).size / 1024 / 1024 > 2
+    // if (is2m) {
+    //   message.warning({ content: '图片不能大于2m' })
+    //   return false
+    // }
     fileObj = file
     setSelectFile(fileObj)
     onSetImgUrl(fileObj)
