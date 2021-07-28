@@ -13,10 +13,24 @@ type FriendList = {
 
 export const getFriendList = async (): Promise<FriendList> => {
   const { data } = await timRenderInstance.TIMFriendshipGetFriendProfileList();
-  console.log('data', data)
+  console.log("data", data);
   const { code, desc, json_params } = data;
   if (code === 0) {
     return JSON.parse(json_params);
   }
   return [];
+};
+
+export const deleteFriend = async (userId: string): Promise<any> => {
+  const { data } = await timRenderInstance.TIMFriendshipDeleteFriend({
+    params: {
+      friendship_delete_friend_param_friend_type: 0,
+      friendship_delete_friend_param_identifier_array: [userId],
+    },
+  });
+  const { code, desc } = data;
+  if (code === 0) {
+    return {};
+  }
+  throw new Error(desc);
 };
