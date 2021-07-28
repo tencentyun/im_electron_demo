@@ -146,7 +146,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       callingType: conv_type
     }));
     openCallWindow({
-      callType
+      callType,
+      conv_id,
+      convInfo: getDisplayConvInfo()
     });
   }
 

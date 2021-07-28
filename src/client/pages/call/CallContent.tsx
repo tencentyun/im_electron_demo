@@ -17,6 +17,16 @@ import {
   } from "trtc-electron-sdk/liteav/trtc_define";
 
 import './call-content.scss';
+import { message } from 'tea-component';
+
+function getQueryString(name) {
+    var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) {
+        return unescape(r[2]);
+    }
+    return null;
+}
 
 export const CallContent = () => {
     const callingTIme = '00:37';
@@ -43,13 +53,33 @@ export const CallContent = () => {
         win.close();
     }
 
+    const getUserData = () => {
+        try {
+            const { convInfo, conv_id } = JSON.parse(getQueryString('data'));
+
+            return {
+                userId: conv_id,
+                convInfo
+            }
+        } catch (e) {
+            message.warning({ content: '获取用户信息失败'})
+        }
+    }
+
+    const onRemoteUserEnterRoom = () => {
+        console.log('other people join in')
+    }
+
     const startVideo = (currentCamera) => {
+        const { userId } = getUserData();
         const roomId = 123456;
-        const userId = 'jinfeng';
         const { deviceId } = currentCamera;
+
+        console.log('urlParams',  getQueryString('data'));
 
         trtcInstance.on('onEnterRoom', onEnterRoom);
         trtcInstance.on('onExitRoom', onExitRoom);
+        trtcInstance.on('onRemoteUserEnterRoom', onRemoteUserEnterRoom);
         trtcInstance.setCurrentCameraDevice(deviceId);
         let encParam = new TRTCVideoEncParam();
         encParam.videoResolution = TRTCVideoResolution.TRTCVideoResolution_640_360;
@@ -80,7 +110,6 @@ export const CallContent = () => {
 
     useEffect(() => {
         const currentCamera = trtcInstance.getCurrentCameraDevice();
-        console.log('currentCamera', currentCamera);
         startVideo(currentCamera);
     }, []);
      
