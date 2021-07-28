@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, message, Bubble, Dropdown, List } from 'tea-component';
-import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
+import { Button, message,Dropdown } from 'tea-component';
+import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg, sendMsg } from './api'
 import { reciMessage, updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup, CUSTEMOJI } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
+import { Menu } from '../../components/menu';
 import BraftEditor, { EditorState } from 'braft-editor'
 import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
@@ -17,6 +18,7 @@ import axios from "axios";
 import { convertBase64UrlToBlob } from "../../utils/tools";
 import { SDKAPPID, TIM_BASE_URL } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
+import { judgeFileSize } from '../../utils/messageUtils';
 
 let store = '1'
 
@@ -25,7 +27,8 @@ type Props = {
     convType: number,
     isShutUpAll: boolean,
     editorState,
-    setEditorState
+    setEditorState,
+    handleOpenCallWindow: (callType: string) => void;
 }
 
 const FEATURE_LIST_GROUP = [{
@@ -80,16 +83,21 @@ const FEATURE_LIST = {
 }
 
 export const MessageInput = (props: Props): JSX.Element => {
+
     const { convId, convType, isShutUpAll, editorState, setEditorState } = props;
     const [isDraging, setDraging] = useState(false);
     const [activeFeature, setActiveFeature] = useState('');
     const [atPopup, setAtPopup] = useState(false);
     const [isEmojiPopup, setEmojiPopup] = useState(false);
+    const [ shouldShowCallMenu, setShowCallMenu] = useState(false);
     const [isRecordPopup, setRecordPopup] = useState(false);
     const [shotKeyTip, setShotKeyTip] = useState('按Enter键发送消息');
     const [isTextNullEmpty, setIsTextNullEmpty] = useState(true);
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
+
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
+    const [ filePathAndBase64Map, setFilePathAndBase64Map] = useState({});
+
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
     const videoPicker = React.useRef(null);
@@ -101,7 +109,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     // const enterSend = localStorage.getItem('sendType') || '1'
 
     const userSig =localStorage.getItem('usersig')
-  const uid =localStorage.getItem('uid')
+    const uid =localStorage.getItem('uid')
 
     // 上传逻辑
     const handleUpload = (base64Data) => {
@@ -211,10 +219,72 @@ export const MessageInput = (props: Props): JSX.Element => {
             message.error({ content: `出错了: ${e.message}` })
         }
     }
+
+    const handleSendMsg = async () => {
+        try {
+            const text = editorState.toText();
+            const htmlText = editorState.toHTML();
+            const imgSrcList = getImageSrcList(htmlText);
+            const atList = getAtList(text);
+    
+            const messageElementArray = [];
+            const trimedText = text.trim();
+            if(trimedText.length) {
+                messageElementArray.push({
+                    elem_type: 0,
+                    text_elem_content: text,
+                });
+            }
+            if(imgSrcList?.length) {
+                messageElementArray.push( ...imgSrcList?.map(v => ({
+                    elem_type: 1,
+                    image_elem_orig_path: filePathAndBase64Map[v],
+                    image_elem_level: 0
+                })));
+            }
+
+            const { data: { code, json_params, desc } } = await sendMsg({
+                convId,
+                convType,
+                messageElementArray,
+                userId,
+                messageAtArray: atList
+            });
+
+            if (code === 0) {                
+                dispatch(reciMessage({
+                    convId,
+                    messages: [JSON.parse(json_params)]
+                }));
+            }
+            setEditorState(ContentUtils.clear(editorState));
+        } catch (e) {
+            message.error({ content: `出错了: ${e.message}` });
+        }
+        setFilePathAndBase64Map({});
+    }
+
     const getAtList = (text: string) => {
         const list = text.match(/@\w+/g);
         return list ? list.map(v => v.slice(1)) : []
     }
+
+    // 从html字符串中匹配出image标签src
+    const getImageSrcList =(text: string) => {
+        //匹配图片（g表示匹配所有结果i表示区分大小写）
+        var imgReg = /<img.*?(?:>|\/>)/gi;
+        //匹配src属性 
+        var srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
+        var arr = text.match(imgReg);// 匹配出所有的img标签
+        const srcList = arr?.map(v => {
+            const srcs = v.match(srcReg);
+            if(srcs) {
+                return srcs[1];
+            }
+        }) || [];
+       return srcList;
+    }
+
     const handleDropFile = (e) => {
         const file = e.dataTransfer?.files[0]
         const iterator = file.type.matchAll(/(\w+)\//g)
@@ -367,8 +437,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         // resetState()
         setEmojiPopup(true)
     }
-    const handleSendPhoneMessage = () => {
-
+    const handleSendPhoneMessage = ()=> {
+        setShowCallMenu(true);
     }
     const handleFeatureClick = (featureId) => {
         switch (featureId) {
@@ -490,6 +560,11 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
 
+    const handleCallMenuClick = (item) => {
+        if(item) handleOpenCallWindow(item.id);
+        setShowCallMenu(false);
+    };
+
     const resetState = () => {
         setAtPopup(false)
         setEmojiPopup(false)
@@ -501,6 +576,27 @@ export const MessageInput = (props: Props): JSX.Element => {
         console.warn(editorState.toHTML())
         setIsTextNullEmpty(editorStateDisabled(editorState))
         setEditorState(editorState)
+    const editorChange = (newEditorState) => {
+        setEditorState(newEditorState)
+
+    }
+
+    const uploadFn = (params: {file:File, success: (value: any) => any}) => {
+        const {file} = params;
+        console.log('file', file);
+        if(file?.path?.length) {
+            var reader = new FileReader();
+            // 传入一个参数对象即可得到基于该参数对象的文本内容
+            reader.readAsDataURL(file);
+            reader.onload = function (e) {
+              const base64Value = e.target.result;
+              // target.result 该属性表示目标对象的DataURL
+              params.success({url: base64Value});
+              // @ts-ignore
+              setFilePathAndBase64Map(pre => ({...pre, [base64Value]: file.path}))
+            };
+        }
+        return true;
     }
 
     const menu = close => (
@@ -591,6 +687,9 @@ export const MessageInput = (props: Props): JSX.Element => {
                     isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
                 }
                 {
+                    shouldShowCallMenu && <Menu options={[{text: '语音通话', id: 'voiceCall' }, {text: '视频通话', id: 'videoCall' }]} onSelect={handleCallMenuClick}/>
+                }
+                {
 
                     FEATURE_LIST[convType].map(({ id, content }) => (
                         <Bubble content={content} key={id}>
@@ -611,11 +710,19 @@ export const MessageInput = (props: Props): JSX.Element => {
                     disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
-                    // controls={[]}
+                    controls={['media']}
                     ref={instance => editorInstance = instance}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     placeholder={placeHolderText}
-                    hooks={hooks}
+                    hooks={{
+                        'remove-medias': ({href, target}) => {
+                            console.log('remove-medias', href)
+                        },
+                        'insert-medias': ({href, target}) => {
+                            console.log('insert-medias', href)
+
+                        }
+                    }}
                 />
             </div>
             <span className="message-input__button-area">
@@ -657,4 +764,5 @@ export const MessageInput = (props: Props): JSX.Element => {
         </div>
     )
 
+}
 }

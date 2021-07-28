@@ -37,6 +37,13 @@ const setAppTray = () => {
   ]
 
   // 系统托盘图标目录
+<<<<<<< HEAD
+=======
+
+  // trayIcon.setTemplateImage(true)
+  // trayIcon.setSize(30, 30)
+
+>>>>>>> 0a6f90fe41db41f58f12c09336bdccef5b45424a
   appTray = new Tray(trayIcon)
 
   // 图标的上下文菜单
@@ -142,6 +149,7 @@ function createWindow () {
       mainWindow.webContents.send('mainProcessMessage', false)
     }
   })
+<<<<<<< HEAD
   // mainWindow.loadURL(`http://localhost:3000`);
   mainWindow.loadURL(
     url.format({
@@ -150,6 +158,16 @@ function createWindow () {
       slashes: true,
     })
   );
+=======
+  mainWindow.loadURL(`http://localhost:3000`);
+  // mainWindow.loadURL(
+  //   url.format({
+  //     pathname: path.join(__dirname, "../../bundle/index.html"),
+  //     protocol: "file:",
+  //     slashes: true,
+  //   })
+  // );
+>>>>>>> 0a6f90fe41db41f58f12c09336bdccef5b45424a
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
@@ -293,6 +311,11 @@ function reSizeWindow () {
   }
 }
 function trayFlash () {
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 0a6f90fe41db41f58f12c09336bdccef5b45424a
   if (appTray) {
     hasFlash = true;
 

@@ -11,7 +11,7 @@
     height: 100%;
     border-right: 1px solid #eee;
 
-    &.is-active {
+    & .is-active {
       background: rgba(232, 242, 255, 1);
     }
 
@@ -21,6 +21,7 @@
       list-style: none;
       padding-left: 12px;
       height: 62px;
+      background: #ffffff;
       cursor: pointer;
 
       &__name {
@@ -43,6 +44,11 @@
         }
         &.accounts{
           background-image: url("../../assets/icon/oce.png");
+        &.buddy-apply {
+          background-image: url("../../assets/icon/buddy-apply.svg");
+        }
+        &.buddy-list {
+          background-image: url("../../assets/icon/buddy-list.svg");
         }
       }
     }
@@ -52,4 +58,5 @@
     flex: 1;
     height: 100%;
   }
+}
 }

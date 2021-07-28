@@ -44,6 +44,13 @@
           "filter": [
             "**/*"
           ]
+        },
+        {
+          "from": "node_modules/trtc-electron-sdk/build/Release/",
+          "to": "./resources",
+          "filter": [
+            "**/*"
+          ]
         }
       ],
       "extraResources": [
@@ -84,6 +91,11 @@
     "redux": "^4.1.0",
     "sass": "^1.35.1",
     "tea-component": "^2.6.22",
+    "electron-builder": "^22.11.7",
+    "native-ext-loader": "^2.3.0"
+  },
+  "dependencies": {
+    "im_electron_sdk": "^1.0.36",
     "trtc-electron-sdk": "^8.6.102-beta.0"
   }
 }

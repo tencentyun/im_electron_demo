@@ -1,6 +1,7 @@
 import React from "react";
 import { decodeText } from "../../../utils/decodeText";
 import { ImagePreview } from 'tea-component'
+import { PicElemItem } from './picElemItem';
 
 export const TextElemItem = (props: any): JSX.Element => {
 
@@ -17,7 +18,7 @@ export const TextElemItem = (props: any): JSX.Element => {
         // 获取img标签内的url 并分隔文字与图片
         let imgs = texts.match(/<img [^>]*src=['"]([^'"]+)[^>]*>/g)
         // let textHtml = <span style={{whiteSpace: 'pre'}} dangerouslySetInnerHTML={{ __html: texts }}>{{texts}}</span>
-        let textHtml = <span style={{whiteSpace: 'pre'}}>{texts}</span>
+        let textHtml = <span style={{whiteSpace: 'pre-wrap'}}>{texts}</span>
 
         // 把img图片用预览组件代替
         if (imgs && imgs.length > 0) {
@@ -31,13 +32,14 @@ export const TextElemItem = (props: any): JSX.Element => {
             textHtml = <>
                 {arrayLength.map((i, index) => {
                     // return <span key={index}>{text[index] ? <span dangerouslySetInnerHTML={{ __html: text[index] }}></span> : <></>}
-                    return <span key={index}>{text[index] ? <span style={{whiteSpace: 'pre'}}>{text[index]}</span> : <></>}
-                        {urls[index] ? <ImagePreview
+                    return <span key={index}>{text[index] ? <span style={{whiteSpace: 'pre-wrap'}}>{text[index]}</span> : <></>}
+                        {urls[index] ? <PicElemItem
+                            image_elem_orig_url={urls[index]}
                             previewSrc={urls[index]}
-                            previewTitle="预览"
+                            previewTitle="预览s"
                         >
                             {open => <a onClick={open}><img src={urls[index]} style={{ maxWidth: 450 }}></img></a>}
-                        </ImagePreview> : <></>}
+                        </PicElemItem> : <></>}
                     </span>
                 })}
             </>

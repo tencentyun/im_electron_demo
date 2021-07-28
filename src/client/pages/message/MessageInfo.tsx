@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { ipcRenderer } from "electron";
+import React, { useEffect } from "react";
+import { message } from 'tea-component';
 
 import { Avatar } from "../../components/avatar/avatar";
 import { getMsgList, markMessageAsRead, inviteMemberGroup } from "./api";
@@ -9,16 +9,18 @@ import { MessageView } from "./MessageView";
 import "./message-info.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "../../store/actions/message";
+import { updateCallingStatus } from "../../store/actions/ui";
 
 import {
   AddGroupMemberDialog,
   AddMemberRecordsType
 } from '../../components/pull/pull'
-
 import { AddUserPopover } from "./AddUserPopover";
+import { addTimeDivider } from "../../utils/addTimeDivider";
+import { openCallWindow, callWindowCloseListiner } from "../../utils/tools";
+import trtcCheck from '../../utils/trtcCheck';
 
 import { useDialogRef } from "../../utils/react-use/useDialog";
-import { addTimeDivider } from "../../utils/addTimeDivider";
 import BraftEditor, { EditorState } from 'braft-editor'
 import {
   changeDrawersVisible,
@@ -54,6 +56,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   const { toolsTab, toolsDrawerVisible } = useSelector(
     (state: State.RootState) => state.groupDrawer
+  );
+
+  const { callingStatus: { callingId, callingType } } = useSelector(
+    (state: State.RootState) => state.ui
   );
 
   const msgList = historyMessageList.get(conv_id);
@@ -124,16 +130,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     handleMsgReaded();
     // }
   };
-  const reloct = (value: Array<string>) => {
-    try {
-      if (value.length) {
-        console.log(conv_id, value)
-        inviteMemberGroup({ groupId: conv_id, UIDS: value })
-      }
-    } catch (e) {
-      console.log(e.message);
-    }
-  }
+
   const { faceUrl, nickName } = getDisplayConvInfo();
   const dispatch = useDispatch();
 
@@ -146,9 +143,38 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));
 
-  const handleOpenCallWindow = () => {
-    ipcRenderer.send("openCallWindow");
+  const handleOpenCallWindow = (callType) => {
+    if(callingId) {
+      message.warning({content: '正在通话中'});
+      return;
+    }
+
+    if(!trtcCheck.isCameraReady() && !trtcCheck.isMicReady()) {
+      message.warning({content: '找不到可用的摄像头和麦克风。请安装摄像头和麦克风后再试'});
+      return;
+    }
+    
+    dispatch(updateCallingStatus({
+      callingId: conv_id,
+      callingType: conv_type
+    }));
+    openCallWindow({
+      callType,
+      conv_id,
+      convInfo: getDisplayConvInfo()
+    });
   }
+
+  useEffect(() => {
+    callWindowCloseListiner(() => {
+      dispatch(updateCallingStatus({
+        callingId: '',
+        callingType: 0
+      }));
+    });
+  }, [])
+
+  const popupContainer = document.getElementById("messageInfo");
 
   useEffect(() => {
     setMessageRead();
@@ -240,7 +266,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
             <div>
               {/* {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>} */}
               {
-                canInviteMember && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
+                (conv_type === 1 || canInviteMember) && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id, convType: conv_type })} />
+              }
+              {
+                canCreateDiscussion && <span title='拉取讨论组' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
               }
               {
                 canCreateDiscussion && <span title='拉取讨论组' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
@@ -276,7 +305,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       </div>
       <AddGroupMemberDialog
         dialogRef={addMemberDialogRef}
-        onSuccess={(value) => reloct(value)}
       />
       <GroupToolsDrawer
         visible={toolsDrawerVisible}

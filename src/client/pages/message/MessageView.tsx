@@ -78,6 +78,37 @@ const RIGHT_CLICK_MENU_LIST = [{
     text: '文件夹目录'
 }];
 
+const RIGHT_CLICK_MENU_LIST_2 = [{
+    id: 'revoke',
+    text: '撤回'
+},
+{
+    id: 'delete',
+    text: '删除'
+},
+
+{
+    id: 'reply',
+    text: '回复'
+}];
+
+const RIGHT_CLICK_MENU_LIST_3 = [{
+    id: 'revoke',
+    text: '撤回'
+},
+{
+    id: 'delete',
+    text: '删除'
+},
+{
+    id: 'transimit',
+    text: '转发'
+},
+{
+    id: 'reply',
+    text: '回复'
+}];
+
 
 
 
@@ -457,6 +488,8 @@ export const MessageView = (props: Props): JSX.Element => {
                     const isMessageSendFailed = message_status === 3 && message_is_from_self;
                     const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self && !isMessageSendFailed;
                     const seleted = seletedMessage.findIndex(i => getMessageId(i) === getMessageId(item)) > -1
+                    const elemType = message_elem_array?.[0]?.elem_type; // 取message array的第一个判断消息类型
+                    const isNotGroupSysAndGroupTipsMessage =  ![5,8].includes(elemType); // 5,8作为群系统消息 不需要多选转发
                     return (
                         <React.Fragment key={index}>
                             {

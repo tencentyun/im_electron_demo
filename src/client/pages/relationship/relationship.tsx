@@ -1,10 +1,20 @@
 import React, { useState } from "react";
+import { FriendApply } from "./friend-apply";
+import { FriendList } from "./friend-list";
 import { Group } from "./group";
 import { Organization } from '../organization/organization'
 import { Accouts } from './accouts'
 import "./relationship.scss";
 
 const navList = [
+  {
+    id: "buddy-list",
+    title: "好友列表",
+  },
+  {
+    id: "buddy-apply",
+    title: "好友申请",
+  },
   {
     id: "group",
     title: "我的群组",
