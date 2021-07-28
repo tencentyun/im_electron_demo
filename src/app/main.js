@@ -125,14 +125,14 @@ const createWindow = () => {
     mainWindow.webContents.openDevTools()
     app.setAppUserModelId("华润银行即时通讯（内测版）")
   })
-  //mainWindow.loadURL(`http://localhost:3000`);
-  mainWindow.loadURL(
-    url.format({
-      pathname: path.join(__dirname, "../../bundle/index.html"),
-      protocol: "file:",
-      slashes: true,
-    })
-  );
+  mainWindow.loadURL(`http://localhost:3000`);
+  // mainWindow.loadURL(
+  //   url.format({
+  //     pathname: path.join(__dirname, "../../bundle/index.html"),
+  //     protocol: "file:",
+  //     slashes: true,
+  //   })
+  // );
   // 通知消息
   mainWindow.on('show', function () {
     console.log('mainWindow show')

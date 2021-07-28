@@ -102,7 +102,7 @@ export const Message = (): JSX.Element => {
     
     useEffect(() => {
         getUsetStatus();
-    }, [conversationList.length, statusIndervel]);
+    }, [conversationList.length]);
 
     useEffect(() => {
         if (currentSelectedConversation?.conv_id) {

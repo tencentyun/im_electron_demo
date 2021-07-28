@@ -4,6 +4,7 @@ import { Form as FinalForm, Field } from "react-final-form";
 import { getStatus } from "../../../../utils/getStatus";
 import { GroupTypeSelect } from "./GroupTypeSelect";
 import  ImgCropper  from "../../../../components/UploadFace";
+let qunioc =  require('../../../../assets/icon/notification.png')
 
 import "./create-group-form.scss";
 
@@ -36,7 +37,7 @@ interface CreateGroupFormProps {
 
 export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
   const { onSubmit, onSuccess, onError, onClose } = props;
-  const [groupAvatarUrl, setGroupAvatarUrl] = useState('http://oaim.crbank.com.cn:30003/emoji/qunioc.png')
+  const [groupAvatarUrl, setGroupAvatarUrl] = useState(qunioc)
   // eslint-disable-next-line
   const _handlerSubmit = async (formValue: FormValue) => {
     try {
