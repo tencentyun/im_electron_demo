@@ -85,6 +85,7 @@ interface UserProfileItem {
 
 export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,onUpdateUserInfo }): JSX.Element => {
   const [isShow, setVisible] = useState(visible)
+  const [imgUrl, setImgUrl] = useState('')
 
   const close = () => {
     setVisible(false)
@@ -92,6 +93,7 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,on
   }
 
   function afterUpload(imgUrl) {
+    setImgUrl(imgUrl)
     console.log('imgUrl',imgUrl)
  }
 
@@ -114,7 +116,7 @@ console.log('userinfo',userInfo);
     console.log(11111)
     const formData: submitUserInfoData = {
       json_modify_self_user_profile_param: {
-        user_profile_item_face_url: values.faceUrl,
+        user_profile_item_face_url: imgUrl,
         user_profile_item_nick_name: values.nickName,
         user_profile_item_gender: +values.gender
       },
