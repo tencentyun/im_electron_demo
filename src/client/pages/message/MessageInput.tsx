@@ -15,7 +15,7 @@ import chooseImg from '../../assets/icon/choose.png'
 import { string } from 'prop-types';
 import axios from "axios";
 import { convertBase64UrlToBlob } from "../../utils/tools";
-import { SDKAPPID,TIM_BASE_URL } from '../../constants/index'
+import { SDKAPPID, TIM_BASE_URL } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
 
 let store = '1'
@@ -523,7 +523,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         const tip = index == '1' ? '按Ctrl+Enter键发送消息' : '按Enter键发送消息'
         setShotKeyTip(tip)
         setSendType(index)
-        ipcRenderer.send('CHANGESTORE', sendType)
+        ipcRenderer.send('CHANGESTORE', index)
         // console.log(localStorage.getItem('sendType'))
     }
     useEffect(() => {
