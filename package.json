@@ -9,7 +9,7 @@
     "build": "npm run build:react && set NODE_ENV=production && electron-builder -w",
     "build:react": "cd ./src/client && npm run build:react --target_platform=win32",
     "dev:electron": "set NODE_ENV=development && electron .",
-    "dev:react": "cd ./src/client && npm run dev:react"
+    "dev:react": "cd ./src/client && npm run dev:react "
   },
   "keywords": [],
   "author": {
@@ -59,7 +59,7 @@
     "node-gyp": "^7.1.2"
   },
   "dependencies": {
-    "im_electron_sdk": "^1.0.37",
+    "im_electron_sdk": "^1.0.36",
     "trtc-electron-sdk": "^8.6.102-beta.0"
   }
 }

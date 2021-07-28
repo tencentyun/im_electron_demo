@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require("webpack");
 const os = require('os');
 const targetPlatform = (function(){
  let target = os.platform();
@@ -79,7 +80,8 @@ module.exports = {
       chunks: ['call'],
       template: 'call.html',
       filename: 'call.html'
-    })
+    }),
+    // new webpack.ExternalsPlugin("commonjs", ["ffi-napi","trtc-electron-sdk","im_electron_sdk"])
   ],
   node: {
     global: true,
