@@ -99,7 +99,7 @@ module.exports = {
         secure: false,
         changeOrigin: true
       },
-      '/status': {
+      '/huarun': {
         //target: 'http://106.52.161.51:30006/',
         target: 'http://oaim.uat.crbank.com.cn:30002/',
         secure: false,
