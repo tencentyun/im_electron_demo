@@ -57,7 +57,8 @@ class IPC {
         this.win.minimize()
     }
     maxsizewin () {
-        this.win.maximize()
+        console.log(this.win.isMaximized(), '++++++++++++++++++++++++++++++++++')
+        this.win.isMaximized() ? this.win.unmaximize() : this.win.maximize()
     }
     close () {
         this.win.hide()
