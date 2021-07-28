@@ -44,7 +44,7 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
   // eslint-disable-next-line
   const _handlerSubmit = async (formValue: FormValue) => {
     console.log('formValue', formValue)
-    // formValue.groupFaceUrl = imgUrl
+    formValue.groupFaceUrl = imgUrl
     console.log('imgUrl', imgUrl)
     try {
       await onSubmit(formValue);
@@ -117,7 +117,7 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
       >
         上传头像
       </Button> */}
-      <ImgCropper {...input} isShowCropper={true} ></ImgCropper>
+      <ImgCropper {...input} isShowCropper={true} afterUpload={afterUpload}></ImgCropper>
                       {/* <Input
                         {...input}
                         placeholder="请输入群头像地址"
@@ -172,22 +172,6 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
           );
         }}
       </FinalForm>
-      {/* <Modal visible={visible} caption="对话框标题" onClose={close}>
-        <Modal.Body>
-          <Form>
-            <Form.Item label="头像(不裁剪)">
-              <ImgCropper isShowCropper={false} afterCropper={afterCropper} afterUpload={afterUpload} cropperFile={cropperFile} beforeUpload={beforeUpload}></ImgCropper>
-            </Form.Item>
-            <Form.Item label="头像">
-              <ImgCropper cropperOption={{ style: { width: '200px', height: '100px' } }} afterCropper={afterCropper} afterUpload={afterUpload} cropperFile={cropperFile} beforeUpload={beforeUpload}></ImgCropper>
-            </Form.Item>
-            <Form.Item label="默认头像">
-              <ImgCropper afterCropper={afterCropper} afterUpload={afterUpload} cropperFile={cropperFile} beforeUpload={beforeUpload}></ImgCropper>
-            </Form.Item>
-          </Form>
-
-        </Modal.Body>
-      </Modal> */}
     </>
   );
 };
