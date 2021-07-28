@@ -191,6 +191,15 @@ export const LoginContent = (): JSX.Element => {
         }
     }
 
+    const chkIt = (val: string) => {
+        if (val.length > 0 && !/^[A-Za-z0-9]+$/.test(val)) {
+            message.warning({content:'不能输入中文！'})
+            return
+        }
+        setUserID(val.toLocaleUpperCase())
+    }
+
+
     return (
         <div className="login--context">
             <h2 className="login--context__title">登陆IM</h2>
@@ -200,13 +209,13 @@ export const LoginContent = (): JSX.Element => {
                     <Input placeholder="请输入密码" className="login--input" />
                 </TabPanel>
                 <TabPanel id="passwordLogin">
-                    <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val)}} />
-                    <Input placeholder="请输入usersig"  value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />
+                    <Input placeholder="请输入userid" value={userID} className="login--input" onChange={chkIt} />
+                    <Input placeholder="请输入usersig" type="password"  value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />
                 </TabPanel>
             </Tabs>
-            <Checkbox display="block" value={false} className="login--auto">
+            {/* <Checkbox display="block" value={false} className="login--auto">
                 下次自动登录
-            </Checkbox>
+            </Checkbox> */}
             <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}> 登陆</Button>
         </div>
     )
