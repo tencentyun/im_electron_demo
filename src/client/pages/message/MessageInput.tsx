@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message } from 'tea-component';
-import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg } from './api'
+import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg, sendMsg } from './api'
 import { reciMessage, updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
@@ -51,6 +51,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ isRecordPopup, setRecordPopup ] = useState(false);
     const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
+    const [ filePathAndBase64Map, setFilePathAndBase64Map] = useState({});
+
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
     const videoPicker = React.useRef(null);
@@ -85,10 +87,72 @@ export const MessageInput = (props: Props): JSX.Element => {
             message.error({ content: `出错了: ${e.message}` })
         }
     }
+
+    const handleSendMsg = async () => {
+        try {
+            const text = editorState.toText();
+            const htmlText = editorState.toHTML();
+            const imgSrcList = getImageSrcList(htmlText);
+            const atList = getAtList(text);
+    
+            const messageElementArray = [];
+            const trimedText = text.trim();
+            if(trimedText.length) {
+                messageElementArray.push({
+                    elem_type: 0,
+                    text_elem_content: text,
+                });
+            }
+            if(imgSrcList?.length) {
+                messageElementArray.push( ...imgSrcList?.map(v => ({
+                    elem_type: 1,
+                    image_elem_orig_path: filePathAndBase64Map[v],
+                    image_elem_level: 0
+                })));
+            }
+
+            const { data: { code, json_params, desc } } = await sendMsg({
+                convId,
+                convType,
+                messageElementArray,
+                userId,
+                messageAtArray: atList
+            });
+
+            if (code === 0) {                
+                dispatch(reciMessage({
+                    convId,
+                    messages: [JSON.parse(json_params)]
+                }));
+            }
+            setEditorState(ContentUtils.clear(editorState));
+        } catch (e) {
+            message.error({ content: `出错了: ${e.message}` });
+        }
+        setFilePathAndBase64Map({});
+    }
+
     const getAtList = (text: string) => {
         const list = text.match(/@\w+/g);
         return list ? list.map(v => v.slice(1)) : []
     }
+
+    // 从html字符串中匹配出image标签src
+    const getImageSrcList =(text: string) => {
+        //匹配图片（g表示匹配所有结果i表示区分大小写）
+        var imgReg = /<img.*?(?:>|\/>)/gi;
+        //匹配src属性 
+        var srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
+        var arr = text.match(imgReg);// 匹配出所有的img标签
+        const srcList = arr?.map(v => {
+            const srcs = v.match(srcReg);
+            if(srcs) {
+                return srcs[1];
+            }
+        }) || [];
+       return srcList;
+    }
+
     const handleDropFile = (e) => {
         const file = e.dataTransfer?.files[0]
         const iterator = file.type.matchAll(/(\w+)\//g)
@@ -305,8 +369,27 @@ export const MessageInput = (props: Props): JSX.Element => {
         setActiveFeature("")
     }
 
-    const editorChange = (editorState) => {
-        setEditorState(editorState)
+    const editorChange = (newEditorState) => {
+        setEditorState(newEditorState)
+
+    }
+
+    const uploadFn = (params: {file:File, success: (value: any) => any}) => {
+        const {file} = params;
+        console.log('file', file);
+        if(file?.path?.length) {
+            var reader = new FileReader();
+            // 传入一个参数对象即可得到基于该参数对象的文本内容
+            reader.readAsDataURL(file);
+            reader.onload = function (e) {
+              const base64Value = e.target.result;
+              // target.result 该属性表示目标对象的DataURL
+              params.success({url: base64Value});
+              // @ts-ignore
+              setFilePathAndBase64Map(pre => ({...pre, [base64Value]: file.path}))
+            };
+        }
+        return true;
     }
 
     useEffect(() => {
@@ -345,14 +428,24 @@ export const MessageInput = (props: Props): JSX.Element => {
                     disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
-                    controls={[]}
+                    media={{items: [], uploadFn }} // 不知道为什么 如果不设置这个属性 会出现粘贴一次插入两个图片的问题
+                    controls={['media']}
                     ref={instance => editorInstance = instance}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     placeholder={placeHolderText}
+                    hooks={{
+                        'remove-medias': ({href, target}) => {
+                            console.log('remove-medias', href)
+                        },
+                        'insert-medias': ({href, target}) => {
+                            console.log('insert-medias', href)
+
+                        }
+                    }}
                 />
             </div>
             <div className="message-input__button-area">
-                <Button type="primary" onClick={handleSendTextMsg} disabled={editorState.toText() === ''}>发送</Button>
+                <Button type="primary" onClick={handleSendMsg} disabled={editorState.toText() === ''}>发送</Button>
             </div>
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
