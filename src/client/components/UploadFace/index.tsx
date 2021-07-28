@@ -51,6 +51,9 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   const [_val, setVal] = useState(value)
   let instance = null, fileObj = null
 
+  const userSig =localStorage.getItem('usersig')
+  const uid =localStorage.getItem('uid')
+
   const onSetImgUrl = async (file) => {
     if (prop.isShowCropper) {
       const url = await dataURLtoBlob(file)
@@ -126,13 +129,14 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   const handleUpload = (base64Data) => {
     return new Promise((resolve, reject) => {
       setUploading(true)
-      axios.post('/api/im_cos_msg/pre_sig', {
+      axios.post('/api/huarun/im_cos_msg/pre_sig', {
         sdkappid: SDKAPPID,
-        uid: "tetetetetetet",
+        uid: uid,
         file_type: 1,
         file_name: 'headUrl/' + fileObj.name,
         Duration: 900,
         'upload_method': 0,
+        userSig: userSig
       }).then(res => {
         if (res.data.error_code === 0) {
           console.log(res)
@@ -181,11 +185,11 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
 
   //用户选择文件 
   function handleBeforeUpload(file, fileList, isAccepted) {
-    const is2m = (file as File).size / 1024 / 1024 > 2
-    if (is2m) {
-      message.warning({ content: '图片不能大于2m' })
-      return false
-    }
+    // const is2m = (file as File).size / 1024 / 1024 > 2
+    // if (is2m) {
+    //   message.warning({ content: '图片不能大于2m' })
+    //   return false
+    // }
     fileObj = file
     setSelectFile(fileObj)
     onSetImgUrl(fileObj)
