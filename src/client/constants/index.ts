@@ -1,7 +1,6 @@
 //The link of setting contact us page.
 export const PURCHASE_LINK = 'https://buy.cloud.tencent.com/avc';
 export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service'
-
 // The config of login page
 
 // The config of login page xingchenhe 私有云测试专用，其他人请不要用这个，需要生成账号找xingchenhe

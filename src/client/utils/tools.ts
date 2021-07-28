@@ -38,10 +38,10 @@ const downloadFilesByUrl = (params) => {
         params
     })
 }
-const checkFileExist = (path) =>{
-    ipcRenderer.send(RENDERPROCESSCALL,{
-        type:CHECK_FILE_EXIST,
-        params:path
+const checkFileExist = (path) => {
+    ipcRenderer.send(RENDERPROCESSCALL, {
+        type: CHECK_FILE_EXIST,
+        params: path
     })
 }
 
@@ -86,7 +86,7 @@ const convertBase64UrlToBlob = (urlData) => {
     let bytes = window.atob(urlData.split(',')[1])
     let ab = new ArrayBuffer(bytes.length)
     let ia = new Uint8Array(ab)
-    for (let i = 0; i < bytes.length; i++) {
+    for (let i = 0;i < bytes.length;i++) {
         ia[i] = bytes.charCodeAt(i)
     }
     return new Blob([ab], { type: 'image/jpeg' })
@@ -97,10 +97,10 @@ const convertBase64UrlToBlob = (urlData) => {
  */
 const highlightText = (text, content, color = '#006eff') => {
     if (!text) {
-      return content
+        return content
     }
     if (!content || !content.includes(text)) {
-      return content
+        return content
     }
     return content.replaceAll(text, `<span style='color: ${color}'>${text}</span>`)
 }
