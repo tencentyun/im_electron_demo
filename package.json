@@ -43,7 +43,9 @@
         {
           "from": "node_modules/trtc-electron-sdk/build/Release/",
           "to": "./resources",
-          "filter": ["**/*"]
+          "filter": [
+            "**/*"
+          ]
         }
       ]
     }
@@ -57,7 +59,7 @@
     "node-gyp": "^7.1.2"
   },
   "dependencies": {
-    "im_electron_sdk": "^1.0.36",
+    "im_electron_sdk": "^1.0.37",
     "trtc-electron-sdk": "^8.6.102-beta.0"
   }
 }
