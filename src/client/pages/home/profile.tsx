@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_USERID } from "../../constants/index";
 import timRenderInstance from "../../utils/timRenderInstance";
 import { setUserInfo } from "../../store/actions/user";
 import { Avatar } from "../../components/avatar/avatar";
@@ -13,7 +12,7 @@ import "./profile.scss";
 export const Profile = (): JSX.Element => {
   const dispatch = useDispatch();
   const [userVisible, setUserVisible] = useState(false)
-  const [sdkAppid] = useState(DEFAULT_USERID);
+  const uId = localStorage.getItem('uid');
   // eslint-disable-next-line prefer-const
   let { faceUrl, nickName, userId, gender, role } = useSelector((state: State.RootState) => state.userInfo);
   const fillStyle = { width: "100%" };
@@ -24,7 +23,7 @@ export const Profile = (): JSX.Element => {
 
     const { data: { code, json_param } } = await timRenderInstance.TIMProfileGetUserProfileList({
       json_get_user_profile_list_param: {
-        friendship_getprofilelist_param_identifier_array: [sdkAppid]
+        friendship_getprofilelist_param_identifier_array: [uId]
       },
     });
 
@@ -58,7 +57,7 @@ export const Profile = (): JSX.Element => {
       data: { json_param },
     } = await timRenderInstance.TIMProfileGetUserProfileList({
       json_get_user_profile_list_param: {
-        friendship_getprofilelist_param_identifier_array: [sdkAppid],
+        friendship_getprofilelist_param_identifier_array: [uId],
       },
     });
     directToMsgPage({

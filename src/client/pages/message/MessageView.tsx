@@ -8,7 +8,7 @@ import {
     animation
 } from 'react-contexify';
 import './message-view.scss';
-import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, TextMsg, getMsgList } from './api';
+import { revokeMsg, deleteMsg, sendMsg, sendMergeMsg, TextMsg, getMsgList } from './api';
 import { markeMessageAsRevoke, deleteMessage, reciMessage, addMoreMessage } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import {
@@ -145,7 +145,7 @@ export const MessageView = (props: Props): JSX.Element => {
             return
         }
         try {
-            const userId = await getLoginUserID()
+            const userId = localStorage.getItem('uid')
             const emojiParams: custEmojiUpsertParams = {
                 uid: userId,
                 sticker_url,
@@ -191,7 +191,7 @@ export const MessageView = (props: Props): JSX.Element => {
     }
 
     const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
-        const userId = await getLoginUserID()
+        const userId = localStorage.getItem('uid')
         const isDivideSending = forwardType === ForwardType.divide
         const isCombineSending = !isDivideSending
         convItemGroup.forEach(async (convItem, k) => {
@@ -308,7 +308,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const handleOpenFile = (item) => {
         showDialog()
     }
-    const displayDiffMessage = (element) => {
+    const displayDiffMessage = (element, index) => {
         const { elem_type, ...res } = element;
         let resp
         switch (elem_type) {
@@ -479,7 +479,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                                 return (
                                                     <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                                         {
-                                                            displayDiffMessage(elment)
+                                                            displayDiffMessage(elment, index)
                                                         }
                                                     </div>
                                                 )
