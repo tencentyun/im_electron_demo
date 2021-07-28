@@ -8,15 +8,16 @@ export const TextElemItem = (props: any): JSX.Element => {
         // 格式化为只有img标签的字符串
         let texts = content?.text?.replace(/<img /g, 'xxxxx')
             .replace(/ >/g, 'YYYYY')
-            .replaceAll(/ /g, '&nbsp')
+            // .replaceAll(/ /g, '&nbsp')
             // .replace(/<\/?.+?\/?>/g, '')
-            .replaceAll(/\n/g, '<br/>')
+            // .replaceAll(/\n/g, '<br/>')
             .replace(/xxxxx/g, '<img ')
             .replace(/YYYYY/g, ' >')
 
         // 获取img标签内的url 并分隔文字与图片
         let imgs = texts.match(/<img [^>]*src=['"]([^'"]+)[^>]*>/g)
-        let textHtml = <span dangerouslySetInnerHTML={{ __html: texts }}></span>
+        // let textHtml = <span style={{whiteSpace: 'pre'}} dangerouslySetInnerHTML={{ __html: texts }}>{{texts}}</span>
+        let textHtml = <span style={{whiteSpace: 'pre'}}>{texts}</span>
 
         // 把img图片用预览组件代替
         if (imgs && imgs.length > 0) {
@@ -29,7 +30,8 @@ export const TextElemItem = (props: any): JSX.Element => {
             // console.warn('看看你们是什么',imgs,text,texts)
             textHtml = <>
                 {arrayLength.map((i, index) => {
-                    return <span key={index}>{text[index] ? <span dangerouslySetInnerHTML={{ __html: text[index] }}></span> : <></>}
+                    // return <span key={index}>{text[index] ? <span dangerouslySetInnerHTML={{ __html: text[index] }}></span> : <></>}
+                    return <span key={index}>{text[index] ? <span style={{whiteSpace: 'pre'}}>{text[index]}</span> : <></>}
                         {urls[index] ? <ImagePreview
                             previewSrc={urls[index]}
                             previewTitle="预览"
