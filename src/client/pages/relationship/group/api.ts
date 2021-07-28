@@ -67,10 +67,11 @@ export const createGroup = async (params: createGroupParams): Promise<any> => {
     params: createParams,
   });
 
-  console.log('data', data)
-  const { code, desc } = data;
+
+  const { code, desc, json_param } = data;
   if (code === 0) {
-    return {};
+    const result = JSON.parse(json_param);
+    return result;
   }
   throw new Error(desc);
 };
