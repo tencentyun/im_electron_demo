@@ -127,7 +127,9 @@ export const Message = (): JSX.Element => {
     }, [currentSelectedConversation] );
 
     const handleConvListClick = convInfo => {
-        // console.log(convInfo,'7777777777777777777777777777777777')
+        if(convInfo.conv_type == 1) {
+            getUsetStatus()
+        }
         dispatch(updateCurrentSelectedConversation(convInfo));
     }
 
@@ -192,7 +194,7 @@ export const Message = (): JSX.Element => {
         // 获取当前对话标列表好友状态
         // const sdkappid = "1400529075";
         // const uid = "YANGGUANG37";
-        const To_Account = ["denny1", "denny2"];
+        const To_Account = [];
         conversationList.forEach((i) => {
             if (i.conv_type === 1) {
                 To_Account.push(i.conv_id)
