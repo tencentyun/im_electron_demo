@@ -1,18 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const webpack = require("webpack");
-const os = require('os');
-const targetPlatform = (function(){
- let target = os.platform();
- for (let i=0; i<process.argv.length; i++) {
-     if (process.argv[i].includes('--target_platform=')) {
-         target = process.argv[i].replace('--target_platform=', '');
-         break;
-     }
- }
- if (!['win32', 'darwin'].includes) target = os.platform();
- return target;
-})();
+
 module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
@@ -21,18 +9,11 @@ module.exports = {
   entry: {
     main: './app.tsx',
     call: './call.tsx'
-  } ,
+  },
   target: 'electron-renderer',
   devtool: 'source-map',
   module: {
     rules: [
-    //   { 
-    //     test: /\.node$/, 
-    //     loader: 'native-ext-loader', 
-    //     options: { 
-    //         rewritePath: targetPlatform === 'win32' ? './resources' : '../Resources' 
-    //     } 
-    // },
       {
         test: /\.(js|ts)$/,
         exclude: /node_modules/,
@@ -85,20 +66,19 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-        chunks: ['main'],
-        template: 'index.html',
-        filename: 'index.html'
-      }),
+      chunks: ['main'],
+      template: 'index.html',
+      filename: 'index.html'
+    }),
     new HtmlWebpackPlugin({
       chunks: ['call'],
       template: 'call.html',
       filename: 'call.html'
     }),
-    // new webpack.ExternalsPlugin("commonjs", ["ffi-napi","trtc-electron-sdk","im_electron_sdk"])
   ],
   node: {
     global: true,
-      __dirname: true,
-      __filename: true
+    __dirname: true,
+    __filename: true
   }
 };
