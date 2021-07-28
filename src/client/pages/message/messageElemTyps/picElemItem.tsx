@@ -5,11 +5,22 @@ import Viewer from 'viewerjs'
 import 'viewerjs/dist/viewer.min.css'
 
 const ImagePreview = (prop) => {
-    const {children} = prop
+    const {children,url} = prop
   const [visible, setVisible] = React.useState(false);
-  const [imgUrl, setImgUrl] = React.useState([])
+    const [imgUrl, setImgUrl] = React.useState([{src:url}])
+    const showPic = () => {
+           console.log('111');
+        showDialog()
+    }
+    const dom  =  children ? children((imgUrlArr: any[]) => {
+              setImgUrl(imgUrlArr)
+              setVisible(true)
+    }) : null
     useEffect(() => {
-        if (imgUrl[0]) {
+       
+        
+        if (imgUrl[0] && imgUrl[0].src) {
+        
             const viewer = new Viewer(document.getElementById(imgUrl[0] && imgUrl[0].src), {
                 url: 'data-original',
                 toolbar: {
@@ -24,17 +35,43 @@ const ImagePreview = (prop) => {
                     rotateRight: 4,
                     flipHorizontal: 4,
                     flipVertical: 4,
-                }
+                },
+                viewed() {
+                    const dirBtn = document.querySelector('.viewer-toolbar .viewer-flip-dir')
+                         console.log('dirBtn1',dirBtn);
+                    if(dirBtn) return
+                   const viewerToolbar = document.querySelector('.viewer-toolbar')
+                    const li = document.createElement('li')
+                    const icon = document.createElement('i')
+                    icon.setAttribute('class','preview-btn')
+                    li.appendChild(icon)
+                    li.setAttribute('tabindex','0')
+                    li.setAttribute('role', 'button')
+                    li.setAttribute('class', 'viewer-flip-dir viewer-hide-md-down')
+                    viewerToolbar.addEventListener('click', (e) => {
+                        const classList = Array.from((e.target as HTMLElement).classList)
+                        if (classList.includes('viewer-flip-dir') || classList.includes('preview-btn')) {
+                            showPic()
+                        }
+                    },false)
+                    viewerToolbar.querySelector('ul').appendChild(li)
+                },
             }); 
         }
-    },[visible])
+        return () => {
+             const viewerToolbarUl = document.querySelector('.viewer-toolbar ul')
+            const dirBtn = document.querySelector('.viewer-toolbar .viewer-flip-dir')
+            console.log('dirBtn',dirBtn);
+            if (dirBtn) {
+            viewerToolbarUl.removeChild(dirBtn)
+                
+            }
+        }
+    }, [visible])
   return (
       <div>
           {
-          children && children((imgUrlArr:string[]) => {
-              setImgUrl(imgUrlArr)
-              setVisible(true)
-          })
+              dom
       }
     </div>
   );
@@ -58,7 +95,7 @@ export const PicElemItem = (props: any): JSX.Element => {
         const url = image_elem_thumb_url || image_elem_orig_url || image_elem_large_url
         return (
             <div className="message-view__item--text text right-menu-item">
-                <ImagePreview>
+                <ImagePreview url={url}>
                     {open=>  <img id={url} data-original={url} src={url} onClick={open.bind(this,[{src:url}])} style={{ maxWidth: 450 }}></img>}
                 </ImagePreview>
             </div>
