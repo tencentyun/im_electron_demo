@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { ipcRenderer } from "electron";
+import React, { useEffect } from "react";
+import { message } from 'tea-component';
 
 import { Avatar } from "../../components/avatar/avatar";
 import { getMsgList, markMessageAsRead, inviteMemberGroup } from "./api";
@@ -9,6 +9,7 @@ import { MessageView } from "./MessageView";
 import "./message-info.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "../../store/actions/message";
+import { updateCallingStatus } from "../../store/actions/ui";
 
 import {
   AddGroupMemberDialog,
@@ -16,6 +17,11 @@ import {
 } from '../../components/pull/pull'
 
 import { AddUserPopover } from "./AddUserPopover";
+<<<<<<< HEAD
+=======
+import { addTimeDivider } from "../../utils/addTimeDivider";
+import { openCallWindow, callWindowCloseListiner } from "../../utils/tools";
+>>>>>>> origin/main
 
 import { useDialogRef } from "../../utils/react-use/useDialog";
 import { addTimeDivider } from "../../utils/addTimeDivider";
@@ -54,6 +60,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   
   const { toolsTab, toolsDrawerVisible } = useSelector(
     (state: State.RootState) => state.groupDrawer
+  );
+
+  const { callingStatus: { callingId, callingType } } = useSelector(
+    (state: State.RootState) => state.ui
   );
 
   const msgList = historyMessageList.get(conv_id);
@@ -145,11 +155,41 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));
+<<<<<<< HEAD
 
   const handleOpenCallWindow = () => {
     ipcRenderer.send("openCallWindow");
   }
 
+=======
+  
+  const handleOpenCallWindow = (callType) => {
+    if(callingId) {
+      message.warning({content: '正在通话中'});
+      return;
+    }
+    
+    dispatch(updateCallingStatus({
+      callingId: conv_id,
+      callingType: conv_type
+    }));
+    openCallWindow({
+      callType
+    });
+  }
+
+  useEffect(() => {
+    callWindowCloseListiner(() => {
+      dispatch(updateCallingStatus({
+        callingId: '',
+        callingType: 0
+      }));
+    });
+  }, [])
+
+  const popupContainer = document.getElementById("messageInfo");
+
+>>>>>>> origin/main
   useEffect(() => {
     setMessageRead();
   }, [msgList]);
@@ -238,11 +278,16 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
               }
             </div>
             <div>
+<<<<<<< HEAD
               {/* {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>} */}
               {
                 canInviteMember && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
               }
               <span className="message-info-view__header--video" onClick={handleOpenCallWindow} />
+=======
+              {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
+              <span className={`message-info-view__header--video ${callingId === conv_id ? 'is-calling' : ''}`} onClick={() => handleOpenCallWindow('videoCall')} />
+>>>>>>> origin/main
             </div>
           </header>
           <section className="message-info-view__content">
@@ -257,8 +302,12 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 convId={conv_id}
                 convType={conv_type}
                 isShutUpAll={isShutUpAll}
+<<<<<<< HEAD
                 editorState={editorState}
                 setEditorState={setEditorState}
+=======
+                handleOpenCallWindow={handleOpenCallWindow}
+>>>>>>> origin/main
               />
             </div>
           </section>

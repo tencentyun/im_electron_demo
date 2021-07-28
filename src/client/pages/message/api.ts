@@ -477,11 +477,9 @@ export const getGroupMemberInfoList = async (params: {
 }): Promise<any> => {
   const { groupId } = params;
   const res = await getGroupMemberList({ groupId });
-  console.log("getGroupMemberList", res);
   const { group_get_memeber_info_list_result_info_array: memberList } = res;
   const userIdList = memberList.map((v) => v.group_member_info_identifier);
   const result = await getUserInfoList(userIdList);
-  console.log("getUserInfoList", result);
   const userList = result.map((v) => {
     const member =
       memberList.find(

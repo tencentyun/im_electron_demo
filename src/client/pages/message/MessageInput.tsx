@@ -6,6 +6,7 @@ import { reciMessage, updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup, CUSTEMOJI } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
+import { Menu } from '../../components/menu';
 import BraftEditor, { EditorState } from 'braft-editor'
 import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
@@ -17,6 +18,7 @@ import axios from "axios";
 import { convertBase64UrlToBlob } from "../../utils/tools";
 import { SDKAPPID } from '../../config/config'
 import { setPathToLS } from '../../utils/messageUtils';
+import { sendCustomMsg } from '../message/api'
 
 let store = '1'
 
@@ -26,6 +28,7 @@ type Props = {
     isShutUpAll: boolean,
     editorState,
     setEditorState
+    handleOpenCallWindow: (callType: string) => void;
 }
 
 const FEATURE_LIST_GROUP = [{
@@ -74,7 +77,7 @@ const FEATURE_LIST = {
 }
 
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType, isShutUpAll, editorState, setEditorState } = props;
+    const { convId, convType, isShutUpAll, editorState, setEditorState, handleOpenCallWindow } = props;
     const [isDraging, setDraging] = useState(false);
     const [activeFeature, setActiveFeature] = useState('');
     const [atPopup, setAtPopup] = useState(false);
@@ -82,6 +85,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [isRecordPopup, setRecordPopup] = useState(false);
     const [shotKeyTip, setShotKeyTip] = useState('按Enter键发送消息');
     const [isTextNullEmpty, setIsTextNullEmpty] = useState(true);
+    // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
+    const [ shouldShowCallMenu, setShowCallMenu] = useState(false);
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -348,8 +353,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         // resetState()
         setEmojiPopup(true)
     }
-    const handleSendPhoneMessage = () => {
-
+    const handleSendPhoneMessage = ()=> {
+        setShowCallMenu(true);
     }
     const handleFeatureClick = (featureId) => {
         switch (featureId) {
@@ -468,6 +473,11 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
 
+    const handleCallMenuClick = (item) => {
+        if(item) handleOpenCallWindow(item.id);
+        setShowCallMenu(false);
+    };
+
     const resetState = () => {
         setAtPopup(false)
         setEmojiPopup(false)
@@ -562,6 +572,9 @@ export const MessageInput = (props: Props): JSX.Element => {
             <div className="message-input__feature-area">
                 {
                     isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
+                }
+                {
+                    shouldShowCallMenu && <Menu options={[{text: '语音通话', id: 'voiceCall' }, {text: '视频通话', id: 'videoCall' }]} onSelect={handleCallMenuClick}/>
                 }
                 {
 
