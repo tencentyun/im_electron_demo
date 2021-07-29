@@ -94,9 +94,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       }
       try {
         const { message_msg_id } = validatelastMessage(msgList) || {};
-        if (!message_msg_id) {
-          return;
-        }
         const { code, ...res } = await markMessageAsRead(
           conv_id,
           conv_type,

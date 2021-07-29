@@ -5,7 +5,12 @@ export const CustomElem = (props: any): JSX.Element => {
 
   const item = (props) => {
     const { custom_elem_data } = props;
-    const data = JSON.parse(custom_elem_data);
+    let data = custom_elem_data;
+    try {
+     data =  JSON.parse(custom_elem_data)
+    }catch(err){
+
+    }
     switch (data.businessID) {
       case "group_create":
         return (

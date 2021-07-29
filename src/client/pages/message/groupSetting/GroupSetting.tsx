@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { LoadingContainer } from "../../../components/loadingContainer";
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
-import { getGroupInfoList, getGroupMemberInfoList } from "../api";
+import { getGroupMemberList } from "../api";
 import { Divider } from "./Divider";
 import { GroupAccountecment } from "./GroupAccountecment";
 import { GroupAllMute } from "./groupAllMute";
@@ -23,21 +23,18 @@ export const GroupSetting = (props: {
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
-  console.log('userId', userId)
-
+  // 当前用户的群配置
   const { value, loading, retry } = useAsyncRetryFunc(async () => {
-   
-    return await getGroupMemberInfoList({
-      groupId,
-    })
-  }, [groupId]);
+      return await getGroupMemberList({
+        groupId,
+        userIds: userId.length ?  [userId] : [],
+        nextSeq: 0,
+      })
+  }, []);
 
-  const memberList = value|| [];
+  const memberList = value?.group_get_memeber_info_list_result_info_array || [];
 
-  console.log("groupDetail", groupDetail);
-
-  const currentUserSetting =
-    memberList.find((v) => v.user_profile_identifier === userId) || {};
+  const currentUserSetting: any = memberList?.[0] || {};
 
   console.log("currentUserSetting", currentUserSetting);
 
@@ -69,7 +66,6 @@ export const GroupSetting = (props: {
       />
       <Divider />
       <GroupMember
-        userList={memberList}
         onRefresh={retry}
         userId={userId}
         groupId={groupDetail.group_detial_info_group_id}

@@ -82,6 +82,7 @@ type MemberInfo = {
   group_get_memeber_info_list_result_info_array: {
     group_member_info_identifier: string;
   }[];
+  group_get_memeber_info_list_result_next_seq: number;
 };
 
 type CancelSendMsgParams = {
@@ -442,38 +443,54 @@ export const searchFriends = async (params: {
 
 export const getGroupMemberList = async (params: {
   groupId: string;
+  nextSeq: number;
+  userIds?: string[];
 }): Promise<MemberInfo> => {
-  const { groupId } = params;
+  const { groupId, userIds, nextSeq } = params;
+  const queryParams: any = {
+    group_get_members_info_list_param_group_id: groupId,
+    group_get_members_info_list_param_next_seq: nextSeq
+  };
+  
+  if(userIds && userIds?.length) {
+    queryParams.group_get_members_info_list_param_identifier_array =  userIds;
+  }
   const { data } = await timRenderInstance.TIMGroupGetMemberInfoList({
-    params: {
-      group_get_members_info_list_param_group_id: groupId,
-    },
+    params: queryParams,
   });
   const { code, json_param } = data;
   if (code === 0) {
     const result = JSON.parse(json_param);
     return result;
   }
-  return [] as any;
+  return {} as any;
 };
 
 export const getGroupMemberInfoList = async (params: {
   groupId: string;
+  nextSeq: number;
+  userIds?: string[];
 }): Promise<any> => {
-  const { groupId } = params;
-  const res = await getGroupMemberList({ groupId });
-  const { group_get_memeber_info_list_result_info_array: memberList } = res;
-  const userIdList = memberList.map((v) => v.group_member_info_identifier);
-  const result = await getUserInfoList(userIdList);
-  const userList = result.map((v) => {
-    const member =
-      memberList.find(
-        (item) =>
-          item.group_member_info_identifier === v.user_profile_identifier
-      ) || {};
-    return { ...v, ...member };
-  });
-  return userList;
+  try{
+    const { groupId, nextSeq, userIds } = params;
+    const res = await getGroupMemberList({ groupId, nextSeq, userIds });
+    const { group_get_memeber_info_list_result_info_array: memberList, group_get_memeber_info_list_result_next_seq: seq } = res;
+    const userIdList = memberList?.map((v) => v.group_member_info_identifier) || [];
+    if(userIdList.length) {
+      const result = await getUserInfoList(userIdList);
+      const userList = result.map((v) => {
+        const member =
+          memberList.find(
+            (item) =>
+              item.group_member_info_identifier === v.user_profile_identifier
+          ) || {};
+        return { ...v, ...member };
+      });
+      return {userList, nextSeq: seq};
+    }
+  }catch(e) {
+    console.log(e);
+  }
 };
 
 const modifyFlagMap = {

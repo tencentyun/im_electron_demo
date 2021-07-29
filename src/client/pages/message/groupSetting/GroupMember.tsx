@@ -14,14 +14,10 @@ import {
   DeleteGroupMemberDialog,
   DeleteMemberRecordsType,
 } from "./DeleteGroupMember";
+import { getGroupMemberList } from "../api";
+import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
 
 export const GroupMember = (props: {
-  userList: {
-    user_profile_face_url: string;
-    user_profile_nick_name: string;
-    group_member_info_member_role: number;
-    user_profile_identifier: string;
-  }[];
   onRefresh: () => Promise<any>;
   userIdentity: number;
   userId: string;
@@ -30,14 +26,20 @@ export const GroupMember = (props: {
   groupAddOption: number;
 }): JSX.Element => {
   const {
-    userList,
     groupId,
     groupType,
-    groupAddOption,
-    userId,
     userIdentity,
-    onRefresh,
   } = props;
+
+  // 获取群成员列表
+  const { value, loading, retry } = useAsyncRetryFunc(async () => {
+      return await getGroupMemberList({
+        groupId,
+        nextSeq: 0,
+      })
+  }, []);
+
+  const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
 
   const popupContainer = document.getElementById("messageInfo");
 
@@ -73,7 +75,7 @@ export const GroupMember = (props: {
           {userList.length ? (
             <span
               className="group-member--title__right"
-              onClick={() => dialogRef.current.open({ memberList: userList })}
+              onClick={() => dialogRef.current.open({ groupId })}
             >
               <span style={{ marginRight: "4px" }}>{userList.length}人</span>
               <a>查看</a>
@@ -85,10 +87,10 @@ export const GroupMember = (props: {
         <div className="group-member--avatar">
           {userList?.slice(0, 15)?.map((v, index) => (
             <Avatar
-              key={`${v.user_profile_face_url}-${index}`}
-              url={v.user_profile_face_url}
-              nickName={v.user_profile_nick_name}
-              userID={v.user_profile_identifier}
+              key={`${v.group_member_info_face_url}-${index}`}
+              url={v.group_member_info_face_url}
+              nickName={v.group_member_info_nick_name}
+              userID={v.group_member_info_identifier}
             />
           ))}
           {canInviteMember && (
@@ -119,11 +121,11 @@ export const GroupMember = (props: {
       />
       <DeleteGroupMemberDialog
         dialogRef={deleteMemberDialogRef}
-        onSuccess={() => onRefresh()}
+        onSuccess={() => retry()}
       />
       <AddGroupMemberDialog
         dialogRef={addMemberDialogRef}
-        onSuccess={() => onRefresh()}
+        onSuccess={() => retry()}
       />
     </>
   );
