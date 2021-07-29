@@ -24,7 +24,6 @@ export interface createGroupParams {
 }
 
 export const getJoinedGroupList = async (): Promise<GroupList> => {
-  console.log("getJoinedGroupList");
   const { data } = await timRenderInstance.TIMGroupGetJoinedGroupList();
   const { code, json_param } = data;
   if (code === 0) return JSON.parse(json_param);

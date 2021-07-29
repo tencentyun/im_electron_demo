@@ -12,11 +12,8 @@ import {
   DeleteMemberRecordsType,
 } from "./DeleteGroupMember";
 import { getUserTypeQuery } from "../../../services/userType";
-
-import {
-  AddGroupMemberDialog,
-  AddMemberRecordsType
-}from '../../../components/pull/pull'
+import { AddMemberRecordsType, 
+  AddGroupMemberDialog } from '../../../components/pull/pull'
 
 import { GroupMemberBubble } from "./GroupMemberBubble";
 import { getLoginUserID } from '../api';

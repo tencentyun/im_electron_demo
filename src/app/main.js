@@ -37,6 +37,10 @@ const setAppTray = () => {
   ]
 
   // 系统托盘图标目录
+
+  // trayIcon.setTemplateImage(true)
+  // trayIcon.setSize(30, 30)
+
   appTray = new Tray(trayIcon)
 
   // 图标的上下文菜单
@@ -293,6 +297,8 @@ function reSizeWindow () {
   }
 }
 function trayFlash () {
+
+
   if (appTray) {
     hasFlash = true;
 
