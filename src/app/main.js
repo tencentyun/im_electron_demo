@@ -1,6 +1,6 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu, ipcMain, Tray, nativeImage, globalShortcut, ipcRenderer, clipboard, shell, dialog } = require('electron')
-const { autoUpdater } = require('electron-updater')
+//const { autoUpdater } = require('electron-updater')
 const feedUrl = `http://localhost/`;
 const TimMain = require('im_electron_sdk/dist/main');
 const url = require('url')
@@ -209,7 +209,7 @@ function createWindow () {
     //执行自动更新检查
     autoUpdater.checkForUpdates();
   };
-  setTimeout(checkForUpdates, 1000)
+  //setTimeout(checkForUpdates, 1000)
   ipcMain.on('CHANGESTORE', function (event, data) {
     console.log(data)
     store.set('sendType', data)
