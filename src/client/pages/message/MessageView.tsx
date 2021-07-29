@@ -38,7 +38,7 @@ import { showDialog } from "../../utils/tools";
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
 import { GroupSysElm } from './messageElemTyps/groupSystemElem';
-import ImagePreview from '../../components/ImgViewer'
+import ImgViewer from '../../components/ImgViewer'
 import { setCurrentReplyUser } from '../../store/actions/message'
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
@@ -446,41 +446,58 @@ export const MessageView = (props: Props): JSX.Element => {
             item.message_elem_array[0].elem_type === 0 &&
             item.message_elem_array[0].text_elem_content.indexOf('<img src=') === -1)
     }
-    const handleImgMsgClick = (item,messageList) => {
-        const imgsUrl = []
-                const {image_elem_thumb_url:url1 , image_elem_orig_url:url2 , image_elem_large_url:url3 } = item
-        const currentUrl = url1 || url2 || url3
+    const handleImgMsgClick = (currentMsgItem, messageList) => {
+        console.log('messageList', messageList);
+        console.log('item',currentMsgItem);
+        let imgsUrl = []
+                const {image_elem_thumb_url:url1 , image_elem_orig_url:url2 , image_elem_large_url:url3 } = currentMsgItem
+        let currentUrl = url1 || url2 || url3
         const txtAndImgStr = []
         messageList.map(msgItem => {
-
             const { message_elem_array } = msgItem
-            
             message_elem_array && message_elem_array.map((elem,index) => {
                 const {elem_type,image_elem_thumb_url , image_elem_orig_url , image_elem_large_url,custom_elem_data,custom_elem_desc,text_elem_content} = elem
                 if (elem_type === 1) {
                     const url = image_elem_thumb_url || image_elem_orig_url || image_elem_large_url
-                    imgsUrl.push(url)
+                    url && imgsUrl.push(url)
                 } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
                 // 自定义表情
-                    imgsUrl.push(custom_elem_desc)
+                  custom_elem_desc && imgsUrl.push(custom_elem_desc)
                 }else if(elem_type === 0){
                     // 图文消息
-                    txtAndImgStr.push({content:text_elem_content})
+                    txtAndImgStr.push({ content: text_elem_content })
                 }
             })
 
         })
-        imgsUrl.push([...matchUrl(txtAndImgStr),...imgsUrl])
-        setImgPreViewUrlIndex(imgsUrl.findIndex(url=>url === currentUrl))
-        setShow(true)
-        setImgPreViewUrl(imgsUrl)
+        const { elem_type,text_elem_content } = currentMsgItem
+        if (elem_type === 0) {
+               const res = matchUrl([{ content: text_elem_content }])
+                    if (res.length) {
+                        currentUrl = res[0]
+                    }else{
+                         currentUrl = ''
+                    }
+        }
+       
+        imgsUrl = imgsUrl.filter(item=>item).concat(matchUrl(txtAndImgStr))
+        console.log('imgsUrl', imgsUrl);
+        console.log('currentUrl',currentUrl);
+        let currentPreviewImgIndex = -1
+       currentPreviewImgIndex =  imgsUrl.findIndex(url =>url === currentUrl )
+        if (currentPreviewImgIndex > -1) {
+            setImgPreViewUrlIndex(currentPreviewImgIndex)
+             setShow(true)
+            setImgPreViewUrl(imgsUrl)
+        }
+       
     }
     const handleClose = ()=>{
          setShow(false)
     }
     return (
         <div className="message-view" ref={messageViewRef}>
-            <ImagePreview show={show} onClose={handleClose} url={imgPreViewUrl} index={imgPreViewUrlIndex}></ImagePreview>
+            <ImgViewer show={show} onClose={handleClose} url={imgPreViewUrl} index={imgPreViewUrlIndex}></ImgViewer>
 
             {
                 messageList && messageList.length > 0 &&
