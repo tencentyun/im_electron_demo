@@ -9,9 +9,10 @@ import {
 import {filterGetDepartment} from '../../../utils/orgin'
 
 interface TreeDynamic {
-    callback: Function,
-    personnel?:Function,
-    selectable?: boolean,
+    callback: Function
+    personnel?:Function
+    selectable?: boolean
+    searchList?:Array<string>
     selectIdsProp?:Array<string>
 }
 
@@ -40,12 +41,12 @@ interface DataNode {
                         }else{
                             child[childrenNode][i].isLeaf = false
                         }
+                        child[childrenNode][i].disableCheckbox = true  
                         child[childrenNode][i].DEPT_NAME = child[childrenNode][i][labelNode] == "" ? "" : child[childrenNode][i][labelNode].match(/[^\/]+/)[0]
                         child[childrenNode][i].key = 'BM' + child[childrenNode][i].DepId
                         child[childrenNode][i].title = child[childrenNode][i][labelNode] == "" ? "" : child[childrenNode][i][labelNode].match(/[^\/]+/)[0]
                         child[childrenNode][i].icon = <UsergroupAddOutlined />
                         child.children.push(child[childrenNode][i])
-                        
                 }  
             }
             if(Array.isArray(child[itemChildren]) && child[itemChildren].length > 0){
@@ -82,11 +83,20 @@ function getNode(nodes, id) {
 }
 
 
-export const TreeDynamicExample: FC<TreeDynamic> = ({selectable =  false,callback,personnel,selectIdsProp = []}): JSX.Element => {
+let  personalList = []
+
+export const TreeDynamicExample: FC<TreeDynamic> = ({selectable =  false,callback,personnel,selectIdsProp = [],searchList= []}): JSX.Element => {
     const [selectIds, setSelectIds] = useState([]);
+    
     useEffect(() => {
         if(selectable) {
             setSelectIds(selectIdsProp) 
+            if(selectIdsProp.length >= personalList.length){
+                //添加
+                personalList.push({Uid:"---",stance:true})
+            }else{
+                //删除
+            }
         }
     },[selectIdsProp])
 
@@ -94,7 +104,6 @@ export const TreeDynamicExample: FC<TreeDynamic> = ({selectable =  false,callbac
 
     const { section } = useSelector((state: State.RootState) => state.section);
     const [treeData, setTreeData] = useState(section ? section : JSON.parse(window.localStorage.getItem('section')));
-   
     const activeNode = (value: Array<any>,node :any)=>{
        callback(node)
     //    setSelectIds(value);
@@ -105,15 +114,31 @@ export const TreeDynamicExample: FC<TreeDynamic> = ({selectable =  false,callbac
     }
 
     const personal = (value: any,id :string | number)=>{
-        let selectId = Array.from(new Set(selectIds.concat(value)))
-        setSelectIds(selectId);
-        let personalList = []
-        selectId.forEach(item => {
-            personalList.push(getNode(treeData, item) ? getNode(treeData, item) : {Uid:"---",stance:true})
-        })
-        personnel && personnel(filterStaff(personalList))  
+            setSelectIds(selectIdsFormat(value));
+            let reacrInfor = selectIdsFormat(value)
+            console.log("删除人员",reacrInfor)
+            let selectId = Array.from(new Set(reacrInfor.concat(value)))
+            console.log("删除人员2",selectId)
+            personalList = []
+            selectId.forEach(item => {
+                personalList.push(getNode(treeData, item) ? getNode(treeData, item) : {Uid:"---",stance:true})
+            })
+            console.log("删除原始数据", personalList)
+            console.log("筛选之后", filterStaff(personalList))
+            personnel && personnel(filterStaff(personalList))    
     }
     
+    const selectIdsFormat = (arrayList : Array<string>) => {
+          let SarrayList  =  personalList.filter( item => !item.stance)
+          let selectIdsProp = searchList.map(item => item.Uid)
+          if(arrayList.length == 0){
+              return  selectIdsProp.filter(item =>  SarrayList.map(items => items.Uid).indexOf(item) === -1)
+          }else  if(arrayList.length >= SarrayList.length){
+              return  Array.from(new Set(selectIdsProp.concat(arrayList)))
+          }else{
+              return    selectIdsProp.filter(function (val) { return SarrayList.map(item => item.Uid).filter(function (val) { return arrayList.indexOf(val) === -1 }).indexOf(val) === -1 })
+          }
+    }
 
     function updateTreeData(list: DataNode[], key: React.Key, children: DataNode[]): DataNode[] {
         return list.map(node => {
@@ -161,7 +186,8 @@ export const TreeDynamicExample: FC<TreeDynamic> = ({selectable =  false,callbac
             <Tree 
                 showIcon
                 checkable={selectable}
-                loadData={onLoadData} 
+                loadData={onLoadData}
+                defaultExpandAll
                 treeData={treeData} 
                 checkedKeys={selectIds}
                 onCheck={(selectedKeys,selectedNodes)=>{

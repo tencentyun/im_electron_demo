@@ -6,6 +6,7 @@ import { reciMessage, updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup, CUSTEMOJI } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
+import { Menu } from '../../components/menu';
 import BraftEditor, { EditorState } from 'braft-editor'
 import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
@@ -18,6 +19,7 @@ import { convertBase64UrlToBlob } from "../../utils/tools";
 import { SDKAPPID, TIM_BASE_URL } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
 import { judgeFileSize } from '../../utils/messageUtils';
+import { sendCustomMsg } from '../message/api'
 
 let store = '1'
 
@@ -27,6 +29,7 @@ type Props = {
     isShutUpAll: boolean,
     editorState,
     setEditorState
+    handleOpenCallWindow: (callType: string) => void;
 }
 
 const FEATURE_LIST_GROUP = [{
@@ -81,7 +84,7 @@ const FEATURE_LIST = {
 }
 
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType, isShutUpAll, editorState, setEditorState } = props;
+    const { convId, convType, isShutUpAll, editorState, setEditorState, handleOpenCallWindow } = props;
     const [isDraging, setDraging] = useState(false);
     const [activeFeature, setActiveFeature] = useState('');
     const [atPopup, setAtPopup] = useState(false);
@@ -89,6 +92,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [isRecordPopup, setRecordPopup] = useState(false);
     const [shotKeyTip, setShotKeyTip] = useState('按Enter键发送消息');
     const [isTextNullEmpty, setIsTextNullEmpty] = useState(true);
+    // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
+    const [ shouldShowCallMenu, setShowCallMenu] = useState(false);
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -368,8 +373,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         // resetState()
         setEmojiPopup(true)
     }
-    const handleSendPhoneMessage = () => {
-
+    const handleSendPhoneMessage = ()=> {
+        setShowCallMenu(true);
     }
     const handleFeatureClick = (featureId) => {
         switch (featureId) {
@@ -419,7 +424,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
                 handleSendTextMsg();
-            } else if (e.key === "@" && convType === 2) {
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
             }
@@ -430,7 +435,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 handleSendTextMsg();
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 // console.log('换行', '----------------------', editorState)
-            } else if (e.key === "@" && convType === 2) {
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
             }
@@ -490,6 +495,11 @@ export const MessageInput = (props: Props): JSX.Element => {
             console.log(path)
         }
     }
+
+    const handleCallMenuClick = (item) => {
+        if(item) handleOpenCallWindow(item.id);
+        setShowCallMenu(false);
+    };
 
     const resetState = () => {
         setAtPopup(false)
@@ -590,6 +600,9 @@ export const MessageInput = (props: Props): JSX.Element => {
             <div className="message-input__feature-area">
                 {
                     isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
+                }
+                {
+                    shouldShowCallMenu && <Menu options={[{text: '语音通话', id: 'voiceCall' }, {text: '视频通话', id: 'videoCall' }]} onSelect={handleCallMenuClick}/>
                 }
                 {
 

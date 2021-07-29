@@ -155,7 +155,7 @@ export const Message = (): JSX.Element => {
             '10': '[关系]',
             '11': '[资料]',
             '12': '[合并消息]',
-        }[firstMsg.elem_type];
+        }[firstMsg?.elem_type];
         const hasAtMessage = conv_group_at_info_array && conv_group_at_info_array.length;
         const atDisPlayMessage = hasAtMessage && conv_group_at_info_array.pop().conv_group_at_info_at_type === 1 ? "@我" : "@所有人"
         const isRead = message_is_from_self && message_is_peer_read || !message_is_from_self && message_is_read

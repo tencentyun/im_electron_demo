@@ -40,7 +40,7 @@ export const GroupOperator = (props: {
   const isOwner = groupOwner === userId;
 
   // 是群主并且非私有群可以解散
-  const canDeleteGroup = groupOwner === userId && groupType !== 1;
+  const canDeleteGroup = groupOwner === userId;
   // 私有群全员可退出群聊 其他群只有非群主可以退出
   const canQuitGroup = isOwner === true || groupType === undefined ? false : groupType === 1 || !isOwner
   // 只有群主可以进行群转让 直播群不可以转让
