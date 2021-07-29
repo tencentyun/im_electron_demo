@@ -31,6 +31,7 @@ type Info = {
   faceUrl: string;
   nickName: string;
 };
+import ImgViewer from '../../components/ImgViewer';
 
 export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const { conv_id, conv_type, conv_profile } = props;
