@@ -59,7 +59,7 @@ export const PicElemItem = (props: any): JSX.Element => {
         return (
             <div className="message-view__item--text text right-menu-item">
                 <ImagePreview>
-                    {open=>  <img id={url} data-original={url} src={url} onClick={open.bind(this,[{src:url}])} style={{ maxWidth: 450 }}></img>}
+                    {open=>  <img id={url} data-original={url} src={url} onClick={open.bind(this,[{src:url}])} style={{ maxWidth: 178 }}></img>}
                 </ImagePreview>
             </div>
         )

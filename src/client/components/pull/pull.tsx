@@ -3,12 +3,12 @@ import { Button, Icon, message, Modal } from "tea-component";
 import { TreeDynamicExample } from '../../pages/organization/tree/tree'
 import { Search } from '../../pages/organization/search/search';
 import React, { FC, useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Avatar } from "../../components/avatar/avatar";
 import { inviteMemberGroup } from "../../pages/message/api";
 import { createGroup, createGroupParams, getJoinedGroupList } from '../../pages/relationship/group/api'
 import { useMessageDirect } from "../../utils/react-use/useDirectMsgPage";
-const qunioc =  require('../../assets/icon/qunioc.png')
+import qunioc from '../../assets/icon/qunioc.png'
 
 import './pull.scss';
 
@@ -122,8 +122,10 @@ export const AddGroupMemberDialog = (props: {
       }
       const { json_param } = await createGroup(params);
       const resultGroupId = JSON.parse(json_param)?.create_group_result_groupid
-      showGroupbyId(resultGroupId)
       onClose();
+      setTimeout(() => {
+        showGroupbyId(resultGroupId)
+      }, 300)
     } catch(e) {
       message.error({ content: '创建失败' + e })
     }
@@ -134,10 +136,12 @@ export const AddGroupMemberDialog = (props: {
       const groupList = await getJoinedGroupList()
       if (groupList) {
         const profile = groupList.find(item => item.group_base_info_group_id === groupId)
-        directToMsgPage({
-          convType: 2,
-          profile: profile as any,
-        });
+        if (profile) {
+          directToMsgPage({
+            convType: 2,
+            profile: profile as any,
+          });
+        }
       }
     } catch(e) {
       console.log('显示刚创建的讨论组失败', e)
