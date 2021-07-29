@@ -123,9 +123,11 @@ export const AddGroupMemberDialog = (props: {
             content: "该成员已在待添加列表！",
         })
     }else{
+        refData.search = true
         selectedList.push(refData)
         setSelectedList(JSON.parse(JSON.stringify(selectedList)))
         setSearchList(JSON.parse(JSON.stringify(selectedList)))
+        console.log(JSON.parse(JSON.stringify(selectedList)))
         const listmap = selectedList.map(item => item.Uid)
         setSelectIdsProp(listmap)
     }
@@ -141,7 +143,8 @@ export const AddGroupMemberDialog = (props: {
  const  callbackPersonnel = (refData: any)=> {
     console.log("人员列表",refData)
     //填充人员
-    for (const iterator of searchList) {
+    let filterSearch = searchList.filter(item => item.search)
+    for (const iterator of filterSearch) {
             for (let i= 0; i<refData.length; i++) {
                 if(refData[i].stance){
                     refData[i] = iterator
@@ -170,7 +173,7 @@ export const AddGroupMemberDialog = (props: {
         <div className="forward-popup__search-list">
           <div className="forward-popup__search-list__list customize-scroll-style">
                 <Search handleCallback= {searchStaff}></Search>
-                <TreeDynamicExample  selectIdsProp={selectIdsProp}  personnel={callbackPersonnel} selectable={ true } callback={refreshData}></TreeDynamicExample>    
+                <TreeDynamicExample  selectIdsProp={selectIdsProp} searchList={selectedList} personnel={callbackPersonnel} selectable={ true } callback={refreshData}></TreeDynamicExample>    
           </div>
         </div>
         <div className="forward-popup__seleted-list customize-scroll-style">
