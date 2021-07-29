@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { LoadingContainer } from "../../../components/loadingContainer";
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
-import { getGroupInfoList, getGroupMemberInfoList } from "../api";
+import { getGroupMemberInfoList } from "../api";
 import { Divider } from "./Divider";
 import { GroupAccountecment } from "./GroupAccountecment";
 import { GroupAllMute } from "./groupAllMute";
@@ -33,12 +33,20 @@ export const GroupSetting = (props: {
     })
   }, [groupId]);
 
-  const memberList = value|| [];
+  const memberList = value || [];
+
+  // 群主置顶
+  if (memberList?.length > 1) {
+    const index = memberList?.findIndex(item => item?.group_member_info_member_role === 3)
+    const groupOwner = memberList?.find(item => item?.group_member_info_member_role === 3)
+    memberList.splice(index, 1)
+    memberList.unshift(groupOwner)
+  }
+  console.log(memberList)
 
   console.log("groupDetail", groupDetail);
-
   const currentUserSetting =
-    memberList.find((v) => v.user_profile_identifier === userId) || {};
+    memberList.find((v) => v?.user_profile_identifier === userId) || {};
 
   console.log("currentUserSetting", currentUserSetting);
 

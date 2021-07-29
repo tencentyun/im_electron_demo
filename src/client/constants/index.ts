@@ -42,14 +42,14 @@ export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service
 // export const DEFAULT_USERID = 'lexuslin';
 // export const DEFAULT_USER_SIG = 'eJwsjs0KgkAUhd-lbg25Y86IA636caFQYQUtq7nZbUzFnxKid4-MszwfnPO9YZekLvUV1wR6qvCXyVCyoaLlK1MNGnLquybnAv6sMfZUVWxACx9ReiEGciScgQZpz5vXcpUmmbDqoGKzjhOsC3uPRFpuu6PT3sogchbzy342Trb8INBCeSqQvh*OEs-h3XMRPt8AAAD--2SQMio_';
 // export const DEFAULT_USER_SIG = 'eJwtjM0KgkAURt9l1iF3rjbjCC1chVFBWtR2dKa8ZGL*IUTvnqnf7jsHzoed94nT25oFDB1gq*mTsWVLd5pwYYeuKahcXGOeuqrIsIB7ANyX7hpnY4eKajtyAB-GzbSl158J9FAAV3Kp0GNMK6Ey40UYp7GmLsrRCDc8Qp7dePqWPc-UVqvd4XJNThv2-QHiqDGk';
-
+//HANPENGYU 刘国武
 
 export const DEFAULT_USERID = 'SHIHONGYI1';
 export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
 
 
-export const TIM_BASE_URL = 'http://localhost:3000'
-// export const TIM_BASE_URL = ''
+// export const TIM_BASE_URL = 'http://localhost:3000'
+export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002'
 export const TIM_BASE_URLB = 'http://oaim.uat.crbank.com.cn:30002'
 export const SDKAPPID = 1400529075
 export const SECRETKEY = '08349186ecd23fafaf7f98ca0116077e5b507fceac558e3dbd32f0dfeb9393a9' // 不可外传仅本次测试使用
