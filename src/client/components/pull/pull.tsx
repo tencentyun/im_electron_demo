@@ -3,12 +3,12 @@ import { Button, Icon, message, Modal } from "tea-component";
 import { TreeDynamicExample } from '../../pages/organization/tree/tree'
 import { Search } from '../../pages/organization/search/search';
 import React, { FC, useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Avatar } from "../../components/avatar/avatar";
 import { inviteMemberGroup } from "../../pages/message/api";
 import { createGroup, createGroupParams, getJoinedGroupList } from '../../pages/relationship/group/api'
 import { useMessageDirect } from "../../utils/react-use/useDirectMsgPage";
-const qunioc =  require('../../assets/icon/qunioc.png')
+import qunioc from '../../assets/icon/qunioc.png'
 
 import './pull.scss';
 
@@ -133,7 +133,7 @@ export const AddGroupMemberDialog = (props: {
     try {
       const groupList = await getJoinedGroupList()
       if (groupList) {
-        const profile = groupList.find(item => item.group_base_info_group_id === groupId)
+        const profile = groupList.find(item => item.group_base_info_group_id === groupId) || {}
         directToMsgPage({
           convType: 2,
           profile: profile as any,

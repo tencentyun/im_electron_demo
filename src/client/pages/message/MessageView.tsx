@@ -134,13 +134,15 @@ export const MessageView = (props: Props): JSX.Element => {
 
     // 添加到自定义表情, 图片和自定义表情可添加
     const handleAddCustEmoji = async (params) => {
-        const { elem_type, image_elem_large_url = '', custom_elem_data = '', custom_elem_desc } = params?.message?.message_elem_array[0];
+        const { elem_type, image_elem_large_url = '', custom_elem_data = '', custom_elem_desc, text_elem_content } = params?.message?.message_elem_array[0];
 
         let sticker_url = ''
         if (elem_type === 1) {
             sticker_url = image_elem_large_url
         } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
             sticker_url = custom_elem_desc
+        } else if(onIsIncludeImg(elem_type, text_elem_content)) {
+            sticker_url = /<img.*?src=[\"|\'"](.*?)[\"|\'"]/.exec(text_elem_content)[1]
         } else {
             return
         }
@@ -285,6 +287,9 @@ export const MessageView = (props: Props): JSX.Element => {
     const onIsCustEmoji = (type, data) => {
         return type === 3 && data === 'CUST_EMOJI'
     }
+    const onIsIncludeImg = (type, content) => {
+        return type === 0 && /<img.*?src=[\"|\']?(.*?)[\"|\']?.*?>/.test(content)
+    }
     const handleContextMenuEvent = (e, message: State.message) => {
         e.preventDefault();
         setCurrMenuMessage(message)
@@ -407,9 +412,9 @@ export const MessageView = (props: Props): JSX.Element => {
 
     // console.warn('查看当前会话所有消息',messageList)
     const getMenuItemData = () => {
-        const { elem_type, custom_elem_data = '' } = currMenuMessage.message_elem_array[0];
+        const { elem_type, custom_elem_data = '', text_elem_content } = currMenuMessage.message_elem_array[0];
         // elemtype:1图片, 3 自定义消息为CUST_EMOJI类型
-        const isEmoji = elem_type === 1 || onIsCustEmoji(elem_type, custom_elem_data)
+        const isEmoji = elem_type === 1 || onIsCustEmoji(elem_type, custom_elem_data) || onIsIncludeImg(elem_type, text_elem_content)
         let menuData = RIGHT_CLICK_MENU_LIST
         if (!isEmoji) {
             // 过滤添加到表情MenuItem
