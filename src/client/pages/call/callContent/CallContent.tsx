@@ -16,17 +16,18 @@ import {
 
 import trtcInstance from '../../../utils/trtcInstance';
 import generateTestUserSig from '../../../utils/generateUserSig';
-import { getUserData } from '../utils';
 import { CallVideo } from '../callVideo/CallVideo';
 import { CallFooter } from '../callFooter/CallFooter';
 
 import event from '../event';
+import { useCallData } from  '../useCallData';
 
 import './call-content.scss';
 
 export const CallContent = () => {
     const callingTIme = '00:37';
-    const { userId, convInfo } = getUserData();
+    const { userId, convInfo } = useCallData();
+    console.log(userId, convInfo);
 
     const onExitRoom = () => {
         const win = remote.getCurrentWindow();
@@ -59,9 +60,11 @@ export const CallContent = () => {
     }
 
     useEffect(() => {
-        const currentCamera = trtcInstance.getCurrentCameraDevice();
-        startVideo(currentCamera);
-    }, []);
+        if(userId) {
+            const currentCamera = trtcInstance.getCurrentCameraDevice();
+            startVideo(currentCamera);
+        }
+    }, [userId]);
 
     const toggleVideo = isMute => {
         trtcInstance.muteLocalVideo(isMute);

@@ -15,6 +15,7 @@ export const C2Cvideo = (props) => {
     const remoteViewRef = useRef(null);
 
     useEffect(() => {
+        console.log('===============C2C============');
         event.on('toggleVideo', onVideoChanged);
         trtcInstance.on('onEnterRoom', onEnterRoom);
         trtcInstance.on('onRemoteUserLeaveRoom', onRemoteUserLeaveRoom);

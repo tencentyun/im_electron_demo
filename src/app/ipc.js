@@ -12,6 +12,8 @@ class IPC {
     win = null;
     callWindow = null;
     constructor(win){
+        const env = process.env?.NODE_ENV?.trim();
+        const isDev = env === 'development';
         this.win = win;
         ipcMain.on(RENDERPROCESSCALL,(event,data) => {
             console.log("get message from render process",event.processId,data)
@@ -35,20 +37,25 @@ class IPC {
                 case CHECK_FILE_EXIST:
                     this.checkFileExist(params)
             }
-        })
+        });
+
+
+        this.createNewWindow(isDev);
 
         ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
-            this.callWindow = this.createNewWindow(data);
+            const params = JSON.stringify(data);
+            this.callWindow.show();
+            this.callWindow.webContents.send('pass-call-data', params);
+            isDev && this.callWindow.webContents.openDevTools();
+
             this.callWindow.on('close', () => {
                 event.reply(CALL_WINDOW_CLOSE_REPLY);
+                this.createNewWindow(isDev);
             });
         });
     }
-    createNewWindow(data) {
-        const params = JSON.stringify(data);
-        console.log('params sended', params);
-        const env = process.env?.NODE_ENV?.trim();
-        const isDev = env === 'development';
+    createNewWindow(isDev) {
+        
         const callWindow = new BrowserWindow({
             height: 600,
             width: 800, 
@@ -65,23 +72,18 @@ class IPC {
         });
         callWindow.removeMenu();
         if(isDev) {
-            callWindow.loadURL(`http://localhost:3000/call.html?data=${params}`);
-            callWindow.webContents.openDevTools();
+            callWindow.loadURL(`http://localhost:3000/call.html`);
         } else {
             callWindow.loadURL(
                 url.format({
-                    pathname: path.join(__dirname, `../../bundle/call.html?data=${params}`),
+                    pathname: path.join(__dirname, `../../bundle/call.html`),
                     protocol: 'file:',
                     slashes: true
                 })
             );
         }
 
-        callWindow.on('ready-to-show',() => {
-            callWindow.show();
-        });
-
-        return callWindow;
+        this.callWindow = callWindow;
     }
     minsizewin(){
         this.win.minimize()
