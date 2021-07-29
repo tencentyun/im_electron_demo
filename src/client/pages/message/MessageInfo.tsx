@@ -133,10 +133,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       return;
     }
 
-    // if(!trtcCheck.isCameraReady() && !trtcCheck.isMicReady()) {
-    //   message.warning({content: '找不到可用的摄像头和麦克风。请安装摄像头和麦克风后再试'});
-    //   return;
-    // }
+    if(!trtcCheck.isCameraReady() && !trtcCheck.isMicReady()) {
+      message.warning({content: '找不到可用的摄像头和麦克风。请安装摄像头和麦克风后再试'});
+      return;
+    }
     
     dispatch(updateCallingStatus({
       callingId: conv_id,
