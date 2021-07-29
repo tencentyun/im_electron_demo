@@ -16,7 +16,8 @@ import {
     getConvId,
     getConvType,
     getMergeMessageTitle,
-    getMergeMessageAbstactArray
+    getMergeMessageAbstactArray,
+    matchUrl
 } from '../../utils/messageUtils'
 import { Avatar } from '../../components/avatar/avatar';
 import { TextElemItem } from './messageElemTyps/textElemItem';
@@ -37,6 +38,7 @@ import { showDialog } from "../../utils/tools";
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
 import { GroupSysElm } from './messageElemTyps/groupSystemElem';
+import ImagePreview from '../../components/ImgViewer'
 import { setCurrentReplyUser } from '../../store/actions/message'
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
@@ -92,14 +94,16 @@ export const MessageView = (props: Props): JSX.Element => {
     const [noMore, setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     const dispatch = useDispatch();
     const [anchor, setAnchor] = useState('')
+    const [show,setShow] = useState(false)
+    const [imgPreViewUrl,setImgPreViewUrl] = useState([])
+    const [imgPreViewUrlIndex,setImgPreViewUrlIndex] = useState(0)
     useEffect(() => {
         if (!anchor) {
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
         }
         setAnchor('')
-        setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
+        setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)  
     }, [messageList.length])
-
     const getNewGroupInfo = () => {
         let newGroupInfo: any = localStorage.getItem('newGroupInfo')
         newGroupInfo = newGroupInfo ? JSON.parse(newGroupInfo) : []
@@ -442,8 +446,42 @@ export const MessageView = (props: Props): JSX.Element => {
             item.message_elem_array[0].elem_type === 0 &&
             item.message_elem_array[0].text_elem_content.indexOf('<img src=') === -1)
     }
+    const handleImgMsgClick = (item,messageList) => {
+        const imgsUrl = []
+                const {image_elem_thumb_url:url1 , image_elem_orig_url:url2 , image_elem_large_url:url3 } = item
+        const currentUrl = url1 || url2 || url3
+        const txtAndImgStr = []
+        messageList.map(msgItem => {
+
+            const { message_elem_array } = msgItem
+            
+            message_elem_array && message_elem_array.map((elem,index) => {
+                const {elem_type,image_elem_thumb_url , image_elem_orig_url , image_elem_large_url,custom_elem_data,custom_elem_desc,text_elem_content} = elem
+                if (elem_type === 1) {
+                    const url = image_elem_thumb_url || image_elem_orig_url || image_elem_large_url
+                    imgsUrl.push(url)
+                } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
+                // 自定义表情
+                    imgsUrl.push(custom_elem_desc)
+                }else if(elem_type === 0){
+                    // 图文消息
+                    txtAndImgStr.push({content:text_elem_content})
+                }
+            })
+
+        })
+        imgsUrl.push([...matchUrl(txtAndImgStr),...imgsUrl])
+        setImgPreViewUrlIndex(imgsUrl.findIndex(url=>url === currentUrl))
+        setShow(true)
+        setImgPreViewUrl(imgsUrl)
+    }
+    const handleClose = ()=>{
+         setShow(false)
+    }
     return (
         <div className="message-view" ref={messageViewRef}>
+            <ImagePreview show={show} onClose={handleClose} url={imgPreViewUrl} index={imgPreViewUrlIndex}></ImagePreview>
+
             {
                 messageList && messageList.length > 0 &&
                 messageList.map((item, index) => {
@@ -482,7 +520,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {
                                             message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                                 return (
-                                                    <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                    <div className="message-view__item--element" onClick={handleImgMsgClick.bind(null,elment,messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                                         {
                                                             displayDiffMessage(elment, index)
                                                         }
