@@ -12,7 +12,8 @@ import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
 import './message-input.scss';
 import { setPathToLS } from '../../utils/messageUtils';
-
+import { blockRendererFn, blockImportFn, blockExportFn } from './CustomBlock';
+  
 type Props = {
     convId: string,
     convType: number,
@@ -49,7 +50,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ atPopup, setAtPopup ] = useState(false);
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ isRecordPopup, setRecordPopup ] = useState(false);
-    const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
+    const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null, {blockImportFn, blockExportFn}))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const [ filePathAndBase64Map, setFilePathAndBase64Map] = useState({});
 
@@ -93,6 +94,10 @@ export const MessageInput = (props: Props): JSX.Element => {
             const text = editorState.toText();
             const htmlText = editorState.toHTML();
             const imgSrcList = getImageSrcList(htmlText);
+            const element = createElement(htmlText);
+            const videosInfo = getCustomBlocksInfo(element, '.block-video', 'data-block-video');
+            const otherFilesInfo = getCustomBlocksInfo(element, '.block-file', 'data-block-file');
+        
             const atList = getAtList(text);
     
             const messageElementArray = [];
@@ -109,6 +114,35 @@ export const MessageInput = (props: Props): JSX.Element => {
                     image_elem_orig_path: filePathAndBase64Map[v],
                     image_elem_level: 0
                 })));
+            }
+
+            if(videosInfo?.length) {
+                messageElementArray.push(...videosInfo?.map(v => ({
+                    // elem_type: 9,
+                    // video_elem_video_type: "MP4",
+                    // video_elem_video_size: v.size,
+                    // video_elem_video_duration: 10,
+                    // video_elem_video_path: v.path,
+                    // video_elem_image_type: "png",
+                    // video_elem_image_size: 10000,
+                    // video_elem_image_width: 200,
+                    // video_elem_image_height: 80,
+                    // video_elem_image_path: "./cover.png"
+
+                    
+                    elem_type: 4,
+                    file_elem_file_path: v.path,
+                    file_elem_file_name: v.name,
+                    file_elem_file_size: v.size
+                })))
+            }
+            if(otherFilesInfo?.length) {
+                messageElementArray.push(...otherFilesInfo?.map(v => ({
+                    elem_type: 4,
+                    file_elem_file_path: v.path,
+                    file_elem_file_name: v.name,
+                    file_elem_file_size: v.size
+                })))
             }
 
             const { data: { code, json_params, desc } } = await sendMsg({
@@ -151,6 +185,24 @@ export const MessageInput = (props: Props): JSX.Element => {
             }
         }) || [];
        return srcList;
+    }
+
+    const createElement = (htmlString: string) => {
+        const currentDiv = document.createElement('div');
+        currentDiv.innerHTML = htmlString;
+        return currentDiv;
+    }
+
+    // 从html字符串中匹配出所需节点上的信息
+    const getCustomBlocksInfo =(element: Element, selector, customAttribute: string) => {
+        const childElements = element.querySelectorAll(selector)
+        const customBlocksInfo = [];
+        childElements.forEach((v) => {
+            console.log('v', v)
+            const value = v.innerHTML;
+            customBlocksInfo.push(JSON.parse(value));
+        })
+        return customBlocksInfo;
     }
 
     const handleDropFile = (e) => {
@@ -374,22 +426,55 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     }
 
-    const uploadFn = (params: {file:File, success: (value: any) => any}) => {
-        const {file} = params;
-        console.log('file', file);
-        if(file?.path?.length) {
-            var reader = new FileReader();
+    // 得到图片的base64
+    const createImgUrl = async (file:File) => {
+        return new Promise(res => {
+            const reader = new FileReader();
             // 传入一个参数对象即可得到基于该参数对象的文本内容
             reader.readAsDataURL(file);
             reader.onload = function (e) {
               const base64Value = e.target.result;
               // target.result 该属性表示目标对象的DataURL
-              params.success({url: base64Value});
               // @ts-ignore
               setFilePathAndBase64Map(pre => ({...pre, [base64Value]: file.path}))
+              res(base64Value)
             };
+        })
+          
+    }
+
+    const handlePastedText = (text: string, htmlString: string) => {
+        if(text) {
+            setEditorState(ContentUtils.insertText(editorState, text));
         }
-        return true;
+    }
+
+    const handlePastedFiles = async (files: File[]) => {
+        console.log('files', files);
+        if (files?.length) {
+            files.forEach(async file => {
+                if (!file?.path?.length) return;
+                const type = file.type;
+                if (type.includes('image')) {
+                    const imgUrl = await createImgUrl(file);
+                    setEditorState(ContentUtils.insertMedias(editorState, [{
+                        type: 'IMAGE',
+                        url: imgUrl
+                    }]));
+                    return;
+                } else if ( type.includes('video')){
+                     setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
+                } else {
+                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
+                }
+
+
+                // editorInstance.setContent(insertHtmlString, 'html')
+                // setEditorState(ContentUtils.insertAtomicBlock(editorState, 'my-block-img', true));
+                // setEditorState(ContentUtils.insertHTML(editorState, insertHtmlString, null));
+           })
+
+        }
     }
 
     useEffect(() => {
@@ -428,20 +513,14 @@ export const MessageInput = (props: Props): JSX.Element => {
                     disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
-                    media={{items: [], uploadFn }} // 不知道为什么 如果不设置这个属性 会出现粘贴一次插入两个图片的问题
-                    controls={['media']}
+                    media={{ pasteImage:false }} // 不知道为什么 如果不设置items这个属性 会出现粘贴一次插入两个图片的问题
                     ref={instance => editorInstance = instance}
+                    handlePastedFiles={handlePastedFiles}
+                    handlePastedText={handlePastedText}
+                    blockRendererFn={blockRendererFn}
                     contentStyle={{ height: '100%', fontSize: 14 }}
+                    converts={{ blockImportFn, blockExportFn }}
                     placeholder={placeHolderText}
-                    hooks={{
-                        'remove-medias': ({href, target}) => {
-                            console.log('remove-medias', href)
-                        },
-                        'insert-medias': ({href, target}) => {
-                            console.log('insert-medias', href)
-
-                        }
-                    }}
                 />
             </div>
             <div className="message-input__button-area">
