@@ -122,8 +122,10 @@ export const AddGroupMemberDialog = (props: {
       }
       const { json_param } = await createGroup(params);
       const resultGroupId = JSON.parse(json_param)?.create_group_result_groupid
-      showGroupbyId(resultGroupId)
       onClose();
+      setTimeout(() => {
+        showGroupbyId(resultGroupId)
+      }, 300)
     } catch(e) {
       message.error({ content: '创建失败' + e })
     }
@@ -133,11 +135,13 @@ export const AddGroupMemberDialog = (props: {
     try {
       const groupList = await getJoinedGroupList()
       if (groupList) {
-        const profile = groupList.find(item => item.group_base_info_group_id === groupId) || {}
-        directToMsgPage({
-          convType: 2,
-          profile: profile as any,
-        });
+        const profile = groupList.find(item => item.group_base_info_group_id === groupId)
+        if (profile) {
+          directToMsgPage({
+            convType: 2,
+            profile: profile as any,
+          });
+        }
       }
     } catch(e) {
       console.log('显示刚创建的讨论组失败', e)
