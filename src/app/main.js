@@ -10,7 +10,8 @@ const child_process = require('child_process');
 const Store = require('electron-store');
 const store = new Store()
 const IPC = require("./ipc");
-let trayIcon = nativeImage.createFromPath(path.join(__dirname, '../client/assets/icon/notification.png'))
+// https://oaim.uat.crbank.com.cn:30003/headUrl/1627475525455839399.png
+let trayIcon = nativeImage.createFromPath(path.join(process.cwd(), '/resources/extraResources', 'notification.png'))
 let forceQuit = false;
 const downloadUrl = app.getPath("downloads");
 let ipc
