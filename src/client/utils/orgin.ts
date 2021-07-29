@@ -124,6 +124,7 @@ const  assemblyData = (data,childrenNode,itemChildren,labelNode,restLabel) =>{
                         }else{
                             child[childrenNode][i].isLeaf = false
                         }
+                        child[childrenNode][i].disableCheckbox = true  
                         child[childrenNode][i].DEPT_NAME = child[childrenNode][i][labelNode] == "" ? "" : child[childrenNode][i][labelNode].match(/[^\/]+/)[0]
                         child[childrenNode][i].key = 'BM' + child[childrenNode][i].DepId
                         child[childrenNode][i].title = child[childrenNode][i][labelNode] == "" ? "" : child[childrenNode][i][labelNode].match(/[^\/]+/)[0]

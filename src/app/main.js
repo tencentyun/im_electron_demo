@@ -10,7 +10,8 @@ const child_process = require('child_process');
 const Store = require('electron-store');
 const store = new Store()
 const IPC = require("./ipc");
-let trayIcon = nativeImage.createFromPath(path.join(__dirname, '../client/assets/icon/notification.png'))
+// https://oaim.uat.crbank.com.cn:30003/headUrl/1627475525455839399.png
+let trayIcon = nativeImage.createFromPath(path.join(process.cwd(), '/resources/extraResources', 'notification.png'))
 let forceQuit = false;
 const downloadUrl = app.getPath("downloads");
 let ipc
@@ -62,7 +63,7 @@ const setAppTray = () => {
 let appTray;
 let appWindow;
 let toggle = false;
-function createWindow () {
+function createWindow() {
   // Create the browser window.
   Menu.setApplicationMenu(null)
   let mainWindow = new BrowserWindow({
@@ -275,7 +276,7 @@ function createWindow () {
 }
 
 let timer;
-function changeWindow () {
+function changeWindow() {
   if (appWindow) {
     // 设置大小
     appWindow.setSize(1000, 650)
@@ -285,7 +286,7 @@ function changeWindow () {
     appWindow.setResizable(true);
   }
 }
-function reSizeWindow () {
+function reSizeWindow() {
   if (appWindow) {
     // 设置大小
     appWindow.setSize(460, 358)
@@ -312,14 +313,14 @@ function trayFlash () {
   }
 }
 
-function openWindow () {
+function openWindow() {
   if (appWindow) {
     appWindow.show()
   }
 }
 let num = 0;
 let hasFlash = false;
-function setTaryTitle () {
+function setTaryTitle() {
   num++;
   appTray.setTitle(num === 0 ? '' : `${num}`);
   appWindow.flashFrame(true);
