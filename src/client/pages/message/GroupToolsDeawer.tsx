@@ -22,22 +22,13 @@ export const GroupToolsDrawer = (props: {
 }): JSX.Element => {
   const { onClose, popupContainer, visible, conversationInfo, toolId } = props;
 
-  console.log("visible", visible);
-
   const { currentSelectedConversation } = useSelector(
     (state: State.RootState) => state.conversation
   );
 
-  const DisplayComponent = {
-    setting: GroupSetting,
-    announcement: GroupAccountecmentSetting,
-  }[toolId];
-
   const close = () => {
     onClose?.();
   };
-
-  console.log("toolsTab", toolId);
 
   const getTitleAndSubTitle = (toolsId: string) => {
     let title = "";
