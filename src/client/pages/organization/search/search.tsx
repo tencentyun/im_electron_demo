@@ -20,7 +20,7 @@ export const Search : FC<TreeDynamic> = ({ callback,onClear,handleCallback,filte
     const 	searchRectData = (nameText) =>{
                 clearTimeout(settime)
                 settime = setTimeout(async ()=>{
-                const { data } =  await	getstAffPrefix({ Prefix:nameText,Limit:10 })
+                const { data } =  await	getstAffPrefix({ Prefix:nameText,Limit:100 })
                 let { ActionStatus, ErrorCode, ErrorInfo,StaffInfoList } = data
                 if(ActionStatus == 'OK' && ErrorCode === 0){
                     callback && ((StaffInfoList.length > 0) && callback(StaffInfoList[0]))
