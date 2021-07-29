@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
 
 import {
-  getGroupInfoList,
   getGroupMemberInfoList,
   modifyGroupInfo,
 } from "../api";
@@ -16,28 +15,24 @@ export const GroupAccountecmentSetting = (props: {
   close: () => void;
 }): JSX.Element => {
   const { close, conversationInfo } = props;
-  console.log("conversationInfo", conversationInfo);
   const groupId = conversationInfo?.conv_id || "";
-  const groupDetail: Partial<State.conversationItem['conv_profile']> = conversationInfo.conv_profile || {};
+  const groupDetail: Partial<State.conversationItem["conv_profile"]> =
+    conversationInfo.conv_profile || {};
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
   const { value, loading, retry } = useAsyncRetryFunc(async () => {
-    
-    return await getGroupMemberInfoList({
-      groupId,
-    })
-  }, [groupId]);
+      return await getGroupMemberInfoList({
+        groupId,
+        userIds: [userId],
+        nextSeq: 0,
+      });
+  }, []);
 
-  const memberList = value|| [];
+  const memberList = value?.userList || [];
 
-  console.log("groupDetail", groupDetail);
+  const currentUserSetting = memberList?.[0] || {};
 
-  const currentUserSetting =
-    memberList.find((v) => v.user_profile_identifier === userId) || {};
-
-  console.log("currentUserSetting", currentUserSetting);
-  
   const accountecment = groupDetail?.group_detial_info_notification || "";
   const groupType = groupDetail?.group_detial_info_group_type || 0;
   const userIdentity = currentUserSetting?.group_member_info_member_role || 0;
