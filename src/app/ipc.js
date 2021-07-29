@@ -1,6 +1,6 @@
 // import { BrowserWindow } from "electron";
 const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY } = require("./const/const");
-const { dialog } = require('electron')
+const { screen } = require('electron')
 const { ipcMain, BrowserWindow } = require('electron')
 const fs = require('fs')
 const path = require('path')
@@ -8,12 +8,19 @@ const http = require('http')
 const url = require('url')
 const child_process = require('child_process')
 
+const getSrceenSize = () => {
+    const display = screen.getPrimaryDisplay();
+
+    return display.size;
+}
+
 class IPC {
     win = null;
     callWindow = null;
     constructor(win){
         const env = process.env?.NODE_ENV?.trim();
         const isDev = env === 'development';
+        const screenSize = getSrceenSize();
         this.win = win;
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             console.log("get message from render process", event.processId, data)
@@ -42,8 +49,21 @@ class IPC {
 
         this.createNewWindow(isDev);
 
+        ipcMain.on('accept-call', () => {
+            this.callWindow.setSize(800, 600);
+            this.callWindow.setPosition(screenSize.width / 2 - 400, screenSize.height /  2 - 300);
+        });
+
+        ipcMain.on('refuse-call', () => {
+            this.callWindow.close();
+        });
+
         ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
             const params = JSON.stringify(data);
+            if(data.windowType === 'notificationWindow') {
+                this.callWindow.setSize(320, 150);
+                this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
+            }
             this.callWindow.show();
             this.callWindow.webContents.send('pass-call-data', params);
             isDev && this.callWindow.webContents.openDevTools();

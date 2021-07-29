@@ -10,13 +10,15 @@ export const useCallData = () => {
             convType: 0
         },
         userId: '',
-        callType: ''
+        callType: '',
+        windowType: 'callWindow'
     });
 
     useEffect(() => {
         eventEmiter.on('getData', (data) => {
-            const { convInfo, convId, callType } = data;
+            const { convInfo, convId, callType, windowType } = data;
             setData({
+                windowType,
                 callType,
                 convInfo: {
                     faceUrl: encodeURIComponent(convInfo.faceUrl),
@@ -25,6 +27,13 @@ export const useCallData = () => {
                 },
                 userId: decodeURIComponent(convId)
             })
+        });
+
+        eventEmiter.on('changeWindowType', type => {
+            setData(data => ({
+                ...data,
+                windowType: type,
+            }))
         })
     }, []);
 

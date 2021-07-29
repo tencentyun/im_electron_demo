@@ -127,7 +127,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));
   
-  const handleOpenCallWindow = (callType) => {
+  const handleOpenCallWindow = (callType, windowType = 'callWindow') => {
     if(callingId) {
       message.warning({content: '正在通话中'});
       return;
@@ -145,6 +145,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
     const {faceUrl, nickName} = getDisplayConvInfo();
     openCallWindow({
+      windowType,
       callType,
       convId: encodeURIComponent(conv_id),
       convInfo: {
@@ -217,7 +218,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
             </div>
             <div>
               {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
-              <span className={`message-info-view__header--video ${callingId === conv_id ? 'is-calling' : ''}`} onClick={() => handleOpenCallWindow('videoCall')} />
+              <span className={`message-info-view__header--video ${callingId === conv_id ? 'is-calling' : ''}`} onClick={() => handleOpenCallWindow('videoCall', 'notificationWindow')} />
             </div>
           </header>
           <section className="message-info-view__content">
