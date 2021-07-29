@@ -88,11 +88,13 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
       let matched = false;
       const oldMessageList = state.historyMessageList.get(payload.convId);
       const newMessageList = oldMessageList.map(oldMessage => {
-        if(oldMessage.message_msg_id === payload.message.message_msg_id) {
-          matched = true
-          return payload.message
-        } else {
-          return oldMessage
+        if(oldMessage.message_msg_id){
+          if(oldMessage.message_msg_id === payload.message.message_msg_id) {
+            matched = true
+            return payload.message
+          } else {
+            return oldMessage
+          }
         }
       });
       if(!matched) newMessageList.unshift(payload.message)
