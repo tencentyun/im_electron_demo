@@ -103,7 +103,7 @@ class IPC {
         }
         const options = {
             host: url.parse(file_url).host,
-            port: 80,
+            port: url.parse(file_url).port,
             path: url.parse(file_url).pathname,
             timeout: 20
         };
