@@ -1,15 +1,9 @@
 import React from 'react';
 import ReactDOM from "react-dom";
 
-
-const Call = () => {
-    return <div>
-        I am call page
-    </div>
-};
-
+import { CallContent } from './pages/call';
 
 ReactDOM.render(
-    <Call />,
+    <CallContent />,
     document.getElementById("root")
   );
