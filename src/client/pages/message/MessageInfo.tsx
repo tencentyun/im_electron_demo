@@ -234,6 +234,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
               {
                 canCreateDiscussion && <span title='拉取讨论组' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
               }
+              {
+                canCreateDiscussion && <span title='拉取讨论组' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
+              }
               <span className="message-info-view__header--video" onClick={handleOpenCallWindow} />
             </div>
           </header>
