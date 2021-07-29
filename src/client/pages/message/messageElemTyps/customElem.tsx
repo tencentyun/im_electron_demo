@@ -14,7 +14,7 @@ export const CustomElem = (props: any): JSX.Element => {
                             previewSrc={custom_elem_desc}
                             previewTitle="预览"
                         >
-                            {open => <a onClick={open}> <img src={custom_elem_desc} style={{ maxWidth: 450 }} /></a>}
+                            {open => <a onClick={open}> <img src={custom_elem_desc} style={{ maxWidth: 178 }} /></a>}
                         </ImagePreview>
                         : JSON.stringify(props)
                     

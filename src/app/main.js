@@ -37,6 +37,10 @@ const setAppTray = () => {
   ]
 
   // 系统托盘图标目录
+
+  // trayIcon.setTemplateImage(true)
+  // trayIcon.setSize(30, 30)
+
   appTray = new Tray(trayIcon)
 
   // 图标的上下文菜单
@@ -142,14 +146,14 @@ function createWindow () {
       mainWindow.webContents.send('mainProcessMessage', false)
     }
   })
-  // mainWindow.loadURL(`http://localhost:3000`);
-  mainWindow.loadURL(
-    url.format({
-      pathname: path.join(__dirname, "../../bundle/index.html"),
-      protocol: "file:",
-      slashes: true,
-    })
-  );
+  mainWindow.loadURL(`http://localhost:3000`);
+  // mainWindow.loadURL(
+  //   url.format({
+  //     pathname: path.join(__dirname, "../../bundle/index.html"),
+  //     protocol: "file:",
+  //     slashes: true,
+  //   })
+  // );
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
@@ -293,6 +297,8 @@ function reSizeWindow () {
   }
 }
 function trayFlash () {
+
+
   if (appTray) {
     hasFlash = true;
 

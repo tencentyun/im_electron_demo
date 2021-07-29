@@ -12,7 +12,9 @@
     left: 0;
     bottom: 0;
     animation:animate .5s;
-    box-shadow:  0 1px 8px rgba(0,32,96,.1)
+    box-shadow:  0 1px 8px rgba(0,32,96,.1);
+    max-height: 190px;
+    overflow-y: auto;
 }
 .at-popup li {
     height: 40px;

@@ -79,6 +79,7 @@ export const GroupMemberListDrawer = (props: {
       key: "member",
       render: (record: any) => {
         const isOwner = record.group_member_info_member_role === 3;
+        const isManage = record.group_member_info_member_role === 2;
         return (
           <div className="member-list-drawer--item" onDoubleClick={() => { handleMsgGroupRead(record) }}>
             <GroupMemberBubble
@@ -104,6 +105,9 @@ export const GroupMemberListDrawer = (props: {
             </span>
             {isOwner && (
               <span className="member-list-drawer--item__owner">群主</span>
+            )}
+            {isManage && (
+              <span className="member-list-drawer--item__owner">管理员</span>
             )}
           </div>
         );

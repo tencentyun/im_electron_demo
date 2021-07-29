@@ -418,7 +418,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
                 handleSendTextMsg();
-            } else if (e.key === "@" && convType === 2) {
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
             }
@@ -429,7 +429,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 handleSendTextMsg();
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 // console.log('换行', '----------------------', editorState)
-            } else if (e.key === "@" && convType === 2) {
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
             }
