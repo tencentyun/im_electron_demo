@@ -73,6 +73,8 @@ function createWindow () {
     minHeight: 600,
     show: false,
     frame: false,
+    resizable: true,
+    fullScreenable: true,
     webPreferences: {
       webSecurity: true,
       nodeIntegration: true,
@@ -146,14 +148,14 @@ function createWindow () {
       mainWindow.webContents.send('mainProcessMessage', false)
     }
   })
-  // mainWindow.loadURL(`http://localhost:3000`);
-  mainWindow.loadURL(
-    url.format({
-      pathname: path.join(__dirname, "../../bundle/index.html"),
-      protocol: "file:",
-      slashes: true,
-    })
-  );
+  mainWindow.loadURL(`http://localhost:3000`);
+  // mainWindow.loadURL(
+  //   url.format({
+  //     pathname: path.join(__dirname, "../../bundle/index.html"),
+  //     protocol: "file:",
+  //     slashes: true,
+  //   })
+  // );
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
