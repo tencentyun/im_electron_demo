@@ -24,7 +24,7 @@ const inintViewer = (prop:ImagePreviewI) => {
     const [minZoom, setminZoom] = useState(0.1)
     const [rotate, setrotate] = useState(0)
     const [previewUrl, setpreviewUrl] = useState('')
-    const [_index, setindex] = useState(index)
+    const [_index, setindex] = useState(0)
     const [imgUrlList, setimgUrlList] = useState([])
     const [visible, setvisible] = useState(false)
     const handleMouseWheel = (event) => {
@@ -55,6 +55,11 @@ const inintViewer = (prop:ImagePreviewI) => {
     useEffect(() => {
         setpreviewUrl(url[_index])
     }, [_index])
+
+     useEffect(() => {
+         setpreviewUrl(url[index])
+         setindex(index)
+    }, [index])
 
     const getCurrentIndex = (): number => {
         return index > -1 ? index : _index

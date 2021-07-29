@@ -144,7 +144,7 @@ export const LoginContent = (): JSX.Element => {
                 </TabPanel> */}
                 <TabPanel id="passwordLogin">
                     <Input placeholder="请输入userid" value={userID} className="login--input" onChange={chkIt} />
-                    <Input placeholder="请输入密码" value={password} className="login--input" onChange={(val) => setPassword(val)} />
+                    <Input placeholder="请输入密码" type="password" value={password} className="login--input" onChange={(val) => setPassword(val)} />
                 </TabPanel>
             </Tabs>
             {/* <Checkbox display="block" value={false} className="login--auto">
