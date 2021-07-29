@@ -15,10 +15,10 @@ class IPC {
         const env = process.env?.NODE_ENV?.trim();
         const isDev = env === 'development';
         this.win = win;
-        ipcMain.on(RENDERPROCESSCALL,(event,data) => {
-            console.log("get message from render process",event.processId,data)
-            const { type,params }  = data;
-            switch (type){
+        ipcMain.on(RENDERPROCESSCALL, (event, data) => {
+            console.log("get message from render process", event.processId, data)
+            const { type, params } = data;
+            switch (type) {
                 case MINSIZEWIN:
                     this.minsizewin();
                     break;
@@ -55,12 +55,11 @@ class IPC {
         });
     }
     createNewWindow(isDev) {
-        
         const callWindow = new BrowserWindow({
             height: 600,
-            width: 800, 
+            width: 800,
             show: false,
-            frame:false,
+            frame: false,
             webPreferences: {
                 parent: this.win,
                 webSecurity: true,
@@ -85,43 +84,58 @@ class IPC {
 
         this.callWindow = callWindow;
     }
-    minsizewin(){
+    minsizewin() {
         this.win.minimize()
     }
-    maxsizewin(){
+    maxsizewin() {
         this.win.maximize()
     }
-    close(){
+    close() {
         this.win.close()
     }
-    showDialog(){
-        child_process.exec(`start "" ${path.resolve(process.cwd(),'./download/')}`);
+    showDialog() {
+        child_process.exec(`start "" ${path.resolve(process.cwd(), './download/')}`);
     }
-    downloadFilesByUrl(file_url){
+    downloadFilesByUrl(file_url) {
         const cwd = process.cwd();
-        const downloadDicPath = path.resolve(cwd,'./download/')
+        const downloadDicPath = path.resolve(cwd, './download/')
         if (!fs.existsSync(downloadDicPath)) {
             fs.mkdirSync(downloadDicPath)
         }
-        const options = {  
-            host: url.parse(file_url).host,  
-            port: 80,  
-            path: url.parse(file_url).pathname  
-        }; 
-        var file_name = url.parse(file_url).pathname.split('/').pop();  
-        if (!fs.existsSync(path.resolve(downloadDicPath,file_name))) {
-            var file = fs.createWriteStream(path.resolve(downloadDicPath,file_name)); 
-            http.get(options, (res)=>{
-                res.on('data', function(data) {  
-                    file.write(data);  
-                }).on('end', function() {  
-                    file.end();  
-                    console.log(file_name + ' downloaded to ' + downloadDicPath);  
-                }); 
-            });  
-        }else{
+        const options = {
+            host: url.parse(file_url).host,
+            port: url.parse(file_url).port,
+            path: url.parse(file_url).pathname,
+            timeout: 20
+        };
+        var file_name = url.parse(file_url).pathname.split('/').pop();
+        if (!fs.existsSync(path.resolve(downloadDicPath, file_name))) {
+            var file = fs.createWriteStream(path.resolve(downloadDicPath, file_name));
+            http.get(options, (res) => {
+                const { statusCode } = res;
+                let error;
+                if (statusCode !== 200) {
+                    error = new Error('Request Failed.\n' +
+                        `Status Code: ${statusCode}`);
+                } else if (!/^application\/json/.test(contentType)) {
+                    error = new Error('Invalid content-type.\n' +
+                        `Expected application/json but received ${contentType}`);
+                }
+                if (error) {
+                    console.error(error.message);
+                    res.resume();
+                    return;
+                }
+                res.on('data', function (data) {
+                    file.write(data);
+                }).on('end', function () {
+                    file.end();
+                    console.log(file_name + ' downloaded to ' + downloadDicPath);
+                });
+            });
+        } else {
             // 已存在
-            console.log(path.resolve(downloadDicPath,file_name),'已存在，不下载')
+            console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
         }
     }
     checkFileExist(path) {
