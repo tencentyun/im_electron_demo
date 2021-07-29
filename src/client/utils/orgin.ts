@@ -65,7 +65,7 @@ const getstAffPrefix = (data) => {
 // 前缀模糊查询职员列表
 const getAccountsList = (pagesize, pageNumber) => {
     return axios({
-        url: `/huarun/user/list?limit=${pagesize}&page=${pageNumber}`,
+        url: `${TIM_BASE_URL}/huarun/user/list?limit=${pagesize}&page=${pageNumber}`,
         method: 'GET',
         data: {
             limit:pagesize,
@@ -76,7 +76,7 @@ const getAccountsList = (pagesize, pageNumber) => {
 
 const getAccountsAdd = (foucs, id) => {
     return axios({
-        url: `/huarun/user/add`,
+        url: `${TIM_BASE_URL}/huarun/user/add`,
         method: 'POST',
         data: {
             foucs:foucs,
@@ -124,6 +124,7 @@ const  assemblyData = (data,childrenNode,itemChildren,labelNode,restLabel) =>{
                         }else{
                             child[childrenNode][i].isLeaf = false
                         }
+                        child[childrenNode][i].disableCheckbox = true  
                         child[childrenNode][i].DEPT_NAME = child[childrenNode][i][labelNode] == "" ? "" : child[childrenNode][i][labelNode].match(/[^\/]+/)[0]
                         child[childrenNode][i].key = 'BM' + child[childrenNode][i].DepId
                         child[childrenNode][i].title = child[childrenNode][i][labelNode] == "" ? "" : child[childrenNode][i][labelNode].match(/[^\/]+/)[0]

@@ -38,10 +38,10 @@ const downloadFilesByUrl = (params) => {
         params
     })
 }
-const checkFileExist = (path) =>{
-    ipcRenderer.send(RENDERPROCESSCALL,{
-        type:CHECK_FILE_EXIST,
-        params:path
+const checkFileExist = (path) => {
+    ipcRenderer.send(RENDERPROCESSCALL, {
+        type: CHECK_FILE_EXIST,
+        params: path
     })
 }
 
@@ -64,11 +64,11 @@ const throttle = (fn, delay) => {
     }
 }
 
-//file对象转换为Blob对象 
+//file对象转换为Blob对象 
 const dataURLtoBlob = (file) => {
     return new Promise((resolve, reject) => {
         if (!file) {
-            reject('file is null')
+            reject('file is null')
         }
         if (window.FileReader) {
             var fr = new FileReader();
@@ -77,16 +77,16 @@ const dataURLtoBlob = (file) => {
                 resolve(e.target.result)
             }
         } else {
-            reject('window.FileReader is undefined')
+            reject('window.FileReader is undefined')
         }
     })
 }
 const convertBase64UrlToBlob = (urlData) => {
-    // 去掉url的头，并转换为byte
+    // 去掉url的头，并转换为byte
     let bytes = window.atob(urlData.split(',')[1])
     let ab = new ArrayBuffer(bytes.length)
     let ia = new Uint8Array(ab)
-    for (let i = 0; i < bytes.length; i++) {
+    for (let i = 0;i < bytes.length;i++) {
         ia[i] = bytes.charCodeAt(i)
     }
     return new Blob([ab], { type: 'image/jpeg' })
@@ -97,10 +97,10 @@ const convertBase64UrlToBlob = (urlData) => {
  */
 const highlightText = (text, content, color = '#006eff') => {
     if (!text) {
-      return content
+        return content
     }
     if (!content || !content.includes(text)) {
-      return content
+        return content
     }
     return content.replaceAll(text, `<span style='color: ${color}'>${text}</span>`)
 }

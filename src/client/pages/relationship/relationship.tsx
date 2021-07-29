@@ -8,14 +8,6 @@ import "./relationship.scss";
 
 const navList = [
   {
-    id: "buddy-list",
-    title: "好友列表",
-  },
-  {
-    id: "buddy-apply",
-    title: "好友申请",
-  },
-  {
     id: "group",
     title: "我的群组",
   },
@@ -30,7 +22,7 @@ const navList = [
 ];
 
 export const RelationShip = (): JSX.Element => {
-  const [activedId, setActiveId] = useState("buddy-list");
+  const [activedId, setActiveId] = useState("group");
   const [onlyFilled,setOnlyFilled] = useState(true)
   const DisplayComponent = {
     group: Group,

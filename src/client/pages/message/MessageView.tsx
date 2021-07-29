@@ -8,7 +8,7 @@ import {
     animation
 } from 'react-contexify';
 import './message-view.scss';
-import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, TextMsg, getMsgList } from './api';
+import { revokeMsg, deleteMsg, sendMsg, sendMergeMsg, TextMsg, getMsgList } from './api';
 import { markeMessageAsRevoke, deleteMessage, reciMessage, addMoreMessage } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import {
@@ -32,7 +32,7 @@ import formateTime from '../../utils/timeFormat';
 import { ContentUtils } from 'braft-utils'
 import { Icon, message } from 'tea-component';
 import { custEmojiUpsert } from '../../services/custEmoji'
-import  { custEmojiUpsertParams } from '../../services/custEmoji'
+import { custEmojiUpsertParams } from '../../services/custEmoji'
 import { showDialog } from "../../utils/tools";
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
@@ -78,20 +78,6 @@ const RIGHT_CLICK_MENU_LIST = [{
     text: '文件夹目录'
 }];
 
-const RIGHT_CLICK_MENU_LIST_2 = [{
-    id: 'revoke',
-    text: '撤回'
-},
-{
-    id: 'delete',
-    text: '删除'
-},
-
-{
-    id: 'reply',
-    text: '回复'
-}];
-
 
 
 
@@ -105,10 +91,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const [currMenuMessage, setCurrMenuMessage] = useState<State.message>(); // 当前右击菜单消息
     const [noMore, setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     const dispatch = useDispatch();
-    const [anchor , setAnchor] = useState('')
-
-    const [rightClickMenuList, setRightClickMenuList] = useState(RIGHT_CLICK_MENU_LIST);
-    
+    const [anchor, setAnchor] = useState('')
     useEffect(() => {
         if (!anchor) {
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
@@ -162,7 +145,7 @@ export const MessageView = (props: Props): JSX.Element => {
             return
         }
         try {
-            const userId = await getLoginUserID()
+            const userId = localStorage.getItem('uid')
             const emojiParams: custEmojiUpsertParams = {
                 uid: userId,
                 sticker_url,
@@ -208,7 +191,7 @@ export const MessageView = (props: Props): JSX.Element => {
     }
 
     const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
-        const userId = await getLoginUserID()
+        const userId = localStorage.getItem('uid')
         const isDivideSending = forwardType === ForwardType.divide
         const isCombineSending = !isDivideSending
         convItemGroup.forEach(async (convItem, k) => {
@@ -298,21 +281,13 @@ export const MessageView = (props: Props): JSX.Element => {
         }
     }
 
+    // 消息类型是否是自定义表情
     const onIsCustEmoji = (type, data) => {
         return type === 3 && data === 'CUST_EMOJI'
     }
-
-    const handleContextMenuEvent = (e, message: State.message, element) => {
+    const handleContextMenuEvent = (e, message: State.message) => {
         e.preventDefault();
         setCurrMenuMessage(message)
-        const { elem_type } = element;
-        //群系统消息 和 tips消息 不可转发
-        if([5,8].includes(elem_type)) {
-            setRightClickMenuList(RIGHT_CLICK_MENU_LIST_2);
-        } else {
-            setRightClickMenuList(RIGHT_CLICK_MENU_LIST)
-        }
-
         contextMenu.show({
             id: MESSAGE_MENU_ID,
             event: e,
@@ -333,7 +308,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const handleOpenFile = (item) => {
         showDialog()
     }
-    const displayDiffMessage = (element) => {
+    const displayDiffMessage = (element, index) => {
         const { elem_type, ...res } = element;
         let resp
         switch (elem_type) {
@@ -350,7 +325,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <CustomElem {...res} />
                 break;
             case 4:
-                resp = <FileElem message={message} element={element}/>
+                resp = <FileElem message={message} element={element} />
                 break;
             case 5:
                 resp = <GroupTipsElemItem {...res} />
@@ -440,7 +415,7 @@ export const MessageView = (props: Props): JSX.Element => {
             // 过滤添加到表情MenuItem
             menuData = menuData.filter(item => item.id !== 'addCustEmoji')
         }
-        if(new Date().getTime() / 1000 - currMenuMessage.message_client_time > 120){
+        if (new Date().getTime() / 1000 - currMenuMessage.message_client_time > 120) {
             // 超时则过滤撤回按钮
             menuData = menuData.filter(item => item.id !== 'revoke')
         }
@@ -459,8 +434,8 @@ export const MessageView = (props: Props): JSX.Element => {
 
     const reeditShowText = (item) => {
         return (item.message_is_from_self && isTimeoutFun(item.message_client_time) &&
-        item.message_elem_array[0].elem_type === 0 && 
-        item.message_elem_array[0].text_elem_content.indexOf('<img src=') === -1) 
+            item.message_elem_array[0].elem_type === 0 &&
+            item.message_elem_array[0].text_elem_content.indexOf('<img src=') === -1)
     }
     return (
         <div className="message-view" ref={messageViewRef}>
@@ -482,8 +457,6 @@ export const MessageView = (props: Props): JSX.Element => {
                     const isMessageSendFailed = message_status === 3 && message_is_from_self;
                     const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self && !isMessageSendFailed;
                     const seleted = seletedMessage.findIndex(i => getMessageId(i) === getMessageId(item)) > -1
-                    const elemType = message_elem_array?.[0].elem_type; // 取message array的第一个判断消息类型
-                    const isNotGroupSysAndGroupTipsMessage =  ![5,8].includes(elemType); // 5,8作为群系统消息 不需要多选转发
                     return (
                         <React.Fragment key={index}>
                             {
@@ -493,31 +466,30 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {reeditShowText(item) ? <span className="message-view__item--withdraw" onClick={() => { reEdit(message_elem_array[0].text_elem_content) }}> 重新编辑</span> : <></>}
                                     </div>
                                 ) :
-                                <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
-                                    { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ? 
-                                        <Icon className="message-view__item--icon" type="success" /> : 
-                                        <i className="message-view__item--icon-normal" ></i>)
-                                    }
-                                    <div className="message-view__item--avatar face-url">
-                                        <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                    <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
+                                        {isMultiSelect && (seleted ?
+                                            <Icon className="message-view__item--icon" type="success" /> :
+                                            <i className="message-view__item--icon-normal" ></i>)
+                                        }
+                                        <div className="message-view__item--avatar face-url">
+                                            <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                        </div>
+                                        {
+                                            message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                                return (
+                                                    <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                        {
+                                                            displayDiffMessage(elment, index)
+                                                        }
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                        {
+                                            shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
+                                                isMessageSendFailed && <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
+                                        }
                                     </div>
-                                    {
-                                        message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
-                                            return (
-                                                <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item, elment) }}>
-                                                    
-                                                    {
-                                                        displayDiffMessage(item, elment, index)
-                                                    }
-                                                </div>
-                                            )
-                                        })
-                                    }
-                                    {
-                                        shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
-                                        isMessageSendFailed &&  <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
-                                    }
-                                </div>
                             }
                             <div className="message-view__item--blank"></div>
                         </React.Fragment>

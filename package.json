@@ -5,8 +5,8 @@
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {
-    "start": "concurrently  \"npm run dev:electron\"",
-    "build": "npm run build:react && set NODE_ENV=production && electron-builder -w",
+    "start": "concurrently \"npm run dev:electron\"",
+    "build": "electron-builder -w",
     "build:react": "cd ./src/client && npm run build:react",
     "dev:electron": "set NODE_ENV=development && electron .",
     "dev:react": "cd ./src/client && npm run dev:react"
@@ -21,9 +21,13 @@
       "src/app",
       "bundle"
     ],
+    "productName": "华润银行即时通讯（内测版）",
     "appId": "electron-sdk",
-    "mac": {},
+    "mac": {
+      "icon": "./icon/favicon.icns"
+    },
     "win": {
+      "icon": "./src/client/assets/icon/windows.png",
       "target": [
         {
           "target": "nsis",

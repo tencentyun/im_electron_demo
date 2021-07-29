@@ -79,6 +79,7 @@ export const GroupMemberListDrawer = (props: {
       key: "member",
       render: (record: any) => {
         const isOwner = record.group_member_info_member_role === 3;
+        const isManage = record.group_member_info_member_role === 2;
         return (
           <div className="member-list-drawer--item" onDoubleClick={() => { handleMsgGroupRead(record) }}>
             <GroupMemberBubble
@@ -105,6 +106,9 @@ export const GroupMemberListDrawer = (props: {
             {isOwner && (
               <span className="member-list-drawer--item__owner">群主</span>
             )}
+            {isManage && (
+              <span className="member-list-drawer--item__owner">管理员</span>
+            )}
           </div>
         );
       },
@@ -124,7 +128,7 @@ export const GroupMemberListDrawer = (props: {
       onClose={onClose}
     >
       {
-        searchData && searchData.length > 10 && <div className="member-list-search">
+        defaultForm?.memberList?.length > 10 && <div className="member-list-search">
         <SearchBox placeholder="请输入昵称" onChange={onSearch} onSearch={onSearch} onClear={() => onSearch('')} />
       </div>
       }

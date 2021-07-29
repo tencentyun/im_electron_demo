@@ -7,7 +7,6 @@ const path = require('path')
 const http = require('http')
 const url = require('url')
 const child_process = require('child_process')
-
 class IPC {
     win = null;
     callWindow = null;
@@ -37,10 +36,18 @@ class IPC {
             }
         })
 
-        ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
-            this.callWindow = this.createNewWindow();
-            this.callWindow.on('close', () => {
-                event.reply(CALL_WINDOW_CLOSE_REPLY);
+        ipcMain.on('openCallWindow', (event, data) => {
+            const callWindow = new BrowserWindow({
+                height: 600,
+                width: 800,
+                show: true,
+                webPreferences: {
+                    webSecurity: true,
+                    nodeIntegration: true,
+                    nodeIntegrationInWorker: true,
+                    enableRemoteModule: true,
+                    contextIsolation: false,
+                }
             });
         });
     }
@@ -85,10 +92,11 @@ class IPC {
         this.win.minimize()
     }
     maxsizewin () {
-        this.win.maximize()
+        console.log(this.win.isMaximized(), '++++++++++++++++++++++++++++++++++')
+        this.win.isMaximized() ? this.win.unmaximize() : this.win.maximize()
     }
     close () {
-        this.win.close()
+        this.win.hide()
     }
     showDialog () {
         child_process.exec(`start "" ${path.resolve(process.cwd(), './download/')}`);
@@ -120,9 +128,11 @@ class IPC {
             console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
         }
     }
-    checkFileExist(path) {
+    checkFileExist (path) {
         return fs.existsSync(path)
     }
 }
 
 module.exports = IPC;
+
+

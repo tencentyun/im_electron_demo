@@ -4,6 +4,7 @@ import { Form as FinalForm, Field } from "react-final-form";
 import { getStatus } from "../../../../utils/getStatus";
 import { GroupTypeSelect } from "./GroupTypeSelect";
 import  ImgCropper  from "../../../../components/UploadFace";
+const qunioc =  require('../../../../assets/icon/qunioc.png')
 
 import "./create-group-form.scss";
 
@@ -17,12 +18,16 @@ const validateFaceUrl = (value: string) => {
     return '用户头像地址必填';
   }
 }
+interface createGroupMemberParams {
+  group_member_info_member_role: number;
+  group_member_info_identifier: number & string
+}
 export interface FormValue {
   groupName: string;
   groupAnnouncement: string;
   groupIntroduction: string;
   joinGroupMode: string;
-  groupMember?: string;
+  groupMember?: any;
   groupType: string;
   groupAvatarUrl: string;
 }
@@ -36,11 +41,24 @@ interface CreateGroupFormProps {
 
 export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
   const { onSubmit, onSuccess, onError, onClose } = props;
-  const [groupAvatarUrl, setGroupAvatarUrl] = useState('http://oaim.crbank.com.cn:30003/emoji/qunioc.png')
+  const [groupAvatarUrl, setGroupAvatarUrl] = useState(qunioc)
+
+  const getGroupMember = (userId) => {
+    if (userId) {
+      return [{
+        group_member_info_member_role: 2,
+        group_member_info_identifier: userId,
+      }]
+    }
+    return null
+  }
   // eslint-disable-next-line
   const _handlerSubmit = async (formValue: FormValue) => {
+    let { groupMember, ...params } = formValue
     try {
-      await onSubmit({ ...formValue, groupAvatarUrl });
+      // 如有添加管理员
+      const groupMangeMember = getGroupMember(groupMember)
+      await onSubmit({ ...params, groupMember: groupMangeMember , groupAvatarUrl });
       onSuccess?.();
     } catch (error) {
       onError?.();

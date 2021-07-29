@@ -38,10 +38,10 @@ interface DataNode {
                 for(let i = 0;i <child[childrenNode].length;i++){
                         if(!(child[childrenNode][i].SubId.length > 0)  && !(child[childrenNode][i].Uids.length > 0)){
                             child[childrenNode][i].isLeaf = true
-                            child[childrenNode][i].disableCheckbox = true   
                         }else{
                             child[childrenNode][i].isLeaf = false
                         }
+                        child[childrenNode][i].disableCheckbox = true  
                         child[childrenNode][i].DEPT_NAME = child[childrenNode][i][labelNode] == "" ? "" : child[childrenNode][i][labelNode].match(/[^\/]+/)[0]
                         child[childrenNode][i].key = 'BM' + child[childrenNode][i].DepId
                         child[childrenNode][i].title = child[childrenNode][i][labelNode] == "" ? "" : child[childrenNode][i][labelNode].match(/[^\/]+/)[0]
