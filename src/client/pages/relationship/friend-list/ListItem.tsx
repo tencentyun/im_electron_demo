@@ -17,7 +17,7 @@ export const ListItem = (props: {
   }
 
   return (
-    <div className="friend-apply--content__item">
+    <div className="friend-list--content__item">
       <div className="item-left">
         <div className="item-left__avatar">
           <Avatar url={faceUrl} userID={userId} nickName={userName} />
@@ -28,7 +28,7 @@ export const ListItem = (props: {
         </div>
       </div>
       <div className="item-right">
-       <Button type="link" onClick={handleDelete}>删除</Button>
+       <Button type="link" className="item-right__btn" onClick={handleDelete}>删除</Button>
       </div>
     </div>
   );
