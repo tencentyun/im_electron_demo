@@ -215,7 +215,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 userID={conv_id}
                 groupID={conv_id}
               />
-              <span className="message-info-view__header--name">
+              <span className="message-info-view__header--name" title={nickName || conv_id}>
                 {nickName || conv_id}
               </span>
               {
