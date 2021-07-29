@@ -38,7 +38,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   } = conv_profile;
 
   const popupContainer = document.getElementById("messageInfo");
-  const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all;
+  const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all && conv_profile.group_detial_info_owener_identifier != localStorage.getItem('uid');
 
   const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
 
