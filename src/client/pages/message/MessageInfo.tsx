@@ -229,10 +229,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
             <div>
               {/* {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>} */}
               {
-                (conv_type === 1 || canInviteMember) && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id, convType: conv_type })} />
-              }
-              {
-                canCreateDiscussion && <span title='拉取讨论组' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
+                canInviteMember && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id, convType: conv_type })} />
               }
               {
                 canCreateDiscussion && <span title='拉取讨论组' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
