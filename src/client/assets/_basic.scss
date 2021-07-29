@@ -1,7 +1,3 @@
-@function toRem($value) {
-    $remValue: ($value / 16) + rem; 
-    @return $remValue;
-}
 #root {
     width: 100vw;
     height: 100vh;

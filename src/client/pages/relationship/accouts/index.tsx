@@ -186,8 +186,9 @@ export const Accouts:FC<listOnly> = ({onlyFill,callBack}): JSX.Element => {
         callBack()
        let {data} = await getAccountsList( 100000,1)
        let { ActionStatus,ErrorInfo,ErrorCode,Data,Total }  =  data;
+       Data =  Data ? Data.filter(item =>  item.username != 'admin') : Data
        Data?.forEach(element => {
-           if(element.uid && element.uid !== ""){
+           if(element.uid && element.uid !== "" && element.username != 'admin'){
                let splitEle = element.uid.split(',')
                if(splitEle.indexOf(window.localStorage.getItem('uid')) !== -1){
                     //已关注
