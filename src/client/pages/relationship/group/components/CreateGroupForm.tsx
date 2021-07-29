@@ -4,7 +4,7 @@ import { Form as FinalForm, Field } from "react-final-form";
 import { getStatus } from "../../../../utils/getStatus";
 import { GroupTypeSelect } from "./GroupTypeSelect";
 import  ImgCropper  from "../../../../components/UploadFace";
-const qunioc =  require('../../../../assets/icon/qunioc.png')
+import qunioc from '../../../../assets/icon/qunioc.png'
 
 import "./create-group-form.scss";
 

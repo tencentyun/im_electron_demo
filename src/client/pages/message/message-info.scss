@@ -68,6 +68,10 @@
         height: 24px;
         background-image: url('../../assets/icon/video.svg');
         margin-left: 12px;
+
+        &.is-calling {
+          background-image: url('../../assets//icon//video-active.svg');
+        }
       }
     }
 

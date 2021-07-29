@@ -3,12 +3,12 @@ import { Button, Icon, message, Modal } from "tea-component";
 import { TreeDynamicExample } from '../../pages/organization/tree/tree'
 import { Search } from '../../pages/organization/search/search';
 import React, { FC, useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Avatar } from "../../components/avatar/avatar";
 import { inviteMemberGroup } from "../../pages/message/api";
 import { createGroup, createGroupParams, getJoinedGroupList } from '../../pages/relationship/group/api'
 import { useMessageDirect } from "../../utils/react-use/useDirectMsgPage";
-const qunioc =  require('../../assets/icon/qunioc.png')
+import qunioc from '../../assets/icon/qunioc.png'
 
 import './pull.scss';
 
@@ -122,8 +122,10 @@ export const AddGroupMemberDialog = (props: {
       }
       const { json_param } = await createGroup(params);
       const resultGroupId = JSON.parse(json_param)?.create_group_result_groupid
-      showGroupbyId(resultGroupId)
       onClose();
+      setTimeout(() => {
+        showGroupbyId(resultGroupId)
+      }, 300)
     } catch(e) {
       message.error({ content: '创建失败' + e })
     }
@@ -134,10 +136,12 @@ export const AddGroupMemberDialog = (props: {
       const groupList = await getJoinedGroupList()
       if (groupList) {
         const profile = groupList.find(item => item.group_base_info_group_id === groupId)
-        directToMsgPage({
-          convType: 2,
-          profile: profile as any,
-        });
+        if (profile) {
+          directToMsgPage({
+            convType: 2,
+            profile: profile as any,
+          });
+        }
       }
     } catch(e) {
       console.log('显示刚创建的讨论组失败', e)
@@ -170,9 +174,11 @@ export const AddGroupMemberDialog = (props: {
             content: "该成员已在待添加列表！",
         })
     }else{
+        refData.search = true
         selectedList.push(refData)
         setSelectedList(JSON.parse(JSON.stringify(selectedList)))
         setSearchList(JSON.parse(JSON.stringify(selectedList)))
+        console.log(JSON.parse(JSON.stringify(selectedList)))
         const listmap = selectedList.map(item => item.Uid)
         setSelectIdsProp(listmap)
     }
@@ -188,7 +194,8 @@ export const AddGroupMemberDialog = (props: {
  const  callbackPersonnel = (refData: any)=> {
     console.log("人员列表",refData)
     //填充人员
-    for (const iterator of searchList) {
+    let filterSearch = searchList.filter(item => item.search)
+    for (const iterator of filterSearch) {
             for (let i= 0; i<refData.length; i++) {
                 if(refData[i].stance){
                     refData[i] = iterator
@@ -217,7 +224,7 @@ export const AddGroupMemberDialog = (props: {
         <div className="forward-popup__search-list">
           <div className="forward-popup__search-list__list customize-scroll-style">
                 <Search handleCallback= {searchStaff}></Search>
-                <TreeDynamicExample  selectIdsProp={selectIdsProp}  personnel={callbackPersonnel} selectable={ true } callback={refreshData}></TreeDynamicExample>    
+                <TreeDynamicExample  selectIdsProp={selectIdsProp} searchList={selectedList} personnel={callbackPersonnel} selectable={ true } callback={refreshData}></TreeDynamicExample>    
           </div>
         </div>
         <div className="forward-popup__seleted-list customize-scroll-style">

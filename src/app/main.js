@@ -11,7 +11,7 @@ const Store = require('electron-store');
 const store = new Store()
 const IPC = require("./ipc");
 // https://oaim.uat.crbank.com.cn:30003/headUrl/1627475525455839399.png
-let trayIcon = nativeImage.createFromPath(path.join(__dirname, '../../icon/notification.png'))
+let trayIcon = nativeImage.createFromPath(path.join(process.cwd(), '/resources/extraResources', 'notification.png'))
 let forceQuit = false;
 const downloadUrl = app.getPath("downloads");
 let ipc
@@ -37,6 +37,10 @@ const setAppTray = () => {
   ]
 
   // 系统托盘图标目录
+
+  // trayIcon.setTemplateImage(true)
+  // trayIcon.setSize(30, 30)
+
   appTray = new Tray(trayIcon)
 
   // 图标的上下文菜单
@@ -293,6 +297,8 @@ function reSizeWindow () {
   }
 }
 function trayFlash () {
+
+
   if (appTray) {
     hasFlash = true;
 

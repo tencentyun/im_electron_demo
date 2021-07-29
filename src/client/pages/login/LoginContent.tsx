@@ -87,22 +87,12 @@ export const LoginContent = (): JSX.Element => {
             //     password: 'MTIzNDU2'
             // }).then(async res => {
             const USERLOGIN = userID
-            console.log(2232323)
             const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
             const params: loginParam = {
                 userID: USERLOGIN.toUpperCase(),
                 userSig: userSig
             }
-            console.log(887655)
             const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
-            console.log(code, data, desc, json_param);
-            window.localStorage.setItem('uid', userID)
-            window.localStorage.setItem('usersig', Encypt)
-            //if(code === 0) {
-            // dispatch(loginUser({
-            //     userId: userID,
-            //     userSig:usersig
-            // }))
             window.localStorage.setItem('uid', userID)
             window.localStorage.setItem('usersig', Encypt)
             //获取部门
