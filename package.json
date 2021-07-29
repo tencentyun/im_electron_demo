@@ -5,12 +5,11 @@
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {
-    "start": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
-    "build": "npm run build:react && electron-builder -w",
+    "start": "concurrently \"npm run dev:electron\"",
+    "build": "electron-builder -w",
     "build:react": "cd ./src/client && npm run build:react",
-    "dev:electron": "electron .",
-    "dev:react": "cd ./src/client && npm run dev:react",
-    "dev": "npm run dev:react && npm run start"
+    "dev:electron": "set NODE_ENV=development && electron .",
+    "dev:react": "cd ./src/client && npm run dev:react"
   },
   "keywords": [],
   "author": {
@@ -22,9 +21,13 @@
       "src/app",
       "bundle"
     ],
+    "productName": "华润银行即时通讯（内测版）",
     "appId": "electron-sdk",
-    "mac": {},
+    "mac": {
+      "icon": "./icon/favicon.icns"
+    },
     "win": {
+      "icon": "./src/client/assets/icon/windows.png",
       "target": [
         {
           "target": "nsis",
@@ -51,20 +54,20 @@
   "devDependencies": {
     "concurrently": "^6.2.0",
     "electron": "^13.1.5",
-    "electron-builder": "^22.11.7",
-    "node-gyp": "^7.1.2"
+    "electron-builder": "^22.11.7"
   },
   "dependencies": {
     "axios": "^0.21.1",
     "braft-editor": "^2.3.9",
     "concurrently": "^6.2.0",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
     "element-react": "^1.4.34",
     "element-theme-default": "^1.4.13",
     "file-loader": "^6.2.0",
     "final-form": "^4.20.2",
-    "im_electron_sdk": "^1.0.29",
+    "im_electron_sdk": "^1.0.42",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
     "qs": "^6.5.2",

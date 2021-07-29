@@ -1,3 +1,4 @@
+import { shell } from "electron";
 import React, { useEffect } from "react";
 import { downloadFilesByUrl, showDialog } from "../../../utils/tools";
 const showPic = () => {
@@ -5,6 +6,16 @@ const showPic = () => {
     }
 
 export const PicElemItem = (props: any): JSX.Element => {
+
+    const showPic = () => {
+        try {
+            const imageName = props.image_elem_large_id.match(/([\d|a-z]+\.\w+)$/)[1]
+            const path = process.cwd() + '/download/' + imageName
+            console.log(path)
+            shell.showItemInFolder(path)
+        } catch(e) {}
+    }
+    
   
     const item = ({ image_elem_thumb_url, image_elem_orig_url, image_elem_large_url }) => {
 
@@ -23,7 +34,7 @@ export const PicElemItem = (props: any): JSX.Element => {
     const savePic = () => {
         // 大图、原图、缩略图
         const { image_elem_orig_url, image_elem_thumb_id } = props;
-        console.log(image_elem_orig_url, '__________________________________', props)
+        // console.log(image_elem_orig_url, '__________________________________', props)
         image_elem_orig_url && downloadPic(image_elem_orig_url, image_elem_thumb_id)
     }
     useEffect(() => {

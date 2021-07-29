@@ -10,6 +10,7 @@ export interface ResponseData {
     data?: any;
     msg?: string;
     token?: string;
+    ERRCODE?: string;
 }
 
 const serverCodeMessage: {[key: number]: string} = {
@@ -82,10 +83,10 @@ request.interceptors.response.use(
     async (response: AxiosResponse) => {
         const res: ResponseData = response.data;
 
-        const { code, ErrorCode } = res;
+        const { code, ErrorCode, ERRCODE } = res;
         console.log('response', response);
         // 自定义状态码验证
-        if (code && code !== 0 && ErrorCode && +ErrorCode !== 0) {
+        if (code && code !== 0 && ErrorCode && +ErrorCode !== 0 && ERRCODE && ERRCODE !== 'S000') {
             return Promise.reject({
                 response,
                 message: 'CustomError',

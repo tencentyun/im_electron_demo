@@ -31,22 +31,27 @@
   }
 
   &--right {
-    &__button {
-      font-size: 14px;
-      font-weight: 400;
-      color: #d0021b;
+    &__disslove{
+      width: 25px;
+      height: 25px;
       cursor: pointer;
+      background: url(../../../../assets/icon/dissolve.png) no-repeat center center / 100% 100%;
+    }
+    &__button {
+      width: 25px;
+      height: 25px;
+      cursor: pointer;
+      background: url(../../../../assets/icon/exit.png) no-repeat center center / 100% 100%;
 
-      &:focus,
-      &:active {
-        background-color: #ffffff;
-        color: #d0021b;
-      }
-
-      &:hover {
-        background: rgba(232, 242, 255, 1);
-        color: #d0021b;
-      }
+      // &:focus,
+      // &:active {
+      //   background-color: #ffffff;
+      //   color: #d0021b;
+      // }
+      // &:hover {
+      //   background: rgba(232, 242, 255, 1);
+      //   color: #d0021b;
+      // }
     }
   }
 }

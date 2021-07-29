@@ -12,13 +12,12 @@ import {
   DeleteMemberRecordsType,
 } from "./DeleteGroupMember";
 import { getUserTypeQuery } from "../../../services/userType";
-
-import {
-  AddGroupMemberDialog,
-  AddMemberRecordsType
-}from '../../../components/pull/pull'
+import { AddMemberRecordsType, 
+  AddGroupMemberDialog } from '../../../components/pull/pull'
 
 import { GroupMemberBubble } from "./GroupMemberBubble";
+import { getLoginUserID } from '../api';
+
 
 export const GroupMember = (props: {
   userList: {
@@ -86,12 +85,13 @@ export const GroupMember = (props: {
   const [userGroupType, setUserGroupType] = useState([]);
 
   // 获取当前群内好友状态
-  const getUsetGroupStatus = () => {
+  const getUsetGroupStatus = async () => {
     if (userList.length <= 0) {
       return;
     }
     // const sdkappid = "1400529075";
-    const uid = "YANGGUANG37";
+    // const uid = "YANGGUANG37";
+    const uid = await getLoginUserID();
     const To_Account = ["denny1", "denny2"];
     userList.forEach((i) => {
       To_Account.push(i.user_profile_identifier);

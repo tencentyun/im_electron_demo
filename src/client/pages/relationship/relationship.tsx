@@ -1,5 +1,9 @@
 import React, { useState } from "react";
+import { FriendApply } from "./friend-apply";
+import { FriendList } from "./friend-list";
 import { Group } from "./group";
+import { Organization } from '../organization/organization'
+import { Accouts } from './accouts'
 import "./relationship.scss";
 
 const navList = [
@@ -7,19 +11,34 @@ const navList = [
     id: "group",
     title: "我的群组",
   },
+  {
+    id: "organization",
+    title: "组织架构",
+  },
+  {
+    id: "accounts",
+    title: "公众号",
+  }
 ];
 
 export const RelationShip = (): JSX.Element => {
   const [activedId, setActiveId] = useState("group");
-
+  const [onlyFilled,setOnlyFilled] = useState(true)
   const DisplayComponent = {
     group: Group,
+    "buddy-apply": FriendApply,
+    "buddy-list": FriendList,
   }[activedId];
 
   const addActiveClass = (id: string): string =>
     id === activedId ? "is-active" : "";
 
-  const handleLinkClick = (id: string): void => setActiveId(id);
+  const handleLinkClick = (id: string): void => {
+    setActiveId(id)
+    if(id == 'accounts'){
+      setOnlyFilled(true)
+    }
+  };
 
   return (
     <div className="relationship">
@@ -38,7 +57,9 @@ export const RelationShip = (): JSX.Element => {
         </ul>
       </div>
       <div className="relationship-content">
-        <DisplayComponent />
+      {
+       activedId == 'group' ?   <Group /> : activedId == 'organization' ?  <Organization />  : <Accouts callBack={()=>{setOnlyFilled(false)}} onlyFill= { onlyFilled }/>
+      }
       </div>
     </div>
   );

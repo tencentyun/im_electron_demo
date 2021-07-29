@@ -5,7 +5,7 @@ export const MergeElem = (props: any): JSX.Element => {
     const item = (props) => {
 
         return (
-            <div className="message-view__item--merge right-menu-item" onClick={showMergeDitail} >
+            <div className="message-view__item--merge right-menu-item" style={{height: 'auto'}} onClick={showMergeDitail} >
                 {/* 标题 */}
                 <div className="message-view__item--merge___title" >{props.merge_elem_title}</div>
                 {/* 消息摘要 */}
@@ -18,6 +18,6 @@ export const MergeElem = (props: any): JSX.Element => {
             </div>
         )
     };
-    console.log('合并我笑傲你', props)
+    // console.log('合并我笑傲你', props)
     return item(props);
 }

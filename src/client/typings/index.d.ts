@@ -3,13 +3,14 @@ declare namespace State {
         login: {
             isLogin: boolean
         },
-        userInfo: userInfo
-        conversation: conversation
-        historyMessage: historyMessage
+        userInfo: userInfo,
+        conversation: conversation,
+        historyMessage: historyMessage,
         section:section
         userTypeList: Array<userTypeData>
         ui: ui
-        groupDrawer: GroupDrawer
+        loginUser:loginUser
+        groupDrawer: GroupDrawer,
     }
     export type GroupDrawer = {
         toolsDrawerVisible: boolean;
@@ -22,15 +23,26 @@ declare namespace State {
     }
     export type ui = {
         function_tab: functionTab,
-        replace_router: boolean
+        replace_router: boolean,
+        callingStatus: {
+            callingType: number,
+            callingId: string
+        }
     }
     
     export type section = {
         section: Array<object>
     }
 
+    export type loginUser = {
+        userId:string,
+        userSig:string 
+    }
+
     export type historyMessage = {
         historyMessageList:Map<string, Array<message>>
+        uploadProgressList:Map<string, any>
+        currentReplyUser: userProfile
     }
     export type conversation = {
         unreadCount: number,

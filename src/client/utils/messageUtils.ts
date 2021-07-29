@@ -1,5 +1,6 @@
 import { ConvItem } from "../pages/message/type"
 
+const TEMP_PATH_NAME_GROUP = "TEMP_PATH_NAME_GROUP"
 export enum TIMConvType {
     kTIMConv_Invalid, // 无效会话
     kTIMConv_C2C,     // 个人会话
@@ -12,7 +13,7 @@ export const getMessageId = (message: State.message): string => {
 }
 export const getConvId = (convItem: ConvItem): string => {
     const item = convItem as State.groupProfile
-    if(item.group_detial_info_group_id) {
+    if (item.group_detial_info_group_id) {
         return item.group_detial_info_group_id
     } else {
         return (convItem as State.FriendProfile).friend_profile_identifier
@@ -54,6 +55,19 @@ export const getMergeMessageAbstactArray = (messageGroup: State.message[]): stri
     return ret;
 }
 
+export const setPathToLS = (path: string): void => {
+    if (!path) return
+    const pathGroup: Array<string> = JSON.parse(localStorage.getItem(TEMP_PATH_NAME_GROUP) || "[]")
+    if (pathGroup.indexOf(path) === -1) {
+        pathGroup.push(path)
+    }
+    localStorage.setItem(TEMP_PATH_NAME_GROUP, JSON.stringify(pathGroup))
+}
+export const checkPathInLS = (path: string) => {
+    const pathGroup: Array<string> = JSON.parse(localStorage.getItem(TEMP_PATH_NAME_GROUP) || "[]")
+    if (pathGroup.length && pathGroup.indexOf(path) > -1) return true
+    return false
+}
 /**
  * 
  * @param limitSize 所要限定的文件大小
@@ -63,4 +77,27 @@ export const getMergeMessageAbstactArray = (messageGroup: State.message[]): stri
 export const judgeFileSize = (limitSize: number, file: File) => {
     const { size } = file
     return limitSize >= size / 1024 / 1024
+}
+
+interface urlDataItem{
+    content:string
+}
+/**
+ * 匹配字符中存在的img的src属性
+ * @param data 
+ */
+export const matchUrl = (data:urlDataItem[]) => {
+    const urlArr = []
+    data.forEach(function (item) {
+        let imgReg = /<img.*?(?:>|\/>)/gi //匹配图片中的img标签
+        let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i // 匹配图片中的src
+        let str = item.content
+        let arr = str.match(imgReg)  //筛选出所有的img
+        for (let i = 0; i < arr.length; i++) {
+            let src = arr[i].match(srcReg)
+            // 获取图片地址
+            urlArr.push(src[1])
+        }
+    })
+    return urlArr
 }

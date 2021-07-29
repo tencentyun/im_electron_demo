@@ -13,9 +13,7 @@ import { addMessage } from "../../store/actions/message";
 import {
   AddGroupMemberDialog,
   AddMemberRecordsType
-}from '../../components/pull/pull'
-
-import { AddUserPopover } from "./AddUserPopover";
+} from '../../components/pull/pull'
 
 import { useDialogRef } from "../../utils/react-use/useDialog";
 import { addTimeDivider } from "../../utils/addTimeDivider";
@@ -41,7 +39,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   } = conv_profile;
 
   const popupContainer = document.getElementById("messageInfo");
-  const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all;
+  const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all && conv_profile.group_detial_info_owener_identifier != localStorage.getItem('uid');
 
   const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
 
@@ -49,16 +47,15 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     (state: State.RootState) => state.historyMessage
   );
   const userTypeList = useSelector((state: State.RootState) => state.userTypeList);
-  const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
-  const [ isPress, setIsPress] = useState(false)
-  const [ editorHeight, seteditorHeight] = useState(250)
-  
+  const [editorState, setEditorState] = useState<EditorState>(BraftEditor.createEditorState(null))
+  const [isPress, setIsPress] = useState(false)
+  const [editorHeight, seteditorHeight] = useState(250)
+
   const { toolsTab, toolsDrawerVisible } = useSelector(
     (state: State.RootState) => state.groupDrawer
   );
 
   const msgList = historyMessageList.get(conv_id);
-
   const getDisplayConvInfo = () => {
     const info: Info = {
       faceUrl: "",
@@ -78,7 +75,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   };
   const validatelastMessage = (messageList: State.message[]) => {
     let msg: State.message;
-    for (let i = 0; i < messageList.length; i++) {
+    for (let i = 0;i < messageList.length;i++) {
       // 筛选不是自己的且发送成功的消息
       if (
         messageList[i]?.message_msg_id &&
@@ -126,28 +123,19 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     handleMsgReaded();
     // }
   };
-  const reloct = (value:Array<string>)=> {
-    try{
-      if(value.length){
-        console.log(conv_id,value)
-         inviteMemberGroup({groupId:conv_id, UIDS:value})
-      }
-    }catch(e){
-      console.log(e.message);
-    }
-  }
+
   const { faceUrl, nickName } = getDisplayConvInfo();
   const dispatch = useDispatch();
 
   // 可拉人进群条件为 当前选中聊天类型为群且群类型不为直播群且当前群没有设置禁止加入
   const canInviteMember = conv_type === 2 && [0, 1, 2].includes(groupType);
-
+  const canCreateDiscussion = conv_type === 1
   // 设置群信息相关
   const handleClick = (id: string) => dispatch(changeToolsTab(id));
 
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));
-  
+
   const handleOpenCallWindow = () => {
     ipcRenderer.send("openCallWindow");
   }
@@ -173,30 +161,30 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   const isOnInternet = () => {
     let buuer = false;
-    for(const item in userTypeList){
-        // console.warn(userTypeList[item])
-        if(userTypeList[item].To_Account === conv_id && userTypeList[item].Status === 'Online'){
-          buuer = true
-        }
+    for (const item in userTypeList) {
+      // console.warn(userTypeList[item])
+      if (userTypeList[item].To_Account === conv_id && userTypeList[item].Status === 'Online') {
+        buuer = true
+      }
     }
     return buuer
   };
 
   // 滑动高度判断赋值
-  const adjustHeight = (e)=>{
-    if(isPress){
+  const adjustHeight = (e) => {
+    if (isPress) {
       let maxHeight = document.documentElement.clientHeight
       let height = maxHeight - e.clientY
-      if(height < 170){
+      if (height < 170) {
         height = 170
-      }else if(height > maxHeight - 150){
+      } else if (height > maxHeight - 150) {
         height = maxHeight - 150
       }
       seteditorHeight(height)
     }
   }
 
-  const sliderStyle = ()=>{
+  const sliderStyle = () => {
     return {
       'height': editorHeight + 'px'
     }
@@ -204,7 +192,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   return (
     <>
-      <div className="message-info" onMouseMove={adjustHeight} onMouseUp={()=>setIsPress(false)}>
+      <div className="message-info" onMouseMove={adjustHeight} onMouseUp={() => setIsPress(false)}>
         <div className="message-info-view" id="messageInfo">
           <header className="message-info-view__header">
             <div
@@ -228,30 +216,39 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 userID={conv_id}
                 groupID={conv_id}
               />
-               <span className="message-info-view__header--name">
-                  {nickName || conv_id}
-                </span>
-                {
-                  conv_type === 1 ?
-                  <span title={isOnInternet()?'在线':'离线'} 
-                    className={['message-info-view__header--type', !isOnInternet()?'message-info-view__header--typeoff': ''].join(' ')}
+              <span className="message-info-view__header--name">
+                {nickName || conv_id}
+              </span>
+              {
+                conv_type === 1 ?
+                  <span title={isOnInternet() ? '在线' : '离线'}
+                    className={['message-info-view__header--type', !isOnInternet() ? 'message-info-view__header--typeoff' : ''].join(' ')}
                   >
-                  </span>:null
-                }
+                  </span> : null
+              }
             </div>
             <div>
-              {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
+              {/* {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>} */}
+              {
+                (conv_type === 1 || canInviteMember) && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id, convType: conv_type })} />
+              }
+              {
+                canCreateDiscussion && <span title='拉取讨论组' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
+              }
+              {
+                canCreateDiscussion && <span title='拉取讨论组' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id, convType: conv_type })} />
+              }
               <span className="message-info-view__header--video" onClick={handleOpenCallWindow} />
             </div>
           </header>
           <section className="message-info-view__content">
             <div className="message-info-view__content--view">
-            <MessageView messageList={msgList || []} convId={conv_id} convType={conv_type} editorState={editorState} setEditorState={setEditorState}/>
+              <MessageView messageList={msgList || []} convId={conv_id} convType={conv_type} editorState={editorState} setEditorState={setEditorState} />
             </div>
-            <div className="message-info-view__content--slider" 
-              onMouseDown={()=>setIsPress(true)} 
-              ></div>
-            <div style={{ ...sliderStyle() }}  className="message-info-view__content--input">
+            <div className="message-info-view__content--slider"
+              onMouseDown={() => setIsPress(true)}
+            ></div>
+            <div style={{ ...sliderStyle() }} className="message-info-view__content--input">
               <MessageInput
                 convId={conv_id}
                 convType={conv_type}
@@ -270,6 +267,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
           />
         )}
       </div>
+      <AddGroupMemberDialog
+        dialogRef={addMemberDialogRef}
+      />
       <GroupToolsDrawer
         visible={toolsDrawerVisible}
         toolId={toolsTab}

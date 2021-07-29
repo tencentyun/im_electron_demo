@@ -7,9 +7,10 @@ import './search.scss'
 interface TreeDynamic {
     callback?: Function
     handleCallback?:Function,
+    onClear?:Function,
     filter?:boolean
 }
-export const Search : FC<TreeDynamic> = ({ callback,handleCallback,filter = true }): JSX.Element => {
+export const Search : FC<TreeDynamic> = ({ callback,onClear,handleCallback,filter = true }): JSX.Element => {
     let  settime: any;
     const [filterDataIndex,setFilterDataIndex] = useState(0);
     const [filterData,setFilterData] = useState([]);
@@ -19,11 +20,12 @@ export const Search : FC<TreeDynamic> = ({ callback,handleCallback,filter = true
     const 	searchRectData = (nameText) =>{
                 clearTimeout(settime)
                 settime = setTimeout(async ()=>{
-                const { data } =  await	getstAffPrefix({ Prefix:nameText,Limit:10 })
+                const { data } =  await	getstAffPrefix({ Prefix:nameText,Limit:100 })
                 let { ActionStatus, ErrorCode, ErrorInfo,StaffInfoList } = data
                 if(ActionStatus == 'OK' && ErrorCode === 0){
                     callback && ((StaffInfoList.length > 0) && callback(StaffInfoList[0]))
                         setFilterDataIndex(0)
+                        console.log(StaffInfoList)
                         setFilterData(StaffInfoList)
                 }else{
                    console.log(ErrorInfo)
@@ -33,19 +35,20 @@ export const Search : FC<TreeDynamic> = ({ callback,handleCallback,filter = true
 
     const filterSearchRectData = (nameText) =>{
             clearTimeout(settime)
+            if(nameText.trim() == "") onClear && onClear()
                 settime = setTimeout(async ()=>{
                     filterGetStAffPrefix({ Prefix:nameText,Limit:10 },(filterLoda)=>{
-                        callback && ((filterLoda.length > 0) && callback(filterLoda[0]))
+                        callback && ((filterLoda.length > 0) && callback(filterLoda[0],filterText))
                         setFilterDataIndex(0)
                         setFilterData(filterLoda)
-                    },window.localStorage.getItem('userId'))
+                    },window.localStorage.getItem('uid'))
         },500)
     }
 
     const  handleItemClick  = (data,index):void => {
         setFilterDataIndex(index)
         callback && callback(data)
-        handleCallback(data)
+        handleCallback && handleCallback(data)
     }
     return (
         <>
@@ -56,7 +59,9 @@ export const Search : FC<TreeDynamic> = ({ callback,handleCallback,filter = true
                         setFilterText(value)
                         filter ? filterSearchRectData(value) :  searchRectData(value)
                     }}
-                    onClear={() => console.log("clear")}
+                    onClear={() => {
+                        onClear && onClear()
+                    }}
                     onHelp={() => console.log("help")}
                     />
 

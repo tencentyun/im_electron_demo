@@ -26,9 +26,15 @@ import { EmptyResult } from './searchMessage/EmptyResult';
 import { Myloader } from '../../components/skeleton';
 import { replaceRouter } from '../../store/actions/ui';
 import { getUserTypeQuery } from '../../services/userType'
+import { getLoginUserID } from './api';
+
+let indervel = null
+
+let uid = ''
 
 export const Message = (): JSX.Element => {
     const [isLoading, setLoadingStatus ] = useState(false);
+    const [statusIndervel, setStatusIndervel ] = useState(1);
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
     const { replace_router } = useSelector((state:State.RootState)=>state.ui)
     const dialogRef = useDialogRef();
@@ -75,6 +81,9 @@ export const Message = (): JSX.Element => {
             dispatch(updateCurrentSelectedConversation(null))
         }
     }
+    const getUid = async ()=>{
+        uid = await getLoginUserID()
+    }
     useEffect(() => {
         if(!replace_router){
             conversationList.length === 0 && setLoadingStatus(true);
@@ -82,7 +91,13 @@ export const Message = (): JSX.Element => {
         }else{
             dispatch(replaceRouter(false))
         }
-        
+        indervel = setInterval(()=>{
+            setStatusIndervel(v=>v+1)
+        },1000*5)
+        getUid()
+        return () => {
+            clearInterval(indervel)
+        }
     }, []);
     
     useEffect(() => {
@@ -111,7 +126,12 @@ export const Message = (): JSX.Element => {
         }
     }, [currentSelectedConversation] );
 
-    const handleConvListClick = convInfo => dispatch(updateCurrentSelectedConversation(convInfo));
+    const handleConvListClick = convInfo => {
+        if(convInfo.conv_type == 1) {
+            getUsetStatus()
+        }
+        dispatch(updateCurrentSelectedConversation(convInfo));
+    }
 
     const handleSearchBoxClick = () => dialogRef.current.open();
 
@@ -120,7 +140,7 @@ export const Message = (): JSX.Element => {
         const { user_profile_nick_name } = message_sender_profile;
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
         const firstMsg = message_elem_array[0];
-        const displayTextMsg = message_status === 6 ? `${revokedPerson} 撤回了一条消息` : firstMsg.text_elem_content;
+        const displayTextMsg = message_status === 6 ? `${revokedPerson} 撤回了一条消息` : firstMsg?.text_elem_content;
         const displayLastMsg = {
             '0': displayTextMsg,
             '1': '[图片]',
@@ -135,7 +155,7 @@ export const Message = (): JSX.Element => {
             '10': '[关系]',
             '11': '[资料]',
             '12': '[合并消息]',
-        }[firstMsg.elem_type];
+        }[firstMsg?.elem_type];
         const hasAtMessage = conv_group_at_info_array && conv_group_at_info_array.length;
         const atDisPlayMessage = hasAtMessage && conv_group_at_info_array.pop().conv_group_at_info_at_type === 1 ? "@我" : "@所有人"
         const isRead = message_is_from_self && message_is_peer_read || !message_is_from_self && message_is_read
@@ -167,14 +187,14 @@ export const Message = (): JSX.Element => {
     }
 
 
-    const getUsetStatus = () => {
+    const getUsetStatus = async () => {
         if(conversationList.length <= 0){
             return
         }
         // 获取当前对话标列表好友状态
         // const sdkappid = "1400529075";
-        const uid = "YANGGUANG37";
-        const To_Account = ["denny1", "denny2"];
+        // const uid = "YANGGUANG37";
+        const To_Account = [];
         conversationList.forEach((i) => {
             if (i.conv_type === 1) {
                 To_Account.push(i.conv_id)
@@ -291,7 +311,7 @@ export const Message = (): JSX.Element => {
     if (currentSelectedConversation === null) {
         return <EmptyResult contentText="暂无会话" />
     }
-    console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
+    // console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
     return (
         <div className="message-content">
             <div className="message-list">

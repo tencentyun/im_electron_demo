@@ -4,7 +4,7 @@ import timRenderInstance from "../../utils/timRenderInstance";
 type SendMsgParams<T> = {
   convId: string;
   convType: number;
-  messageElementArray: [T];
+  messageElementArray: T[];
   userData?: string;
   userId: string;
   messageAtArray?: string[];
@@ -83,6 +83,14 @@ type MemberInfo = {
     group_member_info_identifier: string;
   }[];
 };
+
+
+type CancelSendMsgParams = {
+  conv_id: string,
+  conv_type: number,
+  message_id: string,
+  user_data: string
+}
 
 export const getUserInfoList = async (userIdList: Array<string>) => {
   const {
@@ -326,6 +334,17 @@ export const sendCustomMsg = (params: SendMsgParams<CustomMsg>): Promise<MsgResp
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
+export const cancelSendMsg = async (params: CancelSendMsgParams): Promise<MsgResponse> => {
+  const {conv_id, conv_type, message_id, user_data } = params
+  const res = await timRenderInstance.TIMMsgCancelSend({
+    conv_id,
+    conv_type,
+    message_id,
+    user_data
+  });
+  return res
+}
+
 
 export const getConversionList = async () => {
   const {
@@ -458,11 +477,9 @@ export const getGroupMemberInfoList = async (params: {
 }): Promise<any> => {
   const { groupId } = params;
   const res = await getGroupMemberList({ groupId });
-  console.log("getGroupMemberList", res);
   const { group_get_memeber_info_list_result_info_array: memberList } = res;
   const userIdList = memberList.map((v) => v.group_member_info_identifier);
   const result = await getUserInfoList(userIdList);
-  console.log("getUserInfoList", result);
   const userList = result.map((v) => {
     const member =
       memberList.find(
@@ -519,7 +536,6 @@ export const modifyGroupInfo = async (params: {
       },
     })
   );
-
   const results = await Promise.all(fetchList);
   if (!results.find((item) => item?.data?.code !== 0)) {
     return {};
