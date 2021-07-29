@@ -10,7 +10,7 @@ const child_process = require('child_process');
 const Store = require('electron-store');
 const store = new Store()
 const IPC = require("./ipc");
-// https://oaim.uat.crbank.com.cn:30003/headUrl/1627475525455839399.png
+// 'http://oaim.crbank.com.cn:30003/emoji/notification.png'
 let trayIcon = nativeImage.createFromPath(path.join(process.cwd(), '/resources/extraResources', 'notification.png'))
 let forceQuit = false;
 const downloadUrl = app.getPath("downloads");
@@ -146,14 +146,14 @@ function createWindow () {
       mainWindow.webContents.send('mainProcessMessage', false)
     }
   })
-  mainWindow.loadURL(`http://localhost:3000`);
-  // mainWindow.loadURL(
-  //   url.format({
-  //     pathname: path.join(__dirname, "../../bundle/index.html"),
-  //     protocol: "file:",
-  //     slashes: true,
-  //   })
-  // );
+  // mainWindow.loadURL(`http://localhost:3000`);
+  mainWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, "../../bundle/index.html"),
+      protocol: "file:",
+      slashes: true,
+    })
+  );
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
