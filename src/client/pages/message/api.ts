@@ -458,6 +458,7 @@ export const getGroupMemberList = async (params: {
   const { data } = await timRenderInstance.TIMGroupGetMemberInfoList({
     params: queryParams,
   });
+  console.log('getGroupMemberList', data)
   const { code, json_param } = data;
   if (code === 0) {
     const result = JSON.parse(json_param);

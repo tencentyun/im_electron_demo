@@ -91,7 +91,6 @@ export const GroupMemberListDrawer = (props: {
     }
   }, [visible]);
 
-
   return (
     <Drawer
       visible={visible}
