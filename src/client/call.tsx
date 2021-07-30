@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from "react-dom";
 
-import { CallContent } from './pages/call';
+import { eventListiner } from './pages/call/callIpc';
+import { Call } from './pages/call';
 
-ReactDOM.render(
-    <CallContent />,
-    document.getElementById("root")
-  );
+eventListiner.init();
+
+ReactDOM.render(<Call />, document.getElementById("root"));

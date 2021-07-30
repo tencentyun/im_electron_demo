@@ -48,6 +48,8 @@ export const getFriendShipPendencyList = async (params: {
     },
   });
 
+  console.log('dagetFriendShipPendencyListta', data)
+
   const { code, desc, json_params } = data;
   if (code === 0) {
     const result: FriendShipPendency = JSON.parse(json_params) || {};
@@ -63,6 +65,7 @@ export const getFriendShipPendencyList = async (params: {
         );
         return { ...apply, ...v };
       });
+      // @ts-ignore
       return { applyList, ...others };
     }
   }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { remote } from 'electron';
-import { message } from 'tea-component';
 import {
     TRTCAppScene, 
     TRTCVideoStreamType, 
@@ -16,28 +15,31 @@ import {
 
 import trtcInstance from '../../../utils/trtcInstance';
 import generateTestUserSig from '../../../utils/generateUserSig';
-import { getUserData } from '../utils';
 import { CallVideo } from '../callVideo/CallVideo';
 import { CallFooter } from '../callFooter/CallFooter';
+import { CallTime } from './CallTime';
 
 import event from '../event';
+import { useCallData } from  '../useCallData';
 
 import './call-content.scss';
 
-export const CallContent = () => {
-    const callingTIme = '00:37';
-    const { userId, convInfo } = getUserData();
+export const CallContent = ({ userId, convInfo}) => {
+    const [ isStart, setStartStatus ] = useState(false);
 
     const onExitRoom = () => {
         const win = remote.getCurrentWindow();
         win.close();
     }
 
+    const onRemoteUserEnterRoom = () => setStartStatus(true);
+
     const startVideo = (currentCamera) => {
         const roomId = 123456;
         const { deviceId } = currentCamera;
 
         trtcInstance.on('onExitRoom', onExitRoom);
+        trtcInstance.on('onRemoteUserEnterRoom', onRemoteUserEnterRoom);
         trtcInstance.setCurrentCameraDevice(deviceId);
         let encParam = new TRTCVideoEncParam();
         encParam.videoResolution = TRTCVideoResolution.TRTCVideoResolution_640_360;
@@ -59,24 +61,24 @@ export const CallContent = () => {
     }
 
     useEffect(() => {
-        const currentCamera = trtcInstance.getCurrentCameraDevice();
-        startVideo(currentCamera);
-    }, []);
+        if(userId) {
+            const currentCamera = trtcInstance.getCurrentCameraDevice();
+            startVideo(currentCamera);
+        }
+    }, [userId]);
 
     const toggleVideo = isMute => {
         trtcInstance.muteLocalVideo(isMute);
         event.emit('toggleVideo', !isMute);
     };
 
-    const toggleVoice = isMute => {
-        trtcInstance.muteLocalAudio(isMute);
-    }
+    const toggleVoice = isMute => trtcInstance.muteLocalAudio(isMute);
 
     const exitRoom = () => trtcInstance.exitRoom();
      
     return <div className="call-content">
        <header className="call-content__header">
-           <span>通话时间: {callingTIme}</span>
+           <CallTime isStart={isStart} />
        </header>
        <section className="call-content__video">
             <CallVideo trtcInstance={trtcInstance} convInfo={convInfo} userId={userId} />
