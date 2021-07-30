@@ -269,6 +269,7 @@ function createWindow () {
   // 打开文件
   ipcMain.on("OPENFILE", function (event, filename) {
     const name = filename.filename;
+    console.log(name)
     const localUrl = path.join(process.cwd(), "/download/", name);
     shell.openPath(localUrl);
   });
