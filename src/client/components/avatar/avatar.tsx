@@ -1,7 +1,8 @@
 import React, { FC, useEffect, useState } from "react"
 import { RouteComponentProps } from "react-router-dom"
 import './avatar.scss'
-import ImgViewer from '../../components/ImgViewer'
+import { useDispatch } from 'react-redux';
+import { setImgViewerAction } from '../../store/actions/imgViewer';
 
 
 type AvatarSizeEnum = "default" | "large" | "small" | "mini"
@@ -23,19 +24,22 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
     const [userID,setUserID] = useState(uid)
     const [groupID, setGroupID] = useState(gid)
     const [show, setShow] = useState(false)
-    const [imgPreViewUrl,setImgPreViewUrl] = useState('')
+    const dispatch = useDispatch();
+    
     const displayInfo = (info:string)=>{
         if(!info){
             return "未知"
         }
         return info.slice(-2).toUpperCase()
     }
-    const handleClose = () => {
-        setShow(false)
-    }
+
     const handleOpen = () => {
-        setShow(true)
-        setImgPreViewUrl(url)
+        dispatch(setImgViewerAction({
+            isShow: true,
+            imgs: url,
+            isCanOpenFileDir: false,
+            index:0
+        }))
     }
     const urlComp:JSX.Element =  <div className={`avatar ${size} ${extralClass}`} style={{
         backgroundImage:`url(${url})`,
@@ -68,7 +72,6 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
     },[avatar,nick,uid,gid])
     return (
         <>
-            <ImgViewer show={show} onClose={handleClose} isCanOpenFileDir={false} url={imgPreViewUrl}></ImgViewer>
             <div onClick={handleOpen}>
                 {
                 url ? urlComp : nickName ? nickComp : userID ? userIDComp : groupID ? groupIDComp : defaltComp

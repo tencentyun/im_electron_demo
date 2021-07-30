@@ -38,8 +38,8 @@ import { showDialog } from "../../utils/tools";
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
 import { GroupSysElm } from './messageElemTyps/groupSystemElem';
-import ImgViewer from '../../components/ImgViewer'
 import { setCurrentReplyUser } from '../../store/actions/message'
+import { setImgViewerAction } from '../../store/actions/imgViewer';
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -94,9 +94,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const [noMore, setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     const dispatch = useDispatch();
     const [anchor, setAnchor] = useState('')
-    const [show,setShow] = useState(false)
-    const [imgPreViewUrl,setImgPreViewUrl] = useState([])
-    const [imgPreViewUrlIndex,setImgPreViewUrlIndex] = useState(0)
+    const {isShow,isCanOpenFileDir,index:imgPreViewUrlIndex,imgs} = useSelector((state:State.RootState)=>state.imgViewer)
     useEffect(() => {
         if (!anchor) {
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
@@ -470,35 +468,35 @@ export const MessageView = (props: Props): JSX.Element => {
             })
 
         })
-        const { elem_type,text_elem_content } = currentMsgItem
+        const { elem_type,text_elem_content,custom_elem_data,custom_elem_desc } = currentMsgItem
         if (elem_type === 0) {
-               const res = matchUrl([{ content: text_elem_content }])
-                    if (res.length) {
-                        currentUrl = res[0]
-                    }else{
-                         currentUrl = ''
-                    }
+            const res = matchUrl([{ content: text_elem_content }])
+            if (res.length) {
+                currentUrl = res[0]
+            } else {
+                currentUrl = ''
+            }
+        } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
+            currentUrl = custom_elem_desc
         }
        
-        imgsUrl = imgsUrl.filter(item=>item).concat(matchUrl(txtAndImgStr))
+        imgsUrl = imgsUrl.concat(matchUrl(txtAndImgStr))
         console.log('imgsUrl', imgsUrl);
         console.log('currentUrl',currentUrl);
         let currentPreviewImgIndex = -1
        currentPreviewImgIndex =  imgsUrl.findIndex(url =>url === currentUrl )
         if (currentPreviewImgIndex > -1) {
-            setImgPreViewUrlIndex(currentPreviewImgIndex)
-             setShow(true)
-            setImgPreViewUrl(imgsUrl)
+            dispatch(setImgViewerAction({
+                isShow: true,
+                index:currentPreviewImgIndex,
+                isCanOpenFileDir: true,
+                imgs:imgsUrl
+            }))
         }
        
     }
-    const handleClose = ()=>{
-         setShow(false)
-    }
     return (
         <div className="message-view" ref={messageViewRef}>
-            <ImgViewer show={show} onClose={handleClose} url={imgPreViewUrl} index={imgPreViewUrlIndex}></ImgViewer>
-
             {
                 messageList && messageList.length > 0 &&
                 messageList.map((item, index) => {

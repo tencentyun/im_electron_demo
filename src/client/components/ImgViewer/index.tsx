@@ -6,7 +6,7 @@ import { showDialog } from "../../utils/tools";
 interface ImagePreviewI {
     show: boolean;
     url: string | string[];
-    onClose: () => void;
+    onClose: (bool?:boolean) => void;
     index?: number;
     isCanOpenFileDir?:boolean
 }
@@ -17,14 +17,20 @@ const defaultProp = {
 const showPic = () => {
     showDialog()
 }
+const defaultConfig = {
+    rotate: 0,
+    minzoom: 0.1,
+    zoom: 1,
+    index: 0
+}
 const inintViewer = (prop:ImagePreviewI) => {
-    // console.log('prop', prop);
+    console.log('prop', prop);
     const { show, url, onClose, index,isCanOpenFileDir } = Object.assign({},defaultProp,prop)
-    const [zoom, setzoom] = useState(1)
-    const [minZoom, setminZoom] = useState(0.1)
-    const [rotate, setrotate] = useState(0)
+    const [zoom, setZoom] = useState(defaultConfig.zoom)
+    const [minZoom, setminZoom] = useState(defaultConfig.minzoom)
+    const [rotate, setRotate] = useState(defaultConfig.rotate)
     const [previewUrl, setpreviewUrl] = useState('')
-    const [_index, setindex] = useState(0)
+    const [_index, setindex] = useState(defaultConfig.index)
     const [imgUrlList, setimgUrlList] = useState([])
     const [visible, setvisible] = useState(false)
     const handleMouseWheel = (event) => {
@@ -41,7 +47,10 @@ const inintViewer = (prop:ImagePreviewI) => {
 
     useEffect(() => {
         setvisible(show)
+        setRotate(defaultConfig.rotate)
+        setZoom(defaultConfig.zoom)
     }, [show])
+    
     useEffect(() => {
         if (Array.isArray(url)) {
             setpreviewUrl(url[getCurrentIndex()])
@@ -53,12 +62,18 @@ const inintViewer = (prop:ImagePreviewI) => {
     }, [url])
 
     useEffect(() => {
-        setpreviewUrl(url[_index])
+        if (Array.isArray(url)) {
+            setpreviewUrl(url[_index])
+            }else{
+                setpreviewUrl(url)
+            }
     }, [_index])
 
-     useEffect(() => {
-         setpreviewUrl(url[index])
-         setindex(index)
+    useEffect(() => {
+        if (index > -1) {
+            
+              setindex(index)
+         }
     }, [index])
 
     const getCurrentIndex = (): number => {
@@ -67,25 +82,25 @@ const inintViewer = (prop:ImagePreviewI) => {
 
     const zoomIn = () => {
         const val = zoom + 0.1
-        setzoom(val)
+        setZoom(val)
     }
     const zoomOut = () => {
         const val = zoom - 0.1 > minZoom ? zoom - 0.1 : minZoom
-        setzoom(val)
+        setZoom(val)
     }
     const close = () => {
-        setzoom(1)
+        setZoom(1)
         setvisible(false)
         onClose(false)
     }
 
     const rotateLeft = () => {
         const val = rotate - 90
-        setrotate(val)
+        setRotate(val)
     }
     const rotateRight = () => {
         const val = rotate + 90
-        setrotate(val)
+        setRotate(val)
     }
     const goNext = () => {
         if (imgUrlList.length <= 1) return
