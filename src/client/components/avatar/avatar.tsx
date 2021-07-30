@@ -23,7 +23,6 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
     const [url,setUrl] = useState(avatar)
     const [userID,setUserID] = useState(uid)
     const [groupID, setGroupID] = useState(gid)
-    const [show, setShow] = useState(false)
     const dispatch = useDispatch();
     
     const displayInfo = (info:string)=>{
