@@ -1,9 +1,12 @@
 import React from "react";
 import { decodeText } from "../../../utils/decodeText";
-import { ImagePreview } from 'tea-component'
 import { PicElemItem } from './picElemItem';
+import { useDispatch } from 'react-redux';
+import { setImgViewerAction } from '../../../store/actions/imgViewer';
 
 export const TextElemItem = (props: any): JSX.Element => {
+    const dispatch = useDispatch();
+
     const isWebsit = (txtContent: string) => {
         let check_www = 'w{3}' + '[^\\s]*'
         let check_http = '(https|http|ftp|rtsp|mms)://' + '[^\\s]*'
@@ -49,17 +52,24 @@ export const TextElemItem = (props: any): JSX.Element => {
                     // return <span key={index}>{text[index] ? <span dangerouslySetInnerHTML={{ __html: text[index] }}></span> : <></>}
                     return <span key={index}>{text[index] ? <span style={{ whiteSpace: 'pre-wrap' }}>{text[index]}</span> : <></>}
                         {urls[index] ? <PicElemItem
+                            onClick={handleOpen(urls)}
                             image_elem_orig_url={urls[index]}
-                            previewSrc={urls[index]}
-                            previewTitle="预览"
                         >
-                            {open => <a onClick={open}><img src={urls[index]} style={{ maxWidth: 150 }}></img></a>}
                         </PicElemItem> : <></>}
                     </span>
                 })}
             </>
         }
         return textHtml
+    }
+
+    const handleOpen = (url) => {
+        // dispatch(setImgViewerAction({
+        //     isShow: true,
+        //     imgs: url,
+        //     isCanOpenFileDir: false,
+        //     index:0
+        // }))
     }
 
     const item = ({ text_elem_content }) => <span className="message-view__item--text text right-menu-item">{decodeText(text_elem_content).map((item, index) => {
