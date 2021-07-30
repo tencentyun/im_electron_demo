@@ -397,6 +397,8 @@ export const inviteMemberGroup = async (params: {
 
 export const searchTextMessage = async (params: {
   keyWords: string;
+  convId?: string;
+  convType?: number;
 }): Promise<any> => {
   const {
     data: { json_params },
@@ -404,6 +406,8 @@ export const searchTextMessage = async (params: {
     params: {
       msg_search_param_keyword_array: [params.keyWords],
       msg_search_param_message_type_array: [0],
+      msg_search_param_conv_id: params.convId,
+      msg_search_param_conv_type: params.convType
     },
     user_data: "123",
   });
@@ -419,7 +423,7 @@ export const searchGroup = async (params: {
   } = await timRenderInstance.TIMGroupSearchGroups({
     searchParams: {
       group_search_params_keyword_list: [params.keyWords],
-      group_search_params_field_list: [2],
+      group_search_params_field_list: [1, 2],
     },
   });
   console.log("searchGroup", JSON.parse(json_param || "[]"));

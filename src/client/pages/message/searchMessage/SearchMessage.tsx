@@ -35,7 +35,6 @@ export const SearchMessage = (props) => {
                 const msgResult = await messageResult;
                 const { msg_search_result_total_count,  msg_search_result_item_array } = msgResult;
                 const formatedData = msg_search_result_total_count > 0 ? msg_search_result_item_array
-                .filter(item => item.msg_search_result_item_message_array)
                 .map(item => {
                     return {
                         conv_id: item.msg_search_result_item_conv_id,
