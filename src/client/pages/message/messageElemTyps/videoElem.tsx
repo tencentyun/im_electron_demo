@@ -27,7 +27,7 @@ export const VideoElem = (props: any): JSX.Element => {
 
     const item = () => {
         return (
-            <div className="message-view__item--text text right-menu-item" >
+            <div className="message-view__item--text text right-menu-item" style={{minWidth:'350px',maxWidth:'auto'}}>
                 {
                     ininVideoPlayer(props)
                 }

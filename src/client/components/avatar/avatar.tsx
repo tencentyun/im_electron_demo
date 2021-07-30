@@ -33,6 +33,7 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
     }
 
     const handleOpen = () => {
+        if(!url) return
         dispatch(setImgViewerAction({
             isShow: true,
             imgs: url,
