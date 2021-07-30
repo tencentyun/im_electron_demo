@@ -23,6 +23,8 @@ interface DataNode {
     children?: DataNode[];
 }
 
+
+
 const assemblyData = (data, childrenNode, itemChildren, labelNode, restLabel) => {
     let result = []
     let queue = data
@@ -109,6 +111,19 @@ export const TreeDynamicExample: FC<TreeDynamic> = ({ selectable = false, callba
         //    setSelectIds(value);
     }
 
+    const  recursiveRree = (treeData)=> {
+        treeData.forEach(node => {
+            if (node.children) {
+                 //人员
+                let nodeDisable =  node.children.filter(item => item.disableCheckbox)
+                console.log(nodeDisable,node.title)
+                if(nodeDisable.length <= 0 ){
+                    node.disableCheckbox = false
+                }
+                const result = recursiveRree(node.children);
+            } 
+        });
+     }
     const filterStaff = (data: any) => {
         return data.filter(item => item.Uid)
     }
@@ -165,10 +180,15 @@ export const TreeDynamicExample: FC<TreeDynamic> = ({ selectable = false, callba
                 filterGetDepartment({
                     DepId: node.DepId
                 }, (dataNode) => {
-                    console.log(dataNode)
                     setTreeData(origin =>
                         updateTreeData(origin, key, assemblyData([dataNode], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children),
                     );
+                    if(selectable){
+                        let Copy =  updateTreeData(treeData, key, assemblyData([dataNode], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children)
+                        recursiveRree(Copy)
+                        recursiveRree(Copy)
+                        setTreeData(Copy)
+                    }
                     resolve();
                 }, window.localStorage.getItem('uid'))
             } else {
