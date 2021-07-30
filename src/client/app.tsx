@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import "tea-component/dist/tea.css";
 import {
@@ -7,7 +7,7 @@ import {
     Route,
     useHistory,
 } from "react-router-dom";
-import { Provider, useDispatch, useSelector } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 
 import store from "./store";
 
@@ -33,7 +33,6 @@ import {
     reciMessage,
     markeMessageAsRevoke,
     markMessageAsReaded,
-    addMoreMessage,
     updateMessages,
     updateMessageElemProgress,
 } from "./store/actions/message";
