@@ -29,7 +29,6 @@ type Info = {
   faceUrl: string;
   nickName: string;
 };
-import ImgViewer from '../../components/ImgViewer';
 
 export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const { conv_id, conv_type, conv_profile } = props;
@@ -216,7 +215,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 userID={conv_id}
                 groupID={conv_id}
               />
-              <span className="message-info-view__header--name">
+              <span className="message-info-view__header--name" title={nickName || conv_id}>
                 {nickName || conv_id}
               </span>
               {
@@ -230,13 +229,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
             <div>
               {/* {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>} */}
               {
-                (conv_type === 1 || canInviteMember) && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id, convType: conv_type })} />
-              }
-              {
-                canCreateDiscussion && <span title='拉取讨论组' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
-              }
-              {
                 canCreateDiscussion && <span title='拉取讨论组' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id, convType: conv_type })} />
+              }
+              {
+                canInviteMember && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
               }
               <span className="message-info-view__header--video" onClick={handleOpenCallWindow} />
             </div>

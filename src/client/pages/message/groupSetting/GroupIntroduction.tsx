@@ -53,6 +53,7 @@ export const GroupIntroduction = (props: {
           <Input
             className="group-introduction--input"
             size="full"
+            maxLength={240}
             placeholder="输入后群介绍后按回车进行设置"
             value={input}
             onChange={(value) => {

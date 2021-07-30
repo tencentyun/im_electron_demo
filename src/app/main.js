@@ -10,7 +10,7 @@ const child_process = require('child_process');
 const Store = require('electron-store');
 const store = new Store()
 const IPC = require("./ipc");
-// https://oaim.uat.crbank.com.cn:30003/headUrl/1627475525455839399.png
+// 'http://oaim.crbank.com.cn:30003/emoji/notification.png'
 let trayIcon = nativeImage.createFromPath(path.join(process.cwd(), '/resources/extraResources', 'notification.png'))
 let forceQuit = false;
 const downloadUrl = app.getPath("downloads");
@@ -63,7 +63,7 @@ const setAppTray = () => {
 let appTray;
 let appWindow;
 let toggle = false;
-function createWindow() {
+function createWindow () {
   // Create the browser window.
   Menu.setApplicationMenu(null)
   let mainWindow = new BrowserWindow({
@@ -73,6 +73,8 @@ function createWindow() {
     minHeight: 600,
     show: false,
     frame: false,
+    resizable: true,
+    fullScreenable: true,
     webPreferences: {
       webSecurity: true,
       nodeIntegration: true,
@@ -146,14 +148,14 @@ function createWindow() {
       mainWindow.webContents.send('mainProcessMessage', false)
     }
   })
-  mainWindow.loadURL(`http://localhost:3000`);
-  // mainWindow.loadURL(
-  //   url.format({
-  //     pathname: path.join(__dirname, "../../bundle/index.html"),
-  //     protocol: "file:",
-  //     slashes: true,
-  //   })
-  // );
+  // mainWindow.loadURL(`http://localhost:3000`);
+  mainWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, "../../bundle/index.html"),
+      protocol: "file:",
+      slashes: true,
+    })
+  );
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
@@ -276,7 +278,7 @@ function createWindow() {
 }
 
 let timer;
-function changeWindow() {
+function changeWindow () {
   if (appWindow) {
     // 设置大小
     appWindow.setSize(1000, 650)
@@ -286,7 +288,7 @@ function changeWindow() {
     appWindow.setResizable(true);
   }
 }
-function reSizeWindow() {
+function reSizeWindow () {
   if (appWindow) {
     // 设置大小
     appWindow.setSize(460, 358)
@@ -313,14 +315,14 @@ function trayFlash () {
   }
 }
 
-function openWindow() {
+function openWindow () {
   if (appWindow) {
     appWindow.show()
   }
 }
 let num = 0;
 let hasFlash = false;
-function setTaryTitle() {
+function setTaryTitle () {
   num++;
   appTray.setTitle(num === 0 ? '' : `${num}`);
   appWindow.flashFrame(true);
