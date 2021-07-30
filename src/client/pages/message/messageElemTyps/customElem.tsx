@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 
 export const CustomElem = (props: any): JSX.Element => {
-  console.log("props", props);
 
   const item = (props) => {
     const { custom_elem_data } = props;
@@ -9,7 +8,6 @@ export const CustomElem = (props: any): JSX.Element => {
     try {
      data =  JSON.parse(custom_elem_data)
     }catch(err){
-
     }
     switch (data.businessID) {
       case "group_create":
@@ -19,6 +17,28 @@ export const CustomElem = (props: any): JSX.Element => {
             {data.content}
           </>
         );
+      case 1:
+          // 信令
+          // @ts-ignore
+          const parsedData = JSON.parse(data.data);
+          switch(data.actionType){
+            case 1:
+              return <span>{data.inviter}邀请{
+                data.inviteeList.map((item)=>{
+                  return <span className="">{item}</span>
+                })
+              }通话</span>
+            case 2:
+              return <span>{data.inviter}取消了通话</span>
+            case 3:
+              return <span>{parsedData.inviter}的接受通话</span>
+            case 4:
+              return <span>{parsedData.handleID}拒绝了通话</span>
+            case 5:
+              return <span>{parsedData.inviter}邀请超时</span>
+            default:
+              return <span>信令未解析</span>
+          }
       default:
         return <>{JSON.stringify(props)}</>;
     }
