@@ -88,7 +88,7 @@ export const GroupOperator = (props: {
   return (
     <>
       <div className="group-operator">
-        {canQuitGroup && (
+        {canQuitGroup && userList?.length && (
           <PopConfirm
             title="确认要退出群聊吗?"
             footer={(close) => (

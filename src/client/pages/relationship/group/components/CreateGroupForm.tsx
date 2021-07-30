@@ -117,6 +117,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                       {...input}
                       placeholder="请输入"
                       size="full"
+                      maxLength={20}
                       disabled={submitting}
                     />
                   </Form.Item>
@@ -211,6 +212,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                       {...input}
                       placeholder="请输入群公告"
                       size="full"
+                      maxLength={240}
                       disabled={submitting}
                     />
                   </Form.Item>
@@ -228,6 +230,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                       {...input}
                       placeholder="请输入群简介"
                       size="full"
+                      maxLength={240}
                       disabled={submitting}
                     />
                   </Form.Item>

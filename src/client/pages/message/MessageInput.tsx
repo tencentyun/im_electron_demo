@@ -171,13 +171,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                         return item.replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/<br\/>/g, '\n')
                     });
                 }
-                // imgSrc.forEach(async (i,index)=>{
-                //     await handleUpload(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,'')).then(src=>{
-                //         formatText.splice((index * 2)+1,0,`<img src="${src}" />`)
-                //     })
-                //     // aaa(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,''))
-                // })
-
                 const getImgsUrl = async () => {
                     return new Promise(async (resolve, reject) => {
                         for (let i = 0;i < imgSrc.length;i++) {

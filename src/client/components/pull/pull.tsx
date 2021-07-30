@@ -78,8 +78,8 @@ export const AddGroupMemberDialog = (props: {
 
   const [userList, setUserList] = useState(defaultForm.userList);
   const [selectedList, setSelectedList] = useState([]);
-  const [selectIdsProp,setSelectIdsProp] = useState([]);
-  const [searchList,setSearchList] = useState([]);
+  const [selectIdsProp, setSelectIdsProp] = useState([]);
+  const [searchList, setSearchList] = useState([]);
   let { nickName } = useSelector((state: State.RootState) => state.userInfo);
   const directToMsgPage = useMessageDirect();
 
@@ -102,10 +102,12 @@ export const AddGroupMemberDialog = (props: {
       group_member_info_identifier: defaultForm.groupId
     }]
     // 添加的人
-    reslut.push(...selectedList.map(item => { return {
-      group_member_info_member_role: 0,
-      group_member_info_identifier: item.Uid,
-    }}))
+    reslut.push(...selectedList.map(item => {
+      return {
+        group_member_info_member_role: 0,
+        group_member_info_identifier: item.Uid,
+      }
+    }))
     return reslut
   }
 
@@ -113,7 +115,7 @@ export const AddGroupMemberDialog = (props: {
   const createWorkGroup = async () => {
     try {
       const groupMember: any = getGroupMember()
-      const groupName = `${nickName}的群聊`
+      const groupName = `${nickName}的讨论组`
       const params: createGroupParams = {
         groupAvatarUrl: qunioc,
         groupName,
@@ -126,7 +128,7 @@ export const AddGroupMemberDialog = (props: {
       setTimeout(() => {
         showGroupbyId(resultGroupId)
       }, 300)
-    } catch(e) {
+    } catch (e) {
       message.error({ content: '创建失败' + e })
     }
   }
@@ -143,7 +145,7 @@ export const AddGroupMemberDialog = (props: {
           });
         }
       }
-    } catch(e) {
+    } catch (e) {
       console.log('显示刚创建的讨论组失败', e)
     }
   }
@@ -155,8 +157,8 @@ export const AddGroupMemberDialog = (props: {
       // 群拉人
       try {
         await inviteMemberGroup({
-            groupId:defaultForm.groupId,
-            UIDS: selectedList.map((v) => v.Uid)
+          groupId: defaultForm.groupId,
+          UIDS: selectedList.map((v) => v.Uid)
         });
         onClose();
         onSuccess?.(selectedList.map((v) => v.Uid));
@@ -167,47 +169,47 @@ export const AddGroupMemberDialog = (props: {
   };
 
 
- const searchStaff = (refData)=> {
-    console.log("搜索触发",refData)
-    if(rearrangement(selectedList,refData)){
-        message.warning({
-            content: "该成员已在待添加列表！",
-        })
-    }else{
-        refData.search = true
-        selectedList.push(refData)
-        setSelectedList(JSON.parse(JSON.stringify(selectedList)))
-        setSearchList(JSON.parse(JSON.stringify(selectedList)))
-        console.log(JSON.parse(JSON.stringify(selectedList)))
-        const listmap = selectedList.map(item => item.Uid)
-        setSelectIdsProp(listmap)
+  const searchStaff = (refData) => {
+    console.log("搜索触发", refData)
+    if (rearrangement(selectedList, refData)) {
+      message.warning({
+        content: "该成员已在待添加列表！",
+      })
+    } else {
+      refData.search = true
+      selectedList.push(refData)
+      setSelectedList(JSON.parse(JSON.stringify(selectedList)))
+      setSearchList(JSON.parse(JSON.stringify(selectedList)))
+      console.log(JSON.parse(JSON.stringify(selectedList)))
+      const listmap = selectedList.map(item => item.Uid)
+      setSelectIdsProp(listmap)
     }
- }
+  }
 
- interface  Rearrang {
-     Uid:string;
- }
- const rearrangement = (data:Array<Rearrang>,itemdata:Rearrang):boolean => {
-        return data.some(item => item.Uid == itemdata.Uid)
- }
+  interface Rearrang {
+    Uid: string;
+  }
+  const rearrangement = (data: Array<Rearrang>, itemdata: Rearrang): boolean => {
+    return data.some(item => item.Uid == itemdata.Uid)
+  }
 
- const  callbackPersonnel = (refData: any)=> {
-    console.log("人员列表",refData)
+  const callbackPersonnel = (refData: any) => {
+    console.log("人员列表", refData)
     //填充人员
     let filterSearch = searchList.filter(item => item.search)
     for (const iterator of filterSearch) {
-            for (let i= 0; i<refData.length; i++) {
-                if(refData[i].stance){
-                    refData[i] = iterator
-                    break
-                }
-            }
+      for (let i = 0;i < refData.length;i++) {
+        if (refData[i].stance) {
+          refData[i] = iterator
+          break
+        }
+      }
     }
     setSelectedList(refData)
- }
- const  refreshData = (refData: any)=> {
-    console.log("点击触发",refData)
- }
+  }
+  const refreshData = (refData: any) => {
+    console.log("点击触发", refData)
+  }
 
   useEffect(() => {
     setUserList(defaultForm.userList);
@@ -223,8 +225,8 @@ export const AddGroupMemberDialog = (props: {
       <Modal.Body>
         <div className="forward-popup__search-list">
           <div className="forward-popup__search-list__list customize-scroll-style">
-                <Search handleCallback= {searchStaff}></Search>
-                <TreeDynamicExample  selectIdsProp={selectIdsProp} searchList={selectedList} personnel={callbackPersonnel} selectable={ true } callback={refreshData}></TreeDynamicExample>    
+            <Search handleCallback={searchStaff}></Search>
+            <TreeDynamicExample selectIdsProp={selectIdsProp} searchList={selectedList} personnel={callbackPersonnel} selectable={true} callback={refreshData}></TreeDynamicExample>
           </div>
         </div>
         <div className="forward-popup__seleted-list customize-scroll-style">

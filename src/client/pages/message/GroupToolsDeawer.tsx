@@ -85,7 +85,7 @@ export const GroupToolsDrawer = (props: {
       popupContainer={popupContainer}
       onClose={close}
     >
-      {toolId === "setting" && (
+      {toolId === "setting" && conversationInfo.conv_type === 2 && (
         <GroupSetting close={close} conversationInfo={conversationInfo} />
       )}
       {toolId === "announcement" && (
