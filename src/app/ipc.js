@@ -133,6 +133,7 @@ class IPC {
             var file = fs.createWriteStream(path.resolve(downloadDicPath, file_name));
             http.get(options, (res) => {
                 const { statusCode } = res;
+                const contentType = res.headers['content-type'];
                 let error;
                 if (statusCode !== 200) {
                     error = new Error('Request Failed.\n' +

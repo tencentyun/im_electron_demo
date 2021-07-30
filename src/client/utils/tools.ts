@@ -1,7 +1,7 @@
 import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY } from "../../app/const/const";
 
 import  { ipcRenderer, remote } from 'electron';
-
+import { v4 as uuidv4 } from 'uuid';
 const dialog = remote.dialog;
 const WIN = remote.getCurrentWindow();
 
@@ -50,7 +50,9 @@ const openCallWindow = (data) => {
 const callWindowCloseListiner = (callback) => {
     ipcRenderer.on(CALL_WINDOW_CLOSE_REPLY, callback);
 };
-
+const generateRoomID = () => {
+    return uuidv4()
+}
 export {
     isWin,
     minSizeWin,
@@ -60,5 +62,6 @@ export {
     downloadFilesByUrl,
     checkFileExist,
     openCallWindow,
-    callWindowCloseListiner
+    callWindowCloseListiner,
+    generateRoomID
 }
