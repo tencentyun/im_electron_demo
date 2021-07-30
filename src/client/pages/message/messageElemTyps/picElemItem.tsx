@@ -23,7 +23,7 @@ export const PicElemItem = (props: any): JSX.Element => {
         return (
             <div className="message-view__item--text text right-menu-item">
 
-                <img className="message-pic" src={url} style={{ maxWidth: 450 }}></img>
+                <img className="message-pic" src={url} style={{ maxWidth: 150 }}></img>
             </div>
         )
     };
