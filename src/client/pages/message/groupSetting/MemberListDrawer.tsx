@@ -78,7 +78,7 @@ export const GroupMemberListDrawer = (props: {
   ];
 
   const onScrollBottom = () => {
-    if (loading && nextSeq === 0) {
+    if (loading || nextSeq === 0) {
       return;
     }
     getMemberList(nextSeq);

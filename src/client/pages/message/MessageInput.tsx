@@ -66,7 +66,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         try {
             const text = editorState.toText()
             const atList = getAtList(text)
-            const { data: { code, json_params,desc } } = await sendTextMsg({
+            const { data: { code, json_params, desc } } = await sendTextMsg({
                 convId,
                 convType,
                 messageElementArray: [{
@@ -118,22 +118,22 @@ export const MessageInput = (props: Props): JSX.Element => {
 
             if(videosInfo?.length) {
                 messageElementArray.push(...videosInfo?.map(v => ({
-                    // elem_type: 9,
-                    // video_elem_video_type: "MP4",
-                    // video_elem_video_size: v.size,
-                    // video_elem_video_duration: 10,
-                    // video_elem_video_path: v.path,
-                    // video_elem_image_type: "png",
-                    // video_elem_image_size: 10000,
-                    // video_elem_image_width: 200,
-                    // video_elem_image_height: 80,
-                    // video_elem_image_path: "./cover.png"
+                    elem_type: 9,
+                    video_elem_video_type: "MP4",
+                    video_elem_video_size: v.size,
+                    video_elem_video_duration: 10,
+                    video_elem_video_path: v.path,
+                    video_elem_image_type: "png",
+                    video_elem_image_size: 10000,
+                    video_elem_image_width: 200,
+                    video_elem_image_height: 80,
+                    video_elem_image_path: "./cover.png"
 
                     
-                    elem_type: 4,
-                    file_elem_file_path: v.path,
-                    file_elem_file_name: v.name,
-                    file_elem_file_size: v.size
+                    // elem_type: 4,
+                    // file_elem_file_path: v.path,
+                    // file_elem_file_name: v.name,
+                    // file_elem_file_size: v.size
                 })))
             }
             if(otherFilesInfo?.length) {
