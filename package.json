@@ -67,7 +67,7 @@
     "element-theme-default": "^1.4.13",
     "file-loader": "^6.2.0",
     "final-form": "^4.20.2",
-    "im_electron_sdk": "^1.0.33",
+    "im_electron_sdk": "^1.0.42",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
     "qs": "^6.5.2",

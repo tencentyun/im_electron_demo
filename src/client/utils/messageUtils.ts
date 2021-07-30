@@ -78,3 +78,28 @@ export const judgeFileSize = (limitSize: number, file: File) => {
     const { size } = file
     return limitSize >= size / 1024 / 1024
 }
+
+interface urlDataItem{
+    content:string
+}
+/**
+ * 匹配字符中存在的img的src属性
+ * @param data 
+ */
+export const matchUrl = (data:urlDataItem[]) => {
+    const urlArr = []
+    data.forEach(function (item) {
+        let imgReg = /<img.*?(?:>|\/>)/gi //匹配图片中的img标签
+        let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i // 匹配图片中的src
+        let str = item.content
+        let arr = str.match(imgReg)  //筛选出所有的img
+        if (arr) {
+            for (let i = 0; i < arr.length; i++) {
+                let src = arr[i].match(srcReg)
+                // 获取图片地址
+                urlArr.push(src[1])
+            }
+        }
+    })
+    return urlArr.filter(item=>item)
+}

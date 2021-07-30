@@ -3,12 +3,12 @@ import { Button, Icon, message, Modal } from "tea-component";
 import { TreeDynamicExample } from '../../pages/organization/tree/tree'
 import { Search } from '../../pages/organization/search/search';
 import React, { FC, useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Avatar } from "../../components/avatar/avatar";
 import { inviteMemberGroup } from "../../pages/message/api";
 import { createGroup, createGroupParams, getJoinedGroupList } from '../../pages/relationship/group/api'
 import { useMessageDirect } from "../../utils/react-use/useDirectMsgPage";
-const qunioc =  require('../../assets/icon/qunioc.png')
+import qunioc from '../../assets/icon/qunioc.png'
 
 import './pull.scss';
 
@@ -78,8 +78,8 @@ export const AddGroupMemberDialog = (props: {
 
   const [userList, setUserList] = useState(defaultForm.userList);
   const [selectedList, setSelectedList] = useState([]);
-  const [selectIdsProp,setSelectIdsProp] = useState([]);
-  const [searchList,setSearchList] = useState([]);
+  const [selectIdsProp, setSelectIdsProp] = useState([]);
+  const [searchList, setSearchList] = useState([]);
   let { nickName } = useSelector((state: State.RootState) => state.userInfo);
   const directToMsgPage = useMessageDirect();
 
@@ -102,10 +102,12 @@ export const AddGroupMemberDialog = (props: {
       group_member_info_identifier: defaultForm.groupId
     }]
     // 添加的人
-    reslut.push(...selectedList.map(item => { return {
-      group_member_info_member_role: 0,
-      group_member_info_identifier: item.Uid,
-    }}))
+    reslut.push(...selectedList.map(item => {
+      return {
+        group_member_info_member_role: 0,
+        group_member_info_identifier: item.Uid,
+      }
+    }))
     return reslut
   }
 
@@ -113,7 +115,7 @@ export const AddGroupMemberDialog = (props: {
   const createWorkGroup = async () => {
     try {
       const groupMember: any = getGroupMember()
-      const groupName = `${nickName}的群聊`
+      const groupName = `${nickName}的讨论组`
       const params: createGroupParams = {
         groupAvatarUrl: qunioc,
         groupName,
@@ -122,9 +124,11 @@ export const AddGroupMemberDialog = (props: {
       }
       const { json_param } = await createGroup(params);
       const resultGroupId = JSON.parse(json_param)?.create_group_result_groupid
-      showGroupbyId(resultGroupId)
       onClose();
-    } catch(e) {
+      setTimeout(() => {
+        showGroupbyId(resultGroupId)
+      }, 300)
+    } catch (e) {
       message.error({ content: '创建失败' + e })
     }
   }
@@ -134,12 +138,14 @@ export const AddGroupMemberDialog = (props: {
       const groupList = await getJoinedGroupList()
       if (groupList) {
         const profile = groupList.find(item => item.group_base_info_group_id === groupId)
-        directToMsgPage({
-          convType: 2,
-          profile: profile as any,
-        });
+        if (profile) {
+          directToMsgPage({
+            convType: 2,
+            profile: profile as any,
+          });
+        }
       }
-    } catch(e) {
+    } catch (e) {
       console.log('显示刚创建的讨论组失败', e)
     }
   }
@@ -151,8 +157,8 @@ export const AddGroupMemberDialog = (props: {
       // 群拉人
       try {
         await inviteMemberGroup({
-            groupId:defaultForm.groupId,
-            UIDS: selectedList.map((v) => v.Uid)
+          groupId: defaultForm.groupId,
+          UIDS: selectedList.map((v) => v.Uid)
         });
         onClose();
         onSuccess?.(selectedList.map((v) => v.Uid));
@@ -178,32 +184,32 @@ export const AddGroupMemberDialog = (props: {
         const listmap = selectedList.map(item => item.Uid)
         setSelectIdsProp(listmap)
     }
- }
+  }
 
- interface  Rearrang {
-     Uid:string;
- }
- const rearrangement = (data:Array<Rearrang>,itemdata:Rearrang):boolean => {
-        return data.some(item => item.Uid == itemdata.Uid)
- }
+  interface Rearrang {
+    Uid: string;
+  }
+  const rearrangement = (data: Array<Rearrang>, itemdata: Rearrang): boolean => {
+    return data.some(item => item.Uid == itemdata.Uid)
+  }
 
- const  callbackPersonnel = (refData: any)=> {
-    console.log("人员列表",refData)
+  const callbackPersonnel = (refData: any) => {
+    console.log("人员列表", refData)
     //填充人员
     let filterSearch = searchList.filter(item => item.search)
     for (const iterator of filterSearch) {
-            for (let i= 0; i<refData.length; i++) {
-                if(refData[i].stance){
-                    refData[i] = iterator
-                    break
-                }
-            }
+      for (let i = 0;i < refData.length;i++) {
+        if (refData[i].stance) {
+          refData[i] = iterator
+          break
+        }
+      }
     }
     setSelectedList(refData)
- }
- const  refreshData = (refData: any)=> {
-    console.log("点击触发",refData)
- }
+  }
+  const refreshData = (refData: any) => {
+    console.log("点击触发", refData)
+  }
 
   useEffect(() => {
     setUserList(defaultForm.userList);

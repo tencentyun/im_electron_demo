@@ -16,7 +16,8 @@ import {
     getConvId,
     getConvType,
     getMergeMessageTitle,
-    getMergeMessageAbstactArray
+    getMergeMessageAbstactArray,
+    matchUrl
 } from '../../utils/messageUtils'
 import { Avatar } from '../../components/avatar/avatar';
 import { TextElemItem } from './messageElemTyps/textElemItem';
@@ -38,6 +39,7 @@ import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
 import { GroupSysElm } from './messageElemTyps/groupSystemElem';
 import { setCurrentReplyUser } from '../../store/actions/message'
+import { setImgViewerAction } from '../../store/actions/imgViewer';
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -92,14 +94,14 @@ export const MessageView = (props: Props): JSX.Element => {
     const [noMore, setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     const dispatch = useDispatch();
     const [anchor, setAnchor] = useState('')
+    const {isShow,isCanOpenFileDir,index:imgPreViewUrlIndex,imgs} = useSelector((state:State.RootState)=>state.imgViewer)
     useEffect(() => {
         if (!anchor) {
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
         }
         setAnchor('')
-        setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
+        setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)  
     }, [messageList.length])
-
     const getNewGroupInfo = () => {
         let newGroupInfo: any = localStorage.getItem('newGroupInfo')
         newGroupInfo = newGroupInfo ? JSON.parse(newGroupInfo) : []
@@ -134,13 +136,15 @@ export const MessageView = (props: Props): JSX.Element => {
 
     // 添加到自定义表情, 图片和自定义表情可添加
     const handleAddCustEmoji = async (params) => {
-        const { elem_type, image_elem_large_url = '', custom_elem_data = '', custom_elem_desc } = params?.message?.message_elem_array[0];
+        const { elem_type, image_elem_large_url = '', custom_elem_data = '', custom_elem_desc, text_elem_content } = params?.message?.message_elem_array[0];
 
         let sticker_url = ''
         if (elem_type === 1) {
             sticker_url = image_elem_large_url
         } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
             sticker_url = custom_elem_desc
+        } else if(onIsIncludeImg(elem_type, text_elem_content)) {
+            sticker_url = /<img.*?src=[\"|\'"](.*?)[\"|\'"]/.exec(text_elem_content)[1]
         } else {
             return
         }
@@ -285,6 +289,9 @@ export const MessageView = (props: Props): JSX.Element => {
     const onIsCustEmoji = (type, data) => {
         return type === 3 && data === 'CUST_EMOJI'
     }
+    const onIsIncludeImg = (type, content) => {
+        return type === 0 && /<img.*?src=[\"|\']?(.*?)[\"|\']?.*?>/.test(content)
+    }
     const handleContextMenuEvent = (e, message: State.message) => {
         e.preventDefault();
         setCurrMenuMessage(message)
@@ -407,9 +414,9 @@ export const MessageView = (props: Props): JSX.Element => {
 
     // console.warn('查看当前会话所有消息',messageList)
     const getMenuItemData = () => {
-        const { elem_type, custom_elem_data = '' } = currMenuMessage.message_elem_array[0];
+        const { elem_type, custom_elem_data = '', text_elem_content } = currMenuMessage.message_elem_array[0];
         // elemtype:1图片, 3 自定义消息为CUST_EMOJI类型
-        const isEmoji = elem_type === 1 || onIsCustEmoji(elem_type, custom_elem_data)
+        const isEmoji = elem_type === 1 || onIsCustEmoji(elem_type, custom_elem_data) || onIsIncludeImg(elem_type, text_elem_content)
         let menuData = RIGHT_CLICK_MENU_LIST
         if (!isEmoji) {
             // 过滤添加到表情MenuItem
@@ -436,6 +443,57 @@ export const MessageView = (props: Props): JSX.Element => {
         return (item.message_is_from_self && isTimeoutFun(item.message_client_time) &&
             item.message_elem_array[0].elem_type === 0 &&
             item.message_elem_array[0].text_elem_content.indexOf('<img src=') === -1)
+    }
+    const handleImgMsgClick = (currentMsgItem, messageList) => {
+        console.log('messageList', messageList);
+        console.log('item',currentMsgItem);
+        let imgsUrl = []
+                const {image_elem_thumb_url:url1 , image_elem_orig_url:url2 , image_elem_large_url:url3 } = currentMsgItem
+        let currentUrl = url1 || url2 || url3
+        const txtAndImgStr = []
+        messageList.map(msgItem => {
+            const { message_elem_array } = msgItem
+            message_elem_array && message_elem_array.map((elem,index) => {
+                const {elem_type,image_elem_thumb_url , image_elem_orig_url , image_elem_large_url,custom_elem_data,custom_elem_desc,text_elem_content} = elem
+                if (elem_type === 1) {
+                    const url = image_elem_thumb_url || image_elem_orig_url || image_elem_large_url
+                    url && imgsUrl.push(url)
+                } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
+                // 自定义表情
+                  custom_elem_desc && imgsUrl.push(custom_elem_desc)
+                }else if(elem_type === 0){
+                    // 图文消息
+                    txtAndImgStr.push({ content: text_elem_content })
+                }
+            })
+
+        })
+        const { elem_type,text_elem_content,custom_elem_data,custom_elem_desc } = currentMsgItem
+        if (elem_type === 0) {
+            const res = matchUrl([{ content: text_elem_content }])
+            if (res.length) {
+                currentUrl = res[0]
+            } else {
+                currentUrl = ''
+            }
+        } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
+            currentUrl = custom_elem_desc
+        }
+       
+        imgsUrl = imgsUrl.concat(matchUrl(txtAndImgStr))
+        console.log('imgsUrl', imgsUrl);
+        console.log('currentUrl',currentUrl);
+        let currentPreviewImgIndex = -1
+       currentPreviewImgIndex =  imgsUrl.findIndex(url =>url === currentUrl )
+        if (currentPreviewImgIndex > -1) {
+            dispatch(setImgViewerAction({
+                isShow: true,
+                index:currentPreviewImgIndex,
+                isCanOpenFileDir: true,
+                imgs:imgsUrl
+            }))
+        }
+       
     }
     return (
         <div className="message-view" ref={messageViewRef}>
@@ -477,7 +535,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {
                                             message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                                 return (
-                                                    <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                    <div className="message-view__item--element" onClick={handleImgMsgClick.bind(null,elment,messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                                         {
                                                             displayDiffMessage(elment, index)
                                                         }

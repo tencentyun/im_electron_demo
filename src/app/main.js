@@ -1,6 +1,6 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Menu, ipcMain, Tray, nativeImage, globalShortcut, ipcRenderer, clipboard, shell, dialog } = require('electron')
-const { autoUpdater } = require('electron-updater')
+//const { autoUpdater } = require('electron-updater')
 const feedUrl = `http://localhost/`;
 const TimMain = require('im_electron_sdk/dist/main');
 const url = require('url')
@@ -10,7 +10,8 @@ const child_process = require('child_process');
 const Store = require('electron-store');
 const store = new Store()
 const IPC = require("./ipc");
-let trayIcon = nativeImage.createFromPath(path.join(__dirname, '../client/assets/icon/notification.png'))
+// 'http://oaim.crbank.com.cn:30003/emoji/notification.png'
+let trayIcon = nativeImage.createFromPath(path.join(process.cwd(), '/resources/extraResources', 'notification.png'))
 let forceQuit = false;
 const downloadUrl = app.getPath("downloads");
 let ipc
@@ -72,6 +73,8 @@ function createWindow () {
     minHeight: 600,
     show: false,
     frame: false,
+    resizable: true,
+    fullScreenable: true,
     webPreferences: {
       webSecurity: true,
       nodeIntegration: true,
@@ -145,14 +148,14 @@ function createWindow () {
       mainWindow.webContents.send('mainProcessMessage', false)
     }
   })
-  mainWindow.loadURL(`http://localhost:3000`);
-  // mainWindow.loadURL(
-  //   url.format({
-  //     pathname: path.join(__dirname, "../../bundle/index.html"),
-  //     protocol: "file:",
-  //     slashes: true,
-  //   })
-  // );
+  // mainWindow.loadURL(`http://localhost:3000`);
+  mainWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, "../../bundle/index.html"),
+      protocol: "file:",
+      slashes: true,
+    })
+  );
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
@@ -209,7 +212,7 @@ function createWindow () {
     //执行自动更新检查
     autoUpdater.checkForUpdates();
   };
-  setTimeout(checkForUpdates, 1000)
+  //setTimeout(checkForUpdates, 1000)
   ipcMain.on('CHANGESTORE', function (event, data) {
     console.log(data)
     store.set('sendType', data)

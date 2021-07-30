@@ -135,7 +135,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
         uid: uid,
         userSig: userSig,
         file_type: 1,
-        file_name: 'headUrl/' + fileObj.name,
+        file_name: "headUrl/" + new Date().getTime() + fileObj.name,
         Duration: 900,
         upload_method: 0,
       }).then(res => {
@@ -235,6 +235,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       {
         isShowCropper && imgUrl && <div>
           <Cropper
+          viewMode={1}
             {...cropperOption}
             src={imgUrl}
             onInitialized={(instance) => {

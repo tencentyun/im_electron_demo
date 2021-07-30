@@ -4,7 +4,7 @@ import { Form as FinalForm, Field } from "react-final-form";
 import { getStatus } from "../../../../utils/getStatus";
 import { GroupTypeSelect } from "./GroupTypeSelect";
 import  ImgCropper  from "../../../../components/UploadFace";
-const qunioc =  require('../../../../assets/icon/qunioc.png')
+import qunioc from '../../../../assets/icon/qunioc.png'
 
 import "./create-group-form.scss";
 
@@ -117,6 +117,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                       {...input}
                       placeholder="请输入"
                       size="full"
+                      maxLength={20}
                       disabled={submitting}
                     />
                   </Form.Item>
@@ -211,6 +212,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                       {...input}
                       placeholder="请输入群公告"
                       size="full"
+                      maxLength={240}
                       disabled={submitting}
                     />
                   </Form.Item>
@@ -228,6 +230,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                       {...input}
                       placeholder="请输入群简介"
                       size="full"
+                      maxLength={240}
                       disabled={submitting}
                     />
                   </Form.Item>

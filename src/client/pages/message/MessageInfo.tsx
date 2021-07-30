@@ -42,7 +42,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   } = conv_profile;
 
   const popupContainer = document.getElementById("messageInfo");
-  const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all;
+  const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all && conv_profile.group_detial_info_owener_identifier != localStorage.getItem('uid');
 
   const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
 
@@ -245,7 +245,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 userID={conv_id}
                 groupID={conv_id}
               />
-              <span className="message-info-view__header--name">
+              <span className="message-info-view__header--name" title={nickName || conv_id}>
                 {nickName || conv_id}
               </span>
               {
@@ -259,7 +259,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
             <div>
               {/* {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>} */}
               {
-                !canCreateDiscussion && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id, convType: conv_type })} />
+                canCreateDiscussion && <span title='拉取讨论组' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id, convType: conv_type })} />
+              }
+              {
+                canInviteMember && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
               }
               {/* <span className="message-info-view__header--video" onClick={handleOpenCallWindow} /> */}
               <span className={`message-info-view__header--video ${callingId === conv_id ? 'is-calling' : ''}`} onClick={() => handleOpenCallWindow('videoCall')} />

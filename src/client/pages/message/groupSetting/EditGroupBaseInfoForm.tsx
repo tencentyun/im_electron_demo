@@ -149,6 +149,7 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
                         {...input}
                         placeholder="请输入"
                         size="full"
+                        maxLength={20}
                         disabled={submitting}
                       />
                     </Form.Item>
