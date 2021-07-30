@@ -8,7 +8,7 @@ module.exports = {
   },
   entry: {
     main: './app.tsx',
-    call: './call.tsx'
+    // call: './call.tsx'
   },
   target: 'electron-renderer',
   devtool: 'source-map',

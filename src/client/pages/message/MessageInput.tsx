@@ -68,6 +68,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         try {
             const text = editorState.toText()
             const atList = getAtList(text)
+            setEditorState(ContentUtils.clear(editorState))
             const { data: { code, json_params, desc } } = await sendTextMsg({
                 convId,
                 convType,
@@ -85,7 +86,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     messages: [JSON.parse(json_params)]
                 }))
             }
-            setEditorState(ContentUtils.clear(editorState))
+            
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
         }
@@ -441,7 +442,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             e.preventDefault();
             handleSendTextMsg();
         } else if(e.key === "@" && convType === 2) {
-            console.log(1111)
             e.preventDefault();
             setAtPopup(true)
         } 
@@ -539,7 +539,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     useEffect(() => {
         const listener = (event, params) => {
             const { fileType, data } = params
-            console.log(1111111111, fileType, data)
             sendMessages(fileType, data)
         }
         ipcRenderer.on("SELECT_FILES_CALLBACK", listener)
