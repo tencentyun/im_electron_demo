@@ -242,18 +242,32 @@ export const MessageView = (props: Props): JSX.Element => {
         }
     }
 
+    const cacluateRightMenuList = (message: State.message, element) => {
+        const { elem_type } = element;
+        const { message_is_from_self } = message;
+        const isTips = [5,8].includes(elem_type);
+        const isAvaChatRoom = groupType === 4;
+        let formatedList = RIGHT_CLICK_MENU_LIST;
+
+        if(!message_is_from_self) {
+            formatedList = formatedList.filter(item => item.id !== 'revoke');
+        }
+
+        if(isTips) {
+            formatedList = formatedList.filter(item => item.id !== 'transimite' && item.id !== 'multiSelect'); //群系统消息 和 tips消息 不可转发
+        } else if(isAvaChatRoom) {
+            formatedList = formatedList.filter(item => item.id  !== 'multiSelect'); // 互动直播群不进行多选
+        }
+
+        return formatedList;
+
+    };
+
     const handleContextMenuEvent = (e, message: State.message, element) => {
         e.preventDefault();
-        const { elem_type } = element;
-        console.log('groupType', groupType);
-        //群系统消息 和 tips消息 不可转发
-        if([5,8].includes(elem_type)) {
-            setRightClickMenuList(RIGHT_CLICK_MENU_LIST_2);
-        } else if(groupType === 4) { // 互动直播群不进行多选
-            setRightClickMenuList(RIGHT_CLICK_MENU_LIST_3)
-        } else {
-            setRightClickMenuList(RIGHT_CLICK_MENU_LIST)
-        }
+        const rightMenuList = cacluateRightMenuList(message, element);
+
+        setRightClickMenuList(rightMenuList);
 
         contextMenu.show({
             id: MESSAGE_MENU_ID,
