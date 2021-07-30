@@ -4,7 +4,21 @@ import { ImagePreview } from 'tea-component'
 import { PicElemItem } from './picElemItem';
 
 export const TextElemItem = (props: any): JSX.Element => {
-
+    const isWebsit = (txtContent: string) => {
+        let check_www = 'w{3}' + '[^\\s]*'
+        let check_http = '(https|http|ftp|rtsp|mms)://' + '[^\\s]*'
+        let strRegex = check_www + '|' + check_http
+        let httpReg = new RegExp(strRegex, 'gi')
+        let formatTxtContent = txtContent.replace(httpReg, function (httpText) {
+            if (httpText.search('http') < 0 && httpText.search('HTTP') < 0) {
+                return '<a href="' + 'http://' + httpText + '" target="_blank">' + httpText + '</a>'
+            }
+            else {
+                return '<a href="' + httpText + '" target="_blank">' + httpText + '</a>'
+            }
+        })
+        return formatTxtContent
+    }
     const formatText = (content) => {
         // 格式化为只有img标签的字符串
         let texts = content?.text?.replace(/<img /g, 'xxxxx')
@@ -17,8 +31,9 @@ export const TextElemItem = (props: any): JSX.Element => {
 
         // 获取img标签内的url 并分隔文字与图片
         let imgs = texts.match(/<img [^>]*src=['"]([^'"]+)[^>]*>/g)
+        console.log(isWebsit(texts), '--------------------')
         // let textHtml = <span style={{whiteSpace: 'pre'}} dangerouslySetInnerHTML={{ __html: texts }}>{{texts}}</span>
-        let textHtml = <span style={{whiteSpace: 'pre-wrap'}}>{texts}</span>
+        let textHtml = <span style={{ whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: isWebsit(texts) }}></span>
 
         // 把img图片用预览组件代替
         if (imgs && imgs.length > 0) {
@@ -32,13 +47,13 @@ export const TextElemItem = (props: any): JSX.Element => {
             textHtml = <>
                 {arrayLength.map((i, index) => {
                     // return <span key={index}>{text[index] ? <span dangerouslySetInnerHTML={{ __html: text[index] }}></span> : <></>}
-                    return <span key={index}>{text[index] ? <span style={{whiteSpace: 'pre-wrap'}}>{text[index]}</span> : <></>}
+                    return <span key={index}>{text[index] ? <span style={{ whiteSpace: 'pre-wrap' }}>{text[index]}</span> : <></>}
                         {urls[index] ? <PicElemItem
                             image_elem_orig_url={urls[index]}
                             previewSrc={urls[index]}
-                            previewTitle="预览s"
+                            previewTitle="预览"
                         >
-                            {open => <a onClick={open}><img src={urls[index]} style={{ maxWidth: 178 }}></img></a>}
+                            {open => <a onClick={open}><img src={urls[index]} style={{ maxWidth: 150 }}></img></a>}
                         </PicElemItem> : <></>}
                     </span>
                 })}
