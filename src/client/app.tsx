@@ -171,15 +171,12 @@ export const App = () => {
         
     }
     const _handleElemUploadProgres = ({ message, index, cur_size, total_size, user_data }) => {
-        const ramdon = Math.random()
-        if (ramdon > 0.8) {
-            dispatch(updateMessageElemProgress({
-                messageId: message.message_msg_id,
-                index,
-                cur_size,
-                total_size
-            }));
-        }
+        dispatch(updateMessageElemProgress({
+            messageId: message.message_msg_id,
+            index,
+            cur_size,
+            total_size
+        }));
     }
 
     const _handleKickedout = async () => {

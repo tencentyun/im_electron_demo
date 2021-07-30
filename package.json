@@ -59,7 +59,17 @@
     "node-gyp": "^7.1.2"
   },
   "dependencies": {
+    "ffmpeg-extract-frame": "^1.0.2",
+    "ffprobe": "^1.1.2",
+    "ffprobe-static": "^3.0.0",
+    "file-type": "^16.5.2",
+    "fluent-ffmpeg": "^2.1.2",
+    "get-video-duration": "^3.1.0",
     "im_electron_sdk": "^1.0.42",
+    "image-size": "^1.0.0",
+    "npm": "^7.20.2",
+    "save": "^2.4.0",
+    "shelljs": "^0.8.4",
     "trtc-electron-sdk": "^8.6.102-beta.0"
   }
 }

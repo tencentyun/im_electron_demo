@@ -1,12 +1,17 @@
 // import { BrowserWindow } from "electron";
-const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY } = require("./const/const");
+const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, GET_VIDEO_INFO_CALLBACK, SELECT_FILES, SELECT_FILES_CALLBACK, DOWNLOAD_PATH } = require("./const/const");
+const { ipcMain, BrowserWindow, dialog } = require('electron')
 const { screen } = require('electron')
-const { ipcMain, BrowserWindow } = require('electron')
 const fs = require('fs')
 const path = require('path')
 const http = require('http')
 const url = require('url')
 const child_process = require('child_process')
+const shelljs = require("shelljs")
+const FFmpeg = require("fluent-ffmpeg")
+const ffprobeStatic = require('ffprobe-static');
+const sizeOf = require('image-size')
+const FileType = require('file-type')
 
 const getSrceenSize = () => {
     const display = screen.getPrimaryDisplay();
@@ -22,6 +27,7 @@ class IPC {
         const isDev = env === 'development';
         const screenSize = getSrceenSize();
         this.win = win;
+        this.initFFmpeg();
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             console.log("get message from render process", event.processId, data)
             const { type, params } = data;
@@ -41,8 +47,11 @@ class IPC {
                 case DOWNLOADFILE:
                     this.downloadFilesByUrl(params);
                     break;
-                case CHECK_FILE_EXIST:
-                    this.checkFileExist(params)
+                case GET_VIDEO_INFO:
+                    this.getVideoInfo(event, params)
+                case SELECT_FILES:
+                    this.selectFiles(event, params);
+                    break;
             }
         });
 
@@ -104,6 +113,14 @@ class IPC {
 
         this.callWindow = callWindow;
     }
+    initFFmpeg() {
+        // add ffmpeg to path
+        const command = `export PATH="$PATH:${ffprobeStatic.path}"`
+        // compatable with electron env
+        // issue: https://github.com/shelljs/shelljs/wiki/Electron-compatibility
+        shelljs.config.execPath = shelljs.which('node').toString()
+        shelljs.exec(command)
+    }
     minsizewin() {
         this.win.minimize()
     }
@@ -159,8 +176,87 @@ class IPC {
             console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
         }
     }
-    checkFileExist(path) {
-        return fs.existsSync(path)
+    async _getVideoInfo(filePath) {
+        let videoDuration, videoSize
+        const screenshotName = 'video-temp-thumbnail.png'
+        const screenshotPath = path.resolve(DOWNLOAD_PATH, screenshotName)
+        const { ext } = await FileType.fromFile(filePath)
+        const { width, height, type, size } = await this._getImageInfo(screenshotPath)
+        return new Promise((resolve, reject) => {
+            new FFmpeg({ source: filePath })
+            .on('end', (err, info) => {
+                resolve({
+                    videoDuration,
+                    videoPath: filePath,
+                    videoSize,
+                    videoType: ext,
+                    screenshotPath,
+                    screenshotWidth: width,
+                    screenshotHeight: height,
+                    screenshotType: type,
+                    screenshotSize: size,
+                })
+            })
+            .on('error', (err, info) => {
+                reject(err)
+            })
+            .screenshots({
+                timestamps: [0],
+                filename: screenshotName,
+                folder: DOWNLOAD_PATH
+            }).ffprobe((err, metadata) => {
+                videoDuration = metadata.format.duration
+                videoSize = metadata.format.size
+            })
+        })
+    }
+    async _getImageInfo(path) {
+        const { width, height, type } = await sizeOf(path)
+        const { size } = fs.statSync(path)
+        return {
+            width, height, type, size
+        }
+    }
+    async getVideoInfo(event, params) {
+        const { path } = params
+        const data = await this._getVideoInfo(path)
+        event.reply(GET_VIDEO_INFO_CALLBACK, data) 
+    }
+    async selectFiles(event, params) {
+        const { extensions, fileType, multiSelections } = params
+        const [filePath] = dialog.showOpenDialogSync(this.win, {
+            properties: ['openFile'],
+            filters: [{
+                name: "Images", extensions: extensions
+            }]
+        })
+        let data
+        switch(fileType) {
+            case "file":
+                data = {
+                    filePath: filePath,
+                    fileSize: fs.statSync(filePath).size,
+                    fileName: path.parse(filePath).base
+                }
+                break;
+            case "image":
+                data = {
+                    imagePath: filePath
+                }
+                break;
+            case "video":
+                data = await this._getVideoInfo(filePath)
+                break;
+            case "sound":
+                data = {
+                    soundPath: filePath
+                }
+                break;
+        }
+        event.reply(SELECT_FILES_CALLBACK, {
+            fileType,
+            data
+        })   
     }
 }
 

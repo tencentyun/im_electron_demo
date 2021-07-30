@@ -1,18 +1,21 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { downloadFilesByUrl, showDialog, checkFileExist } from "../../../utils/tools";
 import { cancelSendMsg } from "../api";
 import { shell } from 'electron'
 import { Icon, message as teaMessage } from "tea-component";
 import { checkPathInLS, setPathToLS } from "../../../utils/messageUtils";
+import { ipcRenderer } from "electron";
+import { RENDERPROCESSCALL, SELECT_FILES } from "../../../../app/const/const";
 
 export const FileElem = (props: any): JSX.Element => {
     const { message, element, index } = props
     const { message_conv_id, message_conv_type, message_status, message_msg_id, message_is_from_self } = message
-    const { file_elem_file_name, file_elem_file_size, file_elem_file_path, file_elem_url } = element
+    const { file_elem_file_name, file_elem_file_size, file_elem_file_id, file_elem_file_path, file_elem_url } = element
     const { uploadProgressList } = useSelector((state: State.RootState) => state.historyMessage);
     const progressKey = `${message_msg_id}_${index}`
     const uploadProgress = uploadProgressList.get(progressKey);
+    const dispatch = useDispatch()
     let   backgroundStyle = ""
     let   percentage = 0
     
@@ -21,6 +24,8 @@ export const FileElem = (props: any): JSX.Element => {
         percentage = Math.floor((cur_size / total_size) * 100)
         backgroundStyle = message_status === 1 ? `linear-gradient(to right, #D4FFEB ${percentage}%, white 0%, white 100%)` : ""
     }
+
+    
 
     const getFilePath = () => {
         const match = file_elem_url.match(/\/([\w|\.]+$)/)
@@ -37,7 +42,7 @@ export const FileElem = (props: any): JSX.Element => {
         showDialog()
     }
     const displayName = () => {
-        return file_elem_file_name
+        return file_elem_file_name || "null"
     }
     const getFileTypeName = () => {
         const match = file_elem_file_name.match(/\.(\w+)$/)
@@ -47,7 +52,6 @@ export const FileElem = (props: any): JSX.Element => {
         shell.showItemInFolder(getFilePath())
     }
     const handleCancel = async () => {
-        console.log(111110000)
         const {data: {json_params, code}} = await cancelSendMsg({
             conv_id: message_conv_id,
             conv_type: message_conv_type,
@@ -56,13 +60,11 @@ export const FileElem = (props: any): JSX.Element => {
         });
 
         if (code === 0) {
-            console.log(11112222)
             // dispatch(updateMessages({
             //     convId,
             //     message: JSON.parse(json_params)
             // }))
         }
-        console.log(11113333, code)
     }
     const getHandleElement = () => {
         if(message_status === 1) return <Icon type="dismiss" className="message-view__item--file___close" onClick={handleCancel} />

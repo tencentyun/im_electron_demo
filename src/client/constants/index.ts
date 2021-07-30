@@ -27,9 +27,9 @@ export const DEFAULT_USER_SIG = 'eJwtzNsKgkAUheF3meuQ7eichC60SCwJonqA0Em2WowH0oz
 // export const DEFAULT_USER_SIG = 'eJwtzMsOgjAQheF36VZDplNaK4kbFrpRMdUEt8ZWHbzQAGkkxncXgeX5TvJ-2GG9j4KrWMIwAjbtN1n3auhCPbftqLW9n7wnyxIeA3A9ExKHx709Va5zKSUCwKANPf*mUM2RI-CxQtcuWtg4h5sWW7VLTZ4qsdRFqTN5DPVkI0tuzMo98gzPARbs*wNMDi7s';
 
 
-// export const DEFAULT_USERID = 'lexuslin';
+export const DEFAULT_USERID = 'lexuslin';
 // export const DEFAULT_USER_SIG = 'eJwsjs0KgkAUhd-lbg25Y86IA636caFQYQUtq7nZbUzFnxKid4-MszwfnPO9YZekLvUV1wR6qvCXyVCyoaLlK1MNGnLquybnAv6sMfZUVWxACx9ReiEGciScgQZpz5vXcpUmmbDqoGKzjhOsC3uPRFpuu6PT3sogchbzy342Trb8INBCeSqQvh*OEs-h3XMRPt8AAAD--2SQMio_';
-// export const DEFAULT_USER_SIG = 'eJwtjM0KgkAURt9l1iF3rjbjCC1chVFBWtR2dKa8ZGL*IUTvnqnf7jsHzoed94nT25oFDB1gq*mTsWVLd5pwYYeuKahcXGOeuqrIsIB7ANyX7hpnY4eKajtyAB-GzbSl158J9FAAV3Kp0GNMK6Ey40UYp7GmLsrRCDc8Qp7dePqWPc-UVqvd4XJNThv2-QHiqDGk';
+export const DEFAULT_USER_SIG = 'eJwtjM0KgkAURt9l1iF3rjbjCC1chVFBWtR2dKa8ZGL*IUTvnqnf7jsHzoed94nT25oFDB1gq*mTsWVLd5pwYYeuKahcXGOeuqrIsIB7ANyX7hpnY4eKajtyAB-GzbSl158J9FAAV3Kp0GNMK6Ey40UYp7GmLsrRCDc8Qp7dePqWPc-UVqvd4XJNThv2-QHiqDGk';
 
 
 // export const DEFAULT_USERID = '940928'; 
