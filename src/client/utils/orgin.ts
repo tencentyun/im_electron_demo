@@ -115,6 +115,16 @@ const filterGetStAffPrefix = (data, callback, userId) => {
         }
     })
 }
+
+
+//是否行领导
+const isLead = ()=> {
+    if(Lead.indexOf(window.localStorage.getItem('uid')) !== -1){
+        return true
+    }else{
+        return false
+    }
+}
 // 格式化数据
 const assemblyData = (data, childrenNode, itemChildren, labelNode, restLabel) => {
     let result = []
@@ -166,5 +176,6 @@ export {
     saveStaff,
     getAccountsList,
     getAccountsAdd,
-    getDepAllStaff
+    getDepAllStaff,
+    isLead
 }
