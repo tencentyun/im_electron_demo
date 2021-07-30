@@ -94,6 +94,9 @@ export const matchUrl = (data:urlDataItem[]) => {
         let str = item.content
         let arr = str.match(imgReg)  //筛选出所有的img
         if (arr) {
+            if (arr.length > 1) {
+                arr.reverse()
+            }
             for (let i = 0; i < arr.length; i++) {
                 let src = arr[i].match(srcReg)
                 // 获取图片地址
