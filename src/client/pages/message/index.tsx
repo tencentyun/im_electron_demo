@@ -314,7 +314,7 @@ export const Message = (): JSX.Element => {
     // console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
     return (
         <div className="message-content">
-            <div className="message-list">
+            <div className="message-list" style={{userSelect: 'none'}}>
                 <div className="search-wrap" onClick={handleSearchBoxClick}><SearchBox /></div>
                 <div className="conversion-list">
                     {

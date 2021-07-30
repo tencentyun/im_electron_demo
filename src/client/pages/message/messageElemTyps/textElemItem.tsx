@@ -51,9 +51,9 @@ export const TextElemItem = (props: any): JSX.Element => {
                         {urls[index] ? <PicElemItem
                             image_elem_orig_url={urls[index]}
                             previewSrc={urls[index]}
-                            previewTitle="预览s"
+                            previewTitle="预览"
                         >
-                            {open => <a onClick={open}><img src={urls[index]} style={{ maxWidth: 178 }}></img></a>}
+                            {open => <a onClick={open}><img src={urls[index]} style={{ maxWidth: 150 }}></img></a>}
                         </PicElemItem> : <></>}
                     </span>
                 })}

@@ -93,7 +93,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [shotKeyTip, setShotKeyTip] = useState('按Enter键发送消息');
     const [isTextNullEmpty, setIsTextNullEmpty] = useState(true);
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
-    const [ shouldShowCallMenu, setShowCallMenu] = useState(false);
+    const [shouldShowCallMenu, setShowCallMenu] = useState(false);
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -106,8 +106,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     let editorInstance;
     // const enterSend = localStorage.getItem('sendType') || '1'
 
-    const userSig =localStorage.getItem('usersig')
-  const uid =localStorage.getItem('uid')
+    const userSig = localStorage.getItem('usersig')
+    const uid = localStorage.getItem('uid')
 
     // 上传逻辑
     const handleUpload = (base64Data) => {
@@ -171,13 +171,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                         return item.replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/<br\/>/g, '\n')
                     });
                 }
-                // imgSrc.forEach(async (i,index)=>{
-                //     await handleUpload(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,'')).then(src=>{
-                //         formatText.splice((index * 2)+1,0,`<img src="${src}" />`)
-                //     })
-                //     // aaa(i.replace(/<img src=/,'').replace(/\/>/,'').replace(/"/g,''))
-                // })
-
                 const getImgsUrl = async () => {
                     return new Promise(async (resolve, reject) => {
                         for (let i = 0;i < imgSrc.length;i++) {
@@ -373,7 +366,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         // resetState()
         setEmojiPopup(true)
     }
-    const handleSendPhoneMessage = ()=> {
+    const handleSendPhoneMessage = () => {
         setShowCallMenu(true);
     }
     const handleFeatureClick = (featureId) => {
@@ -497,7 +490,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleCallMenuClick = (item) => {
-        if(item) handleOpenCallWindow(item.id);
+        if (item) handleOpenCallWindow(item.id);
         setShowCallMenu(false);
     };
 
@@ -555,6 +548,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
     useEffect(() => {
+        alert(11)
         ipcRenderer.on('SENDSTORE', function (e, data) {
             console.log(data, '------------------------------------')
             setSendType(data)
@@ -602,7 +596,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
                 }
                 {
-                    shouldShowCallMenu && <Menu options={[{text: '语音通话', id: 'voiceCall' }, {text: '视频通话', id: 'videoCall' }]} onSelect={handleCallMenuClick}/>
+                    shouldShowCallMenu && <Menu options={[{ text: '语音通话', id: 'voiceCall' }, { text: '视频通话', id: 'videoCall' }]} onSelect={handleCallMenuClick} />
                 }
                 {
 
@@ -632,9 +626,9 @@ export const MessageInput = (props: Props): JSX.Element => {
                     hooks={hooks}
                 />
             </div>
-            <span className="message-input__button-area">
+            {/* <span className="message-input__button-area">
                 <Button type="primary" title={shotKeyTip} onClick={handleSendTextMsg} disabled={isTextNullEmpty}>发送</Button>
-            </span>
+            </span> */}
             {/* <span className="message-input__down" title='切换发送消息快捷键'></span> */}
             <Dropdown
                 clickClose={true}
