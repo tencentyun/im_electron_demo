@@ -89,6 +89,7 @@
             font-weight: 400;
             color: #bbb;
             line-height: 20px;
+            user-select:none;
         }
 
         &.is-revoked {
@@ -351,4 +352,17 @@
     &__divide {
         background: url('../../assets/icon/forward-divide.svg') no-repeat;
     }
+}
+
+.preview-btn{
+    display: inline-block;
+    padding: 7px;
+    background: url('../../assets/icon/preview_file.svg') no-repeat;
+     background-size: contain;
+}
+.viewer-flip-dir{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+       
 }

@@ -236,6 +236,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       {
         isShowCropper && imgUrl && <div>
           <Cropper
+          viewMode={1}
             {...cropperOption}
             src={imgUrl}
             onInitialized={(instance) => {

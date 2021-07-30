@@ -9,7 +9,6 @@ import {
   useHistory,
 } from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
-
 import store from "./store";
 
 import { Login } from "./pages/login";
@@ -40,7 +39,6 @@ import {
   updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
-let notificationpng = require('./assets/icon/notification.png')
 
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
@@ -53,16 +51,16 @@ export const App = () => {
   const initIMSDK = async () => {
     if (!isInited) {
       const privite = await timRenderInstance.callExperimentalAPI({
-          json_param: {
-              request_internal_operation: 'internal_operation_set_custom_server_info',
-              request_set_custom_server_info_param: {
-                longconnection_address_array: [{
-                      server_address_ip: "oaim.uat.crbank.com.cn",// ip
-                      server_address_port: 30001// 端口
-                }],
-                server_public_key: '0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f'// 公钥
-              }
+        json_param: {
+          request_internal_operation: 'internal_operation_set_custom_server_info',
+          request_set_custom_server_info_param: {
+            longconnection_address_array: [{
+              server_address_ip: "oaim.uat.crbank.com.cn",// ip
+              server_address_port: 30001// 端口
+            }],
+            server_public_key: '0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f'// 公钥
           }
+        }
       })
       console.log('私有化', privite)
       timRenderInstance.TIMInit().then(async ({ data }) => {
@@ -125,17 +123,17 @@ export const App = () => {
                * 被挤下线
                */
               case "TIMSetKickedOfflineCallback":
-                  _handleKickedout();
-                  break;
-              }
+                _handleKickedout();
+                break;
+            }
           });
         }
       });
     }
   };
-  const _handleElemUploadProgres = ({message, index, cur_size, total_size, user_data}) => {
+  const _handleElemUploadProgres = ({ message, index, cur_size, total_size, user_data }) => {
     const ramdon = Math.random()
-    if(ramdon > 0.8) {
+    if (ramdon > 0.8) {
       dispatch(updateMessageElemProgress({
         messageId: message.message_msg_id,
         index,
@@ -144,7 +142,7 @@ export const App = () => {
       }));
     }
   }
-  
+
   const _handleKickedout = async () => {
     dispatch(userLogout());
     history.replace("/login");
@@ -215,7 +213,7 @@ export const App = () => {
     }
     // console.log(messages[0].message_elem_array[0], '通知消息------------------------------------', messages)
     const notification = new window.Notification('收到新消息', {
-      icon: notificationpng,
+      icon: 'http://oaim.crbank.com.cn:30003/emoji/notification.png',
       // body: replaceAll(message.message_elem_array[0], '&nbsp;', ' ').substring(0, 15)
       body: (messages[0].message_elem_array[0].text_elem_content).substring(0, 15)
     })
@@ -287,13 +285,13 @@ export const App = () => {
       const convList = await addProfileForConversition(conversationList);
       dispatch(updateConversationList(convList));
       handleMessageSendFailed(convList);
-      if(conversationList[0]?.conv_last_msg?.message_status === 1) {
+      if (conversationList[0]?.conv_last_msg?.message_status === 1) {
         dispatch(updateMessages({
           convId: conversationList[0].conv_id,
           message: conversationList[0].conv_last_msg
         }))
       }
-      
+
     }
   };
 

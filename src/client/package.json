@@ -38,7 +38,6 @@
   },
   "dependencies": {
     "antd": "^4.16.8",
-    "viewerjs": "^1.10.0",
     "braft-editor": "^2.3.9",
     "dplayer": "^1.26.0",
     "final-form": "^4.20.2",
@@ -57,7 +56,8 @@
     "redux": "^4.1.0",
     "sass": "^1.35.1",
     "tea-component": "^2.6.22",
-    "trtc-electron-sdk": "^8.6.102-beta.0"
+    "trtc-electron-sdk": "^8.6.102-beta.0",
+    "viewerjs": "^1.10.0"
   },
   "author": "neiceban",
   "license": "ISC"

@@ -55,6 +55,7 @@ export const GroupAccountecment = (props: {
             size="full"
             placeholder="输入后群公告后按回车进行设置"
             value={input}
+            maxLength={240}
             onChange={(value) => {
               setInput(value);
             }}
