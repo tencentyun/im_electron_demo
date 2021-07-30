@@ -17,7 +17,7 @@ type Props = {
     convId: string,
     convType: number,
     isShutUpAll: boolean,
-    handleOpenCallWindow: (callType: string) => void;
+    handleOpenCallWindow: (callType: string,convType:number) => void;
 }
 
 const FEATURE_LIST_GROUP = [{
@@ -358,7 +358,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleCallMenuClick = (item) => {
-        if(item) handleOpenCallWindow(item.id);
+        if(item) handleOpenCallWindow(item.id,convType);
         setShowCallMenu(false);
     };
 
@@ -409,7 +409,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
                 }
                 {
-                    shouldShowCallMenu && <Menu options={[{text: '语音通话', id: 'voiceCall' }, {text: '视频通话', id: 'videoCall' }]} onSelect={handleCallMenuClick}/>
+                    shouldShowCallMenu && <Menu options={[{text: '语音通话', id: '1' }, {text: '视频通话', id: '2' }]} onSelect={handleCallMenuClick}/>
                 }
                 {
 
