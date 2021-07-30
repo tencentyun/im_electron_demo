@@ -18,7 +18,7 @@ const showPic = () => {
     showDialog()
 }
 const inintViewer = (prop:ImagePreviewI) => {
-    console.log('prop', prop);
+    // console.log('prop', prop);
     const { show, url, onClose, index,isCanOpenFileDir } = Object.assign({},defaultProp,prop)
     const [zoom, setzoom] = useState(1)
     const [minZoom, setminZoom] = useState(0.1)

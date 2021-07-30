@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react"
 import { RouteComponentProps } from "react-router-dom"
-import { ImagePreview } from "tea-component";
 import './avatar.scss'
+import ImgViewer from '../../components/ImgViewer'
 
 
 type AvatarSizeEnum = "default" | "large" | "small" | "mini"
@@ -21,12 +21,21 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
     const [nickName,setNickName] = useState(nick)
     const [url,setUrl] = useState(avatar)
     const [userID,setUserID] = useState(uid)
-    const [groupID,setGroupID] = useState(gid)
+    const [groupID, setGroupID] = useState(gid)
+    const [show, setShow] = useState(false)
+    const [imgPreViewUrl,setImgPreViewUrl] = useState('')
     const displayInfo = (info:string)=>{
         if(!info){
             return "未知"
         }
         return info.slice(-2).toUpperCase()
+    }
+    const handleClose = () => {
+        setShow(false)
+    }
+    const handleOpen = () => {
+        setShow(true)
+        setImgPreViewUrl(url)
     }
     const urlComp:JSX.Element =  <div className={`avatar ${size} ${extralClass}`} style={{
         backgroundImage:`url(${url})`,
@@ -59,19 +68,13 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
     },[avatar,nick,uid,gid])
     return (
         <>
-            {
-                url ? (
-                    <ImagePreview
-                previewSrc={url}
-            >
-                {open => <div onClick={open}>
-                    {
-                        url ? urlComp : nickName ? nickComp : userID ? userIDComp : groupID ? groupIDComp : defaltComp
-                    }
-                </div>}
-            </ImagePreview>
-                ) : url ? urlComp : nickName ? nickComp : userID ? userIDComp : groupID ? groupIDComp : defaltComp
-            }
+            <ImgViewer show={show} onClose={handleClose} isCanOpenFileDir={false} url={imgPreViewUrl}></ImgViewer>
+            <div onClick={handleOpen}>
+                {
+                url ? urlComp : nickName ? nickComp : userID ? userIDComp : groupID ? groupIDComp : defaltComp
+                }
+            </div>
+           
             
     
         </>
