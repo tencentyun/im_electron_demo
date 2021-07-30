@@ -481,8 +481,10 @@ export const MessageView = (props: Props): JSX.Element => {
         } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
             currentUrl = custom_elem_desc
         }
-       
-        imgsUrl = imgsUrl.concat(matchUrl(txtAndImgStr))
+        if (txtAndImgStr.length) {
+            imgsUrl = [].concat(matchUrl(txtAndImgStr),imgsUrl)
+        }
+        [...imgsUrl].reverse()
         console.log('imgsUrl', imgsUrl);
         console.log('currentUrl',currentUrl);
         let currentPreviewImgIndex = -1
