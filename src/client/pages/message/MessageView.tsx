@@ -28,7 +28,7 @@ import { GroupTipsElemItem } from './messageElemTyps/grouptipsElem';
 import { VideoElem } from './messageElemTyps/videoElem';
 import { MergeElem } from './messageElemTyps/mergeElem';
 import { ForwardPopup } from './components/forwardPopup';
-import { Icon } from 'tea-component';
+import { Icon, message } from 'tea-component';
 import formateTime from '../../utils/timeFormat';
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
@@ -123,6 +123,9 @@ export const MessageView = (props: Props): JSX.Element => {
             convType,
             msgId
         });
+        if(code === 20016) {
+            message.error({content: '消息超出可撤回时间'})
+        }
         code === 0 && dispatch(markeMessageAsRevoke({
             convId,
             messageId: msgId
