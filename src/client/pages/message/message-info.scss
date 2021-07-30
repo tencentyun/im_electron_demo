@@ -60,6 +60,11 @@
         font-weight: 500;
         line-height: 24px;
         margin-left: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 200px;
+        cursor: pointer;
       }
 
       &--video {
