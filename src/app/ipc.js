@@ -1,6 +1,6 @@
 // import { BrowserWindow } from "electron";
 const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY } = require("./const/const");
-const { dialog } = require('electron')
+const { screen } = require('electron')
 const { ipcMain, BrowserWindow } = require('electron')
 const fs = require('fs')
 const path = require('path')
@@ -8,10 +8,19 @@ const http = require('http')
 const url = require('url')
 const child_process = require('child_process')
 
+const getSrceenSize = () => {
+    const display = screen.getPrimaryDisplay();
+
+    return display.size;
+}
+
 class IPC {
     win = null;
     callWindow = null;
-    constructor(win) {
+    constructor(win){
+        const env = process.env?.NODE_ENV?.trim();
+        const isDev = env === 'development';
+        const screenSize = getSrceenSize();
         this.win = win;
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             console.log("get message from render process", event.processId, data)
@@ -35,20 +44,37 @@ class IPC {
                 case CHECK_FILE_EXIST:
                     this.checkFileExist(params)
             }
-        })
+        });
+
+
+        this.createNewWindow(isDev);
+
+        ipcMain.on('accept-call', () => {
+            this.callWindow.setSize(800, 600);
+            this.callWindow.setPosition(screenSize.width / 2 - 400, screenSize.height /  2 - 300);
+        });
+
+        ipcMain.on('refuse-call', () => {
+            this.callWindow.close();
+        });
 
         ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
-            this.callWindow = this.createNewWindow(data);
+            const params = JSON.stringify(data);
+            if(data.windowType === 'notificationWindow') {
+                this.callWindow.setSize(320, 150);
+                this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
+            }
+            this.callWindow.show();
+            this.callWindow.webContents.send('pass-call-data', params);
+            isDev && this.callWindow.webContents.openDevTools();
+
             this.callWindow.on('close', () => {
                 event.reply(CALL_WINDOW_CLOSE_REPLY);
+                this.createNewWindow(isDev);
             });
         });
     }
-    createNewWindow(data) {
-        const params = JSON.stringify(data);
-        console.log('params sended', params);
-        const env = process.env?.NODE_ENV?.trim();
-        const isDev = env === 'development';
+    createNewWindow(isDev) {
         const callWindow = new BrowserWindow({
             height: 600,
             width: 800,
@@ -64,24 +90,19 @@ class IPC {
             },
         });
         callWindow.removeMenu();
-        if (isDev) {
-            callWindow.loadURL(`http://localhost:3000/call.html?data=${params}`);
-            callWindow.webContents.openDevTools();
+        if(isDev) {
+            callWindow.loadURL(`http://localhost:3000/call.html`);
         } else {
             callWindow.loadURL(
                 url.format({
-                    pathname: path.join(__dirname, `../../bundle/call.html?data=${params}`),
+                    pathname: path.join(__dirname, `../../bundle/call.html`),
                     protocol: 'file:',
                     slashes: true
                 })
             );
         }
 
-        callWindow.on('ready-to-show', () => {
-            callWindow.show();
-        });
-
-        return callWindow;
+        this.callWindow = callWindow;
     }
     minsizewin() {
         this.win.minimize()

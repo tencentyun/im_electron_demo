@@ -287,6 +287,7 @@ export const sendMsg = async ({
 }: SendMsgParams<
   TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg | MergeMsg | CustomMsg
 >): Promise<MsgResponse> => {
+
   const res = await timRenderInstance.TIMMsgSendMessage({
     conv_id: convId,
     conv_type: convType,

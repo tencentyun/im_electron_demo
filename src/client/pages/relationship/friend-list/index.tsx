@@ -18,6 +18,7 @@ export const FriendList = () => {
 
   const friendList = value || [];
 
+
   const columns = [
     {
       header: "",
