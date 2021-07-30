@@ -444,9 +444,11 @@ export const MessageView = (props: Props): JSX.Element => {
             item.message_elem_array[0].elem_type === 0 &&
             item.message_elem_array[0].text_elem_content.indexOf('<img src=') === -1)
     }
-    const handleImgMsgClick = (currentMsgItem, messageList) => {
+    // 点击某条消息中的图片时，拉起预览
+    const handleImgMsgClick = (currentMsgItem, messageList,event:MouseEvent) => {
         console.log('messageList', messageList);
-        console.log('item',currentMsgItem);
+        console.log('item', currentMsgItem);
+        console.log('event',event);
         let imgsUrl = []
                 const {image_elem_thumb_url:url1 , image_elem_orig_url:url2 , image_elem_large_url:url3 } = currentMsgItem
         let currentUrl = url1 || url2 || url3
@@ -470,12 +472,12 @@ export const MessageView = (props: Props): JSX.Element => {
         })
         const { elem_type,text_elem_content,custom_elem_data,custom_elem_desc } = currentMsgItem
         if (elem_type === 0) {
-            const res = matchUrl([{ content: text_elem_content }])
-            if (res.length) {
-                currentUrl = res[0]
-            } else {
-                currentUrl = ''
+            // const res = matchUrl([{ content: text_elem_content }])
+            const currentNode = event.target as HTMLImageElement
+            if (currentNode.nodeName.toLocaleLowerCase() === 'img') {
+                 currentUrl = currentNode.currentSrc
             }
+         
         } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
             currentUrl = custom_elem_desc
         }
@@ -535,7 +537,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {
                                             message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                                 return (
-                                                    <div className="message-view__item--element" onClick={handleImgMsgClick.bind(null,elment,messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                    <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this,elment,messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                                         {
                                                             displayDiffMessage(elment, index)
                                                         }
