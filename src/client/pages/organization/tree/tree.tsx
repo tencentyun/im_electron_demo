@@ -6,7 +6,7 @@ import {
     UsergroupAddOutlined,
     UserOutlined
 } from '@ant-design/icons';
-import { filterGetDepartment } from '../../../utils/orgin'
+import { filterGetDepartment, isLead } from '../../../utils/orgin'
 
 interface TreeDynamic {
     callback: Function
@@ -22,6 +22,8 @@ interface DataNode {
     isLeaf?: boolean;
     children?: DataNode[];
 }
+
+
 
 const assemblyData = (data, childrenNode, itemChildren, labelNode, restLabel) => {
     let result = []
@@ -47,6 +49,11 @@ const assemblyData = (data, childrenNode, itemChildren, labelNode, restLabel) =>
             }
             if (Array.isArray(child[childrenNode]) && child[childrenNode].length > 0) {
                 for (let i = 0;i < child[childrenNode].length;i++) {
+                    if(!isLead()){
+                        if(child[childrenNode][i].DepName == '行领导' || child[childrenNode][i].DepId == "2"){
+                            continue;
+                        }
+                    }
                     if (!(child[childrenNode][i].SubId.length > 0) && !(child[childrenNode][i].Uids.length > 0)) {
                         child[childrenNode][i].isLeaf = true
                     } else {
@@ -109,6 +116,19 @@ export const TreeDynamicExample: FC<TreeDynamic> = ({ selectable = false, callba
         //    setSelectIds(value);
     }
 
+    const  recursiveRree = (treeData)=> {
+        treeData.forEach(node => {
+            if (node.children) {
+                 //人员
+                let nodeDisable =  node.children.filter(item => item.disableCheckbox)
+                console.log(nodeDisable,node.title)
+                if(nodeDisable.length <= 0 ){
+                    node.disableCheckbox = false
+                }
+                const result = recursiveRree(node.children);
+            } 
+        });
+     }
     const filterStaff = (data: any) => {
         return data.filter(item => item.Uid)
     }
@@ -165,10 +185,15 @@ export const TreeDynamicExample: FC<TreeDynamic> = ({ selectable = false, callba
                 filterGetDepartment({
                     DepId: node.DepId
                 }, (dataNode) => {
-                    console.log(dataNode)
                     setTreeData(origin =>
                         updateTreeData(origin, key, assemblyData([dataNode], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children),
                     );
+                    if(selectable){
+                        let Copy =  updateTreeData(treeData, key, assemblyData([dataNode], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children)
+                        recursiveRree(Copy)
+                        recursiveRree(Copy)
+                        setTreeData(Copy)
+                    }
                     resolve();
                 }, window.localStorage.getItem('uid'))
             } else {

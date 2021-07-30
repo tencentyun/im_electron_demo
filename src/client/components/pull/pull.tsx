@@ -169,20 +169,20 @@ export const AddGroupMemberDialog = (props: {
   };
 
 
-  const searchStaff = (refData) => {
-    console.log("搜索触发", refData)
-    if (rearrangement(selectedList, refData)) {
-      message.warning({
-        content: "该成员已在待添加列表！",
-      })
-    } else {
-      refData.search = true
-      selectedList.push(refData)
-      setSelectedList(JSON.parse(JSON.stringify(selectedList)))
-      setSearchList(JSON.parse(JSON.stringify(selectedList)))
-      console.log(JSON.parse(JSON.stringify(selectedList)))
-      const listmap = selectedList.map(item => item.Uid)
-      setSelectIdsProp(listmap)
+ const searchStaff = (refData)=> {
+    console.log("搜索触发",refData)
+    if(rearrangement(selectedList,refData)){
+        message.warning({
+            content: "该成员已在待添加列表！",
+        })
+    }else{
+        refData.search = true
+        selectedList.push(refData)
+        setSelectedList(JSON.parse(JSON.stringify(selectedList)))
+        setSearchList(JSON.parse(JSON.stringify(selectedList)))
+        console.log(JSON.parse(JSON.stringify(selectedList)))
+        const listmap = selectedList.map(item => item.Uid)
+        setSelectIdsProp(listmap)
     }
   }
 
@@ -225,8 +225,8 @@ export const AddGroupMemberDialog = (props: {
       <Modal.Body>
         <div className="forward-popup__search-list">
           <div className="forward-popup__search-list__list customize-scroll-style">
-            <Search handleCallback={searchStaff}></Search>
-            <TreeDynamicExample selectIdsProp={selectIdsProp} searchList={selectedList} personnel={callbackPersonnel} selectable={true} callback={refreshData}></TreeDynamicExample>
+                <Search handleCallback= {searchStaff}></Search>
+                <TreeDynamicExample  selectIdsProp={selectIdsProp} searchList={selectedList} personnel={callbackPersonnel} selectable={ true } callback={refreshData}></TreeDynamicExample>    
           </div>
         </div>
         <div className="forward-popup__seleted-list customize-scroll-style">

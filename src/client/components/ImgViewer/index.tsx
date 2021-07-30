@@ -6,9 +6,9 @@ import { showDialog } from "../../utils/tools";
 interface ImagePreviewI {
     show: boolean;
     url: string | string[];
-    onClose: (bool?:boolean) => void;
+    onClose: (bool?: boolean) => void;
     index?: number;
-    isCanOpenFileDir?:boolean
+    isCanOpenFileDir?: boolean
 }
 
 const defaultProp = {
@@ -23,9 +23,9 @@ const defaultConfig = {
     zoom: 1,
     index: 0
 }
-const inintViewer = (prop:ImagePreviewI) => {
+const inintViewer = (prop: ImagePreviewI) => {
     // console.log('prop', prop);
-    const { show, url, onClose, index,isCanOpenFileDir } = Object.assign({},defaultProp,prop)
+    const { show, url, onClose, index, isCanOpenFileDir } = Object.assign({}, defaultProp, prop)
     const [zoom, setZoom] = useState(defaultConfig.zoom)
     const [minZoom, setminZoom] = useState(defaultConfig.minzoom)
     const [rotate, setRotate] = useState(defaultConfig.rotate)
@@ -44,13 +44,15 @@ const inintViewer = (prop:ImagePreviewI) => {
     const handleFileClick = () => {
         showPic()
     }
-
-    useEffect(() => {
-        setvisible(show)
+    const resetSeting = () => {
         setRotate(defaultConfig.rotate)
         setZoom(defaultConfig.zoom)
+    }
+    useEffect(() => {
+        setvisible(show)
+        resetSeting()
     }, [show])
-    
+
     useEffect(() => {
         if (Array.isArray(url)) {
             setpreviewUrl(url[getCurrentIndex()])
@@ -62,18 +64,18 @@ const inintViewer = (prop:ImagePreviewI) => {
     }, [url])
 
     useEffect(() => {
+        resetSeting()
         if (Array.isArray(url)) {
             setpreviewUrl(url[_index])
-            }else{
-                setpreviewUrl(url)
-            }
+        } else {
+            setpreviewUrl(url)
+        }
     }, [_index])
 
     useEffect(() => {
         if (index > -1) {
-            
-              setindex(index)
-         }
+            setindex(index)
+        }
     }, [index])
 
     const getCurrentIndex = (): number => {
@@ -143,9 +145,9 @@ const inintViewer = (prop:ImagePreviewI) => {
                             <i className="btn-icon btn-out" onClick={rotateLeft}></i>
                             <i className="btn-icon btn-in" onClick={rotateRight}></i>
                             {
-                                isCanOpenFileDir ?  <i className="btn-icon btn-file" onClick={handleFileClick}></i> : null
+                                isCanOpenFileDir ? <i className="btn-icon btn-file" onClick={handleFileClick}></i> : null
                             }
-                           
+
                             <span className="image-counter">{_index + 1} / {imgUrlList.length}</span>
                         </div>
                     </div>
