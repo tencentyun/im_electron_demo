@@ -29,7 +29,7 @@ class IPC {
                     this.showDialog();
                     break;
                 case DOWNLOADFILE:
-                    // this.downloadFilesByUrl(params);
+                    this.downloadFilesByUrl(params);
                     break;
                 case CHECK_FILE_EXIST:
                     this.checkFileExist(params)
@@ -101,29 +101,80 @@ class IPC {
     showDialog () {
         child_process.exec(`start "" ${path.resolve(process.cwd(), './download/')}`);
     }
-    // downloadFilesByUrl (params) {
-    //     const { file_url, file_name } = params
-    //     console.log(params)
+    downloadFilesByUrl (params) {
+        const { file_url, file_name } = params
+        console.log(params)
+        const cwd = process.cwd();
+        const downloadDicPath = path.resolve(cwd, './download/')
+
+        if (!fs.existsSync(downloadDicPath)) {
+            fs.mkdirSync(downloadDicPath)
+        }
+        const options = {
+            host: url.parse(file_url).host,
+            port: url.parse(file_url).port,
+            path: url.parse(file_url).pathname
+        };
+        if (!fs.existsSync(path.resolve(downloadDicPath, file_name))) {
+            var file = fs.createWriteStream(path.resolve(downloadDicPath, file_name));
+            http.get(options, (res) => {
+                res.on('data', function (data) {
+                    file.write(data);
+                }).on('end', function () {
+                    file.end();
+                    console.log(file_name + ' downloaded to ' + downloadDicPath);
+                });
+            });
+        } else {
+            // 已存在
+            console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+        }
+    }
+    // downloadFilesByUrl(file_url) {
     //     const cwd = process.cwd();
     //     const downloadDicPath = path.resolve(cwd, './download/')
-
     //     if (!fs.existsSync(downloadDicPath)) {
     //         fs.mkdirSync(downloadDicPath)
     //     }
-    //     const options = {
-    //         host: url.parse(file_url).host,
-    //         port: url.parse(file_url).port,
-    //         path: url.parse(file_url).pathname
-    //     };
-    //     if (!fs.existsSync(path.resolve(downloadDicPath, file_name))) {
-    //         var file = fs.createWriteStream(path.resolve(downloadDicPath, file_name));
-    //         http.get(options, (res) => {
-    //             res.on('data', function (data) {
-    //                 file.write(data);
-    //             }).on('end', function () {
-    //                 file.end();
-    //                 console.log(file_name + ' downloaded to ' + downloadDicPath);
-    //             });
+        
+    //     const file_name = path.basename(file_url)
+    //     const file_path = path.resolve(downloadDicPath, file_name)
+    //     const file_path_temp =  `${file_path}.tmp`
+        
+    //     if (!fs.existsSync(file_path)) {
+
+    //         //创建写入流
+    //         const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
+    //         console.error('error==>', e)
+    //         }).on('ready', function () {
+    //         console.log("开始下载:", file_url);
+    //         }).on('finish', function () {
+    //         //下载完成后重命名文件
+    //         fs.renameSync(file_path_temp, file_path);
+    //         console.log('文件下载完成:', file_path);
+    //         });
+    //         //请求文件
+    //         fetch(file_url, {
+    //         method: 'GET',
+    //         headers: { 'Content-Type': 'application/octet-stream' },
+    //         }).then(res => {
+    //         //获取请求头中的文件大小数据
+    //         let fsize = res.headers.get("content-length");
+    //         //创建进度
+    //         let str = progressStream({
+    //             length: fsize,
+    //             time: 100 /* ms */
+    //         });
+    //         // 下载进度 
+    //         str.on('progress', function (progressData) {
+    //             //不换行输出
+    //             let percentage = Math.round(progressData.percentage) + '%';
+    //             console.log(percentage);
+    //         });
+    //         res.body.pipe(str).pipe(fileStream);
+    //         }).catch(e => {
+    //         //自定义异常处理
+    //         console.log(e);
     //         });
     //     } else {
     //         // 已存在

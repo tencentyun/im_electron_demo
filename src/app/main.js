@@ -284,99 +284,104 @@ function createWindow() {
     );
   });
   // 打开文件
-  // ipcMain.on("OPENFILE", function (event, filename) {
-  //   console.log('123',filename)
-  //   const name = filename.filename;
-  //   console.log(name)
-  //   console.log(localUrl)
-  //   const localUrl = path.join(process.cwd(), "/download/", name);
-  //   shell.openPath(localUrl);
-  // });
-  function downloadFilesByUrl(params) {
-    const { file_elem_url, file_elem_file_name } = params;
-    console.log(params);
-
-    let savePath = `${app.getPath("downloads")}\\${file_elem_file_name}`; // console.log(savePath)
-    realSavePath = savePath;
-    mainWindow.webContents.downloadURL(file_elem_url);
-    mainWindow.webContents.session.on(
-      "will-download",
-      (event, item, webContents) => {
-        if (savePath == realSavePath) {
-          item.setSavePath(savePath);
-          item.once("done", (event, state) => {
-            if (state === "completed") {
-              shell.openPath(savePath);
-            } else {
-              console.log(`Download failed: ${state}`);
-            }
-          });
-        }
-      }
-    );
-
-    // const cwd = process.cwd();
-    // const downloadDicPath = path.resolve(cwd, "./download/");
-
-    // if (!fs.existsSync(downloadDicPath)) {
-    //   fs.mkdirSync(downloadDicPath);
-    // }
-    // const options = {
-    //   host: url.parse(file_elem_url).host.replace(":30003", ""),
-    //   port: url.parse(file_elem_url).port,
-    //   path: url.parse(file_elem_url).pathname,
-    // };
-    // console.log(111, options.host);
-    // console.log(222, options.port);
-    // console.log(333, options.path);
-    // if (!fs.existsSync(path.resolve(downloadDicPath, file_elem_file_name))) {
-    //   var file = fs.createWriteStream(
-    //     path.resolve(downloadDicPath, file_elem_file_name)
-    //   );
-
-    // http.get(options, (res) => {
-    //   const { statusCode } = res;
-    //   const contentType = res.headers["content-type"];
-    //   let error;
-    //   if (statusCode !== 200) {
-    //     error = new Error("Request Failed.\n" + `Status Code: ${statusCode}`);
-    //   } else if (!/^application\/json/.test(contentType)) {
-    //     error = new Error(
-    //       "Invalid content-type.\n" +
-    //         `Expected application/json but received ${contentType}`
-    //     );
-    //   }
-    //   if (error) {
-    //     console.error(error.message);
-    //     res.resume();
-    //     return;
-    //   }
-    //   res
-    //     .on("data", function (data) {
-    //       file.write(data);
-    //     })
-    //     .on("end", function () {
-    //       file.end();
-    //       const localUrl = path.join(
-    //         process.cwd(),
-    //         "/download/",
-    //         filename.file_elem_file_name
-    //       );
-    //       shell.openPath(localUrl);
-    //       console.log(file_name + " downloaded to " + downloadDicPath);
-    //     });
-    // });
-    // } else {
-    //   // 已存在
-    //   console.log(
-    //     path.resolve(downloadDicPath, file_elem_file_name),
-    //     "已存在，不下载"
-    //   );
-    // }
-  }
   ipcMain.on("openfilenow", function (event, filename) {
-    console.log("666", filename);
-    downloadFilesByUrl(filename);
+    console.log('123',filename)
+    const name = filename.file_elem_file_name;
+    console.log(name)
+    const localUrl = path.join(process.cwd(), "/download/", name);
+    shell.openPath(localUrl);
+  });
+  // function downloadFilesByUrl(params) {
+  //   const { file_elem_file_path, file_elem_file_name } = params;
+  //   console.log(params);
+
+  //   let savePath = `${app.getPath("downloads")}\\${file_elem_file_name}`; // console.log(savePath)
+  //   realSavePath = savePath;
+  //   mainWindow.webContents.downloadURL(file_elem_file_path);
+  //   mainWindow.webContents.session.on(
+  //     "will-download",
+  //     (event, item, webContents) => {
+  //       if (savePath == realSavePath) {
+  //         item.setSavePath(savePath);
+  //         item.once("done", (event, state) => {
+  //           if (state === "completed") {
+  //             shell.openPath(savePath);
+  //           } else {
+  //             console.log(`Download failed: ${state}`);
+  //           }
+  //         });
+  //       }
+  //     }
+  //   );
+
+  //   // const cwd = process.cwd();
+  //   // const downloadDicPath = path.resolve(cwd, "./download/");
+
+  //   // if (!fs.existsSync(downloadDicPath)) {
+  //   //   fs.mkdirSync(downloadDicPath);
+  //   // }
+  //   // const options = {
+  //   //   host: url.parse(file_elem_url).host.replace(":30003", ""),
+  //   //   port: url.parse(file_elem_url).port,
+  //   //   path: url.parse(file_elem_url).pathname,
+  //   // };
+  //   // console.log(111, options.host);
+  //   // console.log(222, options.port);
+  //   // console.log(333, options.path);
+  //   // if (!fs.existsSync(path.resolve(downloadDicPath, file_elem_file_name))) {
+  //   //   var file = fs.createWriteStream(
+  //   //     path.resolve(downloadDicPath, file_elem_file_name)
+  //   //   );
+
+  //   // http.get(options, (res) => {
+  //   //   const { statusCode } = res;
+  //   //   const contentType = res.headers["content-type"];
+  //   //   let error;
+  //   //   if (statusCode !== 200) {
+  //   //     error = new Error("Request Failed.\n" + `Status Code: ${statusCode}`);
+  //   //   } else if (!/^application\/json/.test(contentType)) {
+  //   //     error = new Error(
+  //   //       "Invalid content-type.\n" +
+  //   //         `Expected application/json but received ${contentType}`
+  //   //     );
+  //   //   }
+  //   //   if (error) {
+  //   //     console.error(error.message);
+  //   //     res.resume();
+  //   //     return;
+  //   //   }
+  //   //   res
+  //   //     .on("data", function (data) {
+  //   //       file.write(data);
+  //   //     })
+  //   //     .on("end", function () {
+  //   //       file.end();
+  //   //       const localUrl = path.join(
+  //   //         process.cwd(),
+  //   //         "/download/",
+  //   //         filename.file_elem_file_name
+  //   //       );
+  //   //       shell.openPath(localUrl);
+  //   //       console.log(file_name + " downloaded to " + downloadDicPath);
+  //   //     });
+  //   // });
+  //   // } else {
+  //   //   // 已存在
+  //   //   console.log(
+  //   //     path.resolve(downloadDicPath, file_elem_file_name),
+  //   //     "已存在，不下载"
+  //   //   );
+  //   // }
+  // }
+  // ipcMain.on("openfilenow", function (event, filename) {
+  //   console.log("666", filename);
+  //   downloadFilesByUrl(filename);
+  // });
+  ipcMain.on("OPENFILE", function (event, filename) {
+    const name = filename.filename;
+    console.log(name)
+    const localUrl = path.join(process.cwd(), "/download/", name);
+    shell.openPath(localUrl);
   });
   return mainWindow;
 }
