@@ -103,14 +103,16 @@ class IPC {
     }
     downloadFilesByUrl (params) {
         const { file_url, file_name } = params
+        console.log(params)
         const cwd = process.cwd();
         const downloadDicPath = path.resolve(cwd, './download/')
+
         if (!fs.existsSync(downloadDicPath)) {
             fs.mkdirSync(downloadDicPath)
         }
         const options = {
             host: url.parse(file_url).host,
-            port: 80,
+            port: url.parse(file_url).port,
             path: url.parse(file_url).pathname
         };
         if (!fs.existsSync(path.resolve(downloadDicPath, file_name))) {

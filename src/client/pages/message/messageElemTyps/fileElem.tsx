@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { downloadFilesByUrl, showDialog, checkFileExist } from "../../../utils/tools";
 import { cancelSendMsg } from "../api";
-import { shell } from 'electron'
+import { shell, ipcRenderer } from 'electron'
 import { Icon, message as teaMessage } from "tea-component";
 import { checkPathInLS, setPathToLS } from "../../../utils/messageUtils";
 

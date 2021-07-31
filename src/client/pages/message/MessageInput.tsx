@@ -20,6 +20,7 @@ import { SDKAPPID, TIM_BASE_URL } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
 import { judgeFileSize } from '../../utils/messageUtils';
 import { sendCustomMsg } from '../message/api'
+import { judgeFileSize } from '../../utils/messageUtils';
 
 let store = '1'
 

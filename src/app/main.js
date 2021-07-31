@@ -236,7 +236,7 @@ function createWindow () {
   }
   // 注册截图快捷键
   globalShortcut.register("CommandOrControl+Shift+X", () => {
-    // "start C:\\Users\\admin\\Desktop\\demo\\cut.exe"
+    "start C:\\Users\\admin\\Desktop\\demo\\cut.exe"
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
     child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe", () => {
@@ -271,6 +271,7 @@ function createWindow () {
   // 打开文件
   ipcMain.on("OPENFILE", function (event, filename) {
     const name = filename.filename;
+    console.log(name)
     const localUrl = path.join(process.cwd(), "/download/", name);
     shell.openPath(localUrl);
   });

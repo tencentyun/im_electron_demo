@@ -6,7 +6,7 @@ import {
     UsergroupAddOutlined,
     UserOutlined
 } from '@ant-design/icons';
-import { filterGetDepartment } from '../../../utils/orgin'
+import { filterGetDepartment, isLead } from '../../../utils/orgin'
 
 interface TreeDynamic {
     callback: Function
@@ -49,6 +49,11 @@ const assemblyData = (data, childrenNode, itemChildren, labelNode, restLabel) =>
             }
             if (Array.isArray(child[childrenNode]) && child[childrenNode].length > 0) {
                 for (let i = 0;i < child[childrenNode].length;i++) {
+                    if(!isLead()){
+                        if(child[childrenNode][i].DepName == '行领导' || child[childrenNode][i].DepId == "2"){
+                            continue;
+                        }
+                    }
                     if (!(child[childrenNode][i].SubId.length > 0) && !(child[childrenNode][i].Uids.length > 0)) {
                         child[childrenNode][i].isLeaf = true
                     } else {

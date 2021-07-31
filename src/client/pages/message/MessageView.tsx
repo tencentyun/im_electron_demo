@@ -446,9 +446,12 @@ export const MessageView = (props: Props): JSX.Element => {
     }
     // 点击某条消息中的图片时，拉起预览
     const handleImgMsgClick = (currentMsgItem, messageList,event:MouseEvent) => {
-        console.log('messageList', messageList);
+        if (currentMsgItem.elem_type !== 10 && currentMsgItem.elem_type !== 1 && onIsCustEmoji(currentMsgItem.elem_type, currentMsgItem.custom_elem_data)) {
+            return
+        }
+                console.log('messageList', messageList);
         console.log('item', currentMsgItem);
-        console.log('event',event);
+        console.log('event', event);
         let imgsUrl = []
                 const {image_elem_thumb_url:url1 , image_elem_orig_url:url2 , image_elem_large_url:url3 } = currentMsgItem
         let currentUrl = url1 || url2 || url3
@@ -481,8 +484,10 @@ export const MessageView = (props: Props): JSX.Element => {
         } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
             currentUrl = custom_elem_desc
         }
-       
-        imgsUrl = imgsUrl.concat(matchUrl(txtAndImgStr))
+        if (txtAndImgStr.length) {
+            imgsUrl = [].concat(matchUrl(txtAndImgStr),imgsUrl)
+        }
+        [...imgsUrl].reverse()
         console.log('imgsUrl', imgsUrl);
         console.log('currentUrl',currentUrl);
         let currentPreviewImgIndex = -1
