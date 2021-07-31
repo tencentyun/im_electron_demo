@@ -260,7 +260,6 @@ export const MessageView = (props: Props): JSX.Element => {
         }
     }
     const handlRightClick = (e, id) => {
-        debugger
         const { data } = e.props;
         switch (id) {
             case 'revoke':
@@ -485,7 +484,6 @@ export const MessageView = (props: Props): JSX.Element => {
                  currentUrl = currentNode.currentSrc
             }
         } else if (elem_type === 4) {
-            console.log(file_elem_url)
             ipcRenderer.send('openfilenow',currentMsgItem)
         } else if(onIsCustEmoji(elem_type, custom_elem_data)) {
             currentUrl = custom_elem_desc

@@ -29,7 +29,7 @@ class IPC {
                     this.showDialog();
                     break;
                 case DOWNLOADFILE:
-                    this.downloadFilesByUrl(params);
+                    // this.downloadFilesByUrl(params);
                     break;
                 case CHECK_FILE_EXIST:
                     this.checkFileExist(params)
@@ -101,35 +101,35 @@ class IPC {
     showDialog () {
         child_process.exec(`start "" ${path.resolve(process.cwd(), './download/')}`);
     }
-    downloadFilesByUrl (params) {
-        const { file_url, file_name } = params
-        console.log(params)
-        const cwd = process.cwd();
-        const downloadDicPath = path.resolve(cwd, './download/')
+    // downloadFilesByUrl (params) {
+    //     const { file_url, file_name } = params
+    //     console.log(params)
+    //     const cwd = process.cwd();
+    //     const downloadDicPath = path.resolve(cwd, './download/')
 
-        if (!fs.existsSync(downloadDicPath)) {
-            fs.mkdirSync(downloadDicPath)
-        }
-        const options = {
-            host: url.parse(file_url).host,
-            port: url.parse(file_url).port,
-            path: url.parse(file_url).pathname
-        };
-        if (!fs.existsSync(path.resolve(downloadDicPath, file_name))) {
-            var file = fs.createWriteStream(path.resolve(downloadDicPath, file_name));
-            http.get(options, (res) => {
-                res.on('data', function (data) {
-                    file.write(data);
-                }).on('end', function () {
-                    file.end();
-                    console.log(file_name + ' downloaded to ' + downloadDicPath);
-                });
-            });
-        } else {
-            // 已存在
-            console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
-        }
-    }
+    //     if (!fs.existsSync(downloadDicPath)) {
+    //         fs.mkdirSync(downloadDicPath)
+    //     }
+    //     const options = {
+    //         host: url.parse(file_url).host,
+    //         port: url.parse(file_url).port,
+    //         path: url.parse(file_url).pathname
+    //     };
+    //     if (!fs.existsSync(path.resolve(downloadDicPath, file_name))) {
+    //         var file = fs.createWriteStream(path.resolve(downloadDicPath, file_name));
+    //         http.get(options, (res) => {
+    //             res.on('data', function (data) {
+    //                 file.write(data);
+    //             }).on('end', function () {
+    //                 file.end();
+    //                 console.log(file_name + ' downloaded to ' + downloadDicPath);
+    //             });
+    //         });
+    //     } else {
+    //         // 已存在
+    //         console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+    //     }
+    // }
     checkFileExist (path) {
         return fs.existsSync(path)
     }
