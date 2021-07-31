@@ -222,6 +222,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             //     console.log("formatText.join('')",formatText.join(''));
             //     toTextContent = formatText.join('')
             // }
+                let isCanSendData = []
             if (imgSrc && imgSrc.length > 0) {
                 let formatText = [];
                 let textContent = htmlText.match(/<p>((\w|\W)*?)<\/p>/g)
@@ -237,14 +238,20 @@ export const MessageInput = (props: Props): JSX.Element => {
                                 base64Str
                             })
                         }
-                const isCanSendData = formatText.filter(item=>item)
-
+            isCanSendData = formatText.filter(item=>item)
+            console.log('formatText',formatText);
     //   let newapiget = startapi(isCanSendData,toTextContent);
-
     // newapiget(isCanSendData[0])
-                isCanSendData.map(async item=>{
+               
+            }
+            console.log('isCanSendData',isCanSendData);
+            if (isCanSendData.length) {
+                      isCanSendData.map(async item=>{
                     if (typeof item === 'string') {
+            console.log('toTextContent111',toTextContent);
+
                         const atList = getAtList(toTextContent)
+                        console.log('atList',atList);
                         const { data: { code, json_params, desc } } = await sendTextMsg({
                             convId,
                             convType,
@@ -268,28 +275,30 @@ export const MessageInput = (props: Props): JSX.Element => {
                         ipcRenderer.send('saveFile', {str: item.base64Str})
                     }
                 })
+                return
             }
+       
             // const text = editorState?.toText()
-            // const atList = getAtList(toTextContent)
-            // const { data: { code, json_params, desc } } = await sendTextMsg({
-            //     convId,
-            //     convType,
-            //     messageElementArray: [{
-            //         elem_type: 0,
-            //         // text_elem_content: editorState?.toText(),
-            //         text_elem_content: toTextContent,
-            //     }],
-            //     userId,
-            //     messageAtArray: atList
-            // });
+            const atList = getAtList(toTextContent)
+            const { data: { code, json_params, desc } } = await sendTextMsg({
+                convId,
+                convType,
+                messageElementArray: [{
+                    elem_type: 0,
+                    // text_elem_content: editorState?.toText(),
+                    text_elem_content: toTextContent,
+                }],
+                userId,
+                messageAtArray: atList
+            });
 
-            // if (code === 0) {
-            //     dispatch(reciMessage({
-            //         convId,
-            //         messages: [JSON.parse(json_params)]
-            //     }))
-            // }
-            // setEditorState(ContentUtils.clear(editorState))
+            if (code === 0) {
+                dispatch(reciMessage({
+                    convId,
+                    messages: [JSON.parse(json_params)]
+                }))
+            }
+            setEditorState(ContentUtils.clear(editorState))
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
         }
