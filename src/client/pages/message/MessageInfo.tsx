@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ipcRenderer } from "electron";
+import { message } from 'tea-component';
 
 import { Avatar } from "../../components/avatar/avatar";
 import { getMsgList, markMessageAsRead, inviteMemberGroup } from "./api";
@@ -9,14 +9,18 @@ import { MessageView } from "./MessageView";
 import "./message-info.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "../../store/actions/message";
+import { updateCallingStatus } from "../../store/actions/ui";
 
 import {
   AddGroupMemberDialog,
   AddMemberRecordsType
 } from '../../components/pull/pull'
 
-import { useDialogRef } from "../../utils/react-use/useDialog";
+import { AddUserPopover } from "./AddUserPopover";
 import { addTimeDivider } from "../../utils/addTimeDivider";
+import { openCallWindow, callWindowCloseListiner } from "../../utils/tools";
+
+import { useDialogRef } from "../../utils/react-use/useDialog";
 import BraftEditor, { EditorState } from 'braft-editor'
 import {
   changeDrawersVisible,
@@ -38,8 +42,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   } = conv_profile;
 
   const popupContainer = document.getElementById("messageInfo");
-  const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all && conv_profile.group_detial_info_owener_identifier != localStorage.getItem('uid');
-
+  // const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all && conv_profile.group_detial_info_owener_identifier != localStorage.getItem('uid');
+  const isShutUpAll = conv_profile.group_detial_info_is_shutup_all
   const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
 
   const { historyMessageList } = useSelector(
@@ -52,6 +56,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   const { toolsTab, toolsDrawerVisible } = useSelector(
     (state: State.RootState) => state.groupDrawer
+  );
+
+  const { callingStatus: { callingId, callingType } } = useSelector(
+    (state: State.RootState) => state.ui
   );
 
   const msgList = historyMessageList.get(conv_id);
@@ -135,9 +143,31 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));
 
-  const handleOpenCallWindow = () => {
-    ipcRenderer.send("openCallWindow");
+  const handleOpenCallWindow = (callType) => {
+    if (callingId) {
+      message.warning({ content: '正在通话中' });
+      return;
+    }
+
+    dispatch(updateCallingStatus({
+      callingId: conv_id,
+      callingType: conv_type
+    }));
+    openCallWindow({
+      callType
+    });
   }
+
+  useEffect(() => {
+    callWindowCloseListiner(() => {
+      dispatch(updateCallingStatus({
+        callingId: '',
+        callingType: 0
+      }));
+    });
+  }, [])
+
+  const popupContainer = document.getElementById("messageInfo");
 
   useEffect(() => {
     setMessageRead();
@@ -234,7 +264,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
               {
                 canInviteMember && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
               }
-              <span className="message-info-view__header--video" onClick={handleOpenCallWindow} />
+              {/* <span className="message-info-view__header--video" onClick={handleOpenCallWindow} /> */}
+              <span className={`message-info-view__header--video ${callingId === conv_id ? 'is-calling' : ''}`} onClick={() => handleOpenCallWindow('videoCall')} />
             </div>
           </header>
           <section className="message-info-view__content">
@@ -251,6 +282,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 isShutUpAll={isShutUpAll}
                 editorState={editorState}
                 setEditorState={setEditorState}
+                handleOpenCallWindow={handleOpenCallWindow}
               />
             </div>
           </section>

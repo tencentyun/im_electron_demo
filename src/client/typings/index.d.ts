@@ -11,11 +11,20 @@ declare namespace State {
         ui: ui
         loginUser:loginUser
         groupDrawer: GroupDrawer,
+        imgViewer: imgViewer
     }
     export type GroupDrawer = {
         toolsDrawerVisible: boolean;
         toolsTab: 'setting' | 'announcement';
     }
+
+    export type imgViewer = {
+        isShow: boolean;
+        imgs: string | string[];
+        index?: number;
+        isCanOpenFileDir?: boolean
+    }
+
     export type functionTab = 'message' | 'relationship'
     export type userTypeData = {
         Status: string,

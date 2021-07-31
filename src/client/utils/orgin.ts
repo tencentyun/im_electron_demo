@@ -53,6 +53,15 @@ const saveStaff = (data) => {
     })
 }
 
+
+// 根据部门搜索人员
+const getDepAllStaff  = (data) => {
+    return axios({
+        url: `${TIM_BASE_URL}/v4/org_svc/dep_all_staff?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random()*100000000).toString())}`,
+        method: 'POST',
+        data: data || {}
+    })
+}
 // 前缀模糊查询职员列表
 const getstAffPrefix = (data) => {
     return axios({
@@ -156,5 +165,6 @@ export {
     filterGetStAffPrefix,
     saveStaff,
     getAccountsList,
-    getAccountsAdd
+    getAccountsAdd,
+    getDepAllStaff
 }

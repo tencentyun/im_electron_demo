@@ -123,10 +123,10 @@ export const MessageInput = (props: Props): JSX.Element => {
                     upload_method: 0,
                 })
                 .then((res) => {
-                    console.log(res);
+                    // console.log(res);
                     const { download_url } = res.data;
-                    console.log(111111);
-                    console.log(download_url);
+                    // console.log(111111);
+                    // console.log(download_url);
                     axios
                         .put(download_url, convertBase64UrlToBlob(base64Data), {
                             headers: {
@@ -152,7 +152,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     };
 
     const handleSendTextMsg = async () => {
-        console.warn(editorState?.toHTML())
+        console.warn(editorState, editorState.toText(), '||||||||||||||||||||||||||||||||')
 
         if (editorStateDisabled(editorState)) {
             return
@@ -186,26 +186,27 @@ export const MessageInput = (props: Props): JSX.Element => {
             }
 
             // const text = editorState?.toText()
-            const atList = getAtList(toTextContent)
-            const { data: { code, json_params, desc } } = await sendTextMsg({
-                convId,
-                convType,
-                messageElementArray: [{
-                    elem_type: 0,
-                    // text_elem_content: editorState?.toText(),
-                    text_elem_content: toTextContent,
-                }],
-                userId,
-                messageAtArray: atList
-            });
+            console.log(toTextContent, '0000000000000000000000000')
+            // const atList = getAtList(toTextContent)
+            // const { data: { code, json_params, desc } } = await sendTextMsg({
+            //     convId,
+            //     convType,
+            //     messageElementArray: [{
+            //         elem_type: 0,
+            //         // text_elem_content: editorState?.toText(),
+            //         text_elem_content: toTextContent,
+            //     }],
+            //     userId,
+            //     messageAtArray: atList
+            // });
 
-            if (code === 0) {
-                dispatch(reciMessage({
-                    convId,
-                    messages: [JSON.parse(json_params)]
-                }))
-            }
-            setEditorState(ContentUtils.clear(editorState))
+            // if (code === 0) {
+            //     dispatch(reciMessage({
+            //         convId,
+            //         messages: [JSON.parse(json_params)]
+            //     }))
+            // }
+            // setEditorState(ContentUtils.clear(editorState))
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
         }
@@ -536,19 +537,7 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const shutUpStyle = isShutUpAll ? 'disabled-style' : '';
     const dragEnterStyle = isDraging ? 'draging-style' : '';
-    const hooks = {
-        // 'change-block-type': ({ href, target }) => {
-        //     alert(111)
-        //     href = href.indexOf('http') === 0 ? href : `http://${href}`
-        //     console.log(href, '=====__________')
-        //     return { href, target }
-        // }
-        'change-block-type': () => {
-            alert(111)
-        }
-    }
     useEffect(() => {
-        alert(11)
         ipcRenderer.on('SENDSTORE', function (e, data) {
             console.log(data, '------------------------------------')
             setSendType(data)
@@ -623,12 +612,11 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ref={instance => editorInstance = instance}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     placeholder={placeHolderText}
-                    hooks={hooks}
                 />
             </div>
-            {/* <span className="message-input__button-area">
+            <span className="message-input__button-area">
                 <Button type="primary" title={shotKeyTip} onClick={handleSendTextMsg} disabled={isTextNullEmpty}>发送</Button>
-            </span> */}
+            </span>
             {/* <span className="message-input__down" title='切换发送消息快捷键'></span> */}
             <Dropdown
                 clickClose={true}

@@ -16,6 +16,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { changeFunctionTab } from '../../store/actions/ui';
 import { Organization } from '../organization/organization';
 import { ToolsBar } from "../../components/toolsBar/toolsBar";
+import ImgViewer from '../../components/ImgViewer'
+import { setImgViewerAction } from '../../store/actions/imgViewer';
 const navList = [
     {
         id: 'message',
@@ -49,6 +51,7 @@ const navList = [
 
 export const Home = (): JSX.Element => {
     const { function_tab } = useSelector((state: State.RootState) => state.ui);
+  let { isShow,imgs,index:imgPreViewUrlIndex,isCanOpenFileDir } = useSelector((state: State.RootState) => state.imgViewer);
 
     const location = useLocation();
     const path = location?.pathname;
@@ -67,11 +70,19 @@ export const Home = (): JSX.Element => {
 
     const handleLinkClick = (id: string) => dispatch(changeFunctionTab(id));
 
+    const handleClose = () => {
+        dispatch(setImgViewerAction({
+            isShow: false,
+            imgs: [],
+            isCanOpenFileDir: false
+        }))
+    }
     useEffect(() => {
         dispatch(changeFunctionTab(currentId))
     }, [])
 
     return <div className="home">
+                   <ImgViewer show={isShow} isCanOpenFileDir={isCanOpenFileDir} onClose={handleClose} url={imgs} index={imgPreViewUrlIndex}></ImgViewer>
         <div className="nav">
             {/* 头像以及个人信心 */}
             <Profile />
