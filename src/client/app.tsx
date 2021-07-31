@@ -320,7 +320,7 @@ export const App = () => {
   };
   const ipcRendererLister = (event, data) => {
     if (event) {
-      console.log('changedata:', data)
+      // console.log('changedata:', data)
       showApp = data
       // console.log(showApp, 'showApp')
     }

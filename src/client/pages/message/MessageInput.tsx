@@ -504,7 +504,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const editorChange = (editorState, a, b) => {
-        console.warn(editorState.toHTML())
+        console.warn(editorState.toHTML(), editorState)
         setIsTextNullEmpty(editorStateDisabled(editorState))
         setEditorState(editorState)
     }
