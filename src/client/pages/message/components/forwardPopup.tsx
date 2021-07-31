@@ -22,11 +22,11 @@ interface ForwardPopupProps {
 }
 const getId = (item) => {
     if(!item) return false
-    return item.friend_profile_identifier || item.group_detial_info_group_id
+    return item.user_profile_identifier || item.group_detial_info_group_id
 }
 const getType = (item) => {
     if(!item) return false
-    return (item.friend_profile_identifier || item.user_profile_identifier) ? 1 : 2
+    return (item.user_profile_identifier || item.user_profile_identifier) ? 1 : 2
 }
 
 export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX.Element => {
@@ -37,6 +37,7 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
     const [selectedList, setSelectedList] = useState([])
     const [search, setSearch] = useState("")
      const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
+     console.log('conversationList', conversationList)
 
     const defaultConversationList = conversationList.map(item => {
         const {conv_id,conv_type} = item
@@ -77,6 +78,8 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
         } 
     }
     const handleItemClick = (conv_id, conv_type, item) => {
+        console.log('item', item)
+        console.log('conv_id', conv_id)
         if(selectedList.findIndex(v => getId(v) === conv_id) > -1) {
             const list = selectedList.filter(v => getId(v) !== conv_id)
             setSelectedList(list)
@@ -95,6 +98,7 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
         <div ref={refPopup} >
             <Modal className="forward-popup" visible={visible} caption="转发" onClose={() => onClose()}>
                 <Modal.Body>
+                    {/* 转发box */}
                     <div className="forward-popup__search-list">
                         <div className="forward-popup__search-list__search">
                         <Icon className="forward-popup__search-list__icon" type="search" />
