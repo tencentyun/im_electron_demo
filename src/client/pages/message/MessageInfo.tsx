@@ -1,4 +1,4 @@
-import React, { useEffect,  useState} from "react";
+import React, { useEffect, useState } from "react";
 import { message } from 'tea-component';
 
 import { Avatar } from "../../components/avatar/avatar";
@@ -42,8 +42,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   } = conv_profile;
 
   const popupContainer = document.getElementById("messageInfo");
-  const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all && conv_profile.group_detial_info_owener_identifier != localStorage.getItem('uid');
-
+  // const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all && conv_profile.group_detial_info_owener_identifier != localStorage.getItem('uid');
+  const isShutUpAll = conv_profile.group_detial_info_is_shutup_all
   const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
 
   const { historyMessageList } = useSelector(
@@ -142,13 +142,13 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));
-  
+
   const handleOpenCallWindow = (callType) => {
-    if(callingId) {
-      message.warning({content: '正在通话中'});
+    if (callingId) {
+      message.warning({ content: '正在通话中' });
       return;
     }
-    
+
     dispatch(updateCallingStatus({
       callingId: conv_id,
       callingType: conv_type

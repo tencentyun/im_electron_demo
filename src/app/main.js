@@ -79,7 +79,7 @@ const setAppTray = () => {
 let appTray;
 let appWindow;
 let toggle = false;
-function createWindow() {
+function createWindow () {
   // Create the browser window.
   Menu.setApplicationMenu(null);
   let mainWindow = new BrowserWindow({
@@ -247,7 +247,7 @@ function createWindow() {
   }
   // 注册截图快捷键
   globalShortcut.register("CommandOrControl+Shift+X", () => {
-    //"start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
+    // "start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
     child_process.exec(path.join(process.cwd(), '/resources/extraResources', 'cut.exe'), () => {
@@ -465,7 +465,7 @@ function createWindow() {
 }
 
 let timer;
-function changeWindow() {
+function changeWindow () {
   if (appWindow) {
     // 设置大小
     appWindow.setSize(1000, 650);
@@ -475,7 +475,7 @@ function changeWindow() {
     appWindow.setResizable(true);
   }
 }
-function reSizeWindow() {
+function reSizeWindow () {
   if (appWindow) {
     // 设置大小
     appWindow.setSize(460, 358);
@@ -485,7 +485,7 @@ function reSizeWindow() {
     appWindow.setResizable(false);
   }
 }
-function trayFlash() {
+function trayFlash () {
   if (appTray) {
     hasFlash = true;
 
@@ -500,14 +500,14 @@ function trayFlash() {
   }
 }
 
-function openWindow() {
+function openWindow () {
   if (appWindow) {
     appWindow.show();
   }
 }
 let num = 0;
 let hasFlash = false;
-function setTaryTitle() {
+function setTaryTitle () {
   num++;
   appTray.setTitle(num === 0 ? "" : `${num}`);
   appWindow.flashFrame(true);

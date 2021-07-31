@@ -32,6 +32,7 @@
         {
           "target": "nsis",
           "arch": [
+            "ia32",
             "x64"
           ]
         }
@@ -67,7 +68,7 @@
     "element-theme-default": "^1.4.13",
     "file-loader": "^6.2.0",
     "final-form": "^4.20.2",
-    "im_electron_sdk": "^1.0.43",
+    "im_electron_sdk": "^1.0.44",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
