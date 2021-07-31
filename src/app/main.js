@@ -245,11 +245,11 @@ function createWindow() {
   }
   // 注册截图快捷键
   globalShortcut.register("CommandOrControl+Shift+X", () => {
-    "start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
+    //"start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
     child_process.exec(
-      path.join(process.cwd(), "/resources/extraResources", "cut.exe"),
+      "start C:\\Users\\p_guowuliu\\Desktop\\demo\\cut.exe",
       () => {
         let pngs = clipboard.readImage().toPNG();
         fs.writeFile(url, pngs, (err) => {
