@@ -64,20 +64,21 @@ export const App = () => {
       })
       console.log('私有化', privite)
       timRenderInstance.TIMInit().then(async ({ data }) => {
-
+        console.log(1234)
+        console.log(data)
         if (data === 0) {
           isInited = true;
           // console.log("初始化成功");
           initListeners((callback) => {
             const { data, type } = callback;
-            // console.info(
-            //   "======================== 接收到IM事件 start =============================="
-            // );
-            // console.log("类型：", type);
-            // console.log("数据：", data);
-            // console.info(
-            //   "======================== 接收到IM事件 end =============================="
-            // );
+            console.info(
+              "======================== 接收到IM事件 start =============================="
+            );
+            console.log("类型：", type);
+            console.log("数据：", data);
+            console.info(
+              "======================== 接收到IM事件 end =============================="
+            );
             switch (type) {
               /**
                * 处理收到消息逻辑
