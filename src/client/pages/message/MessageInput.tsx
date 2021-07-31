@@ -188,26 +188,26 @@ export const MessageInput = (props: Props): JSX.Element => {
 
             // const text = editorState?.toText()
             console.log(toTextContent, '0000000000000000000000000')
-            // const atList = getAtList(toTextContent)
-            // const { data: { code, json_params, desc } } = await sendTextMsg({
-            //     convId,
-            //     convType,
-            //     messageElementArray: [{
-            //         elem_type: 0,
-            //         // text_elem_content: editorState?.toText(),
-            //         text_elem_content: toTextContent,
-            //     }],
-            //     userId,
-            //     messageAtArray: atList
-            // });
+            const atList = getAtList(toTextContent)
+            const { data: { code, json_params, desc } } = await sendTextMsg({
+                convId,
+                convType,
+                messageElementArray: [{
+                    elem_type: 0,
+                    // text_elem_content: editorState?.toText(),
+                    text_elem_content: toTextContent,
+                }],
+                userId,
+                messageAtArray: atList
+            });
 
-            // if (code === 0) {
-            //     dispatch(reciMessage({
-            //         convId,
-            //         messages: [JSON.parse(json_params)]
-            //     }))
-            // }
-            // setEditorState(ContentUtils.clear(editorState))
+            if (code === 0) {
+                dispatch(reciMessage({
+                    convId,
+                    messages: [JSON.parse(json_params)]
+                }))
+            }
+            setEditorState(ContentUtils.clear(editorState))
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
         }
