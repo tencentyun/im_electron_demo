@@ -260,7 +260,6 @@ export const MessageView = (props: Props): JSX.Element => {
         }
     }
     const handlRightClick = (e, id) => {
-        // debugger
         const { data } = e.props;
         switch (id) {
             case 'revoke':
@@ -486,9 +485,8 @@ export const MessageView = (props: Props): JSX.Element => {
                 currentUrl = currentNode.currentSrc
             }
         } else if (elem_type === 4) {
-            console.log(file_elem_url)
-            ipcRenderer.send('openfilenow', currentMsgItem)
-        } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
+            ipcRenderer.send('openfilenow',currentMsgItem)
+        } else if(onIsCustEmoji(elem_type, custom_elem_data)) {
             currentUrl = custom_elem_desc
         }
         if (txtAndImgStr.length) {
@@ -536,7 +534,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {reeditShowText(item) ? <span className="message-view__item--withdraw" onClick={() => { reEdit(message_elem_array[0].text_elem_content) }}> 重新编辑</span> : <></>}
                                     </div>
                                 ) :
-                                    <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
+                                    <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self && item ? 'is-self' : ''}`} key={message_msg_id}>
                                         {isMultiSelect && (seleted ?
                                             <Icon className="message-view__item--icon" type="success" /> :
                                             <i className="message-view__item--icon-normal" ></i>)
