@@ -46,7 +46,7 @@ export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service
 
 
 // export const DEFAULT_USERID = 'SHIHONGYI1';
-export const DEFAULT_USERID = 'XUEJINHUI1';
+export const DEFAULT_USERID = '';
 export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
 
 
