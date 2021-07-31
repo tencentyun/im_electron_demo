@@ -186,8 +186,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleSendTextMsg = async () => {
-        console.warn(editorState, editorState.toText(), '||||||||||||||||||||||||||||||||')
-
         if (editorStateDisabled(editorState)) {
             return
         }
@@ -198,15 +196,15 @@ export const MessageInput = (props: Props): JSX.Element => {
         try {
             // if (imgSrc && imgSrc.length > 0) {
             //     let formatText = [];
-            //     console.log('htmlText',htmlText);
+            //     console.log('htmlText', htmlText);
             //     let textContent = htmlText.match(/<p>((\w|\W)*?)<\/p>/g)
-            //     console.log('textContent',textContent);
+            //     console.log('textContent', textContent);
             //     if (textContent && textContent.length > 0) {
             //         formatText = textContent.map(item => {
             //             return item.replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/<br\/>/g, '\n')
             //         });
             //     }
-            //     console.log('formatText1',formatText);
+            //     console.log('formatText1', formatText);
             //     const getImgsUrl = async () => {
             //         return new Promise(async (resolve, reject) => {
             //             for (let i = 0;i < imgSrc.length;i++) {
@@ -218,9 +216,9 @@ export const MessageInput = (props: Props): JSX.Element => {
             //         })
             //     }
             //     await getImgsUrl()
-            //     console.log('formatText2',formatText);
+            //     console.log('formatText2', formatText);
 
-            //     console.log("formatText.join('')",formatText.join(''));
+            //     console.log("formatText.join('')", formatText.join(''));
             //     toTextContent = formatText.join('')
             // }
             if (imgSrc && imgSrc.length > 0) {

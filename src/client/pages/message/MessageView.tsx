@@ -325,7 +325,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 resp = <TextElemItem {...res} />
                 break;
             case 1:
-                console.log(element, '=============================')
+                // console.log(element, '=============================')
                 resp = <PicElemItem {...res} />
                 break;
             case 2:
@@ -462,21 +462,21 @@ export const MessageView = (props: Props): JSX.Element => {
         messageList.map(msgItem => {
             if (msgItem) {
                 const { message_elem_array } = msgItem
-                message_elem_array && message_elem_array.map((elem,index) => {
-                    const {elem_type,image_elem_thumb_url , image_elem_orig_url , image_elem_large_url,custom_elem_data,custom_elem_desc,text_elem_content} = elem
+                message_elem_array && message_elem_array.map((elem, index) => {
+                    const { elem_type, image_elem_thumb_url, image_elem_orig_url, image_elem_large_url, custom_elem_data, custom_elem_desc, text_elem_content } = elem
                     if (elem_type === 1) {
                         const url = image_elem_thumb_url || image_elem_orig_url || image_elem_large_url
                         url && imgsUrl.push(url)
                     } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
-                    // 自定义表情
-                    custom_elem_desc && imgsUrl.push(custom_elem_desc)
-                    }else if(elem_type === 0){
+                        // 自定义表情
+                        custom_elem_desc && imgsUrl.push(custom_elem_desc)
+                    } else if (elem_type === 0) {
                         // 图文消息
                         txtAndImgStr.push({ content: text_elem_content })
                     }
                 })
             }
-      
+
 
         })
         const { elem_type, text_elem_content, custom_elem_data, custom_elem_desc, file_elem_url } = currentMsgItem
@@ -488,8 +488,8 @@ export const MessageView = (props: Props): JSX.Element => {
                 currentUrl = currentNode.currentSrc
             }
         } else if (elem_type === 4) {
-            ipcRenderer.send('openfilenow',currentMsgItem)
-        } else if(onIsCustEmoji(elem_type, custom_elem_data)) {
+            ipcRenderer.send('openfilenow', currentMsgItem)
+        } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
             currentUrl = custom_elem_desc
         }
         if (txtAndImgStr.length) {
