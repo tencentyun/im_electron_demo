@@ -67,7 +67,9 @@
     "get-video-duration": "^3.1.0",
     "im_electron_sdk": "^1.0.42",
     "image-size": "^1.0.0",
+    "node-fetch": "^2.6.1",
     "npm": "^7.20.2",
+    "progress-stream": "^2.0.0",
     "save": "^2.4.0",
     "shelljs": "^0.8.4",
     "trtc-electron-sdk": "^8.6.102-beta.0"

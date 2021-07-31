@@ -30,7 +30,7 @@ new TimMain({
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    height: 960,
+    height: 640,
     width: 960,
     minWidth: 830,
     minHeight: 600,
@@ -52,18 +52,18 @@ const createWindow = () => {
     if(!ipc) ipc = new IPC(mainWindow);
   });
 
-  // if(process.env?.NODE_ENV?.trim() === 'development') {
+  if(process.env?.NODE_ENV?.trim() === 'development') {
     mainWindow.loadURL(`http://localhost:3000`);
     mainWindow.webContents.openDevTools();
-  // } else {
-  //   mainWindow.loadURL(
-  //     url.format({
-  //         pathname: path.join(__dirname, '../../bundle/index.html'),
-  //         protocol: 'file:',
-  //         slashes: true
-  //     })
-  //   );
-  // }
+  } else {
+    mainWindow.loadURL(
+      url.format({
+          pathname: path.join(__dirname, '../../bundle/index.html'),
+          protocol: 'file:',
+          slashes: true
+      })
+    );
+  }
 };
 
 // This method will be called when Electron has finished
