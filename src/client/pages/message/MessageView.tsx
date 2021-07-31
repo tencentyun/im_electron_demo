@@ -40,6 +40,7 @@ import { HISTORY_MESSAGE_COUNT } from '../../constants';
 import { GroupSysElm } from './messageElemTyps/groupSystemElem';
 import { setCurrentReplyUser } from '../../store/actions/message'
 import { setImgViewerAction } from '../../store/actions/imgViewer';
+import { ipcRenderer } from 'electron';
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -313,6 +314,7 @@ export const MessageView = (props: Props): JSX.Element => {
         console.log(item);
     }
     const handleOpenFile = (item) => {
+        console.log(item)
         showDialog()
     }
     const displayDiffMessage = (element, index) => {
@@ -457,39 +459,42 @@ export const MessageView = (props: Props): JSX.Element => {
         let currentUrl = url1 || url2 || url3
         const txtAndImgStr = []
         messageList.map(msgItem => {
-            const { message_elem_array } = msgItem
-            message_elem_array && message_elem_array.map((elem,index) => {
-                const {elem_type,image_elem_thumb_url , image_elem_orig_url , image_elem_large_url,custom_elem_data,custom_elem_desc,text_elem_content} = elem
-                if (elem_type === 1) {
-                    const url = image_elem_thumb_url || image_elem_orig_url || image_elem_large_url
-                    url && imgsUrl.push(url)
-                } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
-                // 自定义表情
-                  custom_elem_desc && imgsUrl.push(custom_elem_desc)
-                }else if(elem_type === 0){
-                    // 图文消息
-                    txtAndImgStr.push({ content: text_elem_content })
-                }
-            })
+            if (msgItem) {
+                const { message_elem_array } = msgItem
+                message_elem_array && message_elem_array.map((elem,index) => {
+                    const {elem_type,image_elem_thumb_url , image_elem_orig_url , image_elem_large_url,custom_elem_data,custom_elem_desc,text_elem_content} = elem
+                    if (elem_type === 1) {
+                        const url = image_elem_thumb_url || image_elem_orig_url || image_elem_large_url
+                        url && imgsUrl.push(url)
+                    } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
+                    // 自定义表情
+                    custom_elem_desc && imgsUrl.push(custom_elem_desc)
+                    }else if(elem_type === 0){
+                        // 图文消息
+                        txtAndImgStr.push({ content: text_elem_content })
+                    }
+                })
+            }
+      
 
         })
-        const { elem_type,text_elem_content,custom_elem_data,custom_elem_desc } = currentMsgItem
+        const { elem_type,text_elem_content,custom_elem_data,custom_elem_desc,file_elem_url } = currentMsgItem
+        console.log(77777)
         if (elem_type === 0) {
             // const res = matchUrl([{ content: text_elem_content }])
             const currentNode = event.target as HTMLImageElement
             if (currentNode.nodeName.toLocaleLowerCase() === 'img') {
                  currentUrl = currentNode.currentSrc
             }
-         
-        } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
+        } else if (elem_type === 4) {
+            ipcRenderer.send('openfilenow',currentMsgItem)
+        } else if(onIsCustEmoji(elem_type, custom_elem_data)) {
             currentUrl = custom_elem_desc
         }
         if (txtAndImgStr.length) {
             imgsUrl = [].concat(matchUrl(txtAndImgStr),imgsUrl)
         }
         [...imgsUrl].reverse()
-        console.log('imgsUrl', imgsUrl);
-        console.log('currentUrl',currentUrl);
         let currentPreviewImgIndex = -1
        currentPreviewImgIndex =  imgsUrl.findIndex(url =>url === currentUrl )
         if (currentPreviewImgIndex > -1) {
@@ -531,7 +536,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {reeditShowText(item) ? <span className="message-view__item--withdraw" onClick={() => { reEdit(message_elem_array[0].text_elem_content) }}> 重新编辑</span> : <></>}
                                     </div>
                                 ) :
-                                    <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
+                                    <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self&&item ? 'is-self' : ''}`} key={message_msg_id}>
                                         {isMultiSelect && (seleted ?
                                             <Icon className="message-view__item--icon" type="success" /> :
                                             <i className="message-view__item--icon-normal" ></i>)

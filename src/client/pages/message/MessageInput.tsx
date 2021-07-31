@@ -18,9 +18,9 @@ import axios from "axios";
 import { convertBase64UrlToBlob } from "../../utils/tools";
 import { SDKAPPID, TIM_BASE_URL } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
-import { judgeFileSize } from '../../utils/messageUtils';
+import { judgeFileSize,dataURLtoFile } from '../../utils/messageUtils';
 import { sendCustomMsg } from '../message/api'
-import { judgeFileSize } from '../../utils/messageUtils';
+import _getTimeStringAutoShort2 from '../../utils/timeFormat';
 
 let store = '1'
 
@@ -152,8 +152,40 @@ export const MessageInput = (props: Props): JSX.Element => {
         });
     };
 
+
+
+    function startapi(requestlist,toTextContent) {
+    //定义counts，用来收集请求的次数，（也可以用reslist的length进行判断）
+    let counts = 0;
+    return function apirequest(data) {
+        let arg = data
+        let a = new Promise((res, rej) => {
+            //setTimeout模拟请求到接收的时间需要5秒钟
+               setTimeout(function () {
+                res('成功返回数据');
+
+            }, 1000)
+            // handleSendMsg(data,toTextContent).then(res)
+        })  
+        //无论成功或者失败都要进行下一次，以免阻塞，成功请求的末尾有s标志，失败的末尾有f标志
+        a.then(() => {
+            counts++;
+            if (counts > requestlist.length) {
+                return;
+            }
+            console.log('counts',counts)
+
+            apirequest(requestlist[counts])
+        }).catch(err => {
+            //递归调用
+            apirequest(requestlist[counts])
+            console.log(err)
+        })
+    }
+
+}
+
     const handleSendTextMsg = async () => {
-        console.warn(editorState?.toHTML())
 
         if (editorStateDisabled(editorState)) {
             return
@@ -162,8 +194,34 @@ export const MessageInput = (props: Props): JSX.Element => {
 
         const htmlText = editorState.toHTML();
         const imgSrc = htmlText.match(/<img [^>]*src=['"]([^'"]+)[^>]*>/g)
+        try { 
+            // if (imgSrc && imgSrc.length > 0) {
+            //     let formatText = [];
+            //     console.log('htmlText',htmlText);
+            //     let textContent = htmlText.match(/<p>((\w|\W)*?)<\/p>/g)
+            //     console.log('textContent',textContent);
+            //     if (textContent && textContent.length > 0) {
+            //         formatText = textContent.map(item => {
+            //             return item.replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/<br\/>/g, '\n')
+            //         });
+            //     }
+            //     console.log('formatText1',formatText);
+            //     const getImgsUrl = async () => {
+            //         return new Promise(async (resolve, reject) => {
+            //             for (let i = 0;i < imgSrc.length;i++) {
+            //                 await handleUpload(imgSrc[i].replace(/<img src=/, '').replace(/\/>/, '').replace(/"/g, '')).then(src => {
+            //                     formatText.splice((i * 2) + 1, 0, `<img src="${src}" />`)
+            //                 })
+            //             }
+            //             resolve(false);
+            //         })
+            //     }
+            //     await getImgsUrl()
+            //     console.log('formatText2',formatText);
 
-        try {
+            //     console.log("formatText.join('')",formatText.join(''));
+            //     toTextContent = formatText.join('')
+            // }
             if (imgSrc && imgSrc.length > 0) {
                 let formatText = [];
                 let textContent = htmlText.match(/<p>((\w|\W)*?)<\/p>/g)
@@ -172,45 +230,105 @@ export const MessageInput = (props: Props): JSX.Element => {
                         return item.replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/<br\/>/g, '\n')
                     });
                 }
-                const getImgsUrl = async () => {
-                    return new Promise(async (resolve, reject) => {
-                        for (let i = 0;i < imgSrc.length;i++) {
-                            await handleUpload(imgSrc[i].replace(/<img src=/, '').replace(/\/>/, '').replace(/"/g, '')).then(src => {
-                                formatText.splice((i * 2) + 1, 0, `<img src="${src}" />`)
+                for (let i = 0; i < imgSrc.length; i++) {
+                            const base64Str = imgSrc[i].replace(/<img src=/, '').replace(/\/>/, '').replace(/"/g, '')
+                            formatText.splice((i * 2) + 1, 0, {
+                                file: dataURLtoFile(base64Str, new Date().getTime().toString() + Math.floor(Math.random() * 1000)),
+                                base64Str
                             })
                         }
-                        resolve(false);
-                    })
-                }
-                await getImgsUrl()
-                toTextContent = formatText.join('')
-            }
+                const isCanSendData = formatText.filter(item=>item)
 
+    //   let newapiget = startapi(isCanSendData,toTextContent);
+
+    // newapiget(isCanSendData[0])
+                isCanSendData.map(async item=>{
+                    if (typeof item === 'string') {
+                        const atList = getAtList(toTextContent)
+                        const { data: { code, json_params, desc } } = await sendTextMsg({
+                            convId,
+                            convType,
+                            messageElementArray: [{
+                                elem_type: 0,
+                                // text_elem_content: editorState?.toText(),
+                                text_elem_content: toTextContent,
+                            }],
+                            userId,
+                            messageAtArray: atList
+                        });
+
+                        if (code === 0) {
+                            dispatch(reciMessage({
+                                convId,
+                                messages: [JSON.parse(json_params)]
+                            }))
+                        }
+                        setEditorState(ContentUtils.clear(editorState))
+                    } else if (typeof item === 'object') {
+                        ipcRenderer.send('saveFile', {str: item.base64Str})
+                    }
+                })
+            }
             // const text = editorState?.toText()
-            const atList = getAtList(toTextContent)
-            const { data: { code, json_params, desc } } = await sendTextMsg({
-                convId,
-                convType,
-                messageElementArray: [{
-                    elem_type: 0,
-                    // text_elem_content: editorState?.toText(),
-                    text_elem_content: toTextContent,
-                }],
-                userId,
-                messageAtArray: atList
-            });
+            // const atList = getAtList(toTextContent)
+            // const { data: { code, json_params, desc } } = await sendTextMsg({
+            //     convId,
+            //     convType,
+            //     messageElementArray: [{
+            //         elem_type: 0,
+            //         // text_elem_content: editorState?.toText(),
+            //         text_elem_content: toTextContent,
+            //     }],
+            //     userId,
+            //     messageAtArray: atList
+            // });
 
-            if (code === 0) {
-                dispatch(reciMessage({
-                    convId,
-                    messages: [JSON.parse(json_params)]
-                }))
-            }
-            setEditorState(ContentUtils.clear(editorState))
+            // if (code === 0) {
+            //     dispatch(reciMessage({
+            //         convId,
+            //         messages: [JSON.parse(json_params)]
+            //     }))
+            // }
+            // setEditorState(ContentUtils.clear(editorState))
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
         }
     }
+
+    // const handleSendMsg = (item,toTextContent) => {
+    //     return new Promise(async(resolve, reject) => {
+    //        try {
+    //          if (typeof item === 'string') {
+    //                     const atList = getAtList(toTextContent)
+    //                     const { data: { code, json_params, desc } } = await sendTextMsg({
+    //                         convId,
+    //                         convType,
+    //                         messageElementArray: [{
+    //                             elem_type: 0,
+    //                             // text_elem_content: editorState?.toText(),
+    //                             text_elem_content: toTextContent,
+    //                         }],
+    //                         userId,
+    //                         messageAtArray: atList
+    //                     });
+
+    //                     if (code === 0) {
+    //                         dispatch(reciMessage({
+    //                             convId,
+    //                             messages: [JSON.parse(json_params)]
+    //                         }))
+    //                     }
+    //                     setEditorState(ContentUtils.clear(editorState))
+    //                 } else if (typeof item === 'object') {
+    //                     ipcRenderer.send('saveFile', {str: item.base64Str})
+    //                 }
+    //         resolve(true)
+    //        } catch (error) {
+    //            reject(error)
+    //        }
+    //     })
+    // }
+
     const getAtList = (text: string) => {
         const list = text.match(/@\w+/g);
         return list ? list.map(v => v.slice(1)) : []
@@ -257,10 +375,11 @@ export const MessageInput = (props: Props): JSX.Element => {
         videoPicker.current.click();
     }
     const sendImageMessage = async (file) => {
-        // console.log(file, '发送文件')
+        console.log(file, '发送文件')
         if (!file) return false;
         if (file) {
-            const { data: { code, desc, json_params } } = await sendImageMsg({
+            return new Promise(async (resolve, reject) => {
+                const { data: { code, desc, json_params } } = await sendImageMsg({
                 convId,
                 convType,
                 messageElementArray: [{
@@ -275,9 +394,13 @@ export const MessageInput = (props: Props): JSX.Element => {
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
+                resolve(true)
             } else {
+                reject(false)
                 message.error({ content: `消息发送失败 ${desc}` })
             }
+            })
+            
         }
     }
 
@@ -503,7 +626,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const editorChange = (editorState, a, b) => {
-        console.warn(editorState.toHTML())
         setIsTextNullEmpty(editorStateDisabled(editorState))
         setEditorState(editorState)
     }
@@ -574,6 +696,21 @@ export const MessageInput = (props: Props): JSX.Element => {
                 return
             }
         })
+         ipcRenderer.on('getFile',async (e, { data, filedirPath }) => {
+            //  console.log('getFile url', filedirPath);
+                            const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' })
+                            const fileObj = {
+                                lastModified: file.lastModified,
+                                lastModifiedDate: file.lastModifiedDate,
+                                name: file.name,
+                                path: filedirPath,
+                                size: file.size,
+                                type: file.type,
+                                webkitRelativePath: file.webkitRelativePath
+                            }
+                             await  sendImageMessage(fileObj)
+                         setEditorState(ContentUtils.clear(editorState))
+                        })
     }, [])
 
     useEffect(() => {

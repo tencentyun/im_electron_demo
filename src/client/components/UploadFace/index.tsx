@@ -12,7 +12,7 @@ import { TIM_BASE_URL } from '../../constants/index'
 const imgStyle = { width: '60px', height: '60px', cursor: 'pointer' }
 
 interface IRes {
-  ci_url?: string;
+  download_url?: string;
   upload_url?: string;
   data: any;
 }
@@ -95,12 +95,12 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       });
       prop.cropperFile?.(fileObj);
       handleUpload(base64Data).then((res: IRes) => {
-        const { ci_url } = res;
+        const { download_url } = res;
         console.log(res)
-        prop.afterUpload?.('https://oaim.uat.crbank.com.cn:30004' + ci_url);
-        setVal('https://oaim.uat.crbank.com.cn:30004' + ci_url);
+        prop.afterUpload?.(download_url);
+        setVal(download_url);
         if (!prop.isShowCropper) {
-          setropperUrl('https://oaim.uat.crbank.com.cn:30004' + ci_url);
+          setropperUrl(download_url);
           return;
         }
       });
@@ -116,11 +116,11 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
         let base64 = reader.result;
         console.log("base64");
         handleUpload(base64).then((res: IRes) => {
-          const { ci_url } = res
+          const { download_url } = res
           setImgUrl('')
-          setVal('https://oaim.uat.crbank.com.cn:30004' + ci_url)
-          setropperUrl('https://oaim.uat.crbank.com.cn:30004' + ci_url)
-          prop.afterUpload?.('https://oaim.uat.crbank.com.cn:30004' + ci_url)
+          setVal(download_url)
+          setropperUrl(download_url)
+          prop.afterUpload?.(download_url)
         })
       }
       return
@@ -142,15 +142,15 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       }).then(res => {
         if (res.data.error_code === 0) {
           console.log(res)
-          const { ci_url } = res.data
+          const { download_url } = res.data
           let fr = new FileReader();
           fr.readAsDataURL(fileObj);
           fr.addEventListener(
             "load",
             () => {
-              axios.put('https://oaim.uat.crbank.com.cn:30004' + ci_url, convertBase64UrlToBlob(base64Data)).then((response) => {
-                const { ci_url } = res.data
-                setVal('https://oaim.uat.crbank.com.cn:30004' + ci_url)
+              axios.put(download_url, convertBase64UrlToBlob(base64Data)).then((response) => {
+                const { download_url } = res.data
+                setVal(download_url)
                 setImgUrl('')
                 resolve(res.data)
                 message.success({
