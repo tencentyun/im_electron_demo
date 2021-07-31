@@ -71,6 +71,8 @@
     "im_electron_sdk": "^1.0.44",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
+    "node-fetch": "^2.6.1",
+    "progress-stream": "^2.0.0",
     "qs": "^6.5.2",
     "react": "^17.0.2",
     "react-contexify": "^5.0.0",

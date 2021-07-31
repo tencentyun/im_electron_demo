@@ -23,12 +23,14 @@ const child_process = require("child_process");
 const Store = require("electron-store");
 const store = new Store();
 const IPC = require("./ipc");
+const fetch = require("node-fetch");
 // https://oaim.uat.crbank.com.cn:30003/headUrl/1627475525455839399.png
 let trayIcon = nativeImage.createFromPath(
   path.join(process.cwd(), "/resources/extraResources", "notification.png")
 );
 let forceQuit = false;
 const downloadUrl = app.getPath("downloads");
+const progressStream = require("progress-stream");
 let ipc;
 new TimMain({
   sdkappid: 1400529075,
@@ -268,17 +270,20 @@ function createWindow () {
     // const shotcutPath = downloadUrl + '\\shotcut\\'
     // if (fs.existsSync(path)) fs.rmdirSync(shotcutPath)
     let pngs = clipboard.readImage().toPNG();
-    const fileName = new Date().getTime().toString() + Math.floor(Math.random() * 1000) + '.png'
-    const filedirPath = downloadUrl + '\\' + fileName
+    const fileName =
+      new Date().getTime().toString() +
+      Math.floor(Math.random() * 1000) +
+      ".png";
+    const filedirPath = downloadUrl + "\\" + fileName;
     fs.writeFile(filedirPath, pngs, (err) => {
       fs.readFile(filedirPath, (err, data) => {
         mainWindow.webContents.send("getFile", {
           data,
-          filedirPath
+          filedirPath,
         });
       });
     });
-  })
+  });
 
   // 接受截图事件
   ipcMain.on("SCREENSHOT", function () {
@@ -301,98 +306,159 @@ function createWindow () {
     );
   });
   // 打开文件
-  // ipcMain.on("OPENFILE", function (event, filename) {
-  //   console.log('123',filename)
-  //   const name = filename.filename;
-  //   console.log(name)
-  //   console.log(localUrl)
-  //   const localUrl = path.join(process.cwd(), "/download/", name);
-  //   shell.openPath(localUrl);
-  // });
-  function downloadFilesByUrl (params) {
-    const { file_elem_url, file_elem_file_name } = params;
-    // console.log(params);
+  ipcMain.on("openfilenow", function (event, file) {
+    console.log("123", file);
+    const cwd = process.cwd();
+    let file_url = file.file_elem_url;
+    const downloadDicPath = path.resolve(cwd, "./download/");
+    if (!fs.existsSync(downloadDicPath)) {
+      fs.mkdirSync(downloadDicPath);
+    }
 
-    let savePath = `${app.getPath("downloads")}\\${file_elem_file_name}`;
-    console.log(savePath)
-    mainWindow.webContents.downloadURL(file_elem_url);
+    const file_name = path.basename(file.file_elem_file_name);
+    const file_path = path.resolve(downloadDicPath, file_name);
+    const file_path_temp = `${file_path}`;
 
-    mainWindow.webContents.session.on(
-      "will-download",
-      (event, item, webContents) => {
-        item.setSavePath(savePath);
-        item.once("done", (event, state) => {
-          if (state === "completed") {
-            shell.openPath(savePath);
-          } else {
-            console.log(`Download failed: ${state}`);
-          }
+    if (!fs.existsSync(file_path)) {
+      //创建写入流
+      const fileStream = fs
+        .createWriteStream(file_path_temp)
+        .on("error", function (e) {
+          console.error("error==>", e);
         })
-      }
-    );
+        .on("ready", function () {
+          console.log("开始下载:", file_url);
+        })
+        .on("finish", function () {
+          //下载完成后重命名文件
+          fs.renameSync(file_path_temp, file_path);
+          console.log("文件下载完成:", file_path);
+        });
+      //请求文件
+      fetch(file_url, {
+        method: "GET",
+        headers: { "Content-Type": "application/octet-stream" },
+      })
+        .then((res) => {
+          //获取请求头中的文件大小数据
+          let fsize = res.headers.get("content-length");
+          //创建进度
+          let str = progressStream({
+            length: fsize,
+            time: 100 /* ms */,
+          });
+          // 下载进度
+          str.on("progress", function (progressData) {
+            //不换行输出
+            let percentage = Math.round(progressData.percentage) + "%";
+            console.log(percentage);
+            if (Number(progressData.percentage) === 100) {
+              const localUrl = path.join(process.cwd(), "/download/", file_name);
+              shell.openPath(localUrl);
+            }
+          });
+          res.body.pipe(str).pipe(fileStream);
+        })
+        .catch((e) => {
+          //自定义异常处理
+          console.log(e);
+        });
+    } else {
+      // 已存在
+      console.log(path.resolve(downloadDicPath, file_name), "已存在，不下载");
+    }
+  });
+  // function downloadFilesByUrl(params) {
+  //   const { file_elem_file_path, file_elem_file_name } = params;
+  //   console.log(params);
 
-    // const cwd = process.cwd();
-    // const downloadDicPath = path.resolve(cwd, "./download/");
+  //   let savePath = `${app.getPath("downloads")}\\${file_elem_file_name}`; // console.log(savePath)
+  //   realSavePath = savePath;
+  //   mainWindow.webContents.downloadURL(file_elem_file_path);
+  //   mainWindow.webContents.session.on(
+  //     "will-download",
+  //     (event, item, webContents) => {
+  //       if (savePath == realSavePath) {
+  //         item.setSavePath(savePath);
+  //         item.once("done", (event, state) => {
+  //           if (state === "completed") {
+  //             shell.openPath(savePath);
+  //           } else {
+  //             console.log(`Download failed: ${state}`);
+  //           }
+  //         });
+  //       }
+  //     }
+  //   );
 
-    // if (!fs.existsSync(downloadDicPath)) {
-    //   fs.mkdirSync(downloadDicPath);
-    // }
-    // const options = {
-    //   host: url.parse(file_elem_url).host.replace(":30003", ""),
-    //   port: url.parse(file_elem_url).port,
-    //   path: url.parse(file_elem_url).pathname,
-    // };
-    // console.log(111, options.host);
-    // console.log(222, options.port);
-    // console.log(333, options.path);
-    // if (!fs.existsSync(path.resolve(downloadDicPath, file_elem_file_name))) {
-    //   var file = fs.createWriteStream(
-    //     path.resolve(downloadDicPath, file_elem_file_name)
-    //   );
+  //   // const cwd = process.cwd();
+  //   // const downloadDicPath = path.resolve(cwd, "./download/");
 
-    // http.get(options, (res) => {
-    //   const { statusCode } = res;
-    //   const contentType = res.headers["content-type"];
-    //   let error;
-    //   if (statusCode !== 200) {
-    //     error = new Error("Request Failed.\n" + `Status Code: ${statusCode}`);
-    //   } else if (!/^application\/json/.test(contentType)) {
-    //     error = new Error(
-    //       "Invalid content-type.\n" +
-    //         `Expected application/json but received ${contentType}`
-    //     );
-    //   }
-    //   if (error) {
-    //     console.error(error.message);
-    //     res.resume();
-    //     return;
-    //   }
-    //   res
-    //     .on("data", function (data) {
-    //       file.write(data);
-    //     })
-    //     .on("end", function () {
-    //       file.end();
-    //       const localUrl = path.join(
-    //         process.cwd(),
-    //         "/download/",
-    //         filename.file_elem_file_name
-    //       );
-    //       shell.openPath(localUrl);
-    //       console.log(file_name + " downloaded to " + downloadDicPath);
-    //     });
-    // });
-    // } else {
-    //   // 已存在
-    //   console.log(
-    //     path.resolve(downloadDicPath, file_elem_file_name),
-    //     "已存在，不下载"
-    //   );
-    // }
-  }
-  ipcMain.on("openfilenow", function (event, filename) {
-    console.log("666", filename);
-    downloadFilesByUrl(filename);
+  //   // if (!fs.existsSync(downloadDicPath)) {
+  //   //   fs.mkdirSync(downloadDicPath);
+  //   // }
+  //   // const options = {
+  //   //   host: url.parse(file_elem_url).host.replace(":30003", ""),
+  //   //   port: url.parse(file_elem_url).port,
+  //   //   path: url.parse(file_elem_url).pathname,
+  //   // };
+  //   // console.log(111, options.host);
+  //   // console.log(222, options.port);
+  //   // console.log(333, options.path);
+  //   // if (!fs.existsSync(path.resolve(downloadDicPath, file_elem_file_name))) {
+  //   //   var file = fs.createWriteStream(
+  //   //     path.resolve(downloadDicPath, file_elem_file_name)
+  //   //   );
+
+  //   // http.get(options, (res) => {
+  //   //   const { statusCode } = res;
+  //   //   const contentType = res.headers["content-type"];
+  //   //   let error;
+  //   //   if (statusCode !== 200) {
+  //   //     error = new Error("Request Failed.\n" + `Status Code: ${statusCode}`);
+  //   //   } else if (!/^application\/json/.test(contentType)) {
+  //   //     error = new Error(
+  //   //       "Invalid content-type.\n" +
+  //   //         `Expected application/json but received ${contentType}`
+  //   //     );
+  //   //   }
+  //   //   if (error) {
+  //   //     console.error(error.message);
+  //   //     res.resume();
+  //   //     return;
+  //   //   }
+  //   //   res
+  //   //     .on("data", function (data) {
+  //   //       file.write(data);
+  //   //     })
+  //   //     .on("end", function () {
+  //   //       file.end();
+  //   //       const localUrl = path.join(
+  //   //         process.cwd(),
+  //   //         "/download/",
+  //   //         filename.file_elem_file_name
+  //   //       );
+  //   //       shell.openPath(localUrl);
+  //   //       console.log(file_name + " downloaded to " + downloadDicPath);
+  //   //     });
+  //   // });
+  //   // } else {
+  //   //   // 已存在
+  //   //   console.log(
+  //   //     path.resolve(downloadDicPath, file_elem_file_name),
+  //   //     "已存在，不下载"
+  //   //   );
+  //   // }
+  // }
+  // ipcMain.on("openfilenow", function (event, filename) {
+  //   console.log("666", filename);
+  //   downloadFilesByUrl(filename);
+  // });
+  ipcMain.on("OPENFILE", function (event, filename) {
+    const name = filename.filename;
+    console.log(name);
+    const localUrl = path.join(process.cwd(), "/download/", name);
+    shell.openPath(localUrl);
   });
   return mainWindow;
 }
