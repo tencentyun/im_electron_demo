@@ -237,20 +237,20 @@ export const MessageInput = (props: Props): JSX.Element => {
                         base64Str
                     })
                 }
-                isCanSendData = formatText.filter(item => item)
+                isCanSendData = formatText.filter(item => item !== '\n' && item !== '')
                 console.log('formatText', formatText);
                 //   let newapiget = startapi(isCanSendData,toTextContent);
                 // newapiget(isCanSendData[0])
 
             }
-            console.log('isCanSendData', isCanSendData);
+            // console.log('isCanSendData', isCanSendData, '||||||||||||||||||||||');
             if (isCanSendData.length) {
                 isCanSendData.map(async item => {
+                    console.log(isCanSendData, '||||||||||||||||||||||', isCanSendData.length)
                     if (typeof item === 'string') {
-                        console.log('toTextContent111', toTextContent);
-
+                        // console.log('toTextContent111', toTextContent);
                         const atList = getAtList(toTextContent)
-                        console.log('atList', atList);
+                        // console.log('atList', atList);
                         const { data: { code, json_params, desc } } = await sendTextMsg({
                             convId,
                             convType,
@@ -792,8 +792,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                 </Modal.Footer>
             </Modal> */}
             <input ref={filePicker} onChange={e => sendFileMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
-            <input ref={imagePicker} onChange={e => sendImageMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
-            <input ref={videoPicker} onChange={e => sendVideoMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
+            <input ref={imagePicker} accept="image/*" onChange={e => sendImageMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
+            <input ref={videoPicker} accept="video/*" onChange={e => sendVideoMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
             <input ref={soundPicker} onChange={e => sendSoundMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
         </div>
     )
