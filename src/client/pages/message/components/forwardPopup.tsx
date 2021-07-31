@@ -22,7 +22,7 @@ interface ForwardPopupProps {
 }
 const getId = (item) => {
     if(!item) return false
-    return item.friend_profile_identifier || item.group_detial_info_group_id
+    return item.friend_profile_identifier || item.group_detial_info_group_id || item.user_profile_identifier
 }
 const getType = (item) => {
     if(!item) return false
