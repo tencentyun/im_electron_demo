@@ -366,7 +366,9 @@ function createWindow() {
         });
     } else {
       // 已存在
-      console.log(path.resolve(downloadDicPath, file_name), "已存在，不下载");
+      // console.log(path.resolve(downloadDicPath, file_name), "已存在，不下载");
+      const localUrl = path.join(process.cwd(), "/download/", file_name);
+      shell.openPath(localUrl);
     }
   });
   // function downloadFilesByUrl(params) {
