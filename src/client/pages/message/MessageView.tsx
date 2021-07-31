@@ -535,7 +535,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {reeditShowText(item) ? <span className="message-view__item--withdraw" onClick={() => { reEdit(message_elem_array[0].text_elem_content) }}> 重新编辑</span> : <></>}
                                     </div>
                                 ) :
-                                    <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} key={message_msg_id}>
+                                    <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self&&item ? 'is-self' : ''}`} key={message_msg_id}>
                                         {isMultiSelect && (seleted ?
                                             <Icon className="message-view__item--icon" type="success" /> :
                                             <i className="message-view__item--icon-normal" ></i>)
