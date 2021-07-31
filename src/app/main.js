@@ -63,7 +63,7 @@ const setAppTray = () => {
 let appTray;
 let appWindow;
 let toggle = false;
-function createWindow () {
+function createWindow() {
   // Create the browser window.
   Menu.setApplicationMenu(null)
   let mainWindow = new BrowserWindow({
@@ -251,6 +251,24 @@ function createWindow () {
       });
     })
   });
+
+  // 保存文件
+  ipcMain.on("saveFile", (e, { str }) => {
+    // const shotcutPath = downloadUrl + '\\shotcut\\'
+    // if (fs.existsSync(path)) fs.rmdirSync(shotcutPath)
+    let pngs = clipboard.readImage().toPNG();
+    const fileName = new Date().getTime().toString() + Math.floor(Math.random() * 1000) + '.png'
+    const filedirPath = downloadUrl + '\\' + fileName
+    fs.writeFile(filedirPath, pngs, (err) => {
+      fs.readFile(filedirPath, (err, data) => {
+        mainWindow.webContents.send("getFile", {
+          data,
+          filedirPath
+        });
+      });
+    });
+  })
+
   // 接受截图事件
   ipcMain.on("SCREENSHOT", function () {
     //news 是自定义的命令 ，只要与页面发过来的命令名字统一就可以
@@ -279,7 +297,7 @@ function createWindow () {
 }
 
 let timer;
-function changeWindow () {
+function changeWindow() {
   if (appWindow) {
     // 设置大小
     appWindow.setSize(1000, 650)
@@ -289,7 +307,7 @@ function changeWindow () {
     appWindow.setResizable(true);
   }
 }
-function reSizeWindow () {
+function reSizeWindow() {
   if (appWindow) {
     // 设置大小
     appWindow.setSize(460, 358)
@@ -299,7 +317,7 @@ function reSizeWindow () {
     appWindow.setResizable(false);
   }
 }
-function trayFlash () {
+function trayFlash() {
 
 
   if (appTray) {
@@ -316,14 +334,14 @@ function trayFlash () {
   }
 }
 
-function openWindow () {
+function openWindow() {
   if (appWindow) {
     appWindow.show()
   }
 }
 let num = 0;
 let hasFlash = false;
-function setTaryTitle () {
+function setTaryTitle() {
   num++;
   appTray.setTitle(num === 0 ? '' : `${num}`);
   appWindow.flashFrame(true);
