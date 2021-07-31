@@ -40,6 +40,7 @@ import { HISTORY_MESSAGE_COUNT } from '../../constants';
 import { GroupSysElm } from './messageElemTyps/groupSystemElem';
 import { setCurrentReplyUser } from '../../store/actions/message'
 import { setImgViewerAction } from '../../store/actions/imgViewer';
+import { ipcRenderer } from 'electron';
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -259,6 +260,7 @@ export const MessageView = (props: Props): JSX.Element => {
         }
     }
     const handlRightClick = (e, id) => {
+        debugger
         const { data } = e.props;
         switch (id) {
             case 'revoke':
@@ -313,6 +315,7 @@ export const MessageView = (props: Props): JSX.Element => {
         console.log(item);
     }
     const handleOpenFile = (item) => {
+        console.log(item)
         showDialog()
     }
     const displayDiffMessage = (element, index) => {
@@ -473,23 +476,24 @@ export const MessageView = (props: Props): JSX.Element => {
             })
 
         })
-        const { elem_type,text_elem_content,custom_elem_data,custom_elem_desc } = currentMsgItem
+        const { elem_type,text_elem_content,custom_elem_data,custom_elem_desc,file_elem_url } = currentMsgItem
+        console.log(77777)
         if (elem_type === 0) {
             // const res = matchUrl([{ content: text_elem_content }])
             const currentNode = event.target as HTMLImageElement
             if (currentNode.nodeName.toLocaleLowerCase() === 'img') {
                  currentUrl = currentNode.currentSrc
             }
-         
-        } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
+        } else if (elem_type === 4) {
+            console.log(file_elem_url)
+            ipcRenderer.send('openfilenow',currentMsgItem)
+        } else if(onIsCustEmoji(elem_type, custom_elem_data)) {
             currentUrl = custom_elem_desc
         }
         if (txtAndImgStr.length) {
             imgsUrl = [].concat(matchUrl(txtAndImgStr),imgsUrl)
         }
         [...imgsUrl].reverse()
-        console.log('imgsUrl', imgsUrl);
-        console.log('currentUrl',currentUrl);
         let currentPreviewImgIndex = -1
        currentPreviewImgIndex =  imgsUrl.findIndex(url =>url === currentUrl )
         if (currentPreviewImgIndex > -1) {
