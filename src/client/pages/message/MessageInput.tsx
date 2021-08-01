@@ -373,7 +373,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         imagePicker.current.click();
     }
     const handleSendSoundMessage = () => {
-        // soundPicker.current.click();
+        //soundPicker.current.click();
         setRecordPopup(true)
     }
     const handleSendFileMessage = () => {
@@ -446,6 +446,7 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const sendVideoMessage = async (file) => {
         if (file) {
+            console.log(file)
             const { data: { code, json_params, desc } } = await sendVideoMsg({
                 convId,
                 convType,
@@ -468,7 +469,14 @@ export const MessageInput = (props: Props): JSX.Element => {
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
-            } else {
+            } else if(code === 7006) {
+                dispatch(reciMessage({
+                    convId,
+                    messages: [JSON.parse(json_params)]
+                }))
+            }else {
+                debugger
+                console.info(json_params)
                 message.error({ content: `消息发送失败 ${desc}` })
             }
         }
@@ -669,7 +677,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const dragEnterStyle = isDraging ? 'draging-style' : '';
     useEffect(() => {
         ipcRenderer.on('SENDSTORE', function (e, data) {
-            console.log(data, '------------------------------------')
+            // console.log(data, '------------------------------------')
             setSendType(data)
         })
         setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
