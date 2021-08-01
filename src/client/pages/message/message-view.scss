@@ -6,6 +6,13 @@
     overflow-x: hidden;
     padding: 0 20px 20px 20px;
     box-sizing: border-box;
+    .tea-action-state{
+        font-size: 16px;
+        max-width: 30%;
+        position: fixed;
+        left: 50%;
+        bottom: 50%;
+    }
     &:hover {
         &::-webkit-scrollbar {
             width:8px;

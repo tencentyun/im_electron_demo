@@ -1,7 +1,7 @@
 {
   "name": "im-electron-demo",
   "productName": "IM Electron Demo",
-  "version": "1.0.0",
+  "version": "3.3.3",
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {

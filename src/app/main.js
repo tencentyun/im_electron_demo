@@ -11,6 +11,7 @@ const {
   clipboard,
   shell,
   dialog,
+  Notification
 } = require("electron");
 //const { autoUpdater } = require('electron-updater')
 const feedUrl = `http://localhost/`;
@@ -117,7 +118,7 @@ function createWindow () {
         } else {
           mainWindow.hide();
         }
-      } catch {}
+      } catch { }
     }
   });
   mainWindow.on("show", function () {
@@ -159,6 +160,7 @@ function createWindow () {
       mainWindow.webContents.send("mainProcessMessage", false);
     }
   })
+
   mainWindow.loadURL(`http://localhost:3000`);
   // mainWindow.loadURL(
   //   url.format({
@@ -251,16 +253,16 @@ function createWindow () {
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
     child_process.exec(path.join(process.cwd(), '/resources/extraResources', 'cut.exe'), () => {
-        let pngs = clipboard.readImage().toPNG();
-        fs.writeFile(url, pngs, (err) => {
-          fs.readFile(url, (err, data) => {
-            mainWindow.webContents.send("screenShotUrl", {
-              data,
-              url,
-            });
+      let pngs = clipboard.readImage().toPNG();
+      fs.writeFile(url, pngs, (err) => {
+        fs.readFile(url, (err, data) => {
+          mainWindow.webContents.send("screenShotUrl", {
+            data,
+            url,
           });
         });
-      }
+      });
+    }
     );
   });
 
@@ -350,8 +352,9 @@ function createWindow () {
           str.on("progress", function (progressData) {
             //不换行输出
             let percentage = Math.round(progressData.percentage) + "%";
-            console.log(percentage);
-            if(Number(progressData.percentage) === 100){
+            console.log(percentage, '下载进度');
+            mainWindow.webContents.send("PERCENTAGE", percentage);
+            if (Number(progressData.percentage) === 100) {
               const localUrl = path.join(process.cwd(), "/download/", file_name);
               shell.openPath(localUrl);
             }
