@@ -677,7 +677,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const dragEnterStyle = isDraging ? 'draging-style' : '';
     useEffect(() => {
         ipcRenderer.on('SENDSTORE', function (e, data) {
-            console.log(data, '------------------------------------')
+            // console.log(data, '------------------------------------')
             setSendType(data)
         })
         setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
