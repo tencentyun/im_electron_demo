@@ -18,8 +18,9 @@ import axios from "axios";
 import { convertBase64UrlToBlob } from "../../utils/tools";
 import { SDKAPPID, TIM_BASE_URL } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
-import { judgeFileSize } from '../../utils/messageUtils';
+import { judgeFileSize, dataURLtoFile } from '../../utils/messageUtils';
 import { sendCustomMsg } from '../message/api'
+import _getTimeStringAutoShort2 from '../../utils/timeFormat';
 
 let store = '1'
 
@@ -93,7 +94,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [shotKeyTip, setShotKeyTip] = useState('按Enter键发送消息');
     const [isTextNullEmpty, setIsTextNullEmpty] = useState(true);
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
-    const [ shouldShowCallMenu, setShowCallMenu] = useState(false);
+    const [shouldShowCallMenu, setShowCallMenu] = useState(false);
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -106,8 +107,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     let editorInstance;
     // const enterSend = localStorage.getItem('sendType') || '1'
 
-    const userSig =localStorage.getItem('usersig')
-  const uid =localStorage.getItem('uid')
+    const userSig = localStorage.getItem('usersig')
+    const uid = localStorage.getItem('uid')
 
     // 上传逻辑
     const handleUpload = (base64Data) => {
@@ -123,10 +124,10 @@ export const MessageInput = (props: Props): JSX.Element => {
                     upload_method: 0,
                 })
                 .then((res) => {
-                    console.log(res);
+                    // console.log(res);
                     const { download_url } = res.data;
-                    console.log(111111);
-                    console.log(download_url);
+                    // console.log(111111);
+                    // console.log(download_url);
                     axios
                         .put(download_url, convertBase64UrlToBlob(base64Data), {
                             headers: {
@@ -151,9 +152,40 @@ export const MessageInput = (props: Props): JSX.Element => {
         });
     };
 
-    const handleSendTextMsg = async () => {
-        console.warn(editorState?.toHTML())
 
+
+    function startapi(requestlist, toTextContent) {
+        //定义counts，用来收集请求的次数，（也可以用reslist的length进行判断）
+        let counts = 0;
+        return function apirequest(data) {
+            let arg = data
+            let a = new Promise((res, rej) => {
+                //setTimeout模拟请求到接收的时间需要5秒钟
+                setTimeout(function () {
+                    res('成功返回数据');
+
+                }, 1000)
+                // handleSendMsg(data,toTextContent).then(res)
+            })
+            //无论成功或者失败都要进行下一次，以免阻塞，成功请求的末尾有s标志，失败的末尾有f标志
+            a.then(() => {
+                counts++;
+                if (counts > requestlist.length) {
+                    return;
+                }
+                console.log('counts', counts)
+
+                apirequest(requestlist[counts])
+            }).catch(err => {
+                //递归调用
+                apirequest(requestlist[counts])
+                console.log(err)
+            })
+        }
+
+    }
+
+    const handleSendTextMsg = async () => {
         if (editorStateDisabled(editorState)) {
             return
         }
@@ -161,8 +193,35 @@ export const MessageInput = (props: Props): JSX.Element => {
 
         const htmlText = editorState.toHTML();
         const imgSrc = htmlText.match(/<img [^>]*src=['"]([^'"]+)[^>]*>/g)
-
         try {
+            // if (imgSrc && imgSrc.length > 0) {
+            //     let formatText = [];
+            //     console.log('htmlText', htmlText);
+            //     let textContent = htmlText.match(/<p>((\w|\W)*?)<\/p>/g)
+            //     console.log('textContent', textContent);
+            //     if (textContent && textContent.length > 0) {
+            //         formatText = textContent.map(item => {
+            //             return item.replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/<br\/>/g, '\n')
+            //         });
+            //     }
+            //     console.log('formatText1', formatText);
+            //     const getImgsUrl = async () => {
+            //         return new Promise(async (resolve, reject) => {
+            //             for (let i = 0;i < imgSrc.length;i++) {
+            //                 await handleUpload(imgSrc[i].replace(/<img src=/, '').replace(/\/>/, '').replace(/"/g, '')).then(src => {
+            //                     formatText.splice((i * 2) + 1, 0, `<img src="${src}" />`)
+            //                 })
+            //             }
+            //             resolve(false);
+            //         })
+            //     }
+            //     await getImgsUrl()
+            //     console.log('formatText2', formatText);
+
+            //     console.log("formatText.join('')", formatText.join(''));
+            //     toTextContent = formatText.join('')
+            // }
+            let isCanSendData = []
             if (imgSrc && imgSrc.length > 0) {
                 let formatText = [];
                 let textContent = htmlText.match(/<p>((\w|\W)*?)<\/p>/g)
@@ -171,18 +230,51 @@ export const MessageInput = (props: Props): JSX.Element => {
                         return item.replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/<br\/>/g, '\n')
                     });
                 }
-                const getImgsUrl = async () => {
-                    return new Promise(async (resolve, reject) => {
-                        for (let i = 0;i < imgSrc.length;i++) {
-                            await handleUpload(imgSrc[i].replace(/<img src=/, '').replace(/\/>/, '').replace(/"/g, '')).then(src => {
-                                formatText.splice((i * 2) + 1, 0, `<img src="${src}" />`)
-                            })
-                        }
-                        resolve(false);
+                for (let i = 0;i < imgSrc.length;i++) {
+                    const base64Str = imgSrc[i].replace(/<img src=/, '').replace(/\/>/, '').replace(/"/g, '')
+                    formatText.splice((i * 2) + 1, 0, {
+                        file: dataURLtoFile(base64Str, new Date().getTime().toString() + Math.floor(Math.random() * 1000)),
+                        base64Str
                     })
                 }
-                await getImgsUrl()
-                toTextContent = formatText.join('')
+                isCanSendData = formatText.filter(item => item !== '\n' && item !== '')
+                console.log('formatText', formatText);
+                //   let newapiget = startapi(isCanSendData,toTextContent);
+                // newapiget(isCanSendData[0])
+
+            }
+            // console.log('isCanSendData', isCanSendData, '||||||||||||||||||||||');
+            if (isCanSendData.length) {
+                isCanSendData.map(async item => {
+                    console.log(isCanSendData, '||||||||||||||||||||||', isCanSendData.length)
+                    if (typeof item === 'string') {
+                        // console.log('toTextContent111', toTextContent);
+                        const atList = getAtList(toTextContent)
+                        // console.log('atList', atList);
+                        const { data: { code, json_params, desc } } = await sendTextMsg({
+                            convId,
+                            convType,
+                            messageElementArray: [{
+                                elem_type: 0,
+                                // text_elem_content: editorState?.toText(),
+                                text_elem_content: toTextContent,
+                            }],
+                            userId,
+                            messageAtArray: atList
+                        });
+
+                        if (code === 0) {
+                            dispatch(reciMessage({
+                                convId,
+                                messages: [JSON.parse(json_params)]
+                            }))
+                        }
+                        setEditorState(ContentUtils.clear(editorState))
+                    } else if (typeof item === 'object') {
+                        ipcRenderer.send('saveFile', { str: item.base64Str })
+                    }
+                })
+                return
             }
 
             // const text = editorState?.toText()
@@ -210,6 +302,41 @@ export const MessageInput = (props: Props): JSX.Element => {
             message.error({ content: `出错了: ${e.message}` })
         }
     }
+
+    // const handleSendMsg = (item,toTextContent) => {
+    //     return new Promise(async(resolve, reject) => {
+    //        try {
+    //          if (typeof item === 'string') {
+    //                     const atList = getAtList(toTextContent)
+    //                     const { data: { code, json_params, desc } } = await sendTextMsg({
+    //                         convId,
+    //                         convType,
+    //                         messageElementArray: [{
+    //                             elem_type: 0,
+    //                             // text_elem_content: editorState?.toText(),
+    //                             text_elem_content: toTextContent,
+    //                         }],
+    //                         userId,
+    //                         messageAtArray: atList
+    //                     });
+
+    //                     if (code === 0) {
+    //                         dispatch(reciMessage({
+    //                             convId,
+    //                             messages: [JSON.parse(json_params)]
+    //                         }))
+    //                     }
+    //                     setEditorState(ContentUtils.clear(editorState))
+    //                 } else if (typeof item === 'object') {
+    //                     ipcRenderer.send('saveFile', {str: item.base64Str})
+    //                 }
+    //         resolve(true)
+    //        } catch (error) {
+    //            reject(error)
+    //        }
+    //     })
+    // }
+
     const getAtList = (text: string) => {
         const list = text.match(/@\w+/g);
         return list ? list.map(v => v.slice(1)) : []
@@ -256,27 +383,32 @@ export const MessageInput = (props: Props): JSX.Element => {
         videoPicker.current.click();
     }
     const sendImageMessage = async (file) => {
-        // console.log(file, '发送文件')
+        console.log(file, '发送文件')
         if (!file) return false;
         if (file) {
-            const { data: { code, desc, json_params } } = await sendImageMsg({
-                convId,
-                convType,
-                messageElementArray: [{
-                    elem_type: 1,
-                    image_elem_orig_path: file.path,
-                    image_elem_level: 0
-                }],
-                userId,
-            });
-            if (code === 0) {
-                dispatch(reciMessage({
+            return new Promise(async (resolve, reject) => {
+                const { data: { code, desc, json_params } } = await sendImageMsg({
                     convId,
-                    messages: [JSON.parse(json_params)]
-                }))
-            } else {
-                message.error({ content: `消息发送失败 ${desc}` })
-            }
+                    convType,
+                    messageElementArray: [{
+                        elem_type: 1,
+                        image_elem_orig_path: file.path,
+                        image_elem_level: 0
+                    }],
+                    userId,
+                });
+                if (code === 0) {
+                    dispatch(reciMessage({
+                        convId,
+                        messages: [JSON.parse(json_params)]
+                    }))
+                    resolve(true)
+                } else {
+                    reject(false)
+                    message.error({ content: `消息发送失败 ${desc}` })
+                }
+            })
+
         }
     }
 
@@ -366,7 +498,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         // resetState()
         setEmojiPopup(true)
     }
-    const handleSendPhoneMessage = ()=> {
+    const handleSendPhoneMessage = () => {
         setShowCallMenu(true);
     }
     const handleFeatureClick = (featureId) => {
@@ -490,7 +622,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleCallMenuClick = (item) => {
-        if(item) handleOpenCallWindow(item.id);
+        if (item) handleOpenCallWindow(item.id);
         setShowCallMenu(false);
     };
 
@@ -502,7 +634,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const editorChange = (editorState, a, b) => {
-        console.warn(editorState.toHTML())
         setIsTextNullEmpty(editorStateDisabled(editorState))
         setEditorState(editorState)
     }
@@ -536,17 +667,6 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const shutUpStyle = isShutUpAll ? 'disabled-style' : '';
     const dragEnterStyle = isDraging ? 'draging-style' : '';
-    const hooks = {
-        // 'change-block-type': ({ href, target }) => {
-        //     alert(111)
-        //     href = href.indexOf('http') === 0 ? href : `http://${href}`
-        //     console.log(href, '=====__________')
-        //     return { href, target }
-        // }
-        'change-block-type': () => {
-            alert(111)
-        }
-    }
     useEffect(() => {
         ipcRenderer.on('SENDSTORE', function (e, data) {
             console.log(data, '------------------------------------')
@@ -573,6 +693,21 @@ export const MessageInput = (props: Props): JSX.Element => {
                 return
             }
         })
+        ipcRenderer.on('getFile', async (e, { data, filedirPath }) => {
+            //  console.log('getFile url', filedirPath);
+            const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' })
+            const fileObj = {
+                lastModified: file.lastModified,
+                lastModifiedDate: file.lastModifiedDate,
+                name: file.name,
+                path: filedirPath,
+                size: file.size,
+                type: file.type,
+                webkitRelativePath: file.webkitRelativePath
+            }
+            await sendImageMessage(fileObj)
+            setEditorState(ContentUtils.clear(editorState))
+        })
     }, [])
 
     useEffect(() => {
@@ -595,7 +730,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
                 }
                 {
-                    shouldShowCallMenu && <Menu options={[{text: '语音通话', id: 'voiceCall' }, {text: '视频通话', id: 'videoCall' }]} onSelect={handleCallMenuClick}/>
+                    shouldShowCallMenu && <Menu options={[{ text: '语音通话', id: 'voiceCall' }, { text: '视频通话', id: 'videoCall' }]} onSelect={handleCallMenuClick} />
                 }
                 {
 
@@ -622,7 +757,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ref={instance => editorInstance = instance}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     placeholder={placeHolderText}
-                    hooks={hooks}
                 />
             </div>
             <span className="message-input__button-area">
@@ -658,8 +792,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                 </Modal.Footer>
             </Modal> */}
             <input ref={filePicker} onChange={e => sendFileMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
-            <input ref={imagePicker} onChange={e => sendImageMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
-            <input ref={videoPicker} onChange={e => sendVideoMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
+            <input ref={imagePicker} accept="image/*" onChange={e => sendImageMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
+            <input ref={videoPicker} accept="video/*" onChange={e => sendVideoMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
             <input ref={soundPicker} onChange={e => sendSoundMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
         </div>
     )

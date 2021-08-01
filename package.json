@@ -32,6 +32,7 @@
         {
           "target": "nsis",
           "arch": [
+            "ia32",
             "x64"
           ]
         }
@@ -67,9 +68,13 @@
     "element-theme-default": "^1.4.13",
     "file-loader": "^6.2.0",
     "final-form": "^4.20.2",
-    "im_electron_sdk": "^1.0.42",
+    "im_electron_sdk": "^1.0.44",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
+    "node-fetch": "^2.6.1",
+    "node-gyp": "^8.1.0",
+    "node-gyp-build": "^4.2.3",
+    "progress-stream": "^2.0.0",
     "qs": "^6.5.2",
     "react": "^17.0.2",
     "react-contexify": "^5.0.0",

@@ -34,7 +34,7 @@ export const TextElemItem = (props: any): JSX.Element => {
 
         // 获取img标签内的url 并分隔文字与图片
         let imgs = texts.match(/<img [^>]*src=['"]([^'"]+)[^>]*>/g)
-        console.log(isWebsit(texts), '--------------------')
+        // console.log(isWebsit(texts), '--------------------')
         // let textHtml = <span style={{whiteSpace: 'pre'}} dangerouslySetInnerHTML={{ __html: texts }}>{{texts}}</span>
         let textHtml = <span style={{ whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: isWebsit(texts) }}></span>
 

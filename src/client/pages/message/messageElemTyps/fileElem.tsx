@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { downloadFilesByUrl, showDialog, checkFileExist } from "../../../utils/tools";
 import { cancelSendMsg } from "../api";
-import { shell } from 'electron'
+import { shell, ipcRenderer } from 'electron'
 import { Icon, message as teaMessage } from "tea-component";
 import { checkPathInLS, setPathToLS } from "../../../utils/messageUtils";
 
@@ -34,11 +34,13 @@ export const FileElem = (props: any): JSX.Element => {
         return (file_elem_file_size / (1024 * 1024)).toFixed(2)
     }
     const showFile = () => {
-        const { file_elem_file_name } = props;
+        console.log(props)
+        const { file_elem_file_name } = element;
+        downloadPic(file_elem_file_name)
         // filename 
-        ipcRenderer.send('OPENFILE', {
-            filename: file_elem_file_name
-        })
+        // ipcRenderer.send('OPENFILE', {
+        //     filename: file_elem_file_name
+        // })
     }
     const displayName = () => {
         return file_elem_file_name
@@ -77,6 +79,7 @@ export const FileElem = (props: any): JSX.Element => {
                 if(!checkPathInLS(getFilePath())) return <div className="message-view__item--file___download" onClick={savePic}></div>
                 else return <div className="message-view__item--file___open" onClick={handleOpen}></div>
             }
+
         }
     }
     const getDetailText = () => {

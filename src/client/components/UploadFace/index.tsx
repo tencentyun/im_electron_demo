@@ -96,6 +96,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       prop.cropperFile?.(fileObj);
       handleUpload(base64Data).then((res: IRes) => {
         const { download_url } = res;
+        console.log(res)
         prop.afterUpload?.(download_url);
         setVal(download_url);
         if (!prop.isShowCropper) {

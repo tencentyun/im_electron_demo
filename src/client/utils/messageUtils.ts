@@ -94,6 +94,9 @@ export const matchUrl = (data:urlDataItem[]) => {
         let str = item.content
         let arr = str.match(imgReg)  //筛选出所有的img
         if (arr) {
+            if (arr.length > 1) {
+                arr.reverse()
+            }
             for (let i = 0; i < arr.length; i++) {
                 let src = arr[i].match(srcReg)
                 // 获取图片地址
@@ -102,4 +105,19 @@ export const matchUrl = (data:urlDataItem[]) => {
         }
     })
     return urlArr.filter(item=>item)
+}
+
+/**
+ * 
+ * @param dataurl base64字符串
+ * @param filename 文件名
+ * @returns file对象
+ */
+export const dataURLtoFile=(dataurl, filename)=> {//将base64转换为文件
+    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
 }

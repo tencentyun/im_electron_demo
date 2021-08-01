@@ -119,7 +119,7 @@ export const GroupItem = (props: {
             )}
           >
             <Tooltip title="解散群聊">
-               <div className="group-item--right__disslove"></div>
+              <div className="group-item--right__disslove"></div>
             </Tooltip>
             {/* <Button className="group-item--right__button" type="text">
               解散群聊
@@ -146,10 +146,10 @@ export const GroupItem = (props: {
                 </Button>
               </>
             )}
-          > 
-             <Tooltip title="退出群聊">
-                <div className="group-item--right__button"></div>
-             </Tooltip>
+          >
+            <Tooltip title="退出群聊">
+              <div className="group-item--right__button"></div>
+            </Tooltip>
           </PopConfirm>
         )}
       </div>

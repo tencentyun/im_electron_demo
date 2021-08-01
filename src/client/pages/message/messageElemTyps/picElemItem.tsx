@@ -21,15 +21,16 @@ export const PicElemItem = (props: any): JSX.Element => {
 
         const url = image_elem_thumb_url || image_elem_orig_url || image_elem_large_url
         return (
+            url ?
             <div className="message-view__item--text text right-menu-item">
-
                 <img className="message-pic" src={url} style={{ maxWidth: 150 }}></img>
             </div>
+            :''
         )
     };
     const downloadPic = (file_url, file_name) => {
         const params = { file_url, file_name }
-        downloadFilesByUrl(params)
+        //downloadFilesByUrl(params)
     }
     const savePic = () => {
         // 大图、原图、缩略图

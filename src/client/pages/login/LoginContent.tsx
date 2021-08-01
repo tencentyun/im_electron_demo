@@ -64,7 +64,7 @@ interface IEncrptPwdRes {
 export const LoginContent = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const [userID, setUserID] = useState(DEFAULT_USERID);
+    const [userID, setUserID] = useState(window.localStorage.getItem('uid')||'');
     const [password, setPassword] = useState('Qaz123456@1');
     const isDisablelogin = userID && password;
 
