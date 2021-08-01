@@ -15,7 +15,7 @@ import { setPathToLS } from '../../utils/messageUtils';
 import { ipcRenderer } from 'electron';
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockImportFn, blockExportFn } from './CustomBlock';
-import { createElement, getCustomBlocksInfo, getImageSrcList, getPasteText } from './pasteInputConfig';
+import { getMessageElemArray, getPasteText } from './pasteInputConfig';
   
 type Props = {
     convId: string,
@@ -102,65 +102,10 @@ export const MessageInput = (props: Props): JSX.Element => {
         try {
             const text = editorState.toText();
             const htmlText = editorState.toHTML();
-            const imgSrcList = getImageSrcList(htmlText);
-            const element = createElement(htmlText);
-            const videosInfo = getCustomBlocksInfo(element, '.block-video');
-            const otherFilesInfo = getCustomBlocksInfo(element, '.block-file');
-        
             const atList = getAtList(text);
-            const messageElementArray = [];
-            const trimedText = text.trim();
-            if(trimedText.length) {
-                messageElementArray.push({
-                    elem_type: 0,
-                    text_elem_content: text,
-                });
-            }
-            if(imgSrcList?.length) {
-                messageElementArray.push(...imgSrcList?.map(v => ({
-                    elem_type: 1,
-                    image_elem_orig_path: filePathAndBase64Map[v],
-                    image_elem_level: 0
-                })));
-            }
 
-            if(videosInfo?.length) {
-                messageElementArray.push(...videosInfo?.map(v => {
-                    
-                    const item = videoInfos.find(item => item.videoPath === v.path );
-                    const { 
-                        videoType,
-                        videoSize,
-                        videoDuration,
-                        videoPath,
-                        screenshotType,
-                        screenshotSize,
-                        screenshotWidth,
-                        screenshotHeight,
-                        screenshotPath
-                    } = item;
-                    return {
-                    elem_type: 9,
-                    video_elem_video_type: videoType,
-                    video_elem_video_size: videoSize,
-                    video_elem_video_duration: videoDuration,
-                    video_elem_video_path: videoPath,
-                    video_elem_image_type: screenshotType,
-                    video_elem_image_size: screenshotSize,
-                    video_elem_image_width: screenshotWidth,
-                    video_elem_image_height: screenshotHeight,
-                    video_elem_image_path: screenshotPath
-                }}))
-            }
-            if(otherFilesInfo?.length) {
-                messageElementArray.push(...otherFilesInfo?.map(v => ({
-                    elem_type: 4,
-                    file_elem_file_path: v.path,
-                    file_elem_file_name: v.name,
-                    file_elem_file_size: v.size
-                })))
-            }
-
+            const messageElementArray = getMessageElemArray(text, htmlText, filePathAndBase64Map, videoInfos);
+           
             const { data: { code, json_params, desc } } = await sendMsg({
                 convId,
                 convType,
@@ -424,7 +369,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         e.preventDefault();
         if (e.keyCode == 13 || e.charCode === 13) {
             e.preventDefault();
-            handleSendTextMsg();
+            handleSendMsg();
         } else if(e.key === "@" && convType === 2) {
             e.preventDefault();
             setAtPopup(true)
