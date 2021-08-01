@@ -161,14 +161,14 @@ function createWindow () {
     }
   })
 
-  mainWindow.loadURL(`http://localhost:3000`);
-  // mainWindow.loadURL(
-  //   url.format({
-  //     pathname: path.join(__dirname, "../../bundle/index.html"),
-  //     protocol: "file:",
-  //     slashes: true,
-  //   })
-  // );
+  //mainWindow.loadURL(`http://localhost:3000`);
+  mainWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, "../../bundle/index.html"),
+      protocol: "file:",
+      slashes: true,
+    })
+  );
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
