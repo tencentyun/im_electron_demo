@@ -58,7 +58,6 @@
     "electron-builder": "^22.11.7"
   },
   "dependencies": {
-    "axios": "^0.21.1",
     "braft-editor": "^2.3.9",
     "concurrently": "^6.2.0",
     "electron-squirrel-startup": "^1.0.0",
@@ -74,20 +73,6 @@
     "node-fetch": "^2.6.1",
     "node-gyp": "^8.1.0",
     "node-gyp-build": "^4.2.3",
-    "progress-stream": "^2.0.0",
-    "qs": "^6.5.2",
-    "react": "^17.0.2",
-    "react-contexify": "^5.0.0",
-    "react-contextmenu": "^2.14.0",
-    "react-cropper": "^2.1.8",
-    "react-dom": "^17.0.2",
-    "react-final-form": "^6.5.2",
-    "react-loading-skeleton": "^2.2.0",
-    "react-redux": "^7.2.4",
-    "react-router-dom": "^5.2.0",
-    "redux": "^4.1.0",
-    "sass": "^1.35.1",
-    "tea-component": "^2.6.22",
-    "trtc-electron-sdk": "^8.6.102-beta.0"
+    "progress-stream": "^2.0.0"
   }
 }
