@@ -10,11 +10,14 @@ const fetch = require("node-fetch");
 const progressStream = require('progress-stream');
 const child_process = require('child_process')
 const shelljs = require("shelljs")
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const FFmpeg = require("fluent-ffmpeg")
 const ffprobeStatic = require('ffprobe-static');
 const sizeOf = require('image-size')
 const FileType = require('file-type')
-
+const ffprobe = require('ffprobe-static');
+FFmpeg.setFfprobePath(ffprobe.path);
+FFmpeg.setFfmpegPath(ffmpegPath);
 const getSrceenSize = () => {
     const display = screen.getPrimaryDisplay();
 
@@ -188,36 +191,46 @@ class IPC {
     }
     async _getVideoInfo(filePath) {
         let videoDuration, videoSize
-        const screenshotName = 'video-temp-thumbnail.png'
+        const screenshotName = path.basename(filePath).split('.').shift()+'.png'
         const screenshotPath = path.resolve(DOWNLOAD_PATH, screenshotName)
+
         const { ext } = await FileType.fromFile(filePath)
-        const { width, height, type, size } = await this._getImageInfo(screenshotPath)
+        
         return new Promise((resolve, reject) => {
-            new FFmpeg({ source: filePath })
-            .on('end', (err, info) => {
-                resolve({
-                    videoDuration,
-                    videoPath: filePath,
-                    videoSize,
-                    videoType: ext,
-                    screenshotPath,
-                    screenshotWidth: width,
-                    screenshotHeight: height,
-                    screenshotType: type,
-                    screenshotSize: size,
+            try{
+                FFmpeg(filePath)
+                .on('end', async (err, info) => {
+                    const { width, height, type, size } = await this._getImageInfo(screenshotPath)
+                    resolve({
+                        videoDuration,
+                        videoPath: filePath,
+                        videoSize,
+                        videoType: ext,
+                        screenshotPath,
+                        screenshotWidth: width,
+                        screenshotHeight: height,
+                        screenshotType: type,
+                        screenshotSize: size,
+                    })
                 })
-            })
-            .on('error', (err, info) => {
-                reject(err)
-            })
-            .screenshots({
-                timestamps: [0],
-                filename: screenshotName,
-                folder: DOWNLOAD_PATH
-            }).ffprobe((err, metadata) => {
-                videoDuration = metadata.format.duration
-                videoSize = metadata.format.size
-            })
+                .on('error', (err, info) => {
+                    reject(err)
+                })
+                .screenshots({
+                    timestamps: [0],
+                    filename: screenshotName,
+                    folder: DOWNLOAD_PATH
+                }).ffprobe((err, metadata) => {
+                   if(!err){
+                    videoDuration = metadata.format.duration
+                    videoSize = metadata.format.size
+                   }else{
+                       console.log(err)
+                   }
+                })
+            }catch(err){
+                console.log(err)
+            }
         })
     }
     async _getImageInfo(path) {

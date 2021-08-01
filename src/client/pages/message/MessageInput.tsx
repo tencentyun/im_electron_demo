@@ -31,6 +31,8 @@ const FEATURE_LIST_GROUP = [{
     id: 'file'
 }, {
     id: 'phone'
+},{
+    id: 'video'
 }, {
     id: 'more'
 }]
@@ -43,6 +45,8 @@ const FEATURE_LIST_C2C = [{
 }, {
     id: 'phone'
 }, {
+    id: 'video'
+},{
     id: 'more'
 }]
 const FEATURE_LIST = {
@@ -425,6 +429,9 @@ export const MessageInput = (props: Props): JSX.Element => {
             case "voice":
                 selectSoundMessage()
                 break;
+                case "video":
+                selectVideoMessage()
+                break;
             case "phone":
                 handleSendPhoneMessage()
                 break;
@@ -539,6 +546,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     useEffect(() => {
         const listener = (event, params) => {
             const { fileType, data } = params
+            console.log(fileType,data)
             sendMessages(fileType, data)
         }
         ipcRenderer.on("SELECT_FILES_CALLBACK", listener)
