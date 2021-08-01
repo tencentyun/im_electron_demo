@@ -31,7 +31,7 @@ import { MergeElem } from './messageElemTyps/mergeElem';
 import { ForwardPopup } from './components/forwardPopup';
 import formateTime from '../../utils/timeFormat';
 import { ContentUtils } from 'braft-utils'
-import { Icon, message } from 'tea-component';
+import { Icon, message, Progress, StatusTip } from 'tea-component';
 import { custEmojiUpsert } from '../../services/custEmoji'
 import { custEmojiUpsertParams } from '../../services/custEmoji'
 import { showDialog } from "../../utils/tools";
@@ -95,6 +95,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const [noMore, setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     const dispatch = useDispatch();
     const [anchor, setAnchor] = useState('')
+    const [percent, setPercent] = useState('0%')
     const { isShow, isCanOpenFileDir, index: imgPreViewUrlIndex, imgs } = useSelector((state: State.RootState) => state.imgViewer)
     useEffect(() => {
         if (!anchor) {
@@ -103,6 +104,17 @@ export const MessageView = (props: Props): JSX.Element => {
         setAnchor('')
         setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     }, [messageList.length])
+    useEffect(() => {
+        ipcRenderer.on('PERCENTAGE', (e, percentage) => {
+            console.log(percentage, '进度条。。。。。。。。。。。。。。。。。。。。。')
+            setPercent(percentage)
+        })
+    }, [])
+    useEffect(() => {
+        if (percent == '100%') {
+            setPercent('0%')
+        }
+    }, [percent])
     const getNewGroupInfo = () => {
         let newGroupInfo: any = localStorage.getItem('newGroupInfo')
         newGroupInfo = newGroupInfo ? JSON.parse(newGroupInfo) : []
@@ -134,7 +146,13 @@ export const MessageView = (props: Props): JSX.Element => {
         }));
 
     };
-
+    const getLoadingStatus = () => {
+        if (percent == '100%' || percent == '0%') {
+            return <></>
+        } else {
+            return <StatusTip.LoadingTip className='loading' loadingText={`下载中${percent}`} />
+        }
+    }
     // 添加到自定义表情, 图片和自定义表情可添加
     const handleAddCustEmoji = async (params) => {
         const { elem_type, image_elem_large_url = '', custom_elem_data = '', custom_elem_desc, text_elem_content } = params?.message?.message_elem_array[0];
@@ -509,7 +527,11 @@ export const MessageView = (props: Props): JSX.Element => {
 
     }
     return (
+
         <div className="message-view" ref={messageViewRef}>
+            {
+                getLoadingStatus()
+            }
             {
                 messageList && messageList.length > 0 &&
                 messageList.map((item, index) => {
