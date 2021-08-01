@@ -15,6 +15,7 @@ import { setPathToLS } from '../../utils/messageUtils';
 import { ipcRenderer } from 'electron';
 import { RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockImportFn, blockExportFn } from './CustomBlock';
+import { createElement, getCustomBlocksInfo, getImageSrcList, getPasteText } from './pasteInputConfig';
   
 type Props = {
     convId: string,
@@ -102,8 +103,8 @@ export const MessageInput = (props: Props): JSX.Element => {
             const htmlText = editorState.toHTML();
             const imgSrcList = getImageSrcList(htmlText);
             const element = createElement(htmlText);
-            const videosInfo = getCustomBlocksInfo(element, '.block-video', 'data-block-video');
-            const otherFilesInfo = getCustomBlocksInfo(element, '.block-file', 'data-block-file');
+            const videosInfo = getCustomBlocksInfo(element, '.block-video');
+            const otherFilesInfo = getCustomBlocksInfo(element, '.block-file');
         
             const atList = getAtList(text);
             const messageElementArray = [];
@@ -129,11 +130,11 @@ export const MessageInput = (props: Props): JSX.Element => {
                     video_elem_video_size: v.size,
                     video_elem_video_duration: 10,
                     video_elem_video_path: v.path,
-                    video_elem_image_type: "png",
-                    video_elem_image_size: 10000,
-                    video_elem_image_width: 200,
-                    video_elem_image_height: 80,
-                    video_elem_image_path: "./cover.png"
+                    // video_elem_image_type: "png",
+                    // video_elem_image_size: 10000,
+                    // video_elem_image_width: 200,
+                    // video_elem_image_height: 80,
+                    // video_elem_image_path: "./cover.png"
 
                     
                     // elem_type: 4,
@@ -175,40 +176,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     const getAtList = (text: string) => {
         const list = text.match(/@\w+/g);
         return list ? list.map(v => v.slice(1)) : []
-    }
-
-    // 从html字符串中匹配出image标签src
-    const getImageSrcList =(text: string) => {
-        //匹配图片（g表示匹配所有结果i表示区分大小写）
-        var imgReg = /<img.*?(?:>|\/>)/gi;
-        //匹配src属性 
-        var srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
-        var arr = text.match(imgReg);// 匹配出所有的img标签
-        const srcList = arr?.map(v => {
-            const srcs = v.match(srcReg);
-            if(srcs) {
-                return srcs[1];
-            }
-        }) || [];
-       return srcList;
-    }
-
-    const createElement = (htmlString: string) => {
-        const currentDiv = document.createElement('div');
-        currentDiv.innerHTML = htmlString;
-        return currentDiv;
-    }
-
-    // 从html字符串中匹配出所需节点上的信息
-    const getCustomBlocksInfo =(element: Element, selector, customAttribute: string) => {
-        const childElements = element.querySelectorAll(selector)
-        const customBlocksInfo = [];
-        childElements.forEach((v) => {
-            console.log('v', v)
-            const value = v.innerHTML;
-            customBlocksInfo.push(JSON.parse(value));
-        })
-        return customBlocksInfo;
     }
 
     const handleDropFile = (e) => {
@@ -496,7 +463,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     const createImgUrl = async (file:File) => {
         return new Promise(res => {
             const reader = new FileReader();
-            // 传入一个参数对象即可得到基于该参数对象的文本内容
             reader.readAsDataURL(file);
             reader.onload = function (e) {
               const base64Value = e.target.result;
@@ -510,16 +476,19 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handlePastedText = (text: string, htmlString: string) => {
-        if(text) {
-            setEditorState(ContentUtils.insertText(editorState, text));
-        }
+        // console.log('handlePasteText', text,htmlString);
+        const patseText = getPasteText(htmlString);
+        console.log('patseText', patseText);
+        setEditorState(ContentUtils.insertText(editorState, patseText))
+
     }
 
     const handlePastedFiles = async (files: File[]) => {
         console.log('files', files);
         if (files?.length) {
             files.forEach(async file => {
-                if (!file?.path?.length) return;
+                const fileSize = file.size;
+                if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
                 const type = file.type;
                 if (type.includes('image')) {
                     const imgUrl = await createImgUrl(file);
@@ -528,16 +497,11 @@ export const MessageInput = (props: Props): JSX.Element => {
                         url: imgUrl
                     }]));
                     return;
-                } else if ( type.includes('video')){
+                } else if ( type.includes('mp4') || type.includes('mov')){
                      setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
                 } else {
                     setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
                 }
-
-
-                // editorInstance.setContent(insertHtmlString, 'html')
-                // setEditorState(ContentUtils.insertAtomicBlock(editorState, 'my-block-img', true));
-                // setEditorState(ContentUtils.insertHTML(editorState, insertHtmlString, null));
            })
 
         }
@@ -587,6 +551,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             </div>
             <div className="message-input__text-area">
                 <BraftEditor
+                    stripPastedStyles
                     //@ts-ignore
                     disabled={isShutUpAll}
                     onChange={editorChange}
