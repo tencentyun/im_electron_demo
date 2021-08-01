@@ -97,7 +97,7 @@ export const TreeDynamicExample: FC<TreeDynamic> = ({ selectable = false, callba
 
     useEffect(() => {
         if (selectable) {
-            setSelectIds(selectIdsProp)
+            setSelectIds(selectIdsProp) 
             if (selectIdsProp.length >= personalList.length) {
                 //添加
                 personalList.push({ Uid: "---", stance: true })
@@ -137,15 +137,14 @@ export const TreeDynamicExample: FC<TreeDynamic> = ({ selectable = false, callba
     const personal = (value: any, id: string | number) => {
         setSelectIds(selectIdsFormat(value));
         let reacrInfor = selectIdsFormat(value)
-        console.log("删除人员", reacrInfor)
+       console.log(reacrInfor)
         let selectId = Array.from(new Set(reacrInfor.concat(value)))
-        console.log("删除人员2", selectId)
+       
         personalList = []
         selectId.forEach(item => {
             personalList.push(getNode(treeData, item) ? getNode(treeData, item) : { Uid: "---", stance: true })
         })
-        console.log("删除原始数据", personalList)
-        console.log("筛选之后", filterStaff(personalList))
+        
         personnel && personnel(filterStaff(personalList))
     }
 

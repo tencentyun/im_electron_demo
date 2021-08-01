@@ -11,17 +11,21 @@ export enum TIMConvType {
 export const getMessageId = (message: State.message): string => {
     return message.message_msg_id
 }
-export const getConvId = (convItem: ConvItem): string => {
+export const getConvId = (convItem: any): string => {
     const item = convItem as State.groupProfile
     if (item.group_detial_info_group_id) {
         return item.group_detial_info_group_id
-    } else {
+    }
+    else if (convItem.user_profile_identifier) {
+        return convItem.user_profile_identifier
+    } 
+    else {
         return (convItem as State.FriendProfile).friend_profile_identifier
     }
 }
-export const getConvType = (convItem: ConvItem): TIMConvType => {
+export const getConvType = (convItem: any): TIMConvType => {
     const item = convItem as State.FriendProfile
-    return (item.friend_profile_identifier || item.friend_profile_user_profile?.user_profile_identifier) ? TIMConvType.kTIMConv_C2C : TIMConvType.kTIMConv_Group
+    return (item.friend_profile_identifier || convItem.user_profile_identifier || item.friend_profile_user_profile?.user_profile_identifier) ? TIMConvType.kTIMConv_C2C : TIMConvType.kTIMConv_Group
 }
 export const getMergeMessageTitle = (message: State.message): string => {
     const groupTitle: string = "群聊"
