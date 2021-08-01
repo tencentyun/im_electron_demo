@@ -53,7 +53,8 @@ class IPC {
                     this.downloadFilesByUrl(params);
                     break;
                 case GET_VIDEO_INFO:
-                    this.getVideoInfo(event, params)
+                    this.getVideoInfo(event, params);
+                    break;
                 case SELECT_FILES:
                     this.selectFiles(event, params);
                     break;
@@ -241,7 +242,7 @@ class IPC {
         }
     }
     async getVideoInfo(event, params) {
-        const { path } = params
+        const { path } = params;
         const data = await this._getVideoInfo(path)
         event.reply(GET_VIDEO_INFO_CALLBACK, data) 
     }

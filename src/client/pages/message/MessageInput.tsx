@@ -13,7 +13,7 @@ import 'braft-editor/dist/index.css'
 import './message-input.scss';
 import { setPathToLS } from '../../utils/messageUtils';
 import { ipcRenderer } from 'electron';
-import { RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
+import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockImportFn, blockExportFn } from './CustomBlock';
 import { createElement, getCustomBlocksInfo, getImageSrcList, getPasteText } from './pasteInputConfig';
   
@@ -64,6 +64,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null, {blockImportFn, blockExportFn}))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const [ filePathAndBase64Map, setFilePathAndBase64Map] = useState({});
+    const [ videoInfos, setVideoInfos] = useState([]);
 
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
@@ -116,7 +117,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 });
             }
             if(imgSrcList?.length) {
-                messageElementArray.push( ...imgSrcList?.map(v => ({
+                messageElementArray.push(...imgSrcList?.map(v => ({
                     elem_type: 1,
                     image_elem_orig_path: filePathAndBase64Map[v],
                     image_elem_level: 0
@@ -124,24 +125,32 @@ export const MessageInput = (props: Props): JSX.Element => {
             }
 
             if(videosInfo?.length) {
-                messageElementArray.push(...videosInfo?.map(v => ({
-                    elem_type: 9,
-                    video_elem_video_type: "MP4",
-                    video_elem_video_size: v.size,
-                    video_elem_video_duration: 10,
-                    video_elem_video_path: v.path,
-                    // video_elem_image_type: "png",
-                    // video_elem_image_size: 10000,
-                    // video_elem_image_width: 200,
-                    // video_elem_image_height: 80,
-                    // video_elem_image_path: "./cover.png"
-
+                messageElementArray.push(...videosInfo?.map(v => {
                     
-                    // elem_type: 4,
-                    // file_elem_file_path: v.path,
-                    // file_elem_file_name: v.name,
-                    // file_elem_file_size: v.size
-                })))
+                    const item = videoInfos.find(item => item.videoPath === v.path );
+                    const { 
+                        videoType,
+                        videoSize,
+                        videoDuration,
+                        videoPath,
+                        screenshotType,
+                        screenshotSize,
+                        screenshotWidth,
+                        screenshotHeight,
+                        screenshotPath
+                    } = item;
+                    return {
+                    elem_type: 9,
+                    video_elem_video_type: videoType,
+                    video_elem_video_size: videoSize,
+                    video_elem_video_duration: videoDuration,
+                    video_elem_video_path: videoPath,
+                    video_elem_image_type: screenshotType,
+                    video_elem_image_size: screenshotSize,
+                    video_elem_image_width: screenshotWidth,
+                    video_elem_image_height: screenshotHeight,
+                    video_elem_image_path: screenshotPath
+                }}))
             }
             if(otherFilesInfo?.length) {
                 messageElementArray.push(...otherFilesInfo?.map(v => ({
@@ -171,6 +180,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             message.error({ content: `出错了: ${e.message}` });
         }
         setFilePathAndBase64Map({});
+        setVideoInfos([]);
     }
 
     const getAtList = (text: string) => {
@@ -476,9 +486,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handlePastedText = (text: string, htmlString: string) => {
-        // console.log('handlePasteText', text,htmlString);
         const patseText = getPasteText(htmlString);
-        console.log('patseText', patseText);
         setEditorState(ContentUtils.insertText(editorState, patseText))
 
     }
@@ -498,7 +506,11 @@ export const MessageInput = (props: Props): JSX.Element => {
                     }]));
                     return;
                 } else if ( type.includes('mp4') || type.includes('mov')){
-                     setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
+                    ipcRenderer.send(RENDERPROCESSCALL,{
+                        type: GET_VIDEO_INFO,
+                        params: { path: file.path }
+                    })
+                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
                 } else {
                     setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
                 }
@@ -518,6 +530,18 @@ export const MessageInput = (props: Props): JSX.Element => {
             ipcRenderer.off("SELECT_FILES_CALLBACK", listener)
         }
     }, [convId, convType])
+
+    useEffect(() => {
+        const listener = (event, params) => {
+           setVideoInfos(pre => [...pre, params]);
+        }
+        ipcRenderer.on("GET_VIDEO_INFO_CALLBACK", listener)
+        return () => {
+            ipcRenderer.off("GET_VIDEO_INFO_CALLBACK", listener)
+        }
+    }, [convId, convType])
+
+    console.log('videInfos',videoInfos)
 
     useEffect(() => {
         setEditorState(ContentUtils.clear(editorState))
