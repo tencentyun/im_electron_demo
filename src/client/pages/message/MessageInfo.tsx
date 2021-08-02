@@ -129,11 +129,13 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));
   
-  const handleOpenCallWindow =async (callType,convType, windowType = 'callWindow') => {
+  const handleOpenCallWindow =async (callType,convType ) => {
     if(callingId) {
       message.warning({content: '正在通话中'});
       return;
     }
+
+    const roomId = generateRoomID();
 
     // if (!trtcCheck.isCameraReady() && !trtcCheck.isMicReady()) {
     //   message.warning({ content: '找不到可用的摄像头和麦克风。请安装摄像头和麦克风后再试' });
@@ -142,6 +144,19 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
 
     // 发起邀请
+
+    openCallWindow({
+      windowType: 'callWindow',
+      callType,
+      convId: encodeURIComponent(conv_id),
+      convInfo: {
+        faceUrl: encodeURIComponent(faceUrl),
+        nickName: encodeURIComponent(nickName),
+        convType: conv_type
+      },
+      roomId
+    });
+  
     let data
     if (convType === 1) {
       data = await timRenderInstance.TIMInvite({
@@ -149,13 +164,14 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
         type: Number(callType),
         senderID: userId,
         data: "",
-        roomID: generateRoomID(),
+        roomID: roomId,
         callType: Number(callType)
       })
     }
     if (convType === 2) {
       data = await timRenderInstance.TIMInviteInGroup()
     }
+
     const { data:{code} } = data;
     if (code === 0) {
       dispatch(updateCallingStatus({
@@ -164,13 +180,15 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       }));
       const { faceUrl, nickName } = getDisplayConvInfo();
       openCallWindow({
+        windowType: 'callWindow',
         callType,
         convId: encodeURIComponent(conv_id),
         convInfo: {
           faceUrl: encodeURIComponent(faceUrl),
           nickName: encodeURIComponent(nickName),
           convType: conv_type
-        }
+        },
+        roomId
       });
     }
   }
@@ -237,7 +255,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
             </div>
             <div>
               {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
-              <span className={`message-info-view__header--video ${callingId === conv_id ? 'is-calling' : ''}`} onClick={() => handleOpenCallWindow('2',conv_type, 'notificationWindow')} />
+              <span className={`message-info-view__header--video ${callingId === conv_id ? 'is-calling' : ''}`} onClick={() => handleOpenCallWindow('2',conv_type,)} />
             </div>
           </header>
           <section className="message-info-view__content">

@@ -24,7 +24,7 @@ const genTestUserSig = function(userID) {
    * 它是腾讯云用于区分客户的唯一标识。
    */
 
-  var SDKAPPID = 1400551687;
+  var SDKAPPID = 1400187352;
 
 
   /**
@@ -47,7 +47,7 @@ const genTestUserSig = function(userID) {
    * 文档：https://cloud.tencent.com/document/product/647/17275#Server
    */
 
-  var SECRETKEY = "db8a604b679c7955aa6b4d2db3b724ddc18682e109abfdf5be7178d35ff91c0d";
+  var SECRETKEY = "f442d0cca069bbcc8ced55f4f113b965999b928c78e3cd83495728133a06f4cb";
 
   /*
    * 混流接口功能实现需要补齐此账号信息。
