@@ -67,20 +67,20 @@ class IPC {
     }
 
     eventListiner(isDev) {
+        const screenSize = getSrceenSize();
         // 当作为接收方，接受电话后，更改窗口尺寸。
         ipcMain.on('accept-call', () => {
-            const screenSize = getSrceenSize();
             this.callWindow.setSize(800, 600);
             this.callWindow.setPosition(screenSize.width / 2 - 400, screenSize.height /  2 - 300);
             // 向聊天窗口通信
-            imWindowEvent.reply('accept-call-reply');
+            this.imWindowEvent.reply('accept-call-reply');
         });
 
         // 当作为接收方，挂断电话，关闭窗口
         ipcMain.on('refuse-call', () => {
             this.callWindow.close();
             // 向聊天窗口通信
-            imWindowEvent.reply('refuse-call-reply');
+            this.imWindowEvent.reply('refuse-call-reply');
         });
 
         // 当接受方拒绝通话后，调用该方法可关闭窗口，并退出房间
@@ -90,12 +90,12 @@ class IPC {
 
         // 远端用户进入
         ipcMain.on('remote-user-join', (event, userId) => {
-            imWindowEvent.reply('remote-user-join-reply', userId)
+            this.imWindowEvent.reply('remote-user-join-reply', userId)
         });
 
         // 远端用户离开
         ipcMain.on('remote-user-exit', (event, userId) => {
-            imWindowEvent.reply('remote-user-exit-reply', userId)
+            this.imWindowEvent.reply('remote-user-exit-reply', userId)
         });
 
 
