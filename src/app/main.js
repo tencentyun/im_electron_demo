@@ -161,14 +161,14 @@ function createWindow () {
     }
   })
 
-  mainWindow.loadURL(`http://localhost:3000`);
-  // mainWindow.loadURL(
-  //   url.format({
-  //     pathname: path.join(__dirname, "../../bundle/index.html"),
-  //     protocol: "file:",
-  //     slashes: true,
-  //   })
-  // );
+  // mainWindow.loadURL(`http://localhost:3000`);
+  mainWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, "../../bundle/index.html"),
+      protocol: "file:",
+      slashes: true,
+    })
+  );
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
@@ -252,7 +252,7 @@ function createWindow () {
     // "start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(path.join(process.cwd(), '/resources/extraResources', 'cut.exe'), () => {
+    child_process.exec('start C:\\Users\\admin\\Desktop\\demo\\cut.exe', () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
@@ -290,9 +290,9 @@ function createWindow () {
   ipcMain.on("SCREENSHOT", function () {
     //news 是自定义的命令 ，只要与页面发过来的命令名字统一就可以
     //接收到消息后的执行程序
+    // path.join(process.cwd(), "/resources/extraResources", "cut.exe")
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(
-      path.join(process.cwd(), "/resources/extraResources", "cut.exe"),
+    child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe",
       () => {
         let pngs = clipboard.readImage().toPNG();
         fs.writeFile(url, pngs, (err) => {

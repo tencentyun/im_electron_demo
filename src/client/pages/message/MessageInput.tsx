@@ -86,6 +86,7 @@ const FEATURE_LIST = {
 
 export const MessageInput = (props: Props): JSX.Element => {
     const { convId, convType, isShutUpAll, editorState, setEditorState, handleOpenCallWindow } = props;
+    // console.log(convId, '对话id', props)
     const [isDraging, setDraging] = useState(false);
     const [activeFeature, setActiveFeature] = useState('');
     const [atPopup, setAtPopup] = useState(false);
@@ -105,11 +106,10 @@ export const MessageInput = (props: Props): JSX.Element => {
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
     const [sendType, setSendType] = useState(null);
     let editorInstance;
-    // const enterSend = localStorage.getItem('sendType') || '1'
 
-    const userSig = localStorage.getItem('usersig')
-    const uid = localStorage.getItem('uid')
-
+    const userSig = window.localStorage.getItem('usersig')
+    const uid = window.localStorage.getItem('uid')
+    window.localStorage.setItem('convId', convId)
     // 上传逻辑
     const handleUpload = (base64Data) => {
         return new Promise((resolve, reject) => {
@@ -238,7 +238,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     })
                 }
                 isCanSendData = formatText.filter(item => item !== '\n' && item !== '')
-                console.log('formatText', formatText);
+                // console.log('formatText', formatText);
                 //   let newapiget = startapi(isCanSendData,toTextContent);
                 // newapiget(isCanSendData[0])
 
@@ -246,7 +246,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             // console.log('isCanSendData', isCanSendData, '||||||||||||||||||||||');
             if (isCanSendData.length) {
                 isCanSendData.map(async item => {
-                    console.log(isCanSendData, '||||||||||||||||||||||', isCanSendData.length)
+                    // console.log(isCanSendData, '||||||||||||||||||||||', isCanSendData.length)
                     if (typeof item === 'string') {
                         // console.log('toTextContent111', toTextContent);
                         const atList = getAtList(toTextContent)
@@ -383,12 +383,12 @@ export const MessageInput = (props: Props): JSX.Element => {
         videoPicker.current.click();
     }
     const sendImageMessage = async (file) => {
-        console.log(file, '发送文件')
+        // console.log(file, '文件对象', typeof file)
         if (!file) return false;
         if (file) {
             return new Promise(async (resolve, reject) => {
                 const { data: { code, desc, json_params } } = await sendImageMsg({
-                    convId,
+                    convId: window.localStorage.getItem('convId'),
                     convType,
                     messageElementArray: [{
                         elem_type: 1,
@@ -399,7 +399,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 });
                 if (code === 0) {
                     dispatch(reciMessage({
-                        convId,
+                        convId: window.localStorage.getItem('convId'),
                         messages: [JSON.parse(json_params)]
                     }))
                     resolve(true)
@@ -432,7 +432,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             }],
             userId,
         });
-        console.log(file, 1111)
+        // console.log(file, 1111)
         if (code === 0) {
             dispatch(updateMessages({
                 convId,
@@ -446,7 +446,7 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const sendVideoMessage = async (file) => {
         if (file) {
-            console.log(file)
+            // console.log(file)
             const { data: { code, json_params, desc } } = await sendVideoMsg({
                 convId,
                 convType,
@@ -469,12 +469,12 @@ export const MessageInput = (props: Props): JSX.Element => {
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
-            } else if(code === 7006) {
+            } else if (code === 7006) {
                 dispatch(reciMessage({
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
-            }else {
+            } else {
                 debugger
                 console.info(json_params)
                 message.error({ content: `消息发送失败 ${desc}` })
@@ -544,7 +544,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleScreenShot = () => {
-        console.log('点击了截图按钮')
         clipboard.clear()
         ipcRenderer.send('SCREENSHOT')
     }
@@ -667,8 +666,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         setShotKeyTip(tip)
         setSendType(index)
         ipcRenderer.send('CHANGESTORE', index)
-        // console.log(localStorage.getItem('sendType'))
     }
+
     useEffect(() => {
         setEditorState(ContentUtils.clear(editorState))
     }, [convId, convType]);
@@ -677,7 +676,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     const dragEnterStyle = isDraging ? 'draging-style' : '';
     useEffect(() => {
         ipcRenderer.on('SENDSTORE', function (e, data) {
-            // console.log(data, '------------------------------------')
             setSendType(data)
         })
         setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
@@ -685,6 +683,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             if (data.length == 0) {
                 message.error({ content: '已取消截图' })
             } else {
+                // debugger
                 const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' })
                 // console.log(file, '截图文件对象')
                 const fileObj = {
@@ -696,7 +695,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     type: file.type,
                     webkitRelativePath: file.webkitRelativePath
                 }
-                // console.log(fileObj, '截图文件对象', file)
+                console.log(convId, '截图文件对象', file)
                 sendImageMessage(fileObj)
                 return
             }
@@ -721,6 +720,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     useEffect(() => {
         return () => {
             ipcRenderer.removeAllListeners('screenShotUrl')
+            window.localStorage.removeItem('convId')
         }
     }, [])
 
