@@ -189,6 +189,7 @@ const {nickName,faceUrl,gender} = userInfo
                           {...input}
                           autoComplete="off"
                           placeholder="你是谁"
+                          maxLength={10}
                         />
                       </Form.Item>
                     )}

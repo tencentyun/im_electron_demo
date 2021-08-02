@@ -160,7 +160,6 @@ function createWindow () {
       mainWindow.webContents.send("mainProcessMessage", false);
     }
   })
-
   mainWindow.loadURL(`http://localhost:3000`);
   // mainWindow.loadURL(
   //   url.format({
