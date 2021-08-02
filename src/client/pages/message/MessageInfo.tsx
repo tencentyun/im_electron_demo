@@ -13,7 +13,8 @@ import { updateCallingStatus } from "../../store/actions/ui";
 
 import { AddUserPopover } from "./AddUserPopover";
 import { addTimeDivider } from "../../utils/addTimeDivider";
-import { openCallWindow, callWindowCloseListiner, generateRoomID } from "../../utils/tools";
+import { generateRoomID } from "../../utils/tools";
+import {  openCallWindow, callWindowCloseListiner } from '../../utils/callWindowTools';
 import trtcCheck from '../../utils/trtcCheck';
 
 import {

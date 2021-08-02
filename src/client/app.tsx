@@ -37,9 +37,12 @@ import {
     updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
-import { openCallWindow } from "./utils/tools";
+import { openCallWindow, closeCallWindow } from "./utils/callWindowTools";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
+
+// @ts-ignore
+window.closeCallWindow = closeCallWindow;
 
 export const App = () => {
     const dispatch = useDispatch();
