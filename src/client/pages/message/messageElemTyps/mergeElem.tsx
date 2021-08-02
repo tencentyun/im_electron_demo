@@ -70,6 +70,6 @@ export const MergeElem = (props: any): JSX.Element => {
             </div>
         )
     };
-    // console.log('合并我笑傲你', props)
+    console.log('合并消息', props)
     return item(props);
 }

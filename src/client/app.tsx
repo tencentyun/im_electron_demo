@@ -176,7 +176,6 @@ export const App = () => {
                 friendship_getprofilelist_param_force_update: false
             }
         }).then(data => {
-            console.log(data)
             const { data: { code, json_param } } = data;
             if (code === 0) {
                 const [userdata] = JSON.parse(json_param)
@@ -203,10 +202,10 @@ export const App = () => {
 
     }
     const _onCanceled = (data) => {
-
+        // 关闭通知窗口
     }
     const _onTimeout = (data) => {
-
+        // 关闭通知窗口
     }
     const _handleElemUploadProgres = ({ message, index, cur_size, total_size, user_data }) => {
         dispatch(updateMessageElemProgress({
