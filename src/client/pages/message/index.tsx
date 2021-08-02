@@ -32,6 +32,33 @@ let indervel = null
 
 let uid = ''
 
+const convMenuItem = [
+    {
+        id: "pinged",
+        text: "会话置顶"
+    },
+    {
+        id: "unpinged",
+        text: "取消置顶"
+    },
+    {
+        id: "disable",
+        text: "消息免打扰"
+    },
+    {
+        id: "undisable",
+        text: "移除消息免打扰"
+    },
+    {
+        id: "remove",
+        text: "移除会话"
+    },
+    {
+        id: "clean",
+        text: "清除消息"
+    }
+]
+
 export const Message = (): JSX.Element => {
     const [isLoading, setLoadingStatus ] = useState(false);
     const [statusIndervel, setStatusIndervel ] = useState(1);
@@ -39,35 +66,10 @@ export const Message = (): JSX.Element => {
     const { replace_router } = useSelector((state:State.RootState)=>state.ui)
     const dialogRef = useDialogRef();
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
-
+    const [nowConvMenuItem, setNowConvMenuItem] = useState(convMenuItem)
     const convMenuID = "CONV_HANDLE"
 
-    const convMenuItem = [
-        {
-            id: "pinged",
-            text: "会话置顶"
-        },
-        {
-            id: "unpinged",
-            text: "取消置顶"
-        },
-        {
-            id: "disable",
-            text: "消息免打扰"
-        },
-        {
-            id: "undisable",
-            text: "移除消息免打扰"
-        },
-        {
-            id: "remove",
-            text: "移除会话"
-        },
-        {
-            id: "clean",
-            text: "清除消息"
-        }
-    ]
+
     const dispatch = useDispatch();
     const getData = async () => {
         const response = await getConversionList();
@@ -176,8 +178,37 @@ export const Message = (): JSX.Element => {
         return count > 9 ? '···' : count
     }
 
+    const filterMenu = (data)=>{
+        let filterMenu = convMenuItem
+        for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+                const element = data[key];
+                switch(key){
+                    case "conv_is_pinned": 
+                        if(element){
+                            filterMenu = filterMenu.filter(item => item.id != 'pinged')
+                        }else{
+                            filterMenu = filterMenu.filter(item => item.id != 'unpinged')
+                        }
+                        break;
+                    case "conv_recv_opt":
+                            if(element){
+                                filterMenu = filterMenu.filter(item => item.id != 'disable')
+                            }else{
+                                filterMenu = filterMenu.filter(item => item.id != 'undisable')
+                            }
+                        break;
+                            
+                }
+            }
+        }
+        return  filterMenu
+    }
+
     const handleContextMenuEvent = (e, conv: State.conversationItem) => {
         e.preventDefault()
+        //会话置顶限制
+        setNowConvMenuItem(filterMenu(conv))
         contextMenu.show({
             id: convMenuID,
             event: e,
@@ -281,6 +312,7 @@ export const Message = (): JSX.Element => {
         console.log(data)
     }
     const handleClickMenuItem = (e,id) => {
+        console.log("好友列表功能区", e,id)
         const { data }  = e.props;
         switch (id){
             case 'pinged':
@@ -358,7 +390,7 @@ export const Message = (): JSX.Element => {
                         onHidden={() => console.log('HIDDEN')}
                     >
                         {
-                            convMenuItem.map(({ text, id }) => {
+                            nowConvMenuItem.map(({ text, id }) => {
                                 return <Item key={id} onClick={(e) => { handleClickMenuItem(e, id) }}>{text}</Item>
                             })
                         }

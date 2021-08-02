@@ -1,5 +1,5 @@
 import React from 'react';
-import { shell } from 'electron';
+import { shell,app } from 'electron';
 import { Button } from 'tea-component';
 
 import './login-about.scss';
@@ -18,7 +18,7 @@ export const LoginAbout = (): JSX.Element => {
         <div className="login-about">
             <section className="login-about__header">
                 <span className="login-about__header--logo" />
-                <span className="login-about__header--tc-text">华润云</span>
+                <span className="login-about__header--tc-text">华润银行</span>
                 <span className='login-about__header--split' />
                 <span className='login-about__header--im-text'> 即时通信</span>
             </section>
