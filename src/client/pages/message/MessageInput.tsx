@@ -13,8 +13,9 @@ import 'braft-editor/dist/index.css'
 import './message-input.scss';
 import { setPathToLS } from '../../utils/messageUtils';
 import { ipcRenderer } from 'electron';
-import { RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
+import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockImportFn, blockExportFn } from './CustomBlock';
+import { getMessageElemArray, getPasteText } from './pasteInputConfig';
   
 type Props = {
     convId: string,
@@ -55,6 +56,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null, {blockImportFn, blockExportFn}))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const [ filePathAndBase64Map, setFilePathAndBase64Map] = useState({});
+    const [ videoInfos, setVideoInfos] = useState([]);
 
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
@@ -92,57 +94,10 @@ export const MessageInput = (props: Props): JSX.Element => {
         try {
             const text = editorState.toText();
             const htmlText = editorState.toHTML();
-            const imgSrcList = getImageSrcList(htmlText);
-            const element = createElement(htmlText);
-            const videosInfo = getCustomBlocksInfo(element, '.block-video', 'data-block-video');
-            const otherFilesInfo = getCustomBlocksInfo(element, '.block-file', 'data-block-file');
-        
             const atList = getAtList(text);
-            const messageElementArray = [];
-            const trimedText = text.trim();
-            if(trimedText.length) {
-                messageElementArray.push({
-                    elem_type: 0,
-                    text_elem_content: text,
-                });
-            }
-            if(imgSrcList?.length) {
-                messageElementArray.push( ...imgSrcList?.map(v => ({
-                    elem_type: 1,
-                    image_elem_orig_path: filePathAndBase64Map[v],
-                    image_elem_level: 0
-                })));
-            }
 
-            if(videosInfo?.length) {
-                messageElementArray.push(...videosInfo?.map(v => ({
-                    elem_type: 9,
-                    video_elem_video_type: "MP4",
-                    video_elem_video_size: v.size,
-                    video_elem_video_duration: 10,
-                    video_elem_video_path: v.path,
-                    video_elem_image_type: "png",
-                    video_elem_image_size: 10000,
-                    video_elem_image_width: 200,
-                    video_elem_image_height: 80,
-                    video_elem_image_path: "./cover.png"
-
-                    
-                    // elem_type: 4,
-                    // file_elem_file_path: v.path,
-                    // file_elem_file_name: v.name,
-                    // file_elem_file_size: v.size
-                })))
-            }
-            if(otherFilesInfo?.length) {
-                messageElementArray.push(...otherFilesInfo?.map(v => ({
-                    elem_type: 4,
-                    file_elem_file_path: v.path,
-                    file_elem_file_name: v.name,
-                    file_elem_file_size: v.size
-                })))
-            }
-
+            const messageElementArray = getMessageElemArray(text, htmlText, filePathAndBase64Map, videoInfos);
+           
             const { data: { code, json_params, desc } } = await sendMsg({
                 convId,
                 convType,
@@ -162,45 +117,12 @@ export const MessageInput = (props: Props): JSX.Element => {
             message.error({ content: `出错了: ${e.message}` });
         }
         setFilePathAndBase64Map({});
+        setVideoInfos([]);
     }
 
     const getAtList = (text: string) => {
         const list = text.match(/@\w+/g);
         return list ? list.map(v => v.slice(1)) : []
-    }
-
-    // 从html字符串中匹配出image标签src
-    const getImageSrcList =(text: string) => {
-        //匹配图片（g表示匹配所有结果i表示区分大小写）
-        var imgReg = /<img.*?(?:>|\/>)/gi;
-        //匹配src属性 
-        var srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
-        var arr = text.match(imgReg);// 匹配出所有的img标签
-        const srcList = arr?.map(v => {
-            const srcs = v.match(srcReg);
-            if(srcs) {
-                return srcs[1];
-            }
-        }) || [];
-       return srcList;
-    }
-
-    const createElement = (htmlString: string) => {
-        const currentDiv = document.createElement('div');
-        currentDiv.innerHTML = htmlString;
-        return currentDiv;
-    }
-
-    // 从html字符串中匹配出所需节点上的信息
-    const getCustomBlocksInfo =(element: Element, selector, customAttribute: string) => {
-        const childElements = element.querySelectorAll(selector)
-        const customBlocksInfo = [];
-        childElements.forEach((v) => {
-            console.log('v', v)
-            const value = v.innerHTML;
-            customBlocksInfo.push(JSON.parse(value));
-        })
-        return customBlocksInfo;
     }
 
     const handleDropFile = (e) => {
@@ -421,6 +343,9 @@ export const MessageInput = (props: Props): JSX.Element => {
             case "voice":
                 selectSoundMessage()
                 break;
+                case "video":
+                selectVideoMessage()
+                break;
             case "phone":
                 handleSendPhoneMessage()
                 break;
@@ -436,7 +361,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         e.preventDefault();
         if (e.keyCode == 13 || e.charCode === 13) {
             e.preventDefault();
-            handleSendTextMsg();
+            handleSendMsg();
         } else if(e.key === "@" && convType === 2) {
             e.preventDefault();
             setAtPopup(true)
@@ -485,7 +410,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     const createImgUrl = async (file:File) => {
         return new Promise(res => {
             const reader = new FileReader();
-            // 传入一个参数对象即可得到基于该参数对象的文本内容
             reader.readAsDataURL(file);
             reader.onload = function (e) {
               const base64Value = e.target.result;
@@ -499,16 +423,17 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handlePastedText = (text: string, htmlString: string) => {
-        if(text) {
-            setEditorState(ContentUtils.insertText(editorState, text));
-        }
+        const patseText = getPasteText(htmlString);
+        setEditorState(ContentUtils.insertText(editorState, patseText))
+
     }
 
     const handlePastedFiles = async (files: File[]) => {
         console.log('files', files);
         if (files?.length) {
             files.forEach(async file => {
-                if (!file?.path?.length) return;
+                const fileSize = file.size;
+                if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
                 const type = file.type;
                 if (type.includes('image')) {
                     const imgUrl = await createImgUrl(file);
@@ -517,16 +442,15 @@ export const MessageInput = (props: Props): JSX.Element => {
                         url: imgUrl
                     }]));
                     return;
-                } else if ( type.includes('video')){
-                     setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
+                } else if ( type.includes('mp4') || type.includes('mov')){
+                    ipcRenderer.send(RENDERPROCESSCALL,{
+                        type: GET_VIDEO_INFO,
+                        params: { path: file.path }
+                    })
+                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
                 } else {
                     setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
                 }
-
-
-                // editorInstance.setContent(insertHtmlString, 'html')
-                // setEditorState(ContentUtils.insertAtomicBlock(editorState, 'my-block-img', true));
-                // setEditorState(ContentUtils.insertHTML(editorState, insertHtmlString, null));
            })
 
         }
@@ -535,6 +459,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     useEffect(() => {
         const listener = (event, params) => {
             const { fileType, data } = params
+            console.log(fileType,data)
             sendMessages(fileType, data)
         }
         ipcRenderer.on("SELECT_FILES_CALLBACK", listener)
@@ -542,6 +467,18 @@ export const MessageInput = (props: Props): JSX.Element => {
             ipcRenderer.off("SELECT_FILES_CALLBACK", listener)
         }
     }, [convId, convType])
+
+    useEffect(() => {
+        const listener = (event, params) => {
+           setVideoInfos(pre => [...pre, params]);
+        }
+        ipcRenderer.on("GET_VIDEO_INFO_CALLBACK", listener)
+        return () => {
+            ipcRenderer.off("GET_VIDEO_INFO_CALLBACK", listener)
+        }
+    }, [convId, convType])
+
+    console.log('videInfos',videoInfos)
 
     useEffect(() => {
         setEditorState(ContentUtils.clear(editorState))
@@ -575,6 +512,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             </div>
             <div className="message-input__text-area">
                 <BraftEditor
+                    stripPastedStyles
                     //@ts-ignore
                     disabled={isShutUpAll}
                     onChange={editorChange}

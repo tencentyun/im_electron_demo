@@ -72,7 +72,13 @@
           background-image: url("../../assets/icon/voice-message-active.svg");
         }
       }
+      &.video {
+        background-image: url("../../assets/icon/video.svg");
 
+        &.is-active {
+          background-image: url("../../assets/icon/video-active.svg");
+        }
+      }
       &.phone {
         background-image: url("../../assets/icon/phone.svg");
 

@@ -60,6 +60,7 @@
   },
   "dependencies": {
     "im_electron_sdk": "^1.0.44",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "ffmpeg-extract-frame": "^1.0.2",
     "ffprobe": "^1.1.2",
     "ffprobe-static": "^3.0.0",
@@ -67,7 +68,9 @@
     "fluent-ffmpeg": "^2.1.2",
     "get-video-duration": "^3.1.0",
     "image-size": "^1.0.0",
+    "node-fetch": "^2.6.1",
     "npm": "^7.20.2",
+    "progress-stream": "^2.0.0",
     "save": "^2.4.0",
     "shelljs": "^0.8.4",
     "trtc-electron-sdk": "^8.6.102-beta.0"
