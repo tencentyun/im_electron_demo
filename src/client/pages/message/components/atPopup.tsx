@@ -12,11 +12,13 @@ import { getGroupMemberList } from "../api";
 
 interface AtPopupProps {
     callback: Function,
-    group_id: string
+    group_id: string,
+    atUserNameInput: string;
 }
 
-export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element => {
+export const AtPopup: FC<AtPopupProps> = ({ callback, group_id, atUserNameInput }): JSX.Element => {
     const [list, setList] = useState([])
+    const [displayList, setDisplayList] = useState([]);
     const [coords, setCoords] = useState({x: 0, y: 0})
     const refPopup = useRef(null)
     const newCoords = getSelectionCoords(window)
@@ -29,9 +31,10 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element =
         });
         const arr = list.group_get_memeber_info_list_result_info_array
         setList(arr)
+        setDisplayList(arr);
     }
     useEffect(() => {
-        setCoords({x: newCoords.x - 325, y: newCoords.y - 567})
+        setCoords({x: newCoords.x - 325, y: 40})
         getData()
     }, [group_id])
 
@@ -41,6 +44,11 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element =
             document.removeEventListener('click', handlePopupClick);
         }
     }, []);
+
+    
+    useEffect(() => {
+        setDisplayList(list.filter(v => v.group_member_info_nick_name?.includes(atUserNameInput) || v.group_member_info_identifier?.includes(atUserNameInput)));
+    }, [atUserNameInput, list]);
 
     const handlePopupClick = (e) => {
         if(!refPopup.current) return
@@ -53,12 +61,13 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element =
         <div className="at-popup-wrapper" style={{left: coords.x, top: coords.y}}>
             <List ref={refPopup} className="at-popup" >
                 {   
-                    list.map((v, i) => <List.Item key={i} onClick={() => callback(v.group_member_info_identifier)}>    
+                    displayList.map((v, i) => <List.Item key={i} onClick={() => callback(v.group_member_info_identifier, v.group_member_info_nick_name)}>    
                         <Avatar
                             size="mini"
+                            url={ v.group_member_info_face_url }
                             userID = { v.group_member_info_identifier }
                         />
-                        {v.group_member_info_identifier}
+                        { v.group_member_info_nick_name || v.group_member_info_identifier }
                     </List.Item>)
                 }
             </List>

@@ -54,8 +54,11 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ isRecordPopup, setRecordPopup ] = useState(false);
     const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null, { blockExportFn }))
-    const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const [ videoInfos, setVideoInfos] = useState([]);
+    const [ atUserNameInput, setAtInput] = useState('');
+    const [ atUserMap, setAtUserMap] = useState({});
+
+    const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
@@ -94,6 +97,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             const text = editorState.toText();
             const RAWData = editorState.toRAW();
             const atList = getAtList(text);
+            console.log('atList', atList);
 
             const messageElementArray = getMessageElemArray(RAWData, videoInfos);
            
@@ -119,8 +123,9 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const getAtList = (text: string) => {
-        const list = text.match(/@\w+/g);
-        return list ? list.map(v => v.slice(1)) : []
+        const list = text.match(/@[a-zA-Z0-9_\u4e00-\u9fa5]+/g);
+        const atNameList =  list ? list.map(v => v.slice(1)) : [];
+        return atNameList.map(v => atUserMap[v]);
     }
 
     const handleDropFile = (e) => {
@@ -366,15 +371,16 @@ export const MessageInput = (props: Props): JSX.Element => {
         } 
     }
 
-    const onAtPopupCallback = (userName) => {
+    const onAtPopupCallback = (userId: string, userName: string) => {
         resetState()
-        if (userName) {
-            setEditorState(ContentUtils.insertText(editorState, `@${userName} `))
+        if (userId) {
+            const atText = userName || userId;
+            setAtUserMap(pre => ({...pre, [atText]: userId}));
+            setEditorState(ContentUtils.insertText(editorState, `${atText} `))
         }
     }
 
-    const onEmojiPopupCallback = (id) => {
-        resetState()
+    const onEmojiPopupCallback = (id) => { 
         if (id) {
             setEditorState(ContentUtils.insertText(editorState, id))
         }
@@ -401,7 +407,16 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const editorChange = (newEditorState) => {
         setEditorState(newEditorState)
-
+        const text = newEditorState.toText();
+        const hasAt = text.includes('@');
+        if(!hasAt) {
+            setAtPopup(false);
+            return;
+        }
+        // 取最后一个@后的内容作为搜索条件
+        const textArr = text.split('@');
+        const lastInput = textArr[textArr.length - 1]; 
+        setAtInput(lastInput);
     }
 
     const handlePastedText = (text: string, htmlString: string) => {
@@ -469,7 +484,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     return (
         <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyUp={ handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
-                atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
+                atPopup && <AtPopup callback={(userId, name) => onAtPopupCallback(userId, name)} atUserNameInput={atUserNameInput} group_id={convId} />
             }
             <div className="message-input__feature-area">
                 {
