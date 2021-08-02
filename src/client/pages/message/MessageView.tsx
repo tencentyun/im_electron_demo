@@ -200,6 +200,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 })
             }
             else if(isCombineSending) {
+                console.log(getMergeMessageAbstactArray(seletedMessage),seletedMessage)
                 const { data: { code, json_params } } = await sendMergeMsg({
                     convId: getConvId(convItem),
                     convType: getConvType(convItem),
@@ -355,7 +356,6 @@ export const MessageView = (props: Props): JSX.Element => {
                         )
                     }
                     const { message_elem_array, message_sender_profile, message_is_from_self ,message_status, message_is_peer_read, message_conv_type } = item;
-                    console.log('item', item);
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                     const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
                     const isMessageSendFailed = message_status === 3 && message_is_from_self;
