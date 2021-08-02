@@ -55,7 +55,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ isRecordPopup, setRecordPopup ] = useState(false);
     const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null, { blockExportFn }))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
-    const [ filePathAndBase64Map, setFilePathAndBase64Map] = useState({});
     const [ videoInfos, setVideoInfos] = useState([]);
 
     const dispatch = useDispatch();
@@ -107,16 +106,15 @@ export const MessageInput = (props: Props): JSX.Element => {
             });
 
             if (code === 0) {                
-                dispatch(reciMessage({
+                dispatch(updateMessages({
                     convId,
-                    messages: [JSON.parse(json_params)]
-                }));
+                    message: JSON.parse(json_params)
+                }))
             }
             setEditorState(ContentUtils.clear(editorState));
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
         }
-        setFilePathAndBase64Map({});
         setVideoInfos([]);
     }
 

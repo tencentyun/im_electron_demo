@@ -323,10 +323,13 @@ export const App = () => {
             dispatch(updateConversationList(convList));
             handleMessageSendFailed(convList);
             if (conversationList[0]?.conv_last_msg?.message_status === 1) {
-                dispatch(updateMessages({
-                    convId: conversationList[0].conv_id,
-                    message: conversationList[0].conv_last_msg
-                }))
+                const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
+                if(elemType === 4) {
+                    dispatch(updateMessages({
+                        convId: conversationList[0].conv_id,
+                        message: conversationList[0].conv_last_msg
+                    }))
+                }
             }
 
         }
