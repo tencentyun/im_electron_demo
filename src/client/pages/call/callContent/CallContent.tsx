@@ -20,7 +20,6 @@ import { CallFooter } from '../callFooter/CallFooter';
 import { CallTime } from './CallTime';
 
 import event from '../event';
-import { useCallData } from  '../useCallData';
 
 import './call-content.scss';
 
@@ -53,7 +52,7 @@ export const CallContent = ({ userId, convInfo, roomId}) => {
         let param = new TRTCParams();
         param.sdkAppId = sdkappid;
         param.userSig = userSig;
-        param.roomId = roomId;
+        param.roomId = Number(roomId);
         param.userId = userId;
 
         trtcInstance.enterRoom(param, TRTCAppScene.TRTCAppSceneVideoCall);
