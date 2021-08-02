@@ -18,14 +18,12 @@ export const FileElem = (props: any): JSX.Element => {
     const dispatch = useDispatch()
     let   backgroundStyle = ""
     let   percentage = 0
-    
+   
     if(message_status === 1 && uploadProgress) {
         const { cur_size, total_size } = uploadProgress
         percentage = Math.floor((cur_size / total_size) * 100)
         backgroundStyle = message_status === 1 ? `linear-gradient(to right, #D4FFEB ${percentage}%, white 0%, white 100%)` : ""
     }
-
-    
 
     const getFilePath = () => {
         const match = file_elem_url.match(/\/([\w|\.]+$)/)
