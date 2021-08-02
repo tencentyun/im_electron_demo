@@ -161,14 +161,14 @@ function createWindow () {
     }
   })
 
-  // mainWindow.loadURL(`http://localhost:3000`);
-  mainWindow.loadURL(
-    url.format({
-      pathname: path.join(__dirname, "../../bundle/index.html"),
-      protocol: "file:",
-      slashes: true,
-    })
-  );
+  mainWindow.loadURL(`http://localhost:3000`);
+  // mainWindow.loadURL(
+  //   url.format({
+  //     pathname: path.join(__dirname, "../../bundle/index.html"),
+  //     protocol: "file:",
+  //     slashes: true,
+  //   })
+  // );
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
@@ -306,6 +306,10 @@ function createWindow () {
       }
     );
   });
+  ipcMain.on('UPLOAD', (event, data) => {
+    console.log(data, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    mainWindow.webContents.send('UPLOADPROGRESS', data)
+  })
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {
     console.log("123", file);
@@ -518,6 +522,7 @@ function setTaryTitle () {
     trayFlash();
   }
 }
+
 ipcMain.on("asynchronous-message", function (event, arg) {
   const [type, data] = arg.split(",");
   switch (type) {
@@ -541,6 +546,7 @@ ipcMain.on("asynchronous-message", function (event, arg) {
       break;
   }
 });
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

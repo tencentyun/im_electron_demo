@@ -96,6 +96,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const dispatch = useDispatch();
     const [anchor, setAnchor] = useState('')
     const [percent, setPercent] = useState('0%')
+    const [tips, setTips] = useState('')
     const { isShow, isCanOpenFileDir, index: imgPreViewUrlIndex, imgs } = useSelector((state: State.RootState) => state.imgViewer)
     useEffect(() => {
         if (!anchor) {
@@ -106,8 +107,14 @@ export const MessageView = (props: Props): JSX.Element => {
     }, [messageList.length])
     useEffect(() => {
         ipcRenderer.on('PERCENTAGE', (e, percentage) => {
-            console.log(percentage, '进度条。。。。。。。。。。。。。。。。。。。。。')
+            // console.log(percentage, '进度条。。。。。。。。。。。。。。。。。。。。。')
             setPercent(percentage)
+            setTips('下载中')
+        })
+        ipcRenderer.on('UPLOADPROGRESS', (e, percentage) => {
+            setPercent(percentage)
+            setTips('上传中')
+            console.log(percentage, '进度条-----------------------------------------------------')
         })
     }, [])
     useEffect(() => {
@@ -150,7 +157,7 @@ export const MessageView = (props: Props): JSX.Element => {
         if (percent == '100%' || percent == '0%') {
             return <></>
         } else {
-            return <StatusTip.LoadingTip className='loading' loadingText={`下载中${percent}`} />
+            return <StatusTip.LoadingTip className='loading' loadingText={`${tips}${percent}`} />
         }
     }
     // 添加到自定义表情, 图片和自定义表情可添加

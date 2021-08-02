@@ -248,7 +248,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 isCanSendData.map(async item => {
                     // console.log(isCanSendData, '||||||||||||||||||||||', isCanSendData.length)
                     if (typeof item === 'string') {
-                        // console.log('toTextContent111', toTextContent);
+                        console.log('toTextContent111', toTextContent);
                         const atList = getAtList(toTextContent)
                         // console.log('atList', atList);
                         const { data: { code, json_params, desc } } = await sendTextMsg({
