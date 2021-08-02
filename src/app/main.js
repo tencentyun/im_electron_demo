@@ -251,7 +251,7 @@ function createWindow () {
     // "start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(path.join(process.cwd(), '/resources/extraResources', 'cut.exe'), () => {
+    child_process.exec('start C:\\Users\\admin\\Desktop\\demo\\cut.exe', () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
@@ -289,9 +289,9 @@ function createWindow () {
   ipcMain.on("SCREENSHOT", function () {
     //news 是自定义的命令 ，只要与页面发过来的命令名字统一就可以
     //接收到消息后的执行程序
+    // path.join(process.cwd(), "/resources/extraResources", "cut.exe")
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(
-      path.join(process.cwd(), "/resources/extraResources", "cut.exe"),
+    child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe",
       () => {
         let pngs = clipboard.readImage().toPNG();
         fs.writeFile(url, pngs, (err) => {
@@ -305,6 +305,10 @@ function createWindow () {
       }
     );
   });
+  ipcMain.on('UPLOAD', (event, data) => {
+    console.log(data, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    mainWindow.webContents.send('UPLOADPROGRESS', data)
+  })
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {
     //console.log("123", file);
@@ -517,6 +521,7 @@ function setTaryTitle () {
     trayFlash();
   }
 }
+
 ipcMain.on("asynchronous-message", function (event, arg) {
   const [type, data] = arg.split(",");
   switch (type) {
@@ -540,6 +545,7 @@ ipcMain.on("asynchronous-message", function (event, arg) {
       break;
   }
 });
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
