@@ -65,6 +65,10 @@ export const CallContent = ({ userId, convInfo, roomId}) => {
         }
     }, [userId]);
 
+    useEffect(() => {
+        event.on('exitRoom', exitRoom)
+    }, []);
+
     const toggleVideo = isMute => {
         trtcInstance.muteLocalVideo(isMute);
         event.emit('toggleVideo', !isMute);

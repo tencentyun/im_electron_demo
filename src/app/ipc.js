@@ -1,5 +1,5 @@
 // import { BrowserWindow } from "electron";
-const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, GET_VIDEO_INFO_CALLBACK, SELECT_FILES, SELECT_FILES_CALLBACK, DOWNLOAD_PATH } = require("./const/const");
+const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, GET_VIDEO_INFO_CALLBACK, SELECT_FILES, SELECT_FILES_CALLBACK, DOWNLOAD_PATH } = require("./const/const");
 const { ipcMain, BrowserWindow, dialog } = require('electron')
 const { screen } = require('electron')
 const fs = require('fs')
@@ -27,10 +27,10 @@ const getSrceenSize = () => {
 class IPC {
     win = null;
     callWindow = null;
+    imWindowEvent = null;
     constructor(win){
         const env = process.env?.NODE_ENV?.trim();
         const isDev = env === 'development';
-        const screenSize = getSrceenSize();
         this.win = win;
         this.initFFmpeg();
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
@@ -63,17 +63,44 @@ class IPC {
 
 
         this.createNewWindow(isDev);
+        this.eventListiner(isDev);
+    }
 
+    eventListiner(isDev) {
+        // 当作为接收方，接受电话后，更改窗口尺寸。
         ipcMain.on('accept-call', () => {
+            const screenSize = getSrceenSize();
             this.callWindow.setSize(800, 600);
             this.callWindow.setPosition(screenSize.width / 2 - 400, screenSize.height /  2 - 300);
+            // 向聊天窗口通信
+            imWindowEvent.reply('accept-call-reply');
         });
 
+        // 当作为接收方，挂断电话，关闭窗口
         ipcMain.on('refuse-call', () => {
             this.callWindow.close();
+            // 向聊天窗口通信
+            imWindowEvent.reply('refuse-call-reply');
         });
 
+        // 当接受方拒绝通话后，调用该方法可关闭窗口，并退出房间
+        ipcMain.on(CLOSE_CALL_WINDOW, () => {
+            this.callWindow.webContents.send('exit-room');
+        });
+
+        // 远端用户进入
+        ipcMain.on('remote-user-join', (event, userId) => {
+            imWindowEvent.reply('remote-user-join-reply', userId)
+        });
+
+        // 远端用户离开
+        ipcMain.on('remote-user-exit', (event, userId) => {
+            imWindowEvent.reply('remote-user-exit-reply', userId)
+        });
+
+
         ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
+            this.imWindowEvent = event;
             const params = JSON.stringify(data);
             if(data.windowType === 'notificationWindow') {
                 this.callWindow.setSize(320, 150);
@@ -89,6 +116,7 @@ class IPC {
             });
         });
     }
+
     createNewWindow(isDev) {
         const callWindow = new BrowserWindow({
             height: 600,
