@@ -8,7 +8,11 @@
             display: inline-block;
             width: 36px;
             height: 36px;
-            background: url('../../../assets/icon/call-video-forbiden.png');
+            background: url('../../../assets/icon/call-video.svg');
+
+            &.is-active {
+                background: url('../../../assets/icon/call-video-forbiden.svg');
+            }
         }
     
         .voice {
@@ -16,7 +20,11 @@
             margin-right: 16px;
             width: 36px;
             height: 36px;
-            background: url('../../../assets/icon/call-voice.png');
+            background: url('../../../assets/icon/call-voice-forbiden.svg');
+
+            &.is-active {
+                background: url('../../../assets/icon/call-voice.svg');
+            }
         }
     }
 

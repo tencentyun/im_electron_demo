@@ -10,7 +10,7 @@ type Props = {
 
 export const CallFooter = (props: Props) => {
     const { toggleVoice, toggleVideo, exitRoom } = props;
-    const [isMute, setMute] = useState(true);
+    const [isOpenMic, setMute] = useState(true);
     const [isOpenCamera, setOpenCamera ] = useState(false);
 
     const handleToggleVideo = () => {
@@ -19,15 +19,15 @@ export const CallFooter = (props: Props) => {
     };
 
     const handleToggleVoice = () => {
-        toggleVoice(!isMute);
-        setMute(!isMute);
+        toggleVoice(!isOpenMic);
+        setMute(!isOpenMic);
     };
 
     return (
         <div className="call-footer">
             <div className="call-footer__control-btn">
-                <span className="voice" onClick={handleToggleVoice}></span>
-                <span className="video" onClick={handleToggleVideo}></span>
+                <span className={`voice ${isOpenMic ? 'is-active' : '' }`} onClick={handleToggleVoice}></span>
+                <span className={`video ${!isOpenCamera ? 'is-active' : '' }`} onClick={handleToggleVideo}></span>
             </div>
             <div className="call-footer__end-btn">
                 <button onClick={exitRoom}>挂断</button>
