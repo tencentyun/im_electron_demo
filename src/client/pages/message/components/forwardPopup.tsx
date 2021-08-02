@@ -22,11 +22,11 @@ interface ForwardPopupProps {
 }
 const getId = (item) => {
     if(!item) return false
-    return item.user_profile_identifier || item.group_detial_info_group_id
+    return item.user_profile_identifier || item.friend_profile_identifier || item.group_detial_info_group_id
 }
 const getType = (item) => {
     if(!item) return false
-    return (item.user_profile_identifier || item.user_profile_identifier) ? 1 : 2
+    return (item.user_profile_identifier || item.friend_profile_identifier || item.user_profile_identifier) ? 1 : 2
 }
 
 export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX.Element => {
@@ -116,7 +116,7 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
                                     />)
                             }
                             { 
-                                userList.map((v, k) =>
+                              (search) &&  userList.map((v, k) =>
                                     <UserItem
                                         key={k}
                                         onItemClick={handleItemClick}
@@ -128,7 +128,7 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
                                 )
                             }
                             {
-                                groupList.map((v, k) =>
+                             (search) &&   groupList.map((v, k) =>
                                     <UserItem
                                         key={k}
                                         onItemClick={handleItemClick}

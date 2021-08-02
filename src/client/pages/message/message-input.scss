@@ -1,3 +1,8 @@
+.bf-container {
+    .public-DraftEditor-content{
+        word-break: break-word !important;
+    }
+}
 .message-input {
     height: 100%;
     position: relative;

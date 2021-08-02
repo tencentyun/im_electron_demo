@@ -1,7 +1,7 @@
 {
   "name": "im-electron-demo",
   "productName": "IM Electron Demo",
-  "version": "3.3.3",
+  "version": "3.3.10",
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {
@@ -13,7 +13,7 @@
   },
   "keywords": [],
   "author": {
-    "name": "Jingfeng",
+    "name": "zhaiweichao",
     "email": "joyxian@tencent.com"
   },
   "build": {
@@ -54,7 +54,7 @@
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^6.2.0",
-    "electron": "^13.1.5",
+    "electron": "^13.1.7",
     "electron-builder": "^22.11.7"
   },
   "dependencies": {
