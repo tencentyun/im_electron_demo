@@ -38,12 +38,12 @@ export const MergeElem = (props: any): JSX.Element => {
                             <header>{props.merge_elem_title}</header>
                             <div>
                                 {
-                                    props.merge_elem_message_array && props.merge_elem_message_array.map((item: State.message) => {
+                                    props.merge_elem_message_array && props.merge_elem_message_array.map((item: State.message,index) => {
                                         const { message_sender_profile, message_elem_array } = item;
                                         const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
 
                                         return (
-                                            <>
+                                            <div key={index}>
                                                 <div className="message-view__item--avatar face-url">
                                                     <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                                                 </div>
@@ -58,7 +58,7 @@ export const MergeElem = (props: any): JSX.Element => {
                                                         )
                                                     })
                                                 }
-                                            </>
+                                            </ div>
                                         )
 
                                     })
