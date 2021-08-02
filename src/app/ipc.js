@@ -1,5 +1,5 @@
 // import { BrowserWindow } from "electron";
-const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY } = require("./const/const");
+const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY,GET_VIDEO_INFO, GET_VIDEO_INFO_CALLBACK, SELECT_FILES, SELECT_FILES_CALLBACK,DOWNLOAD_PATH } = require("./const/const");
 const { dialog } = require('electron')
 const { ipcMain, BrowserWindow } = require('electron')
 const fs = require('fs')
@@ -8,14 +8,26 @@ const http = require('http')
 const fetch = require("node-fetch");
 const url = require('url')
 const child_process = require('child_process')
+const shelljs = require("shelljs")
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+const FFmpeg = require("fluent-ffmpeg")
+const ffprobeStatic = require('ffprobe-static');
+const sizeOf = require('image-size')
+const FileType = require('file-type')
+const ffprobe = require('ffprobe-static');
+FFmpeg.setFfprobePath(ffprobe.path);
+FFmpeg.setFfmpegPath(ffmpegPath);
 class IPC {
     win = null;
     callWindow = null;
     constructor(win) {
         this.win = win;
+        this.initFFmpeg();
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             // console.log("get message from render process", event.processId, data)
             const { type, params } = data;
+            console.log(55555)
+            console.log(type)
             switch (type) {
                 case MINSIZEWIN:
                     this.minsizewin();
@@ -32,8 +44,11 @@ class IPC {
                 case DOWNLOADFILE:
                     this.downloadFilesByUrl(params);
                     break;
-                case CHECK_FILE_EXIST:
-                    this.checkFileExist(params)
+                case GET_VIDEO_INFO:
+                    this.getVideoInfo(event, params)
+                case SELECT_FILES:
+                    this.selectFiles(event, params);
+                    break;
             }
         })
 
@@ -89,6 +104,14 @@ class IPC {
 
         return callWindow;
     }
+    initFFmpeg() {
+        // add ffmpeg to path
+        const command = `export PATH="$PATH:${ffprobeStatic.path}"`
+        // compatable with electron env
+        // issue: https://github.com/shelljs/shelljs/wiki/Electron-compatibility
+        shelljs.config.execPath = shelljs.which('node').toString()
+        shelljs.exec(command)
+    }
     minsizewin () {
         this.win.minimize()
     }
@@ -131,6 +154,52 @@ class IPC {
     //         console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
     //     }
     // }
+    async _getVideoInfo(filePath) {
+        let videoDuration, videoSize
+        const screenshotName = path.basename(filePath).split('.').shift()+'.png'
+        const screenshotPath = path.resolve(DOWNLOAD_PATH, screenshotName)
+
+        const { ext } = await FileType.fromFile(filePath)
+        
+        return new Promise((resolve, reject) => {
+            try{
+                FFmpeg(filePath)
+                .on('end', async (err, info) => {
+                    const { width, height, type, size } = await this._getImageInfo(screenshotPath)
+                    resolve({
+                        videoDuration,
+                        videoPath: filePath,
+                        videoSize,
+                        videoType: ext,
+                        screenshotPath,
+                        screenshotWidth: width,
+                        screenshotHeight: height,
+                        screenshotType: type,
+                        screenshotSize: size,
+                    })
+                    console.log(878978789789)
+                })
+                .on('error', (err, info) => {
+                    reject(err)
+                })
+                .screenshots({
+                    timestamps: [0],
+                    filename: screenshotName,
+                    folder: DOWNLOAD_PATH
+                }).ffprobe((err, metadata) => {
+                    console.log(err)
+                    console.log(metadata)
+                    if(metadata.format.duration && metadata.format.size) {
+                        console.log(7768678687)
+                        videoDuration = metadata.format.duration
+                        videoSize = metadata.format.size
+                    }
+                })
+            }catch(err){
+                console.log(err)
+            }
+        })
+    }
     downloadFilesByUrl (file) {
         console.log('111222333', file)
         const cwd = process.cwd();
@@ -183,6 +252,58 @@ class IPC {
             // 已存在
             console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
         }
+    }
+    async _getImageInfo(path) {
+        const { width, height, type } = await sizeOf(path)
+        const { size } = fs.statSync(path)
+        return {
+            width, height, type, size
+        }
+    }
+    async getVideoInfo(event, params) {
+        const { path } = params
+        console.log(123456)
+        const data = await this._getVideoInfo(path)
+        console.log(1111)
+        event.reply(GET_VIDEO_INFO_CALLBACK, data)
+        console.log(2222)
+    }
+    async selectFiles(event, params) {
+        console.log(8789789789)
+        const { extensions, fileType, multiSelections } = params
+        const [filePath] = dialog.showOpenDialogSync(this.win, {
+            properties: ['openFile'],
+            filters: [{
+                name: "Images", extensions: extensions
+            }]
+        })
+        let data
+        switch(fileType) {
+            case "file":
+                data = {
+                    filePath: filePath,
+                    fileSize: fs.statSync(filePath).size,
+                    fileName: path.parse(filePath).base
+                }
+                break;
+            case "image":
+                data = {
+                    imagePath: filePath
+                }
+                break;
+            case "video":
+                data = await this._getVideoInfo(filePath)
+                break;
+            case "sound":
+                data = {
+                    soundPath: filePath
+                }
+                break;
+        }
+        event.reply(SELECT_FILES_CALLBACK, {
+            fileType,
+            data
+        })   
     }
     checkFileExist (path) {
         return fs.existsSync(path)

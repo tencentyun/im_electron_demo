@@ -58,6 +58,7 @@
     "electron-builder": "^22.11.7"
   },
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "axios": "^0.21.1",
     "braft-editor": "^2.3.9",
     "concurrently": "^6.2.0",
@@ -66,9 +67,15 @@
     "electron-updater": "^4.3.9",
     "element-react": "^1.4.34",
     "element-theme-default": "^1.4.13",
+    "ffmpeg-extract-frame": "^1.0.2",
+    "ffprobe": "^1.1.2",
+    "ffprobe-static": "^3.0.0",
     "file-loader": "^6.2.0",
+    "file-type": "^16.5.2",
     "final-form": "^4.20.2",
+    "fluent-ffmpeg": "^2.1.2",
     "im_electron_sdk": "^1.0.44",
+    "image-size": "^1.0.0",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
@@ -85,6 +92,7 @@
     "react-router-dom": "^5.2.0",
     "redux": "^4.1.0",
     "sass": "^1.35.1",
+    "shelljs": "^0.8.4",
     "tea-component": "^2.6.22",
     "trtc-electron-sdk": "^8.6.102-beta.0"
   }

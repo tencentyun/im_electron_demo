@@ -70,7 +70,7 @@ const setAppTray = () => {
   appTray.setContextMenu(contextMenu);
 
   appTray.on("click", () => {
-    console.log(appWindow, forceQuit, "==========");
+    //console.log(appWindow, forceQuit, "==========");
     if (appWindow && !forceQuit) {
       appWindow.show();
     }
@@ -135,11 +135,11 @@ function createWindow () {
   });
 
   mainWindow.on("blur", function () {
-    console.log("mainWindow blur");
+    //console.log("mainWindow blur");
     mainWindow.webContents.send("mainProcessMessage", false);
   });
   mainWindow.on("focus", function () {
-    console.log("mainWindow focus");
+    //console.log("mainWindow focus");
     mainWindow.webContents.send("SENDSTORE", store.get("sendType") || "0");
     clearInterval(timer);
     setTimeout(() => {
@@ -161,14 +161,14 @@ function createWindow () {
     }
   })
 
-  //mainWindow.loadURL(`http://localhost:3000`);
-  mainWindow.loadURL(
-    url.format({
-      pathname: path.join(__dirname, "../../bundle/index.html"),
-      protocol: "file:",
-      slashes: true,
-    })
-  );
+  mainWindow.loadURL(`http://localhost:3000`);
+  // mainWindow.loadURL(
+  //   url.format({
+  //     pathname: path.join(__dirname, "../../bundle/index.html"),
+  //     protocol: "file:",
+  //     slashes: true,
+  //   })
+  // );
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
@@ -178,7 +178,7 @@ function createWindow () {
   };
   // 自动更新升级
   let checkForUpdates = () => {
-    console.log(feedUrl);
+    //console.log(feedUrl);
     autoUpdater.setFeedURL(feedUrl);
 
     autoUpdater.on("error", function (message) {
@@ -196,7 +196,7 @@ function createWindow () {
 
     // 更新下载进度事件
     autoUpdater.on("download-progress", function (progressObj) {
-      console.log(progressObj);
+      //console.log(progressObj);
       sendUpdateMessage("downloadProgress", progressObj);
     });
     autoUpdater.on(
@@ -227,7 +227,7 @@ function createWindow () {
   };
   //setTimeout(checkForUpdates, 1000)
   ipcMain.on("CHANGESTORE", function (event, data) {
-    console.log(data);
+    //console.log(data);
     store.set("sendType", data);
   });
   // 防止同时打开多个客户端
@@ -308,7 +308,7 @@ function createWindow () {
   });
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {
-    console.log("123", file);
+    //console.log("123", file);
     const cwd = process.cwd();
     let file_url = file.file_elem_url;
     const downloadDicPath = path.resolve(cwd, "./download/");
@@ -325,15 +325,15 @@ function createWindow () {
       const fileStream = fs
         .createWriteStream(file_path_temp)
         .on("error", function (e) {
-          console.error("error==>", e);
+          //console.error("error==>", e);
         })
         .on("ready", function () {
-          console.log("开始下载:", file_url);
+          //console.log("开始下载:", file_url);
         })
         .on("finish", function () {
           //下载完成后重命名文件
           fs.renameSync(file_path_temp, file_path);
-          console.log("文件下载完成:", file_path);
+          //console.log("文件下载完成:", file_path);
         });
       //请求文件
       fetch(file_url, {
@@ -352,7 +352,7 @@ function createWindow () {
           str.on("progress", function (progressData) {
             //不换行输出
             let percentage = Math.round(progressData.percentage) + "%";
-            console.log(percentage, '下载进度');
+            //console.log(percentage, '下载进度');
             mainWindow.webContents.send("PERCENTAGE", percentage);
             if (Number(progressData.percentage) === 100) {
               const localUrl = path.join(process.cwd(), "/download/", file_name);
@@ -363,7 +363,7 @@ function createWindow () {
         })
         .catch((e) => {
           //自定义异常处理
-          console.log(e);
+          //console.log(e);
         });
     } else {
       // 已存在
@@ -460,7 +460,7 @@ function createWindow () {
   // });
   ipcMain.on("OPENFILE", function (event, filename) {
     const name = filename.filename;
-    console.log(name);
+    //console.log(name);
     const localUrl = path.join(process.cwd(), "/download/", name);
     shell.openPath(localUrl);
   });
@@ -554,7 +554,7 @@ app.on("click", () => {
   }
 });
 app.whenReady().then(() => {
-  console.log(111111111111111111111111111111111111111111111111111111111);
+  //console.log(111111111111111111111111111111111111111111111111111111111);
   const template = [];
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);

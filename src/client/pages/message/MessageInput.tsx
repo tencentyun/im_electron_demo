@@ -21,6 +21,8 @@ import { setPathToLS } from '../../utils/messageUtils';
 import { judgeFileSize, dataURLtoFile } from '../../utils/messageUtils';
 import { sendCustomMsg } from '../message/api'
 import _getTimeStringAutoShort2 from '../../utils/timeFormat';
+import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
+import { createImgBase64Url, getMessageElemArray, getPasteText } from './pasteInputConfig';
 
 let store = '1'
 
@@ -152,7 +154,17 @@ export const MessageInput = (props: Props): JSX.Element => {
         });
     };
 
-
+    const selectVideoMessage = () => {
+        console.log('选择了')
+        ipcRenderer.send(RENDERPROCESSCALL,{
+            type: SELECT_FILES,
+            params: {
+                fileType: "video",
+                extensions: ["mp4", "mov"],
+                multiSelections: false
+            }
+        })
+    }
 
     function startapi(requestlist, toTextContent) {
         //定义counts，用来收集请求的次数，（也可以用reslist的length进行判断）
@@ -354,7 +366,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 sendSoundMessage(file)
                 break
             case "video":
-                sendVideoMessage(file)
+                selectVideoMessage()
                 break
             default:
                 sendFileMessage(file)
@@ -524,7 +536,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 handleSendFileMessage()
                 break;
             case "video":
-                handleSendVideoMessage()
+                selectVideoMessage()
                 break;
             case "voice":
                 handleSendSoundMessage()
@@ -646,6 +658,37 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(editorState)
     }
 
+    const handlePastedText = (text: string, htmlString: string) => {
+        const patseText = getPasteText(htmlString);
+        setEditorState(ContentUtils.insertText(editorState, patseText))
+
+    }
+
+    const handlePastedFiles = async (files: File[]) => {
+        console.log('files', files);
+        if (files?.length) {
+            files.forEach(async file => {
+                const fileSize = file.size;
+                if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
+                const type = file.type;
+                if (type.includes('image')) {
+                    const imgUrl = await createImgBase64Url(file);
+                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
+                    return;
+                } else if ( type.includes('mp4') || type.includes('mov')){
+                    ipcRenderer.send(RENDERPROCESSCALL,{
+                        type: GET_VIDEO_INFO,
+                        params: { path: file.path }
+                    })
+                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
+                } else {
+                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
+                }
+           })
+
+        }
+    }
+
     const menu = close => (
         <List type="option" style={{ width: '200px', background: '#ffffff' }}>
             <List.Item onClick={() => changeSendShotcut('1')} style={{ display: 'flex' }}>
@@ -743,14 +786,12 @@ export const MessageInput = (props: Props): JSX.Element => {
                 {
 
                     FEATURE_LIST[convType].map(({ id, content }) => (
-                        <Bubble content={content} key={id}>
                             <span
                                 className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
 
                                 onClick={() => handleFeatureClick(id)}
                             >
                             </span>
-                        </Bubble>
 
                     ))
                 }
@@ -761,7 +802,10 @@ export const MessageInput = (props: Props): JSX.Element => {
                     disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
+                    media={{ pasteImage:false }} // 不知道为什么 如果不设置items这个属性 会出现粘贴一次插入两个图片的问题
                     // controls={[]}
+                    handlePastedFiles={handlePastedFiles}
+                    handlePastedText={handlePastedText}
                     ref={instance => editorInstance = instance}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     placeholder={placeHolderText}
