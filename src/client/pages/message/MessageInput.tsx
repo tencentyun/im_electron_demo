@@ -97,6 +97,27 @@ export const MessageInput = (props: Props): JSX.Element => {
             const atList = getAtList(text);
 
             const messageElementArray = getMessageElemArray(text, htmlText, filePathAndBase64Map, videoInfos);
+
+            const fetchList = messageElementArray.map((v) => sendMsg({
+                convId,
+                convType,
+                messageElementArray: [v],
+                userId,
+                messageAtArray: atList
+            }))
+
+            // const resultList = await Promise.all(fetchList);
+
+            // resultList.forEach(v => {
+            //     const { data: { code, json_params, desc } } = v;
+
+                // if (code === 0) {                
+                //     dispatch(reciMessage({
+                //         convId,
+                //         messages: [JSON.parse(json_params)]
+                //     }));
+                // }
+            // })
            
             const { data: { code, json_params, desc } } = await sendMsg({
                 convId,
@@ -112,6 +133,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                     messages: [JSON.parse(json_params)]
                 }));
             }
+
+            
             setEditorState(ContentUtils.clear(editorState));
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });

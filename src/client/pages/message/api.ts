@@ -618,3 +618,11 @@ export const deleteGroupMember = async (params: {
   }
   throw new Error(desc);
 };
+
+export const downloadMeregeMessage = async params => {
+  const res = await timRenderInstance.TIMMsgDownloadMergerMessage({
+    params,
+    user_data: '111'
+  });
+  console.log('res', res);
+};

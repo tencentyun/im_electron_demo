@@ -173,18 +173,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
         }
       });
     }
-
-    const {faceUrl, nickName} = getDisplayConvInfo();
-    openCallWindow({
-      windowType,
-      callType,
-      convId: encodeURIComponent(conv_id),
-      convInfo: {
-        faceUrl: encodeURIComponent(faceUrl),
-        nickName: encodeURIComponent(nickName),
-        convType: conv_type
-      } 
-    });
   }
 
   useEffect(() => {

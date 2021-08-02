@@ -24,7 +24,7 @@ import { useCallData } from  '../useCallData';
 
 import './call-content.scss';
 
-export const CallContent = ({ userId, convInfo}) => {
+export const CallContent = ({ userId, convInfo, roomId}) => {
     const [ isStart, setStartStatus ] = useState(false);
 
     const onExitRoom = () => {
@@ -35,7 +35,6 @@ export const CallContent = ({ userId, convInfo}) => {
     const onRemoteUserEnterRoom = () => setStartStatus(true);
 
     const startVideo = (currentCamera) => {
-        const roomId = 123456;
         const { deviceId } = currentCamera;
 
         trtcInstance.on('onExitRoom', onExitRoom);
