@@ -24,8 +24,8 @@ export const CustomElem = (props: any): JSX.Element => {
           switch(data.actionType){
             case 1:
               return <span>{data.inviter}邀请{
-                data.inviteeList.map((item)=>{
-                  return <span className="">{item}</span>
+                data.inviteeList.map((item,index)=>{
+                  return <span className="" key={index}>{item}</span>
                 })
               }通话</span>
             case 2:

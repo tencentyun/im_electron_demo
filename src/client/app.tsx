@@ -37,6 +37,7 @@ import {
     updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
+import { openCallWindow } from "./utils/tools";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
@@ -155,20 +156,53 @@ export const App = () => {
             });
         }
     };
-    const _onInvited = (data)=>{
+    const _onInvited = (data) => {
+        // actionType: 1
+        // businessID: 1
+        // data: "{\"version\":0,\"call_type\":1,\"room_id\":30714513}"
+        // groupID: ""
+        // inviteID: "19455b33-c8fc-4fef-ab60-9347ebea78cc"
+        // inviteeList: ["3708"]
+        // inviter: "109442"
+        // timeout: 30
+        const { room_id, call_type } = JSON.parse(data.data)
+        const { inviter, groupID } = data;
+        timRenderInstance.TIMProfileGetUserProfileList({
+            json_get_user_profile_list_param: {
+                friendship_getprofilelist_param_identifier_array: [inviter],
+                friendship_getprofilelist_param_force_update: false
+            }
+        }).then(data => {
+            console.log(data)
+            const { data: { code, json_param } } = data;
+            if (code === 0) {
+                const [userdata] = JSON.parse(json_param)
+                openCallWindow({
+                    call_type,
+                    convId: encodeURIComponent(groupID ? groupID : inviter),
+                    convInfo: {
+                        faceUrl: encodeURIComponent(userdata.user_profile_face_url),
+                        nickName: encodeURIComponent(userdata.user_profile_nick_name),
+                        convType: groupID ? 2 : 1,
+                        roomID: room_id
+                    }
+                });
+            }
+
+        })
 
     }
-    const _onRejected = (data)=>{
-        
+    const _onRejected = (data) => {
+
     }
-    const _onAccepted = (data)=>{
-        
+    const _onAccepted = (data) => {
+
     }
-    const _onCanceled = (data)=>{
-        
+    const _onCanceled = (data) => {
+
     }
-    const _onTimeout = (data)=>{
-        
+    const _onTimeout = (data) => {
+
     }
     const _handleElemUploadProgres = ({ message, index, cur_size, total_size, user_data }) => {
         dispatch(updateMessageElemProgress({
