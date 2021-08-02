@@ -1,3 +1,8 @@
+.bf-container {
+    .public-DraftEditor-content{
+        word-break: break-word !important;
+    }
+}
 .message-input {
     height: 100%;
     position: relative;
@@ -89,7 +94,6 @@
                     background-image: url('../../assets/icon/voice-message-active.svg');
                 }
             }
-
             &.phone {
                 background-image: url('../../assets/icon/phone.svg');
 
