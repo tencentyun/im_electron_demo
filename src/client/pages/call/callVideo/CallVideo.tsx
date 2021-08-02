@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import TRTCCloud from 'trtc-electron-sdk';
 
-import { C2Cvideo } from './C2CVideo'
+import { C2Cvideo } from './C2CVideo';
+import { GroupVideo } from './GroupVideo';
 
 import './call-video.scss';
 
@@ -31,7 +32,7 @@ export const CallVideo = (props: Props): JSX.Element => {
     return (
         <div className="call-video" ref={videoRef}>
             {
-                isC2CCall && <C2Cvideo trtcInstance={trtcInstance} />
+                isC2CCall ? <C2Cvideo trtcInstance={trtcInstance} /> : <GroupVideo />
             }
         </div>
     )

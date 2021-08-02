@@ -4,7 +4,7 @@ import './notification.scss';
 import { eventListiner } from '../callIpc';
 
 export const Notification = (props) => {
-    // const { convInfo: { nickName, faceUrl} } = props;
+    const { convInfo: { nickName, faceUrl}, callType } = props;
     console.log(props);
 
     const accept = () => {
@@ -13,18 +13,24 @@ export const Notification = (props) => {
 
     const refuse = () => {
         eventListiner.refuseCall();
-    } 
+    }
+
+    const getDisplayText = () => {
+        const typeText = callType === 1 ? '语音' : '视频';
+
+        return `邀请你进行${typeText}通话`;
+    }
     
     return (
         <div className="notification">
             <div className="notification__title">
-                {/* <img src={faceUrl}></img> */}
-                <span className="notification__title--nick-name">Jingfeng</span><br></br>
-                <span className="notification__title--text">邀请你进行语音通话</span>
+                <img src={faceUrl} />
+                <span className="notification__title--nick-name">{nickName}</span><br></br>
+                <span className="notification__title--text">{getDisplayText()}</span>
             </div>
             <div className="notification__btn">
-                <button className="notification__btn--apply" onClick={accept}>接受</button>
-                <button className="notification__btn--refuse" onClick={refuse}>拒绝</button>
+                <div className="notification__btn--apply" onClick={accept}></div>
+                <div className="notification__btn--refuse" onClick={refuse}></div>
             </div>
         </div>
     ) 

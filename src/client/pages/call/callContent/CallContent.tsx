@@ -2,15 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { remote } from 'electron';
 import {
     TRTCAppScene, 
-    TRTCVideoStreamType, 
-    TRTCVideoFillMode, 
     TRTCParams, 
     TRTCVideoEncParam,
     TRTCVideoResolution,
     TRTCVideoResolutionMode,
-    TRTCVideoRotation,
-    TRTCRenderParams,
-    Rect,
 } from "trtc-electron-sdk/liteav/trtc_define";
 
 import trtcInstance from '../../../utils/trtcInstance';
@@ -18,6 +13,7 @@ import generateTestUserSig from '../../../utils/generateUserSig';
 import { CallVideo } from '../callVideo/CallVideo';
 import { CallFooter } from '../callFooter/CallFooter';
 import { CallTime } from './CallTime';
+import { eventListiner } from '../callIpc';
 
 import event from '../event';
 
@@ -31,7 +27,10 @@ export const CallContent = ({ userId, convInfo, roomId}) => {
         win.close();
     }
 
-    const onRemoteUserEnterRoom = () => setStartStatus(true);
+    const onRemoteUserEnterRoom = userId => {
+        eventListiner.remoteUserJoin (userId);
+        setStartStatus(true);
+    }
 
     const startVideo = (currentCamera) => {
         const { deviceId } = currentCamera;

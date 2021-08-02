@@ -129,7 +129,7 @@ export const MessageView = (props: Props): JSX.Element => {
     
     useEffect(() => {
         if(!anchor){
-            messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
+            messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded?.();
         }
         setAnchor('')
         setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
@@ -376,7 +376,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                    {
                                         message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                             return (
-                                                <div key={index} onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
+                                                <div  key={index} onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
                                                     { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ? 
                                                         <Icon className="message-view__item--icon" type="success" /> : 
                                                         <i className="message-view__item--icon-normal" ></i>)

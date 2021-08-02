@@ -7,6 +7,7 @@ import {
 } from "trtc-electron-sdk/liteav/trtc_define";
 
 import event from '../event';
+import { eventListiner } from '../callIpc';
 
 export const C2Cvideo = (props) => {
     const { trtcInstance } = props;
@@ -15,7 +16,6 @@ export const C2Cvideo = (props) => {
     const remoteViewRef = useRef(null);
 
     useEffect(() => {
-        console.log('===============C2C============');
         event.on('toggleVideo', onVideoChanged);
         trtcInstance.on('onEnterRoom', onEnterRoom);
         trtcInstance.on('onRemoteUserLeaveRoom', onRemoteUserLeaveRoom);
@@ -48,7 +48,8 @@ export const C2Cvideo = (props) => {
         }
     };
 
-    const onRemoteUserLeaveRoom = () => {
+    const onRemoteUserLeaveRoom = (userId) => {
+        eventListiner.remoteUserExit(userId);
         message.warning({content: '对方已挂断电话'});
         trtcInstance.exitRoom();
     };
