@@ -68,3 +68,11 @@
     }
   }
 }
+
+.block-image {
+  display: inline-block;
+  & img {
+    max-width: 200px;
+    max-height: 70px;
+  }
+}
