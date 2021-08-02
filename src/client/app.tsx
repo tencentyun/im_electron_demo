@@ -182,7 +182,7 @@ export const App = () => {
                 const [userdata] = JSON.parse(json_param)
                 openCallWindow({
                     windowType: 'notificationWindow',
-                    call_type,
+                    callType: call_type,
                     convId: encodeURIComponent(groupID ? groupID : inviter),
                     convInfo: {
                         faceUrl: encodeURIComponent(userdata.user_profile_face_url),

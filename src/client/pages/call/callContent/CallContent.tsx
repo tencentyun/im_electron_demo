@@ -2,15 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { remote } from 'electron';
 import {
     TRTCAppScene, 
-    TRTCVideoStreamType, 
-    TRTCVideoFillMode, 
     TRTCParams, 
     TRTCVideoEncParam,
     TRTCVideoResolution,
     TRTCVideoResolutionMode,
-    TRTCVideoRotation,
-    TRTCRenderParams,
-    Rect,
 } from "trtc-electron-sdk/liteav/trtc_define";
 
 import trtcInstance from '../../../utils/trtcInstance';
