@@ -18,7 +18,7 @@ export const SearchMessage = (props) => {
     });
 
     useEffect(() => {
-        if(inputValue) {
+        if(inputValue.trim()) {
             const messageResult = searchTextMessage({
                 keyWords: inputValue
             });

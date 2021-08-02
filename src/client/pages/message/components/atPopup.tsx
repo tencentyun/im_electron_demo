@@ -24,13 +24,14 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id }): JSX.Element =
     
     const getData = async () => {
         const list = await getGroupMemberList({
-            groupId: group_id
+            groupId: group_id,
+            nextSeq: 0
         });
         const arr = list.group_get_memeber_info_list_result_info_array
         setList(arr)
     }
     useEffect(() => {
-        setCoords({x: newCoords.x - 325, y: newCoords.y - 35})
+        setCoords({x: newCoords.x - 325, y: newCoords.y - 567})
         getData()
     }, [group_id])
 
