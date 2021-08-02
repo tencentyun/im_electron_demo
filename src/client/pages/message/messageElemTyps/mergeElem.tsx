@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
+import { Avatar } from '../../../components/avatar/avatar';
+import { Modal } from 'tea-component';
+
+import { displayDiffMessage } from "../MessageView";
 
 export const MergeElem = (props: any): JSX.Element => {
-    const showMergeDitail = () => { }
+    const [showModal, setShowModal ] = useState(false);
+    const showMergeDitail = () => { 
+        setShowModal(true);
+     }
+
+     const handleModalClose = () => {
+         setShowModal(false);
+     }
     const item = (props) => {
 
         return (
@@ -15,6 +26,47 @@ export const MergeElem = (props: any): JSX.Element => {
                     })
 
                 }
+                <Modal 
+                    className="message-info-modal" 
+                    disableEscape 
+                    visible={showModal} 
+                    size="85%"
+                    onClose={handleModalClose}
+                >
+                    <Modal.Body>
+                        <div>
+                            <header>{props.merge_elem_title}</header>
+                            <div>
+                                {
+                                    props.merge_elem_message_array && props.merge_elem_message_array.map((item: State.message) => {
+                                        const { message_sender_profile, message_elem_array } = item;
+                                        const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
+
+                                        return (
+                                            <>
+                                                <div className="message-view__item--avatar face-url">
+                                                    <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                                </div>
+                                                {
+                                                message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                                    return (
+                                                        <div className="message-view__item--element" key={index} >
+                                                            {
+                                                                displayDiffMessage(item, elment, index)
+                                                            }
+                                                        </div>
+                                                        )
+                                                    })
+                                                }
+                                            </>
+                                        )
+
+                                    })
+                                }
+                            </div>
+                        </div>
+                    </Modal.Body>
+                </Modal>
             </div>
         )
     };

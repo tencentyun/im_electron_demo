@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
     Menu,
     Item,
@@ -63,37 +63,55 @@ const RIGHT_CLICK_MENU_LIST = [{
     text: '多选'
 }];
 
-const RIGHT_CLICK_MENU_LIST_2 = [{
-    id: 'revoke',
-    text: '撤回'
-},
-{
-    id: 'delete',
-    text: '删除'
-},
-
-{
-    id: 'reply',
-    text: '回复'
-}];
-
-const RIGHT_CLICK_MENU_LIST_3 = [{
-    id: 'revoke',
-    text: '撤回'
-},
-{
-    id: 'delete',
-    text: '删除'
-},
-{
-    id: 'transimit',
-    text: '转发'
-},
-{
-    id: 'reply',
-    text: '回复'
-}];
-
+export const displayDiffMessage = (message, element, index) => {
+    const { elem_type, ...res } = element;
+    let resp
+    switch (elem_type) {
+        case 0:
+            resp = <TextElemItem {...res} />
+            break;
+        case 1:
+            resp = <PicElemItem { ...res }/>
+            break;
+        case 2:
+            resp = <VoiceElem { ...res }/>
+            break;
+        case 3:
+            resp = <CustomElem { ...res }/>
+            break;
+        case 4:
+            resp = <FileElem message={message} element={element} index={index}/>
+            break;
+        case 5:
+            resp = <GroupTipsElemItem { ...res }/> 
+            break;
+        case 6:
+            resp = <div>表情消息</div>
+            break;
+        case 7:
+            resp = <div>位置消息</div>
+            break;
+        case 8:
+            resp = <GroupSysElm { ...res }/>  
+            break;
+        case 9:
+            resp =  <VideoElem { ...res }/>
+            break;
+        case 10:
+            resp = <div>关系消息</div>
+            break;
+        case 11:
+            resp = <div>资料消息</div>
+            break;
+        case 12:
+            resp = <MergeElem { ...res } message={message}/>
+            break;
+        default:
+            resp = null;
+            break;
+    }
+    return resp;
+}
 
 
 export const MessageView = (props: Props): JSX.Element => {
@@ -290,55 +308,7 @@ export const MessageView = (props: Props): JSX.Element => {
         console.log(item);
     }
 
-    const displayDiffMessage = (message, element, index) => {
-        const { elem_type, ...res } = element;
-        let resp
-        switch (elem_type) {
-            case 0:
-                resp = <TextElemItem {...res} />
-                break;
-            case 1:
-                resp = <PicElemItem { ...res }/>
-                break;
-            case 2:
-                resp = <VoiceElem { ...res }/>
-                break;
-            case 3:
-                resp = <CustomElem { ...res }/>
-                break;
-            case 4:
-                resp = <FileElem message={message} element={element} index={index}/>
-                break;
-            case 5:
-                resp = <GroupTipsElemItem { ...res }/> 
-                break;
-            case 6:
-                resp = <div>表情消息</div>
-                break;
-            case 7:
-                resp = <div>位置消息</div>
-                break;
-            case 8:
-                resp = <GroupSysElm { ...res }/>  
-                break;
-            case 9:
-                resp =  <VideoElem { ...res }/>
-                break;
-            case 10:
-                resp = <div>关系消息</div>
-                break;
-            case 11:
-                resp = <div>资料消息</div>
-                break;
-            case 12:
-                resp = <MergeElem { ...res }/>
-                break;
-            default:
-                resp = null;
-                break;
-        }
-        return resp;
-    }
+    
     const validatelastMessage = (messageList:State.message[])=>{
         let msg:State.message;
         for(let i = messageList.length-1;i>-1;i--){
