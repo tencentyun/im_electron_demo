@@ -355,6 +355,7 @@ export const MessageView = (props: Props): JSX.Element => {
                         )
                     }
                     const { message_elem_array, message_sender_profile, message_is_from_self ,message_status, message_is_peer_read, message_conv_type } = item;
+                    console.log('item', item);
                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                     const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
                     const isMessageSendFailed = message_status === 3 && message_is_from_self;
@@ -371,31 +372,39 @@ export const MessageView = (props: Props): JSX.Element => {
                                         { `${revokedPerson} 撤回了一条消息` }
                                     </div>
                                 ) :
-                                <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
-                                    { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ? 
-                                        <Icon className="message-view__item--icon" type="success" /> : 
-                                        <i className="message-view__item--icon-normal" ></i>)
-                                    }
-                                    <div className="message-view__item--avatar face-url">
-                                        <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
-                                    </div>
-                                    {
+                                <>
+                                   {
                                         message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                             return (
-                                                <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item, elment) }}>
-                                                    
+                                                <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
+                                                    { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ? 
+                                                        <Icon className="message-view__item--icon" type="success" /> : 
+                                                        <i className="message-view__item--icon-normal" ></i>)
+                                                    }
+                                                    <div className="message-view__item--avatar face-url">
+                                                        <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                                    </div>
                                                     {
-                                                        displayDiffMessage(item, elment, index)
+                                                        // message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                                        //     return (
+                                                                <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item, elment) }}>
+
+                                                                    {
+                                                                        displayDiffMessage(item, elment, index)
+                                                                    }
+                                                                </div>
+                                                        //     )
+                                                        // })
+                                                    }
+                                                    {
+                                                        shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
+                                                        isMessageSendFailed &&  <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
                                                     }
                                                 </div>
                                             )
                                         })
-                                    }
-                                    {
-                                        shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
-                                        isMessageSendFailed &&  <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
-                                    }
-                                </div>
+                                   }
+                                </>
                             }
                             <div className="message-view__item--blank"></div>
                         </React.Fragment>
