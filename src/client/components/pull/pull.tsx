@@ -8,7 +8,7 @@ import { Avatar } from "../../components/avatar/avatar";
 import { inviteMemberGroup } from "../../pages/message/api";
 import { createGroup, createGroupParams, getJoinedGroupList } from '../../pages/relationship/group/api'
 import { useMessageDirect } from "../../utils/react-use/useDirectMsgPage";
-import qunioc from '../../assets/icon/qunioc.png'
+//import qunioc from '../../assets/icon/qunioc.png'
 
 import './pull.scss';
 
@@ -117,7 +117,7 @@ export const AddGroupMemberDialog = (props: {
       const groupMember: any = getGroupMember()
       const groupName = `${nickName}的讨论组`
       const params: createGroupParams = {
-        groupAvatarUrl: qunioc,
+        groupAvatarUrl: 'http://oaim.crbank.com.cn:30003/emoji/qunioc.png',
         groupName,
         groupMember,
         groupType: '1'

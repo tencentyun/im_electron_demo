@@ -21,6 +21,8 @@ import { setPathToLS } from '../../utils/messageUtils';
 import { judgeFileSize, dataURLtoFile } from '../../utils/messageUtils';
 import { sendCustomMsg } from '../message/api'
 import _getTimeStringAutoShort2 from '../../utils/timeFormat';
+import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
+import { createImgBase64Url, getMessageElemArray, getPasteText } from './pasteInputConfig';
 
 let store = '1'
 
@@ -152,7 +154,17 @@ export const MessageInput = (props: Props): JSX.Element => {
         });
     };
 
-
+    const selectVideoMessage = () => {
+        console.log('选择了')
+        ipcRenderer.send(RENDERPROCESSCALL,{
+            type: SELECT_FILES,
+            params: {
+                fileType: "video",
+                extensions: ["mp4", "mov"],
+                multiSelections: false
+            }
+        })
+    }
 
     function startapi(requestlist, toTextContent) {
         //定义counts，用来收集请求的次数，（也可以用reslist的length进行判断）
@@ -345,19 +357,48 @@ export const MessageInput = (props: Props): JSX.Element => {
         const file = e.dataTransfer?.files[0]
         const iterator = file.type.matchAll(/(\w+)\//g)
         const type = iterator.next().value[1]
+        const params = getSendMessageParamsByFile(type, file)
         setDraging(false);
-        switch (type) {
+        sendMessages(type, params)
+    }
+
+    const getSendMessageParamsByFile = (type, file) => {
+        switch(type) {
             case "image":
-                sendImageMessage(file)
+                return { 
+                    imagePath: file.path 
+                }
+            case "audio":
+                return { 
+                    audioPath: file.path 
+                }
+            case "video":
+                return {
+                    videoPath: file.value, 
+                    videoSize: file.size,
+                }
+            default:
+                return {
+                    filePath: file.path,
+                    fileName: file.name,
+                    fileSize: file.size
+                }
+        }
+    }
+
+    const sendMessages = (type, params) => {
+        switch(type) {
+            case "image":
+                sendImageMessage(params)
                 break
             case "audio":
-                sendSoundMessage(file)
+                sendSoundMessage(params)
                 break
             case "video":
-                sendVideoMessage(file)
+                sendVideoMessage(params)
                 break
             default:
-                sendFileMessage(file)
+                sendFileMessage(params)
         }
     }
 
@@ -379,9 +420,9 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handleSendFileMessage = () => {
         filePicker.current.click();
     }
-    const handleSendVideoMessage = () => {
-        videoPicker.current.click();
-    }
+    // const handleSendVideoMessage = () => {
+    //     videoPicker.current.click();
+    // }
     const sendImageMessage = async (file) => {
         console.log(file, '发送文件')
         if (!file) return false;
@@ -464,6 +505,9 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }],
                 userId,
             });
+            console.log(code)
+            console.log(json_params)
+            console.log(desc)
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -524,7 +568,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 handleSendFileMessage()
                 break;
             case "video":
-                handleSendVideoMessage()
+                selectVideoMessage()
                 break;
             case "voice":
                 handleSendSoundMessage()
@@ -646,6 +690,39 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(editorState)
     }
 
+    const handlePastedText = (text: string, htmlString: string) => {
+        const patseText = getPasteText(htmlString);
+        setEditorState(ContentUtils.insertText(editorState, patseText))
+
+    }
+
+    const handlePastedFiles = async (files: File[]) => {
+        debugger
+        console.log('files', files);
+        if (files?.length) {
+            files.forEach(async file => {
+                const fileSize = file.size;
+                if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
+                const type = file.type;
+                if (type.includes('image')) {
+                    const imgUrl = await createImgBase64Url(file);
+                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
+                    return;
+                } else if ( type.includes('mp4') || type.includes('mov')){
+                    
+                    ipcRenderer.send(RENDERPROCESSCALL,{
+                        type: GET_VIDEO_INFO,
+                        params: { path: file.path }
+                    })
+                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
+                } else {
+                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
+                }
+           })
+
+        }
+    }
+
     const menu = close => (
         <List type="option" style={{ width: '200px', background: '#ffffff' }}>
             <List.Item onClick={() => changeSendShotcut('1')} style={{ display: 'flex' }}>
@@ -671,6 +748,15 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
     useEffect(() => {
         setEditorState(ContentUtils.clear(editorState))
+        const listener = (event, params) => {
+            const { fileType, data } = params
+            console.log(fileType,data)
+            sendMessages(fileType, data)
+        }
+        ipcRenderer.on("SELECT_FILES_CALLBACK", listener)
+        return () => {
+            ipcRenderer.off("SELECT_FILES_CALLBACK", listener)
+        }
     }, [convId, convType]);
 
     const shutUpStyle = isShutUpAll ? 'disabled-style' : '';
@@ -743,25 +829,26 @@ export const MessageInput = (props: Props): JSX.Element => {
                 {
 
                     FEATURE_LIST[convType].map(({ id, content }) => (
-                        <Bubble content={content} key={id}>
                             <span
                                 className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
 
                                 onClick={() => handleFeatureClick(id)}
                             >
                             </span>
-                        </Bubble>
 
                     ))
                 }
             </div>
-            <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}>
+            <div className="message-input__text-area disabled" onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}>
                 <BraftEditor
                     //@ts-ignore
                     disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
+                    media={{ pasteImage:false }} // 不知道为什么 如果不设置items这个属性 会出现粘贴一次插入两个图片的问题
                     // controls={[]}
+                    handlePastedFiles={handlePastedFiles}
+                    handlePastedText={handlePastedText}
                     ref={instance => editorInstance = instance}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     placeholder={placeHolderText}
@@ -801,7 +888,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             </Modal> */}
             <input ref={filePicker} onChange={e => sendFileMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
             <input ref={imagePicker} accept="image/*" onChange={e => sendImageMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
-            <input ref={videoPicker} accept="video/*" onChange={e => sendVideoMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
+            {/* <input ref={videoPicker} accept="video/*" onChange={e => sendVideoMessage(e.target.files[0])} type="file" style={{ display: 'none' }} /> */}
             <input ref={soundPicker} onChange={e => sendSoundMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
         </div>
     )
