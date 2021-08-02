@@ -7,7 +7,7 @@ import { displayDiffMessage } from "../MessageView";
 export const MergeElem = (props: any): JSX.Element => {
     const [showModal, setShowModal ] = useState(false);
     const showMergeDitail = () => { 
-        setShowModal(true);
+        // setShowModal(true);
      }
 
      const handleModalClose = () => {

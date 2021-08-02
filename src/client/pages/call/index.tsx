@@ -4,13 +4,13 @@ import { CallContent } from './callContent/CallContent';
 import { Notification } from './notification/index';
 
 export const Call = () => {
-    const { windowType, userId, convInfo } = useCallData();
+    const { windowType, userId, convInfo, roomId } = useCallData();
     const isCallWindow = windowType === 'callWindow';
 
     return (
         <div>
             {
-                isCallWindow ? <CallContent userId={userId} convInfo={convInfo} /> : <Notification convInfo={convInfo} />
+                isCallWindow ? <CallContent userId={userId} convInfo={convInfo} roomId={roomId} /> : <Notification convInfo={convInfo} />
             }
         </div>
     )
