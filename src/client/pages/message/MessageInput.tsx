@@ -357,19 +357,48 @@ export const MessageInput = (props: Props): JSX.Element => {
         const file = e.dataTransfer?.files[0]
         const iterator = file.type.matchAll(/(\w+)\//g)
         const type = iterator.next().value[1]
+        const params = getSendMessageParamsByFile(type, file)
         setDraging(false);
-        switch (type) {
+        sendMessages(type, params)
+    }
+
+    const getSendMessageParamsByFile = (type, file) => {
+        switch(type) {
             case "image":
-                sendImageMessage(file)
+                return { 
+                    imagePath: file.path 
+                }
+            case "audio":
+                return { 
+                    audioPath: file.path 
+                }
+            case "video":
+                return {
+                    videoPath: file.value, 
+                    videoSize: file.size,
+                }
+            default:
+                return {
+                    filePath: file.path,
+                    fileName: file.name,
+                    fileSize: file.size
+                }
+        }
+    }
+
+    const sendMessages = (type, params) => {
+        switch(type) {
+            case "image":
+                sendImageMessage(params)
                 break
             case "audio":
-                sendSoundMessage(file)
+                sendSoundMessage(params)
                 break
             case "video":
-                selectVideoMessage()
+                sendVideoMessage(params)
                 break
             default:
-                sendFileMessage(file)
+                sendFileMessage(params)
         }
     }
 
@@ -391,9 +420,9 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handleSendFileMessage = () => {
         filePicker.current.click();
     }
-    const handleSendVideoMessage = () => {
-        videoPicker.current.click();
-    }
+    // const handleSendVideoMessage = () => {
+    //     videoPicker.current.click();
+    // }
     const sendImageMessage = async (file) => {
         console.log(file, '发送文件')
         if (!file) return false;
@@ -476,6 +505,9 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }],
                 userId,
             });
+            console.log(code)
+            console.log(json_params)
+            console.log(desc)
             if (code === 0) {
                 dispatch(reciMessage({
                     convId,
@@ -665,6 +697,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handlePastedFiles = async (files: File[]) => {
+        debugger
         console.log('files', files);
         if (files?.length) {
             files.forEach(async file => {
@@ -676,6 +709,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
                     return;
                 } else if ( type.includes('mp4') || type.includes('mov')){
+                    
                     ipcRenderer.send(RENDERPROCESSCALL,{
                         type: GET_VIDEO_INFO,
                         params: { path: file.path }
@@ -714,6 +748,15 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
     useEffect(() => {
         setEditorState(ContentUtils.clear(editorState))
+        const listener = (event, params) => {
+            const { fileType, data } = params
+            console.log(fileType,data)
+            sendMessages(fileType, data)
+        }
+        ipcRenderer.on("SELECT_FILES_CALLBACK", listener)
+        return () => {
+            ipcRenderer.off("SELECT_FILES_CALLBACK", listener)
+        }
     }, [convId, convType]);
 
     const shutUpStyle = isShutUpAll ? 'disabled-style' : '';
@@ -796,7 +839,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area disabled" onDrop={handleDropFile} onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}>
+            <div className="message-input__text-area disabled" onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}>
                 <BraftEditor
                     //@ts-ignore
                     disabled={isShutUpAll}
@@ -845,7 +888,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             </Modal> */}
             <input ref={filePicker} onChange={e => sendFileMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
             <input ref={imagePicker} accept="image/*" onChange={e => sendImageMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
-            <input ref={videoPicker} accept="video/*" onChange={e => sendVideoMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
+            {/* <input ref={videoPicker} accept="video/*" onChange={e => sendVideoMessage(e.target.files[0])} type="file" style={{ display: 'none' }} /> */}
             <input ref={soundPicker} onChange={e => sendSoundMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
         </div>
     )
