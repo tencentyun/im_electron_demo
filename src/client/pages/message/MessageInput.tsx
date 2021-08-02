@@ -155,8 +155,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     };
 
     const selectVideoMessage = () => {
-        console.log('选择了')
-        ipcRenderer.send(RENDERPROCESSCALL,{
+        ipcRenderer.send(RENDERPROCESSCALL, {
             type: SELECT_FILES,
             params: {
                 fileType: "video",
@@ -363,18 +362,18 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const getSendMessageParamsByFile = (type, file) => {
-        switch(type) {
+        switch (type) {
             case "image":
-                return { 
-                    imagePath: file.path 
+                return {
+                    imagePath: file.path
                 }
             case "audio":
-                return { 
-                    audioPath: file.path 
+                return {
+                    audioPath: file.path
                 }
             case "video":
                 return {
-                    videoPath: file.value, 
+                    videoPath: file.value,
                     videoSize: file.size,
                 }
             default:
@@ -387,7 +386,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const sendMessages = (type, params) => {
-        switch(type) {
+        switch (type) {
             case "image":
                 sendImageMessage(params)
                 break
@@ -493,15 +492,15 @@ export const MessageInput = (props: Props): JSX.Element => {
                 convType,
                 messageElementArray: [{
                     elem_type: 9,
-                    video_elem_video_type: "MP4",
-                    video_elem_video_size: file.size,
-                    video_elem_video_duration: 10,
-                    video_elem_video_path: file.value,
-                    video_elem_image_type: "png",
-                    video_elem_image_size: 10000,
-                    video_elem_image_width: 200,
-                    video_elem_image_height: 80,
-                    video_elem_image_path: "./cover.png"
+                    video_elem_video_type: file.videoType,
+                    video_elem_video_size: file.videoSize,
+                    video_elem_video_duration: file.videoDuration,
+                    video_elem_video_path: file.videoPath,
+                    video_elem_image_type: file.screenshotType,
+                    video_elem_image_size: file.screenshotSize,
+                    video_elem_image_width: file.screenshotWidth,
+                    video_elem_image_height: file.screenshotHeight,
+                    video_elem_image_path: file.screenshotPath
                 }],
                 userId,
             });
@@ -513,12 +512,12 @@ export const MessageInput = (props: Props): JSX.Element => {
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
-            } else if(code === 7006) {
+            } else if (code === 7006) {
                 dispatch(reciMessage({
                     convId,
                     messages: [JSON.parse(json_params)]
                 }))
-            }else {
+            } else {
                 debugger
                 console.info(json_params)
                 message.error({ content: `消息发送失败 ${desc}` })
@@ -702,23 +701,23 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (files?.length) {
             files.forEach(async file => {
                 const fileSize = file.size;
-                if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
+                if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
                 const type = file.type;
                 if (type.includes('image')) {
                     const imgUrl = await createImgBase64Url(file);
                     setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
                     return;
-                } else if ( type.includes('mp4') || type.includes('mov')){
-                    
-                    ipcRenderer.send(RENDERPROCESSCALL,{
+                } else if (type.includes('mp4') || type.includes('mov')) {
+
+                    ipcRenderer.send(RENDERPROCESSCALL, {
                         type: GET_VIDEO_INFO,
                         params: { path: file.path }
                     })
-                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
+                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-video', true, { name: file.name, path: file.path, size: file.size }));
                 } else {
-                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
+                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
                 }
-           })
+            })
 
         }
     }
@@ -750,7 +749,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(ContentUtils.clear(editorState))
         const listener = (event, params) => {
             const { fileType, data } = params
-            console.log(fileType,data)
+            console.log(fileType, data)
             sendMessages(fileType, data)
         }
         ipcRenderer.on("SELECT_FILES_CALLBACK", listener)
@@ -829,12 +828,12 @@ export const MessageInput = (props: Props): JSX.Element => {
                 {
 
                     FEATURE_LIST[convType].map(({ id, content }) => (
-                            <span
-                                className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
+                        <span
+                            className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
 
-                                onClick={() => handleFeatureClick(id)}
-                            >
-                            </span>
+                            onClick={() => handleFeatureClick(id)}
+                        >
+                        </span>
 
                     ))
                 }
@@ -845,7 +844,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
-                    media={{ pasteImage:false }} // 不知道为什么 如果不设置items这个属性 会出现粘贴一次插入两个图片的问题
+                    media={{ pasteImage: false }} // 不知道为什么 如果不设置items这个属性 会出现粘贴一次插入两个图片的问题
                     // controls={[]}
                     handlePastedFiles={handlePastedFiles}
                     handlePastedText={handlePastedText}
