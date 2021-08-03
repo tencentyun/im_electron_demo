@@ -468,11 +468,18 @@ export const MessageInput = (props: Props): JSX.Element => {
             e.preventDefault();
             return 'enter';
         }
+        if(e.keyCode === 38 || e.charCode === 38) {
+            e.preventDefault();
+            return 'arrowUp';
+        }
     }
 
     const handleKeyCommand = (e) => {
         switch(e) {
             case 'enter': {
+                return 'not-handled';
+            }
+            case 'arrowUp': {
                 return 'not-handled';
             }
         }

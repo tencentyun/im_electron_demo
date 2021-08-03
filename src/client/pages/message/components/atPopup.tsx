@@ -73,8 +73,24 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id, atUserNameInput 
         } 
     }
 
+
+    const handleArrowUpOrDownSelectMember = (type: 'up'| 'down', e) => {
+        const index = displayList.findIndex(v => v.group_member_info_identifier === currentSelectMember.memberId);
+        let newIndex = 0;
+        if(type === 'up') {
+            newIndex = index - 1;
+            newIndex = newIndex < 0 ? displayList.length - 1 : newIndex;
+        } else {
+            newIndex = index + 1;
+            newIndex = newIndex >= displayList.length ? 0 : newIndex;
+        }
+        const currentElement = document.getElementById(`custom-${newIndex}`);
+        currentElement.scrollIntoView({block: "end", inline: "nearest", behavior: 'smooth'});
+        const newCurrentSelectMember = displayList[newIndex];
+        setCurrentSelectMember({memberId: newCurrentSelectMember.group_member_info_identifier, memberName: newCurrentSelectMember.group_member_info_nick_name });
+    }
+
     const handleOnkeyPress = (e) => {
-        console.log('handleOnkeyPress', e);
         if (e.keyCode === 13 || e.charCode === 13) {
             e.stopPropagation();
             e.preventDefault();
@@ -83,20 +99,12 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id, atUserNameInput 
         if (e.keyCode === 40 || e.charCode === 40) {// 下键
             e.stopPropagation();
             e.preventDefault();
-            const index = displayList.findIndex(v => v.group_member_info_identifier === currentSelectMember.memberId);
-            let newIndex = index + 1;
-            newIndex = newIndex >= displayList.length ? 0 : newIndex;
-            const newCurrentSelectMember = displayList[newIndex];
-            setCurrentSelectMember({memberId: newCurrentSelectMember.group_member_info_identifier, memberName: newCurrentSelectMember.group_member_info_nick_name });
+            handleArrowUpOrDownSelectMember('down', e)
         } 
         if (e.keyCode === 38 || e.charCode === 38) { // 上键
             e.stopPropagation();
             e.preventDefault();
-            const index = displayList.findIndex(v => v.group_member_info_identifier === currentSelectMember.memberId);
-            let newIndex = index - 1;
-            newIndex = newIndex < 0 ? displayList.length - 1 : newIndex;
-            const newCurrentSelectMember = displayList[newIndex];
-            setCurrentSelectMember({memberId: newCurrentSelectMember.group_member_info_identifier, memberName: newCurrentSelectMember.group_member_info_nick_name });
+            handleArrowUpOrDownSelectMember('up', e)
         }
     }
 
