@@ -189,8 +189,8 @@ export const App = () => {
   const _handleUnreadChange = (unreadCount) => {
     dispatch(setUnreadCount(unreadCount));
   };
-  const _handeMessage = (messages: State.message[]) => {
-    // console.log(messages, '消息---------------')
+  const _handeMessage = async (messages: State.message[]) => {
+    console.log(messages, '消息---------------')
     // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
     const obj = {};
     for (let i = 0;i < messages.length;i++) {
@@ -207,10 +207,20 @@ export const App = () => {
         })
       );
     }
+    const response = await getConversionList();
+    if (response?.length) {
+      const newConversaionItem = response.find(
+        (v) => v.conv_id === messages[0].message_conv_id
+      );
+      console.log(newConversaionItem, '对话item。。。。。。。。。。。。。。。。。。。。。。。。。。。。')
+      if (newConversaionItem.conv_recv_opt) {
+        return
+      }
+    }
     handleNotify(messages)
   };
   const handleNotify = (messages) => {
-    console.log(showApp, '[[[[[[[[[[[[[[[')
+    // console.log(showApp, '[[[[[[[[[[[[[[[')
     if (showApp) {
       return
     }
