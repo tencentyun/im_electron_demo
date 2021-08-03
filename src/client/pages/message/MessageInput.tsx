@@ -106,7 +106,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             const text = editorState.toText();
             const RAWData = editorState.toRAW();
             const atList = getAtList(text);
-            console.log('atList', atList);
 
             const messageElementArray = getMessageElemArray(RAWData, videoInfos);
            
@@ -373,11 +372,10 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handleOnkeyPress = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         if (e.keyCode == 13 || e.charCode === 13) {
-            e.preventDefault();
             handleSendMsg();
         } else if(e.key === "@" && convType === 2) {
-            e.preventDefault();
             setAtPopup(true)
         } 
     }
@@ -438,27 +436,25 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handlePastedFiles = async (files: File[]) => {
         console.log('files', files);
-        if (files?.length) {
-            files.forEach(async file => {
+        for (const file of files) {
+            if(file) {
                 const fileSize = file.size;
                 if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
                 const type = file.type;
                 if (type.includes('image')) {
                     const imgUrl = await createImgBase64Url(file);
-                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
-                    return;
+                    setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
                 } else if ( type.includes('mp4') || type.includes('mov')){
                     ipcRenderer.send(RENDERPROCESSCALL,{
                         type: GET_VIDEO_INFO,
                         params: { path: file.path }
                     })
-                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
+                    setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
                 } else {
-                    setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
+                    setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
                 }
-           })
-
-        }
+            }
+        }      
     }
 
     useEffect(() => {
