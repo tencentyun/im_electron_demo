@@ -716,7 +716,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                     setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
                 }
             })
-
         }
     }
 
