@@ -488,7 +488,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (file) {
             // console.log(file)
             const { data: { code, json_params, desc } } = await sendVideoMsg({
-                convId,
+                convId: window.localStorage.getItem('convId'),
                 convType,
                 messageElementArray: [{
                     elem_type: 9,
@@ -509,12 +509,12 @@ export const MessageInput = (props: Props): JSX.Element => {
             console.log(desc)
             if (code === 0) {
                 dispatch(reciMessage({
-                    convId,
+                    convId: window.localStorage.getItem('convId'),
                     messages: [JSON.parse(json_params)]
                 }))
             } else if (code === 7006) {
                 dispatch(reciMessage({
-                    convId,
+                    convId: window.localStorage.getItem('convId'),
                     messages: [JSON.parse(json_params)]
                 }))
             } else {
@@ -592,8 +592,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
     const handleOnkeyPress = (e) => {
         // const type = sendType
-        if(editorState?.toText().substring(editorState?.toText().length-1,editorState?.toText().length) === '@'){
-            setEditorState(ContentUtils.insertText(editorState.substring(0,editorState?.toText().length-1), ''))
+        if (editorState?.toText().substring(editorState?.toText().length - 1, editorState?.toText().length) === '@') {
+            setEditorState(ContentUtils.insertText(editorState.substring(0, editorState?.toText().length - 1), ''))
         }
         if (sendType == '0') {
             // enter发送
