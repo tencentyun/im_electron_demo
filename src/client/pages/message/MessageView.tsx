@@ -98,6 +98,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const dispatch = useDispatch();
     const [anchor, setAnchor] = useState('')
     const [percent, setPercent] = useState('0%')
+    const [tips, setTips] = useState('')
     const { isShow, isCanOpenFileDir, index: imgPreViewUrlIndex, imgs } = useSelector((state: State.RootState) => state.imgViewer)
     const directToMsgPage = useMessageDirect();
     useEffect(() => {
@@ -109,8 +110,14 @@ export const MessageView = (props: Props): JSX.Element => {
     }, [messageList.length])
     useEffect(() => {
         ipcRenderer.on('PERCENTAGE', (e, percentage) => {
-            console.log(percentage, '进度条。。。。。。。。。。。。。。。。。。。。。')
+            // console.log(percentage, '进度条。。。。。。。。。。。。。。。。。。。。。')
             setPercent(percentage)
+            setTips('下载中')
+        })
+        ipcRenderer.on('UPLOADPROGRESS', (e, percentage) => {
+            setPercent(percentage)
+            setTips('上传中')
+            console.log(percentage, '进度条-----------------------------------------------------')
         })
     }, [])
     useEffect(() => {
@@ -153,7 +160,7 @@ export const MessageView = (props: Props): JSX.Element => {
         if (percent == '100%' || percent == '0%') {
             return <></>
         } else {
-            return <StatusTip.LoadingTip className='loading' loadingText={`下载中${percent}`} />
+            return <StatusTip.LoadingTip className='loading' loadingText={`${tips}${percent}`} />
         }
     }
     // 添加到自定义表情, 图片和自定义表情可添加
@@ -455,13 +462,18 @@ export const MessageView = (props: Props): JSX.Element => {
         const { elem_type, custom_elem_data = '', text_elem_content } = currMenuMessage.message_elem_array[0];
         // elemtype:1图片, 3 自定义消息为CUST_EMOJI类型
         const isEmoji = elem_type === 1 || onIsCustEmoji(elem_type, custom_elem_data) || onIsIncludeImg(elem_type, text_elem_content)
+        const message_is_from_self = currMenuMessage.message_is_from_self
         let menuData = RIGHT_CLICK_MENU_LIST
+        if (elem_type !== 4) {
+            // 非文件过滤打开文件夹按钮
+            menuData = menuData.filter(item => item.id !== 'openFile')
+        }
         if (!isEmoji) {
             // 过滤添加到表情MenuItem
             menuData = menuData.filter(item => item.id !== 'addCustEmoji')
         }
-        if (new Date().getTime() / 1000 - currMenuMessage.message_client_time > 120) {
-            // 超时则过滤撤回按钮
+        if (new Date().getTime() / 1000 - currMenuMessage.message_client_time > 120 || !message_is_from_self) {
+            // 超时或者不是本人发送消息则过滤撤回按钮
             menuData = menuData.filter(item => item.id !== 'revoke')
         }
         return menuData

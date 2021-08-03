@@ -16,16 +16,17 @@ export const GroupFlagMessage = (props: {
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
   const { flagMsg, userId, groupId, onRefresh } = props;
-
   const handleChange = async (value: string) => {
+    console.log(value, userId, groupId, '==========================================================')
     try {
-      await modifyGroupMemberInfo({
+      const data = await modifyGroupMemberInfo({
         groupId,
         userId,
         modifyGroupMemberParams: {
           group_modify_member_info_msg_flag: Number(value),
         },
       });
+      console.log(data, '返回信息。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。')
       await onRefresh();
     } catch (e) {
       console.log(e);
