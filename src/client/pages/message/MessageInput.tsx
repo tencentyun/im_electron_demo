@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message } from 'tea-component';
-import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg, sendMsg, sendMergeMsg } from './api'
+import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg, sendMsg } from './api'
 import { reciMessage, updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
@@ -15,7 +15,7 @@ import { setPathToLS } from '../../utils/messageUtils';
 import { ipcRenderer } from 'electron';
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
-import { createImgBase64Url, getMessageElemArray, getPasteText } from './pasteInputConfig';
+import { createImgBase64Url, getMessageElemArray, getPasteText } from './message-input-util';
   
 type Props = {
     convId: string,
@@ -462,6 +462,21 @@ export const MessageInput = (props: Props): JSX.Element => {
         }      
     }
 
+    const keyBindingFn = (e) => {
+        if(e.keyCode === 13 || e.charCode === 13) {
+            e.preventDefault();
+            return 'enter';
+        }
+    }
+
+    const handleKeyCommand = (e) => {
+        switch(e) {
+            case 'enter': {
+                return 'not-handled';
+            }
+        }
+    }
+
     useEffect(() => {
         const listener = (event, params) => {
             const { fileType, data } = params
@@ -484,8 +499,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }, [convId, convType])
 
-    console.log('videInfos',videoInfos)
-
     useEffect(() => {
         setEditorState(ContentUtils.clear(editorState))
     }, [convId, convType]);
@@ -494,7 +507,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const dragEnterStyle = isDraging ? 'draging-style' : '';
 
     return (
-        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyUp={ handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
+        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyDown={ handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
                 atPopup && <AtPopup callback={(userId, name) => onAtPopupCallback(userId, name)} atUserNameInput={atUserNameInput} group_id={convId} />
             }
@@ -523,11 +536,13 @@ export const MessageInput = (props: Props): JSX.Element => {
                     disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
-                    media={{ pasteImage:false }} // 不知道为什么 如果不设置items这个属性 会出现粘贴一次插入两个图片的问题
+                    media={{ pasteImage:false }}
                     ref={instance => editorInstance = instance}
                     handlePastedFiles={handlePastedFiles}
                     handlePastedText={handlePastedText}
                     blockRendererFn={blockRendererFn}
+                    keyBindingFn={keyBindingFn}
+                    handleKeyCommand={handleKeyCommand}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}

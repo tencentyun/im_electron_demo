@@ -1,20 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar } from '../../../components/avatar/avatar';
 import { Modal } from 'tea-component';
+import formateTime from '../../../utils/timeFormat';
+
 
 import { displayDiffMessage } from "../MessageView";
 
 export const MergeElem = (props: any): JSX.Element => {
     const [showModal, setShowModal ] = useState(false);
-    const showMergeDitail = () => { 
-        // setShowModal(true);
+    const showMergeDitail = () => {
+        setShowModal(true);
      }
 
      const handleModalClose = () => {
          setShowModal(false);
      }
-    const item = (props) => {
 
+
+    const item = (props) => {
         return (
             <div className="message-view__item--merge right-menu-item" onClick={showMergeDitail} >
                 {/* 标题 */}
@@ -35,29 +38,39 @@ export const MergeElem = (props: any): JSX.Element => {
                 >
                     <Modal.Body>
                         <div>
-                            <header>{props.merge_elem_title}</header>
-                            <div>
+                            <header className="merge-mesage-header">{props.merge_elem_title}</header>
+                            <div className="merge-message-content customize-scroll-style">
                                 {
-                                    props.merge_elem_message_array && props.merge_elem_message_array.map((item: State.message,index) => {
-                                        const { message_sender_profile, message_elem_array } = item;
+                                    props.merge_elem_message_array && props.merge_elem_message_array.reverse().map((item: State.message,index) => {
+                                        const previousMessage = props.merge_elem_message_array[index -1];
+                                        const previousMessageSender = previousMessage?.message_sender_profile?.user_profile_identifier;
+                                        const { message_sender_profile, message_elem_array, message_client_time } = item;
                                         const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
+                                        const shouldShowAvatar = previousMessageSender !== user_profile_identifier;
+                                        const displayText = `${user_profile_nick_name || user_profile_identifier} ${formateTime(message_client_time * 1000, true)}`;
 
                                         return (
-                                            <div key={index}>
+                                            <div key={index} className="merge-message-item">
                                                 <div className="message-view__item--avatar face-url">
-                                                    <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                                    {
+                                                        shouldShowAvatar && <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                                    }
                                                 </div>
-                                                {
-                                                message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
-                                                    return (
-                                                        <div className="message-view__item--element" key={index} >
-                                                            {
-                                                                displayDiffMessage(item, elment, index)
-                                                            }
-                                                        </div>
-                                                        )
-                                                    })
-                                                }
+                                                <div className="merge-message-item__message">
+                                                    {shouldShowAvatar &&  <span className="merge-message-item__nick-name">{displayText}</span> }
+                                                    {
+                                                    message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                                        return (
+                                                            <div className="message-view__item--element" key={index} >
+                                                                {
+                                                                    displayDiffMessage(item, elment, index)
+                                                                }
+                                                            </div>
+                                                            )
+                                                        })
+                                                    }
+                                                </div>
+                                                
                                             </ div>
                                         )
 

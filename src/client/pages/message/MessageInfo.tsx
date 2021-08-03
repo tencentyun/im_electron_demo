@@ -254,10 +254,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 {nickName || conv_id}
               </span>
             </div>
-            <div>
-              {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
-              <span className={`message-info-view__header--video ${callingId === conv_id ? 'is-calling' : ''}`} onClick={() => handleOpenCallWindow('2',conv_type,)} />
-            </div>
+            {canInviteMember ? <AddUserPopover groupId={conv_id} /> : <></>}
           </header>
           <section className="message-info-view__content">
             <div className="message-info-view__content--view">
