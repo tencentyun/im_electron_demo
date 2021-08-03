@@ -9,10 +9,8 @@ const url = require('url')
 const fetch = require("node-fetch");
 const progressStream = require('progress-stream');
 const child_process = require('child_process')
-const shelljs = require("shelljs")
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const FFmpeg = require("fluent-ffmpeg")
-const ffprobeStatic = require('ffprobe-static');
 const sizeOf = require('image-size')
 const FileType = require('file-type')
 const ffprobe = require('ffprobe-static');
@@ -32,7 +30,6 @@ class IPC {
         const env = process.env?.NODE_ENV?.trim();
         const isDev = env === 'development';
         this.win = win;
-        this.initFFmpeg();
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             console.log("get message from render process", event.processId, data)
             const { type, params } = data;
@@ -146,14 +143,6 @@ class IPC {
         }
 
         this.callWindow = callWindow;
-    }
-    initFFmpeg() {
-        // add ffmpeg to path
-        const command = `export PATH="$PATH:${ffprobeStatic.path}"`
-        // compatable with electron env
-        // issue: https://github.com/shelljs/shelljs/wiki/Electron-compatibility
-        shelljs.config.execPath = shelljs.which('node').toString()
-        shelljs.exec(command)
     }
     minsizewin() {
         this.win.minimize()
