@@ -129,6 +129,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
         }
+        setAtUserMap({});
         setVideoInfos([]);
     }
 
@@ -373,14 +374,13 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleOnkeyPress = (e) => {
-
         if (e.keyCode == 13 || e.charCode === 13) {
-            e.stopPropagation();
             e.preventDefault();
-            handleSendMsg();
+            if(!atPopup){
+                handleSendMsg();
+            }
         } else if(e.key === "@" && convType === 2) {
             e.preventDefault();
-            e.stopPropagation();
             setAtPopup(true)
         } 
     }
@@ -508,7 +508,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const dragEnterStyle = isDraging ? 'draging-style' : '';
 
     return (
-        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyDown={ handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
+        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyUp={ handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
                 atPopup && <AtPopup callback={(userId, name) => onAtPopupCallback(userId, name)} atUserNameInput={atUserNameInput} group_id={convId} />
             }

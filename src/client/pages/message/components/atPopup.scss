@@ -43,20 +43,29 @@
   }
 }
 
+.at-popup .is-active {
+  background-color: #e8f2ff;
+  cursor: pointer;
+}
+
 .at-popup li {
   height: 40px;
   line-height: 40px;
   padding: 0 12px;
+  margin-bottom: 0px;
   display: flex;
   align-items: center;
 }
+
 .at-popup .avatar {
   margin-right: 8px;
 }
-.at-popup li:hover {
-  background-color: #e8f2ff;
-  cursor: pointer;
-}
+
+// .at-popup li:hover {
+//   background-color: #e8f2ff;
+//   cursor: pointer;
+// }
+
 @keyframes animate {
   0% {
     opacity: 0;
