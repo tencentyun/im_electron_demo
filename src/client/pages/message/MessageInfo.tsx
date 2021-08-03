@@ -258,7 +258,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
           </header>
           <section className="message-info-view__content">
             <div className="message-info-view__content--view">
-              <MessageView groupType={groupType} messageList={msgList || []} />
+              <MessageView groupType={groupType} messageList={msgList || []} convId={conv_id} />
             </div>
             <div className="message-info-view__content--input">
               <MessageInput
