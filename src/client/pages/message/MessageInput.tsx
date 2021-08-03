@@ -592,9 +592,10 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
     const handleOnkeyPress = (e) => {
         // const type = sendType
-        if(editorState?.toText().substring(editorState?.toText().length-1,editorState?.toText().length) === '@'){
-            setEditorState(ContentUtils.insertText(editorState.substring(0,editorState?.toText().length-1), ''))
-        }
+        // if(editorState.toText().substring(editorState.toText().length-1,editorState.toText().length) === '@'){
+        //     console.info(787878)
+        //     setEditorState(ContentUtils.insertText(editorState.toText().substring(0,editorState.toText().length-1), ''))
+        // }
         if (sendType == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
