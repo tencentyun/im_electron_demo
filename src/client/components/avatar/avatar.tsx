@@ -33,10 +33,11 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
     }
 
     const handleOpen = () => {
+        console.log(url)
         if(!url) return
         dispatch(setImgViewerAction({
             isShow: true,
-            imgs: url,
+            imgs: url.replace('30003','30004/oaim')+'?imageView2/3/w/400/h/400',
             isCanOpenFileDir: false,
             index:0
         }))

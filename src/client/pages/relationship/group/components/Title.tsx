@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useDialogRef } from "../../../../utils/react-use/useDialog";
 import { GroupList } from "../api";
 import { CreateGroupDialog } from "./CreateGroupDialog";
+import { useSelector } from "react-redux";
 import  ImgCropper  from "../../../../components/UploadFace";
 import "./title.scss";
 
@@ -17,7 +18,7 @@ export const Title = (props: {
   const { onRefresh } = props;
   const createGroupDialogRef = useDialogRef();
   const [visible, setVisible] = useState(false);
-
+  const { userId } = useSelector((state: State.RootState) => state.userInfo);
   const open = () => setVisible(true);
   const close = () => setVisible(false);
         
@@ -44,9 +45,9 @@ export const Title = (props: {
           <Button
             className="title--right__button"
             type="primary"
-            onClick={() => createGroupDialogRef.current.open()}
+            onClick={() => createGroupDialogRef.current.open({ userId })}
           >
-            创建群聊
+            创建群聊 
           </Button>
           {/* 放开这里的注释即可查看调用截图组件的调用 */}
           {/* <Button
