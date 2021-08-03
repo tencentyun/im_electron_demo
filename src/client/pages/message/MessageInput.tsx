@@ -56,9 +56,9 @@ const FEATURE_LIST_GROUP = [{
 }, {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
-// }, {
-//     id: 'more',
-//     content: '更多'
+    // }, {
+    //     id: 'more',
+    //     content: '更多'
 }]
 const FEATURE_LIST_C2C = [{
     id: 'face',
@@ -78,9 +78,9 @@ const FEATURE_LIST_C2C = [{
 }, {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
-// }, {
-//     id: 'more',
-//     content: '更多'
+    // }, {
+    //     id: 'more',
+    //     content: '更多'
 }]
 const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
@@ -159,7 +159,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             type: SELECT_FILES,
             params: {
                 fileType: "video",
-                extensions: ["mp4", "mov","wmv"],
+                extensions: ["mp4", "mov", "wmv"],
                 multiSelections: false
             }
         })
@@ -698,7 +698,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handlePastedFiles = async (files: File[]) => {
-        // debugger
         console.log('files', files);
         if (files?.length) {
             files.forEach(async file => {
@@ -720,7 +719,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                     setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
                 }
             })
-
         }
     }
 
