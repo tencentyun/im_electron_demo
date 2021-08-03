@@ -301,7 +301,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             }],
             userId,
         }
-        console.log('发视频参数',params)
         const { data: { code, json_params, desc } } = await sendVideoMsg(params);
         if (code === 0) {
             dispatch(updateMessages({
