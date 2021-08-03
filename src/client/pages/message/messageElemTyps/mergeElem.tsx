@@ -3,14 +3,14 @@ import React from "react";
 export const MergeElem = (props: any): JSX.Element => {
     const showMergeDitail = () => { }
     const item = (props) => {
-
+        console.log(props)
         return (
             <div className="message-view__item--merge right-menu-item" style={{height: 'auto'}} onClick={showMergeDitail} >
                 {/* 标题 */}
                 <div className="message-view__item--merge___title" >{props.merge_elem_title}</div>
                 {/* 消息摘要 */}
                 {
-                    props.merge_elem_abstract_array.map((item, index) => {
+                    props.merge_elem_abstract_array?.map((item, index) => {
                         return <div key={index} className="message-view__item--merge___abst">{item}</div>
                     })
 
