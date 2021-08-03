@@ -108,22 +108,24 @@ export const MessageInput = (props: Props): JSX.Element => {
             const atList = getAtList(text);
 
             const messageElementArray = getMessageElemArray(RAWData, videoInfos);
-           
-            const { data: { code, json_params, desc } } = await sendMsg({
-                convId,
-                convType,
-                messageElementArray,
-                userId,
-                messageAtArray: atList
-            });
 
-            if (code === 0) {                
-                dispatch(updateMessages({
+            if(messageElementArray.length) {
+                const { data: { code, json_params, desc } } = await sendMsg({
                     convId,
-                    message: JSON.parse(json_params)
-                }))
+                    convType,
+                    messageElementArray,
+                    userId,
+                    messageAtArray: atList
+                });
+    
+                if (code === 0) {                
+                    dispatch(updateMessages({
+                        convId,
+                        message: JSON.parse(json_params)
+                    }))
+                }
+                setEditorState(ContentUtils.clear(editorState));
             }
-            setEditorState(ContentUtils.clear(editorState));
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
         }
@@ -371,11 +373,14 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleOnkeyPress = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+
         if (e.keyCode == 13 || e.charCode === 13) {
+            e.stopPropagation();
+            e.preventDefault();
             handleSendMsg();
         } else if(e.key === "@" && convType === 2) {
+            e.preventDefault();
+            e.stopPropagation();
             setAtPopup(true)
         } 
     }
@@ -390,6 +395,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const onEmojiPopupCallback = (id) => { 
+        resetState();
         if (id) {
             setEditorState(ContentUtils.insertText(editorState, id))
         }
