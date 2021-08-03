@@ -103,28 +103,43 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handleSendMsg = async () => {
         try {
-            const text = editorState.toText();
-            const RAWData = editorState.toRAW();
-            const atList = getAtList(text);
+            const rawData = editorState.toRAW();
 
-            const messageElementArray = getMessageElemArray(RAWData, videoInfos);
+            const messageElementArray = getMessageElemArray(rawData, videoInfos);
 
             if(messageElementArray.length) {
-                const { data: { code, json_params, desc } } = await sendMsg({
-                    convId,
-                    convType,
-                    messageElementArray,
-                    userId,
-                    messageAtArray: atList
-                });
-    
-                if (code === 0) {                
-                    dispatch(updateMessages({
+                const fetchList = messageElementArray.map((v => {
+                    if(v.elem_type === 0) {
+                        const atList = getAtList(v.text_elem_content);
+                        return  sendMsg({
+                            convId,
+                            convType,
+                            messageElementArray: [v],
+                            userId,
+                            messageAtArray: atList
+                        });
+                    }
+                    return sendMsg({
                         convId,
-                        message: JSON.parse(json_params)
-                    }))
-                }
-                setEditorState(ContentUtils.clear(editorState));
+                        convType,
+                        messageElementArray: [v],
+                        userId,
+                    });
+                }));
+
+                const results = await Promise.all(fetchList);
+
+                for(const res of results) {
+                    // @ts-ignore
+                    const { data: {code, json_params, desc }} = res;
+                    if (code === 0) {                
+                        dispatch(updateMessages({
+                            convId,
+                            message: JSON.parse(json_params)
+                        }))
+                    }
+                    setEditorState(ContentUtils.clear(editorState));
+                } 
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });

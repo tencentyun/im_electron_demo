@@ -401,10 +401,10 @@ export const MessageView = (props: Props): JSX.Element => {
                                         { `${revokedPerson} 撤回了一条消息` }
                                     </div>
                                 ) :
-                                <>
-                                   {
-                                        message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
-                                            return (
+                                // <>
+                                //    {
+                                //         message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                //             return (
                                                 <div  key={index} onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
                                                     { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ? 
                                                         <Icon className="message-view__item--icon" type="success" /> : 
@@ -414,26 +414,26 @@ export const MessageView = (props: Props): JSX.Element => {
                                                         <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                                                     </div>
                                                     {
-                                                        // message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
-                                                        //     return (
+                                                        message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                                            return (
                                                                 <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item, elment) }}>
 
                                                                     {
                                                                         displayDiffMessage(item, elment, index)
                                                                     }
                                                                 </div>
-                                                        //     )
-                                                        // })
+                                                            )
+                                                        })
                                                     }
                                                     {
                                                         shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
                                                         isMessageSendFailed &&  <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
                                                     }
                                                 </div>
-                                            )
-                                        })
-                                   }
-                                </>
+                                //             )
+                                //         })
+                                //    }
+                                // </>
                             }
                             <div className="message-view__item--blank"></div>
                         </React.Fragment>
