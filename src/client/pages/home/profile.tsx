@@ -93,7 +93,7 @@ export const Profile = (): JSX.Element => {
             <div className="card-content">
               <div className="main-info">
                 <div className="info-item">
-                  <Avatar url={faceUrl} nickName={nickName} userID={userId} />
+                  <Avatar url={faceUrl.replace('30003','30004/oaim')+'?imageView2/3/w/40/h/40'} nickName={nickName} userID={userId} />
                   <div className="nickname">{nickName}</div>
                 </div>
                 <div className="info-btn" onClick={handleAvatarClick}><Icon type="setting" /></div>

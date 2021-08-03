@@ -56,9 +56,9 @@ const FEATURE_LIST_GROUP = [{
 }, {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
-}, {
-    id: 'more',
-    content: '更多'
+    // }, {
+    //     id: 'more',
+    //     content: '更多'
 }]
 const FEATURE_LIST_C2C = [{
     id: 'face',
@@ -78,9 +78,9 @@ const FEATURE_LIST_C2C = [{
 }, {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
-}, {
-    id: 'more',
-    content: '更多'
+    // }, {
+    //     id: 'more',
+    //     content: '更多'
 }]
 const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
@@ -159,7 +159,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             type: SELECT_FILES,
             params: {
                 fileType: "video",
-                extensions: ["mp4", "mov"],
+                extensions: ["mp4", "mov", "wmv"],
                 multiSelections: false
             }
         })
@@ -705,7 +705,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     const imgUrl = await createImgBase64Url(file);
                     setEditorState(ContentUtils.insertAtomicBlock(editorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
                     return;
-                } else if (type.includes('mp4') || type.includes('mov')) {
+                } else if (type.includes('mp4') || type.includes('mov') || type.includes('wmv')) {
 
                     ipcRenderer.send(RENDERPROCESSCALL, {
                         type: GET_VIDEO_INFO,

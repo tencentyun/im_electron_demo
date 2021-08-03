@@ -42,6 +42,20 @@ export const GroupTipsElemItem = (props: any): JSX.Element => {
         
         return [`${group_tips_elem_op_user_info.user_profile_nick_name||group_tips_elem_op_user_info.user_profile_identifier}退出群聊`]
     }
+    const tips_3 = ()=>{
+        const { group_tips_elem_op_user_info,group_tips_elem_changed_group_memberinfo_array } = props;
+        const { user_profile_nick_name,user_profile_identifier } = group_tips_elem_op_user_info;
+        const res= []
+        for(let i = 0;i<group_tips_elem_changed_group_memberinfo_array.length;i++){
+            res.push(`${inviteInfo(group_tips_elem_changed_group_memberinfo_array[i])}被${user_profile_nick_name||user_profile_identifier}移出群聊`)
+        }
+        return res
+    }
+    const tips_4 = ()=>{
+        const { group_tips_elem_op_user_info } = props;
+        
+        return [`${group_tips_elem_op_user_info.user_profile_nick_name||group_tips_elem_op_user_info.user_profile_identifier}退出群聊`]
+    }
     const getChangeType = () => {
         const { group_tips_elem_tip_type } = props;
         let res = ['未适配'];
@@ -63,8 +77,10 @@ export const GroupTipsElemItem = (props: any): JSX.Element => {
                 res = tips_2()
                 break;
             case 3:
+                res = tips_3()
                 break;
             case 4:
+                res = tips_4()
                 break;
             case 5:
                 break;
