@@ -695,7 +695,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handlePastedFiles = async (files: File[]) => {
-        // debugger
         console.log('files', files);
         if (files?.length) {
             files.forEach(async file => {
