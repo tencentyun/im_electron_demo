@@ -40,6 +40,7 @@ const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 type Props = {
     messageList: Array<State.message>
     groupType: number;
+    convId: string;
 }
 
 const RIGHT_CLICK_MENU_LIST = [{
@@ -115,7 +116,7 @@ export const displayDiffMessage = (message, element, index) => {
 
 
 export const MessageView = (props: Props): JSX.Element => {
-    const { messageList, groupType } = props;
+    const { messageList, groupType, convId } = props;
     const messageViewRef = useRef(null);
     const [isTransimitPopup, setTransimitPopup] = useState(false);
     const [isMultiSelect, setMultiSelect] = useState(false);
@@ -134,6 +135,13 @@ export const MessageView = (props: Props): JSX.Element => {
         setAnchor('')
         setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     }, [messageList.length])
+
+    useEffect(() => {
+        if(isMultiSelect) {
+            setMultiSelect(false);
+        }
+    }, [convId]);
+
     const handleRevokeMsg = async (params) => {
         const { convId, msgId, convType } = params;
         const code = await revokeMsg({
