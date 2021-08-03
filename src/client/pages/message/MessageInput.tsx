@@ -518,7 +518,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     messages: [JSON.parse(json_params)]
                 }))
             } else {
-                debugger
+                // debugger
                 console.info(json_params)
                 message.error({ content: `消息发送失败 ${desc}` })
             }
@@ -695,7 +695,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handlePastedFiles = async (files: File[]) => {
-        debugger
+        // debugger
         console.log('files', files);
         if (files?.length) {
             files.forEach(async file => {
