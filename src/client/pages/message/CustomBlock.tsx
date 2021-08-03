@@ -1,7 +1,7 @@
 import { ContentUtils } from "braft-utils";
 import React from "react";
 import "./custom-block.scss";
-import { getFileTypeName } from "./pasteInputConfig";
+import { getFileTypeName } from "./message-input-util";
 
 export const BlockFileComponent = (props: { blockProps: any; block: any }) => {
   const { block, blockProps } = props;
