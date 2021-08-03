@@ -503,7 +503,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     useEffect(() => {
         const listener = (event, params) => {
             const { fileType, data } = params
-            console.log(fileType,data)
             sendMessages(fileType, data)
         }
         ipcRenderer.on("SELECT_FILES_CALLBACK", listener)
