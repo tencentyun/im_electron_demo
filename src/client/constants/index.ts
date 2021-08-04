@@ -51,7 +51,11 @@ export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtog
 
 
 export const TIM_BASE_URL = 'http://localhost:3000'
+<<<<<<< HEAD
 // export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002'
+=======
+//export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002'
+>>>>>>> 47f5bab03a6e98c9399e590c79f77325aec41abc
 export const TIM_BASE_URLB = 'http://oaim.uat.crbank.com.cn:30002'
 export const TIM_MASTER_URL_PORT = "30003"
 export const TIM_BREVIARY_URL_PORT = "30004/oaim"

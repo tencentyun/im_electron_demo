@@ -36,7 +36,7 @@ export const FileElem = (props: any): JSX.Element => {
     const showFile = () => {
         console.log(props)
         const { file_elem_file_name } = element;
-        downloadPic(file_elem_file_name)
+        downloadPic(element)
         // filename 
         // ipcRenderer.send('OPENFILE', {
         //     filename: file_elem_file_name

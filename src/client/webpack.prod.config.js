@@ -14,6 +14,13 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.node$/,
+        loader: 'native-ext-loader',
+        options: {
+          rewritePath: targetPlatform === 'win32' ? './resources' : '../Resources'
+        }
+      },
+      {
         test: /\.(js|ts)$/,
         exclude: /node_modules/,
         use: {

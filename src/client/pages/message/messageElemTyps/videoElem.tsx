@@ -24,9 +24,9 @@ const ininVideoPlayer = (props) => {
 }
 
 export const VideoElem = (props: any): JSX.Element => {
-
     const item = () => {
         return (
+            props.video_elem_video_duration ?
             <div className="message-view__item--text text right-menu-item" style={{minWidth:'350px',maxWidth:'auto'}}>
                 {
                     ininVideoPlayer(props)
@@ -35,6 +35,7 @@ export const VideoElem = (props: any): JSX.Element => {
                     <source src={props.video_elem_video_url}  />
                 </video> */}
             </div>
+            : null
         )
     };
     return item()
