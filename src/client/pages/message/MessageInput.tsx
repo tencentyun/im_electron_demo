@@ -154,38 +154,59 @@ export const MessageInput = (props: Props): JSX.Element => {
         return atNameList.map(v => atUserMap[v]);
     }
 
-    const handleDropFile = (e) => {
-        const file = e.dataTransfer?.files[0]
-        const iterator = file.type.matchAll(/(\w+)\//g)
-        const type = iterator.next().value[1];
-        const params = getSendMessageParamsByFile(type, file)
-        setDraging(false);
-        sendMessages(type, params)
-    }
-
-    const getSendMessageParamsByFile = (type, file) => {
-        switch(type) {
-            case "image":
-                return { 
-                    imagePath: file.path 
-                }
-            case "audio":
-                return { 
-                    audioPath: file.path 
-                }
-            case "video":
-                return {
-                    videoPath: file.value, 
-                    videoSize: file.size,
-                }
-            default:
-                return {
-                    filePath: file.path,
-                    fileName: file.name,
-                    fileSize: file.size
-                }
+    
+    const setFile = async (file: File) => {
+        if(file) {
+            const fileSize = file.size;
+            if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
+            const type = file.type;
+            if (type.includes('image')) {
+                const imgUrl = await createImgBase64Url(file);
+                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
+            } else if ( type.includes('mp4') || type.includes('mov')){
+                ipcRenderer.send(RENDERPROCESSCALL,{
+                    type: GET_VIDEO_INFO,
+                    params: { path: file.path }
+                })
+                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
+            } else {
+                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
+            }
         }
     }
+
+    const handleDropFile = (e) => {
+        const files = e.dataTransfer?.files || [];
+        for (const file of files) {
+            setFile(file);
+        }
+        setDraging(false);
+    }
+
+    // const getSendMessageParamsByFile = (type, file) => {
+    //     switch(type) {
+    //         case "image":
+    //             return { 
+    //                 imagePath: file.path 
+    //             }
+    //         case "audio":
+    //             return { 
+    //                 audioPath: file.path 
+    //             }
+    //         case "video":
+    //             return {
+    //                 videoPath: file.value, 
+    //                 videoSize: file.size,
+    //             }
+    //         default:
+    //             return {
+    //                 filePath: file.path,
+    //                 fileName: file.name,
+    //                 fileSize: file.size
+    //             }
+    //     }
+    // }
+
     const sendMessages = (type, params) => {
         switch(type) {
             case "image":
@@ -455,25 +476,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handlePastedFiles = async (files: File[]) => {
-        console.log('files', files);
         for (const file of files) {
-            if(file) {
-                const fileSize = file.size;
-                if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
-                const type = file.type;
-                if (type.includes('image')) {
-                    const imgUrl = await createImgBase64Url(file);
-                    setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
-                } else if ( type.includes('mp4') || type.includes('mov')){
-                    ipcRenderer.send(RENDERPROCESSCALL,{
-                        type: GET_VIDEO_INFO,
-                        params: { path: file.path }
-                    })
-                    setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
-                } else {
-                    setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
-                }
-            }
+            setFile(file);
         }      
     }
 

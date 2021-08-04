@@ -21,7 +21,7 @@
   }
 
   &__feature-area {
-    // height: 30px;
+    height: 30px;
     padding-left: 12px;
     padding-top: 12px;
     position: relative;
@@ -97,7 +97,7 @@
   }
 
   &__text-area {
-    height: 100%;
+    height: calc(100% - 30px);
 
     & .bf-controlbar {
       display: none;
@@ -113,6 +113,34 @@
 
     & .bf-media-toolbar {
       display: none;
+    }
+
+    & .bf-content {
+      &:hover {
+        &::-webkit-scrollbar {
+          width: 8px;
+          background-color: #fff;
+        }
+        &::-webkit-scrollbar-thumb {
+          border-radius: 8px;
+          box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.3);
+          background-color: #d1d1d1;
+        }
+      }
+      &::-webkit-scrollbar {
+        width: 0px;
+        background-color: #fff;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: #fff;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.3);
+        background-color: #d1d1d1;
+      }
     }
 
     textarea {
