@@ -44,6 +44,13 @@
           "filter": [
             "**/*"
           ]
+        },
+        {
+          "from": "node_modules/trtc-electron-sdk/build/Release/",
+          "to": "./resources",
+          "filter": [
+            "**/*"
+          ]
         }
       ],
       "extraResources": [

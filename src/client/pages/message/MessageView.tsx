@@ -86,7 +86,6 @@ const RIGHT_CLICK_MENU_LIST = [{
 
 
 
-
 export const MessageView = (props: Props): JSX.Element => {
     const { messageList, editorState, setEditorState, convType, convId } = props;
     const messageViewRef = useRef(null);

@@ -64,7 +64,7 @@ const throttle = (fn, delay) => {
     }
 }
 
-//file����ת��ΪBlob���� 
+
 const dataURLtoBlob = (file) => {
     return new Promise((resolve, reject) => {
         if (!file) {
@@ -82,7 +82,7 @@ const dataURLtoBlob = (file) => {
     })
 }
 const convertBase64UrlToBlob = (urlData) => {
-    // ȥ��url��ͷ����ת��Ϊbyte
+
     let bytes = window.atob(urlData.split(',')[1])
     let ab = new ArrayBuffer(bytes.length)
     let ia = new Uint8Array(ab)
@@ -92,9 +92,7 @@ const convertBase64UrlToBlob = (urlData) => {
     return new Blob([ab], { type: 'image/jpeg' })
 }
 
-/**
- * ���ָ���
- */
+
 const highlightText = (text, content, color = '#006eff') => {
     if (!text) {
         return content

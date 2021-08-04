@@ -12,6 +12,19 @@ export const getNameByLink = (link: string) => {
   return decodeURIComponent(name);
 };
 
+// 得到图片的base64
+export const createImgBase64Url = async (file: File) => {
+  return new Promise((res) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function (e) {
+      const base64Value = e.target.result;
+      // target.result 该属性表示目标对象的DataURL
+      res(base64Value);
+    };
+  });
+};
+
 const getMessageElemItem = (
   type: string,
   data: { text?: string; path?: string; name?: string; size?: number },
@@ -134,7 +147,7 @@ export const getPasteText = (htmlString: string) => {
 };
 
 // 得到图片的base64
-export const createImgBase64Url = async (file: File) => {
+export const fileImgToBase64Url = async (file: File) => {
   return new Promise((res) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -145,3 +158,8 @@ export const createImgBase64Url = async (file: File) => {
     };
   });
 };
+
+export const bufferToBase64Url = (data: string, type: string) => {
+  const buffer = new Buffer(data, 'binary');
+  return `data:image/${type};base64,` + buffer.toString('base64');
+} 

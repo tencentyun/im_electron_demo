@@ -627,3 +627,12 @@ export const deleteMsgList = async params => {
 
   return res;
 }
+
+export const downloadMergedMsg = async params => {
+  const res = await timRenderInstance.TIMMsgDownloadMergerMessage({
+    params,
+    user_data: '123'
+  });
+
+  return res;
+};

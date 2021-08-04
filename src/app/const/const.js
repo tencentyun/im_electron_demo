@@ -15,8 +15,7 @@ const MINSIZEWIN = 'MINSIZEWIN';
  const DOWNLOAD_PATH = path.resolve(process.cwd(), "download/");
  const GET_VIDEO_INFO_CALLBACK = 'GET_VIDEO_INFO_CALLBACK';
  const CHECK_FILE_EXIST = 'CHECK_FILE_EXIST';
-
-
+ const GET_FILE_INFO_CALLBACK = 'GET_FILE_INFO_CALLBACK';
 
 module.exports = {
     MINSIZEWIN,
@@ -28,6 +27,7 @@ module.exports = {
     SELECT_FILES_CALLBACK,
     DOWNLOADFILE,
     GET_VIDEO_INFO,
+    GET_FILE_INFO_CALLBACK,
     DOWNLOAD_PATH,
     OPEN_CALL_WINDOW,
     CALL_WINDOW_CLOSE,

@@ -1,5 +1,5 @@
 // import { BrowserWindow } from "electron";
-const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY,GET_VIDEO_INFO, GET_VIDEO_INFO_CALLBACK, SELECT_FILES, SELECT_FILES_CALLBACK,DOWNLOAD_PATH } = require("./const/const");
+const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY,GET_VIDEO_INFO, GET_VIDEO_INFO_CALLBACK, SELECT_FILES, SELECT_FILES_CALLBACK,DOWNLOAD_PATH,GET_FILE_INFO_CALLBACK } = require("./const/const");
 const { dialog } = require('electron')
 const { ipcMain, BrowserWindow } = require('electron')
 const fs = require('fs')
@@ -260,14 +260,16 @@ class IPC {
             width, height, type, size
         }
     }
+
     async getVideoInfo(event, params) {
         const { path } = params
         console.log(123456)
         const data = await this._getVideoInfo(path)
         console.log(1111)
-        event.reply(GET_VIDEO_INFO_CALLBACK, data)
+        event.reply(GET_FILE_INFO_CALLBACK, data)
         console.log(2222)
     }
+
     async selectFiles(event, params) {
         console.log(8789789789)
         const { extensions, fileType, multiSelections } = params
@@ -277,31 +279,27 @@ class IPC {
                 name: "Images", extensions: extensions
             }]
         })
-        let data
-        switch(fileType) {
-            case "file":
-                data = {
-                    filePath: filePath,
-                    fileSize: fs.statSync(filePath).size,
-                    fileName: path.parse(filePath).base
-                }
-                break;
-            case "image":
-                data = {
-                    imagePath: filePath
-                }
-                break;
-            case "video":
-                data = await this._getVideoInfo(filePath)
-                break;
-            case "sound":
-                data = {
-                    soundPath: filePath
-                }
-                break;
+        const size =  fs.statSync(filePath).size;
+        const name =  path.parse(filePath).base;
+        const type = name.split('.')[1];
+
+        const data = {
+            path: filePath,
+            size,
+            name,
+            type
+        };
+
+        if(fileType === 'image') {
+            const fileContent = await fs.readFileSync(filePath);
+            data.fileContent = fileContent;
+
         }
-        event.reply(SELECT_FILES_CALLBACK, {
-            fileType,
+
+
+      
+        event.reply(GET_FILE_INFO_CALLBACK, {
+            triggerType: SELECT_FILES,
             data
         })   
     }
