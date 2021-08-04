@@ -125,8 +125,8 @@ export const AddGroupMemberDialog = (props: {
       }
       const { json_param } = await createGroup(params);
       const resultGroupId = JSON.parse(json_param)?.create_group_result_groupid
-
-      await sendMsg({
+      console.log('创建讨论组........................','resultGroupId:'+ resultGroupId, 'userId:'+userId)
+      const data = await sendMsg({
         convId: resultGroupId,
         convType: 2,
         messageElementArray: [
@@ -137,7 +137,7 @@ export const AddGroupMemberDialog = (props: {
         ],
         userId: userId,
       });
-
+      console.log(data, '创建讨论组成功')
       onClose();
       setTimeout(() => {
         showGroupbyId(resultGroupId)
