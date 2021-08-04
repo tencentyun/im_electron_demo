@@ -98,6 +98,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [isTextNullEmpty, setIsTextNullEmpty] = useState(true);
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const [shouldShowCallMenu, setShowCallMenu] = useState(false);
+    let inputAt = false;
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -542,6 +543,7 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handleSendAtMessage = () => {
         // resetState()
+        inputAt = false;
         convType === 2 && setAtPopup(true)
     }
 
@@ -595,6 +597,10 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (editorState?.toText().substring(editorState?.toText().length - 1, editorState?.toText().length) === '@') {
             setEditorState(ContentUtils.insertText(editorState.substring(0, editorState?.toText().length - 1), ''))
         }
+        // if(editorState.toText().substring(editorState.toText().length-1,editorState.toText().length) === '@'){
+        //     console.info(787878)
+        //     setEditorState(ContentUtils.insertText(editorState.toText().substring(0,editorState.toText().length-1), ''))
+        // }
         if (sendType == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
@@ -615,6 +621,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 // console.log('换行', '----------------------', editorState)
             } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
                 e.preventDefault();
+                inputAt = true
                 setAtPopup(true)
             }
         }
@@ -623,8 +630,10 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const onAtPopupCallback = (userName) => {
         resetState()
+        console.log(inputAt, '-----------------------==================================')
         if (userName) {
-            setEditorState(ContentUtils.insertText(editorState, `@${userName} `))
+            const text = inputAt ? `${userName} ` : `@${userName} `
+            setEditorState(ContentUtils.insertText(editorState, text))
         }
     }
 
@@ -819,7 +828,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     return (
         <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
-                atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
+                atPopup && <AtPopup callback={(name) => { onAtPopupCallback(name) }} group_id={convId} />
             }
             <div className="message-input__feature-area">
                 {

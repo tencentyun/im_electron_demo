@@ -38,8 +38,8 @@ export const GroupItem = (props: {
 
   const directToMsgPage = useMessageDirect();
 
-  const canDeleteGroup = groupOwner === userId && groupType !== 1; // 是群主并且非私有群可以解散
-  const canQuitGroup = groupOwner !== userId || groupType === 1; // 不是群主或者该群为私有群
+  const canDeleteGroup = groupOwner === userId; // 是群主可以解散
+  const canQuitGroup = groupOwner !== userId; // 不是群主或者该群为私有群
 
   const handleItemClick = () => {
     directToMsgPage({

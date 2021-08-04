@@ -101,6 +101,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const [tips, setTips] = useState('')
     const { isShow, isCanOpenFileDir, index: imgPreViewUrlIndex, imgs } = useSelector((state: State.RootState) => state.imgViewer)
     const directToMsgPage = useMessageDirect();
+    console.log('messageList---------------------------------------------------------------------', messageList);
     useEffect(() => {
         if (!anchor) {
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
@@ -499,7 +500,6 @@ export const MessageView = (props: Props): JSX.Element => {
         if (currentMsgItem.elem_type !== 10 && currentMsgItem.elem_type !== 1 && onIsCustEmoji(currentMsgItem.elem_type, currentMsgItem.custom_elem_data)) {
             return
         }
-        console.log('messageList', messageList);
         console.log('item', currentMsgItem);
         console.log('event', event);
         let imgsUrl = []
@@ -589,7 +589,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                     </div>
                                 ) :
                                     <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self && item ? 'is-self' : ''}`} key={message_msg_id}>
-                                        {isMultiSelect && (seleted ?
+                                        {isMultiSelect && (seleted && message_is_peer_read ?
                                             <Icon className="message-view__item--icon" type="success" /> :
                                             <i className="message-view__item--icon-normal" ></i>)
                                         }
@@ -625,7 +625,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                                 return (
                                                     elment.elem_type === 3 ?
                                                         <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-                                                            <span className="message-view__item--text text right-menu-item">{elment?.custom_elem_data}创建了群组</span>
+                                                            <span className="message-view__item--text text right-menu-item">{elment?.custom_elem_data}创建了群</span>
                                                         </div>
                                                         :
                                                         <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
