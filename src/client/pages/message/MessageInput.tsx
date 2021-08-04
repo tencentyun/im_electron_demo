@@ -404,7 +404,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (userId) {
             const atText = userName || userId;
             setAtUserMap(pre => ({...pre, [atText]: userId}));
-            setEditorState(ContentUtils.insertText(editorState, `${atText} `))
+            setEditorState(ContentUtils.insertText(editorState, `@${atText} `))
         }
     }
 
@@ -528,7 +528,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const dragEnterStyle = isDraging ? 'draging-style' : '';
 
     return (
-        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyUp={ handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
+        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyDown={ handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
                 atPopup && <AtPopup callback={(userId, name) => onAtPopupCallback(userId, name)} atUserNameInput={atUserNameInput} group_id={convId} />
             }
