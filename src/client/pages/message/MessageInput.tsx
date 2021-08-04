@@ -15,7 +15,7 @@ import { setPathToLS } from '../../utils/messageUtils';
 import { ipcRenderer } from 'electron';
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
-import { createImgBase64Url, getMessageElemArray, getPasteText } from './message-input-util';
+import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText } from './message-input-util';
   
 type Props = {
     convId: string,
@@ -154,13 +154,13 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     
-    const setFile = async (file: File) => {
+    const setFile = async (file: File | {size: number; type: string; path: string; name: string; fileContent: string}) => {
         if(file) {
             const fileSize = file.size;
             if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
             const type = file.type;
-            if (type.includes('image')) {
-                const imgUrl = await createImgBase64Url(file);
+            if (type.includes('png') || type.includes('jpg')) {
+                const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
                 setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
             } else if ( type.includes('mp4') || type.includes('mov')){
                 ipcRenderer.send(RENDERPROCESSCALL,{
@@ -383,19 +383,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         setActiveFeature(featureId);
     }
 
-    // const handleOnkeyPress = (e) => {
-    //     console.log('handleOnkeyPress', e)
-    //     if (e.keyCode == 13 || e.charCode === 13) {
-    //         e.preventDefault();
-    //         if(!atPopup){
-    //             handleSendMsg();
-    //         }
-    //     } else if(e.key === "@" && e.shiftkey && convType === 2) {
-    //         e.preventDefault();
-    //         setAtPopup(true)
-    //     } 
-    // }
-
     const onAtPopupCallback = (userId: string, userName: string) => {
         resetState()
         if (userId) {
@@ -493,22 +480,21 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     useEffect(() => {
         const listener = (event, params) => {
-            const { fileType, data } = params
-            sendMessages(fileType, data)
+            const { triggerType, data } = params;
+            switch(triggerType) {
+                case 'SELECT_FILES': {
+                    setFile(data);
+                    break;
+                }
+                case 'GET_VIDEO_INFO': {
+                    setVideoInfos(pre => [...pre, data]);
+                    break;
+                }
+            }
         }
-        ipcRenderer.on("SELECT_FILES_CALLBACK", listener)
+        ipcRenderer.on("GET_FILE_INFO_CALLBACK", listener)
         return () => {
-            ipcRenderer.off("SELECT_FILES_CALLBACK", listener)
-        }
-    }, [convId, convType])
-
-    useEffect(() => {
-        const listener = (event, params) => {
-           setVideoInfos(pre => [...pre, params]);
-        }
-        ipcRenderer.on("GET_VIDEO_INFO_CALLBACK", listener)
-        return () => {
-            ipcRenderer.off("GET_VIDEO_INFO_CALLBACK", listener)
+            ipcRenderer.off("GET_FILE_INFO_CALLBACK", listener)
         }
     }, [convId, convType])
 

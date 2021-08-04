@@ -134,7 +134,7 @@ export const getPasteText = (htmlString: string) => {
 };
 
 // 得到图片的base64
-export const createImgBase64Url = async (file: File) => {
+export const fileImgToBase64Url = async (file: File) => {
   return new Promise((res) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -145,3 +145,8 @@ export const createImgBase64Url = async (file: File) => {
     };
   });
 };
+
+export const bufferToBase64Url = (data: string, type: string) => {
+  const buffer = new Buffer(data, 'binary');
+  return `data:image/${type};base64,` + buffer.toString('base64');
+} 
