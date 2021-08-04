@@ -2,15 +2,25 @@ import React, { useState, useEffect } from "react";
 import { Avatar } from '../../../components/avatar/avatar';
 import { Modal } from 'tea-component';
 import formateTime from '../../../utils/timeFormat';
+import { downloadMergedMsg } from '../api';
 
 
 import { displayDiffMessage } from "../MessageView";
 
 export const MergeElem = (props: any): JSX.Element => {
     const [showModal, setShowModal ] = useState(false);
-    const showMergeDitail = () => {
+    const [ mergedMsg, setMergedMsg ] = useState([]); 
+    const showMergeDitail = async () => {
+        if(props.merge_elem_message_array) {
+            setMergedMsg(props.merge_elem_message_array);
+        } else {
+            const { data: {code, json_params} } = await downloadMergedMsg(props.message);
+            const mergedMsg = JSON.parse(json_params);
+            setMergedMsg(mergedMsg);
+        }
         setShowModal(true);
      }
+     
 
      const handleModalClose = () => {
          setShowModal(false);
@@ -40,8 +50,8 @@ export const MergeElem = (props: any): JSX.Element => {
                             <header className="merge-mesage-header">{props.merge_elem_title}</header>
                             <div className="merge-message-content customize-scroll-style">
                                 {
-                                    props.merge_elem_message_array && props.merge_elem_message_array.reverse().map((item: State.message,index) => {
-                                        const previousMessage = props.merge_elem_message_array[index -1];
+                                    mergedMsg.length > 0 && mergedMsg.reverse().map((item: State.message,index) => {
+                                        const previousMessage = mergedMsg[index -1];
                                         const previousMessageSender = previousMessage?.message_sender_profile?.user_profile_identifier;
                                         const { message_sender_profile, message_elem_array, message_client_time } = item;
                                         const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
