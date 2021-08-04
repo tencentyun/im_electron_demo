@@ -458,14 +458,16 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const keyBindingFn = (e) => {
-        e.preventDefault();
         if(e.keyCode === 13 || e.charCode === 13) {
+            e.preventDefault();
             return 'enter';
         } 
         if(e.keyCode === 38 || e.charCode === 38) {
+            e.preventDefault();
             return 'arrowUp';
         } 
         if(e.key === "@" && e.shiftKey && convType === 2) {
+            e.preventDefault();
             return '@';
         } 
     }
@@ -484,7 +486,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             case '@' : {
                 setAtPopup(true);
                 setEditorState(ContentUtils.insertText(editorState, ` @`))
-                return 'handled';
+                return 'not-handled';
             }
         }
     }
