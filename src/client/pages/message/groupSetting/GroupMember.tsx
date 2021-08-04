@@ -42,12 +42,12 @@ export const GroupMember = (props: {
     onRefresh,
   } = props;
 
-
+  const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
   const popupContainer = document.getElementById("messageInfo");
 
   const dialogRef = useDialogRef<GroupMemberListDrawerRecordsType>();
 
-  const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
+  const elem_type = useDialogRef<AddMemberRecordsType>();
 
   const deleteMemberDialogRef = useDialogRef<DeleteMemberRecordsType>();
 

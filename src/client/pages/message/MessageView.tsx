@@ -101,6 +101,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const [tips, setTips] = useState('')
     const { isShow, isCanOpenFileDir, index: imgPreViewUrlIndex, imgs } = useSelector((state: State.RootState) => state.imgViewer)
     const directToMsgPage = useMessageDirect();
+    console.log('messageList---------------------------------------------------------------------', messageList);
     useEffect(() => {
         if (!anchor) {
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
@@ -462,17 +463,17 @@ export const MessageView = (props: Props): JSX.Element => {
 
     const handleMsgReaded = async (UserId: Array<string>) => {
         const {
-          data: { code, json_param },
+            data: { code, json_param },
         } = await timRenderInstance.TIMProfileGetUserProfileList({
-          json_get_user_profile_list_param: {
-            friendship_getprofilelist_param_identifier_array: UserId,
-          },
+            json_get_user_profile_list_param: {
+                friendship_getprofilelist_param_identifier_array: UserId,
+            },
         });
         directToMsgPage({
-          convType: 1,
-          profile: JSON.parse(json_param)[0],
+            convType: 1,
+            profile: JSON.parse(json_param)[0],
         });
-      };
+    };
 
     const reEdit = (data) => {
         setEditorState(ContentUtils.insertText(editorState, data))
@@ -520,7 +521,6 @@ export const MessageView = (props: Props): JSX.Element => {
         if (currentMsgItem.elem_type !== 10 && currentMsgItem.elem_type !== 1 && onIsCustEmoji(currentMsgItem.elem_type, currentMsgItem.custom_elem_data)) {
             return
         }
-        console.log('messageList', messageList);
         console.log('item', currentMsgItem);
         console.log('event', event);
         let imgsUrl = []
@@ -595,7 +595,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     }
                     // console.warn(item,'查看发送内容')
                     const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status, message_is_peer_read, message_conv_type, message_conv_id, message_sender, message_client_time } = item;
-                    const { user_profile_face_url, user_profile_nick_name, user_profile_identifier,user_profile_gender } = message_sender_profile;
+                    const { user_profile_face_url, user_profile_nick_name, user_profile_identifier, user_profile_gender } = message_sender_profile;
                     const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
                     const isMessageSendFailed = message_status === 3 && message_is_from_self;
                     const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self && !isMessageSendFailed;
@@ -610,7 +610,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                     </div>
                                 ) :
                                     <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self && item ? 'is-self' : ''}`} key={message_msg_id}>
-                                        {isMultiSelect && (seleted &&  message_is_peer_read?
+                                        {isMultiSelect && (seleted && message_is_peer_read ?
                                             <Icon className="message-view__item--icon" type="success" /> :
                                             <i className="message-view__item--icon-normal" ></i>)
                                         }
@@ -619,24 +619,24 @@ export const MessageView = (props: Props): JSX.Element => {
                                                 placement={"right-start"}
                                                 trigger="click"
                                                 content={
-                                                <div className="card-content">
-                                                    <div className="main-info">
-                                                    <div className="info-item">
-                                                        <Avatar
-                                                        key={user_profile_face_url}
-                                                        url={user_profile_face_url}
-                                                        nickName={user_profile_nick_name}
-                                                        userID={user_profile_identifier}
-                                                        />
-                                                        <div className="nickname">{user_profile_nick_name || ''}</div>
+                                                    <div className="card-content">
+                                                        <div className="main-info">
+                                                            <div className="info-item">
+                                                                <Avatar
+                                                                    key={user_profile_face_url}
+                                                                    url={user_profile_face_url}
+                                                                    nickName={user_profile_nick_name}
+                                                                    userID={user_profile_identifier}
+                                                                />
+                                                                <div className="nickname">{user_profile_nick_name || ''}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="info-bar">
+                                                            <Button type="primary" onClick={() => handleMsgReaded([user_profile_identifier])} style={{ width: "100%" }}>
+                                                                发消息
+                                                            </Button>
+                                                        </div>
                                                     </div>
-                                                    </div>
-                                                    <div className="info-bar">
-                                                    <Button type="primary" onClick={() => handleMsgReaded([user_profile_identifier])} style={{ width: "100%" }}>
-                                                        发消息
-                                                    </Button>
-                                                    </div>
-                                                </div>
                                                 }
                                             >
                                                 <span style={{display:'none'}}>占位</span><Avatar url={user_profile_face_url}  isClick={false} isPreview={true} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />

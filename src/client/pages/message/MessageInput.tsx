@@ -111,6 +111,7 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const userSig = window.localStorage.getItem('usersig')
     const uid = window.localStorage.getItem('uid')
+    window.localStorage.setItem('inputAt', '0')
     window.localStorage.setItem('convId', convId)
     // 上传逻辑
     const handleUpload = (base64Data) => {
@@ -488,7 +489,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (file) {
             // console.log(file)
             const { data: { code, json_params, desc } } = await sendVideoMsg({
-                convId,
+                convId: window.localStorage.getItem('convId'),
                 convType,
                 messageElementArray: [{
                     elem_type: 9,
@@ -509,12 +510,12 @@ export const MessageInput = (props: Props): JSX.Element => {
             console.log(desc)
             if (code === 0) {
                 dispatch(reciMessage({
-                    convId,
+                    convId: window.localStorage.getItem('convId'),
                     messages: [JSON.parse(json_params)]
                 }))
             } else if (code === 7006) {
                 dispatch(reciMessage({
-                    convId,
+                    convId: window.localStorage.getItem('convId'),
                     messages: [JSON.parse(json_params)]
                 }))
             } else {
@@ -542,6 +543,7 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handleSendAtMessage = () => {
         // resetState()
+        window.localStorage.setItem('inputAt', '0')
         convType === 2 && setAtPopup(true)
     }
 
@@ -592,6 +594,9 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
     const handleOnkeyPress = (e) => {
         // const type = sendType
+        if (editorState?.toText().substring(editorState?.toText().length - 1, editorState?.toText().length) === '@') {
+            setEditorState(ContentUtils.insertText(editorState.substring(0, editorState?.toText().length - 1), ''))
+        }
         // if(editorState.toText().substring(editorState.toText().length-1,editorState.toText().length) === '@'){
         //     console.info(787878)
         //     setEditorState(ContentUtils.insertText(editorState.toText().substring(0,editorState.toText().length-1), ''))
@@ -615,7 +620,8 @@ export const MessageInput = (props: Props): JSX.Element => {
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 // console.log('换行', '----------------------', editorState)
             } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-                e.preventDefault();
+                window.localStorage.setItem('inputAt', '1')
+                e.preventDefault()
                 setAtPopup(true)
             }
         }
@@ -625,7 +631,10 @@ export const MessageInput = (props: Props): JSX.Element => {
     const onAtPopupCallback = (userName) => {
         resetState()
         if (userName) {
-            setEditorState(ContentUtils.insertText(editorState, `@${userName} `))
+            const isInputAt = window.localStorage.getItem('inputAt')
+            console.log(isInputAt, '0000000000000')
+            const text = Number(isInputAt) ? `${userName} ` : `@${userName} `
+            setEditorState(ContentUtils.insertText(editorState, text))
         }
     }
 
@@ -820,7 +829,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     return (
         <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
-                atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
+                atPopup && <AtPopup callback={(name) => { onAtPopupCallback(name) }} group_id={convId} />
             }
             <div className="message-input__feature-area">
                 {

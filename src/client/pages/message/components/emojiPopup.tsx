@@ -1,7 +1,7 @@
 import './emojiPopup.scss'
-import React, { 
-    FC, 
-    useEffect, 
+import React, {
+    FC,
+    useEffect,
     useRef,
     useState
 } from "react"
@@ -13,8 +13,8 @@ import {
     animation
 } from 'react-contexify';
 import { emojiMap, emojiName, emojiUrl } from '../emoji-map'
-import { getCustEmoji, custEmojiUpsert }  from '../../../services/custEmoji'
-import type { getCustEmojiType, custEmojiUpsertParams }  from '../../../services/custEmoji'
+import { getCustEmoji, custEmojiUpsert } from '../../../services/custEmoji'
+import type { getCustEmojiType, custEmojiUpsertParams } from '../../../services/custEmoji'
 import { message, StatusTip } from 'tea-component';
 import { throttle } from '../../../utils/tools'
 
@@ -34,7 +34,7 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
     const [page, setPage] = useState(1)
     const [isFinalPage, setIsFinalPage] = useState(false)
     const [loadStatus, setLoadStatus] = useState('init')
-    
+
     useEffect(() => {
         document.addEventListener('click', handlePopupClick);
         return () => {
@@ -43,10 +43,10 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
     }, []);
 
     const handlePopupClick = (e) => {
-        if(!refPopup.current) return
+        if (!refPopup.current) return
         if (!refPopup.current.contains(e.target as Node) && refPopup.current !== e.target) {
             callback("")
-        } 
+        }
     }
 
     const handleEmojiShow = () => {
@@ -54,7 +54,7 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
     }
 
     const hanldeScrollCustEmoji = throttle(() => {
-        if (refCustEmoji){
+        if (refCustEmoji) {
             const { scrollTop, clientHeight, scrollHeight } = refCustEmoji.current
             if (scrollTop + clientHeight >= scrollHeight - 10) {
                 !isFinalPage && onGetCustEmoji(page + 1)
@@ -70,7 +70,7 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
         try {
             setLoadStatus('loading')
             const userId = localStorage.getItem('uid')
-            const params:getCustEmojiType = {
+            const params: getCustEmojiType = {
                 uid: userId,
                 page,
                 limit
@@ -80,14 +80,14 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
             if (data.ErrorCode !== 0) {
                 return
             }
-            const dataList= data.Data || []
+            const dataList = data.Data || []
             if (page === 1) {
                 setCustEmojiList(dataList)
             } else {
                 setCustEmojiList([...custEmojiList, ...dataList])
             }
             setIsFinalPage(dataList.length < limit)
-        } catch(e){
+        } catch (e) {
             setLoadStatus('complete')
         }
     }
@@ -105,7 +105,7 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
         })
     }
 
-    const handlDeleteClick =async (e) => {
+    const handlDeleteClick = async (e) => {
         try {
             const userId = localStorage.getItem('uid')
             const params: custEmojiUpsertParams = {
@@ -113,81 +113,81 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
                 op_type: 2,
                 uid: userId
             }
-            const {ErrorCode, ErrorInfo } = await custEmojiUpsert(params)
+            const { ErrorCode, ErrorInfo } = await custEmojiUpsert(params)
             if (ErrorCode === 0) {
                 message.success({ content: '删除成功' })
                 onGetCustEmoji(1)
             } else {
                 message.error({ content: ErrorInfo })
             }
-        } catch(e) {
+        } catch (e) {
             message.error({ content: '删除错误' })
         }
     }
 
     const getLoadingStatus = () => {
         if (loadStatus === 'loading') {
-            return <StatusTip.LoadingTip/>
+            return <StatusTip.LoadingTip />
         } else {
-            if (loadStatus ==='complete' && !custEmojiList.length) {
-                return <StatusTip.EmptyTip emptyText="您还没有添加表情"/>
+            if (loadStatus === 'complete' && !custEmojiList.length) {
+                return <StatusTip.EmptyTip emptyText="您还没有添加表情" />
             }
         }
     }
     return (
-            <div ref={refPopup} className="emoji-popup">
-                { 
-                    !isShowCustEmoji && <div className="emojis emojis-default">
-                        {
-                            emojiName.map((v, i) => <span key={i} onClick={() => callback(v)}>
-                                < img src={emojiUrl + emojiMap[v]} />
-                            </span>)
-                        }
+        <div ref={refPopup} className="emoji-popup">
+            {
+                !isShowCustEmoji && <div className="emojis emojis-default">
+                    {
+                        emojiName.map((v, i) => <span key={i} onClick={() => callback(v)}>
+                            < img src={emojiUrl + emojiMap[v]} />
+                        </span>)
+                    }
+                </div>
+            }
+            {
+                isShowCustEmoji &&
+                <div
+                    ref={refCustEmoji}
+                    className="emojis emojis-cust"
+                    onScrollCapture={hanldeScrollCustEmoji}
+                >
+                    {
+                        custEmojiList.map((v, i) =>
+                            <span
+                                key={i}
+                                className="cust-span"
+                                onClick={() => callback(v.sticker_url, CUSTEMOJI)}
+                                onContextMenu={(e) => { handleContextMenuEvent(e, v.id) }}
+                            >
+                                < img src={v.sticker_url} title="发送" />
+                            </span>
+                        )
+                    }
+                    {
+                        getLoadingStatus()
+                    }
+                </div>
+            }
+            {
+                isShowCustEmoji && <Menu
+                    id={EMOJIMENU}
+                    theme={theme.light}
+                    animation={animation.fade}
+                >
+                    <Item onClick={(e) => handlDeleteClick(e)}>删除 </Item>
+                </Menu>
+            }
+            <div className="emoji-tab">
+                <div className="tabs">
+                    <div className={!isShowCustEmoji ? 'single smileiconactive' : 'single smileicon'} onClick={handleEmojiShow}>
+                        <div className="tab-icon"></div>
                     </div>
-                }
-                {
-                    isShowCustEmoji &&
-                        <div 
-                            ref={refCustEmoji}
-                            className="emojis emojis-cust"
-                            onScrollCapture={hanldeScrollCustEmoji}
-                        >
-                            {
-                                custEmojiList.map((v, i) =>
-                                    <span
-                                        key={i}
-                                        className="cust-span"
-                                        onClick={() => callback(v.sticker_url, CUSTEMOJI)}
-                                        onContextMenu={(e) => { handleContextMenuEvent(e, v.id) }}
-                                    >
-                                        < img src={v.sticker_url} title="发送" />
-                                    </span>
-                                )
-                            }
-                            {
-                                getLoadingStatus()
-                            }
-                        </div>
-                }
-                {
-                    isShowCustEmoji && <Menu
-                        id={EMOJIMENU}
-                        theme={theme.light}
-                        animation={animation.fade}
-                     >
-                        <Item onClick={(e) => handlDeleteClick(e)}>删除 </Item>
-                    </Menu>
-                }
-                <div className="emoji-tab">
-                    <div className="tabs">
-                        <div className={ !isShowCustEmoji ? 'single smileiconactive' : 'single smileicon' } onClick={ handleEmojiShow }>
-                            <div className="tab-icon"></div>
-                        </div>
-                        <div className={ isShowCustEmoji ? 'single custemojiactive' : 'single custemojiicon' } onClick={ handleCustEmojiShow }>
-                            <div className="tab-icon"></div>
-                        </div>
+                    <div className={isShowCustEmoji ? 'single custemojiactive' : 'single custemojiicon'} onClick={handleCustEmojiShow}>
+                        <div className="tab-icon"></div>
                     </div>
                 </div>
             </div>
+        </div>
     )
 }
