@@ -210,6 +210,7 @@ export const MessageView = (props: Props): JSX.Element => {
     };
 
     const handleTransimitMsg = (params) => {
+        console.log(params)
         const { message } = params;
         setTransimitPopup(true)
         setSeletedMessage([message])

@@ -7,7 +7,7 @@ const ADD_MORE_MESSAGE = "ADD_MORE_MESSAGE";
 const UPDATE_MESSAGES = "UPDATE_MESSAGES"
 const UPDATE_MESSAGE_ELEM_PROGRESS = "UPDATE_MESSAGE_ELEM_PROGRESS"
 const SET_CURRENT_REPLY_USER = "SET_CURRENT_REPLY_USER"
-
+const CLEAR_HISTORY = 'CLEAR_HISTORY'
 export enum ActionTypeEnum {
     ADD_MESSAGE = "ADD_MESSAGE",
     RECI_MESSAGE = "RECI_MESSAGE",
@@ -17,7 +17,8 @@ export enum ActionTypeEnum {
     ADD_MORE_MESSAGE = "ADD_MORE_MESSAGE",
     UPDATE_MESSAGES = "UPDATE_MESSAGES",
     UPDATE_MESSAGE_ELEM_PROGRESS = "UPDATE_MESSAGE_ELEM_PROGRESS",
-    SET_CURRENT_REPLY_USER = "SET_CURRENT_REPLY_USER"
+    SET_CURRENT_REPLY_USER = "SET_CURRENT_REPLY_USER",
+    CLEAR_HISTORY = 'CLEAR_HISTORY'
 }
 
 export type Action = {
@@ -116,4 +117,8 @@ export const updateMessageElemProgress = (payload: UpdateMessageElemProgressPayl
 export const setCurrentReplyUser = (payload: SetCurrentReplyUserPayload): State.actcionType<SetCurrentReplyUserPayload> => ({
     type: SET_CURRENT_REPLY_USER,
     payload
+})
+
+export const clearHistory = () => ({
+    type: CLEAR_HISTORY
 })

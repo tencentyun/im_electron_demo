@@ -117,7 +117,12 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
         currentReplyUser: payload.profile
       }
     }
-
+    case ActionTypeEnum.CLEAR_HISTORY:
+      return {
+        historyMessageList: new Map(),
+        uploadProgressList: new Map(),
+        currentReplyUser: null
+      }
     default:
       return state;
   }
