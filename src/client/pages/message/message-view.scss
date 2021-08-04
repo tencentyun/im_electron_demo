@@ -348,11 +348,12 @@
         top: 20px;
         cursor: pointer;
     }
-    &__combine, &__divide {
+    &__combine, &__divide, &__delete {
         padding-top: 48px;
         cursor: pointer;
         p {
             padding-top: 9px;
+            text-align: center;
         }
     }
     &__combine {
@@ -360,6 +361,13 @@
         background: url('../../assets/icon/forward-combine.svg') no-repeat;
     }
     &__divide {
+        margin-right: 84px;
         background: url('../../assets/icon/forward-divide.svg') no-repeat;
+    }
+
+    &__delete {
+        width: 48px;
+        background: url('../../assets/icon/delete-message.svg') no-repeat;
+        background-size: 48px;
     }
 }

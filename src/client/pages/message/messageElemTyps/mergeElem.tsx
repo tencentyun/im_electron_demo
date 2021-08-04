@@ -27,7 +27,6 @@ export const MergeElem = (props: any): JSX.Element => {
                     props.merge_elem_abstract_array.map((item, index) => {
                         return <div key={index} className="message-view__item--merge___abst">{item}</div>
                     })
-
                 }
                 <Modal 
                     className="message-info-modal" 
@@ -83,6 +82,5 @@ export const MergeElem = (props: any): JSX.Element => {
             </div>
         )
     };
-    console.log('合并消息', props)
     return item(props);
 }

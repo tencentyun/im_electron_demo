@@ -8,7 +8,7 @@ import {
     animation
 } from 'react-contexify';
 import './message-view.scss';
-import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, TextMsg, getMsgList } from './api';
+import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, TextMsg, getMsgList, deleteMsgList } from './api';
 import { markeMessageAsRevoke, deleteMessage, reciMessage,  addMoreMessage } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import { 
@@ -238,6 +238,27 @@ export const MessageView = (props: Props): JSX.Element => {
         setTransimitPopup(true)
         setForwardType(type)
     }
+
+    const deleteSelectedMessage = async () => {
+        if(!seletedMessage.length) return;
+        const { message_conv_id, message_conv_type} = seletedMessage[0];
+        seletedMessage.map(item => {
+            handleDeleteMsg({
+                convId: item.message_conv_id,
+                msgId: item.message_msg_id,
+                convType: item.message_conv_type
+            })
+        })
+        // const params = {
+        //     convId: message_conv_id,
+        //     convType: message_conv_type,
+        //     messageList: seletedMessage.map(item => item.message_msg_id)
+        // }
+        // const res = await deleteMsgList(params);
+
+        // console.log(res);
+    };
+
     const handleMultiSelectMsg = (params) => {
         setMultiSelect(true)
     }
@@ -380,10 +401,10 @@ export const MessageView = (props: Props): JSX.Element => {
                                         { `${revokedPerson} 撤回了一条消息` }
                                     </div>
                                 ) :
-                                <>
-                                   {
-                                        message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
-                                            return (
+                                // <>
+                                //    {
+                                //         message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                //             return (
                                                 <div  key={index} onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
                                                     { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ? 
                                                         <Icon className="message-view__item--icon" type="success" /> : 
@@ -393,26 +414,26 @@ export const MessageView = (props: Props): JSX.Element => {
                                                         <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                                                     </div>
                                                     {
-                                                        // message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
-                                                        //     return (
+                                                        message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                                            return (
                                                                 <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item, elment) }}>
 
                                                                     {
                                                                         displayDiffMessage(item, elment, index)
                                                                     }
                                                                 </div>
-                                                        //     )
-                                                        // })
+                                                            )
+                                                        })
                                                     }
                                                     {
                                                         shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
                                                         isMessageSendFailed &&  <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
                                                     }
                                                 </div>
-                                            )
-                                        })
-                                   }
-                                </>
+                                //             )
+                                //         })
+                                //    }
+                                // </>
                             }
                             <div className="message-view__item--blank"></div>
                         </React.Fragment>
@@ -446,6 +467,9 @@ export const MessageView = (props: Props): JSX.Element => {
                     </div>
                     <div className="forward-type-popup__divide" onClick={() => handleForwardTypePopup(ForwardType.divide)}>
                         <p>逐条转发</p>
+                    </div>
+                    <div className="forward-type-popup__delete" onClick={deleteSelectedMessage}>
+                        <p>删除</p>
                     </div>
                 </div>   
             }

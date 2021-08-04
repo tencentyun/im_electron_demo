@@ -626,3 +626,13 @@ export const downloadMeregeMessage = async params => {
   });
   console.log('res', res);
 };
+
+export const deleteMsgList = async params => {
+  const res = await timRenderInstance.TIMMsgListDelete({
+    conv_id: params.convId,
+    conv_type: params.convType,
+    params: params.messageList
+  });
+
+  return res;
+}
