@@ -751,7 +751,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         return () => {
             ipcRenderer.off("SELECT_FILES_CALLBACK", listener)
         }
-    }, [])
+    }, [convId, convType])
     const listener = (event, params) => {
         const { fileType, data } = params
         console.log(fileType, data)
