@@ -31,7 +31,7 @@ export const CreateGroupDialog = (props: {
     const res = await createGroup(formData);
     const currentGroupId = JSON.parse(res.json_param).create_group_result_groupid;
     
-     const  await sendMsg({
+     await sendMsg({
         convId: currentGroupId,
         convType: 2,
         messageElementArray: [
