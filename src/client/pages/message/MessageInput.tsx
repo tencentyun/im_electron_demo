@@ -128,7 +128,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }));
 
                 const results = await Promise.all(fetchList);
-
+                console.log(results)
                 for(const res of results) {
                     const { data: {code, json_params, desc }} = res;
                     if (code === 0) {                

@@ -1,4 +1,4 @@
-import { REPLACE_CONV_LIST, SET_UNREAD_COUNT, UPDATE_CONVERSATIONLIST, UPDATE_CURRENT_SELECTED_CONVERSATION, MARK_CONV_LAST_MSG_IS_READED } from '../actions/conversation';
+import { REPLACE_CONV_LIST, SET_UNREAD_COUNT, UPDATE_CONVERSATIONLIST, UPDATE_CURRENT_SELECTED_CONVERSATION, MARK_CONV_LAST_MSG_IS_READED, CLEAR_CONVERSATION } from '../actions/conversation';
 
 const initState = {
     unreadCount: 0,
@@ -53,7 +53,7 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
                 conversationList: action.payload
             }
 
-        case MARK_CONV_LAST_MSG_IS_READED: {
+        case MARK_CONV_LAST_MSG_IS_READED: 
             const catchList = [...state.conversationList];
             const { payload  } = action;
             const convIds = payload.map((element : State.MessageReceipt)  => element.msg_receipt_conv_id);
@@ -67,7 +67,12 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
                 ...state,
                 conversationList: catchList
             }
-        }
+        case CLEAR_CONVERSATION:
+            return {
+                unreadCount: 0,
+                conversationList:[],
+                currentSelectedConversation: null
+            }
         default:
           return state;
     }

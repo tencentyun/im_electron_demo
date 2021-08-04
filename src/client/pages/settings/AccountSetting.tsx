@@ -5,6 +5,8 @@ import { useHistory } from "react-router-dom";
 
 import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction, userLogout } from '../../store/actions/login';
+import { clearConversation } from '../../store/actions/conversation';
+import { clearHistory } from '../../store/actions/message';
 
 
 export const AccountSetting = (): JSX.Element => {
@@ -16,6 +18,8 @@ export const AccountSetting = (): JSX.Element => {
         dispatch(userLogout());
         history.replace('/login');
         dispatch(setIsLogInAction(false));
+        dispatch(clearConversation())
+        dispatch(clearHistory())
     };
     return (
         <div className="connect">
