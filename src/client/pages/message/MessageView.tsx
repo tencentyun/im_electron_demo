@@ -51,7 +51,8 @@ type Props = {
     editorState,
     setEditorState,
     convType: number,
-    convId: string
+    groupType: number;
+    convId: string;
 }
 
 const RIGHT_CLICK_MENU_LIST = [{
@@ -274,6 +275,27 @@ export const MessageView = (props: Props): JSX.Element => {
         setTransimitPopup(true)
         setForwardType(type)
     }
+
+    const deleteSelectedMessage = async () => {
+        if(!seletedMessage.length) return;
+        const { message_conv_id, message_conv_type} = seletedMessage[0];
+        seletedMessage.map(item => {
+            handleDeleteMsg({
+                convId: item.message_conv_id,
+                msgId: item.message_msg_id,
+                convType: item.message_conv_type
+            })
+        })
+        // const params = {
+        //     convId: message_conv_id,
+        //     convType: message_conv_type,
+        //     messageList: seletedMessage.map(item => item.message_msg_id)
+        // }
+        // const res = await deleteMsgList(params);
+
+        // console.log(res);
+    };
+
     const handleMultiSelectMsg = (params) => {
         setMultiSelect(true)
     }

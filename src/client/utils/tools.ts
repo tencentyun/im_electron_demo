@@ -1,4 +1,4 @@
-import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY } from "../../app/const/const";
+import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW } from "../../app/const/const";
 
 import { ipcRenderer, remote } from 'electron';
 
@@ -64,7 +64,7 @@ const throttle = (fn, delay) => {
     }
 }
 
-//file对象转换为Blob对象 
+//file����ת��ΪBlob���� 
 const dataURLtoBlob = (file) => {
     return new Promise((resolve, reject) => {
         if (!file) {
@@ -82,7 +82,7 @@ const dataURLtoBlob = (file) => {
     })
 }
 const convertBase64UrlToBlob = (urlData) => {
-    // 去掉url的头，并转换为byte
+    // ȥ��url��ͷ����ת��Ϊbyte
     let bytes = window.atob(urlData.split(',')[1])
     let ab = new ArrayBuffer(bytes.length)
     let ia = new Uint8Array(ab)
@@ -93,7 +93,7 @@ const convertBase64UrlToBlob = (urlData) => {
 }
 
 /**
- * 文字高亮
+ * ���ָ���
  */
 const highlightText = (text, content, color = '#006eff') => {
     if (!text) {
@@ -112,7 +112,9 @@ const openCallWindow = (data) => {
 const callWindowCloseListiner = (callback) => {
     ipcRenderer.on(CALL_WINDOW_CLOSE_REPLY, callback);
 };
-
+const generateRoomID = () => {
+    return Math.floor(Math.random() * 1000);
+}
 export {
     isWin,
     minSizeWin,
@@ -121,6 +123,7 @@ export {
     showDialog,
     downloadFilesByUrl,
     checkFileExist,
+    generateRoomID,
     throttle,
     dataURLtoBlob,
     convertBase64UrlToBlob,

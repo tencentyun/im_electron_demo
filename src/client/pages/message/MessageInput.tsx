@@ -349,16 +349,16 @@ export const MessageInput = (props: Props): JSX.Element => {
     // }
 
     const getAtList = (text: string) => {
-        const list = text.match(/@\w+/g);
-        return list ? list.map(v => v.slice(1)) : []
+        const list = text.match(/@[a-zA-Z0-9_\u4e00-\u9fa5]+/g);
+        const atNameList =  list ? list.map(v => v.slice(1)) : [];
+        return atNameList.map(v => atUserMap[v]);
     }
     const handleDropFile = (e) => {
-        const file = e.dataTransfer?.files[0]
-        const iterator = file.type.matchAll(/(\w+)\//g)
-        const type = iterator.next().value[1]
-        const params = getSendMessageParamsByFile(type, file)
+        const files = e.dataTransfer?.files || [];
+        for (const file of files) {
+            setFile(file);
+        }
         setDraging(false);
-        sendMessages(type, params)
     }
 
     const getSendMessageParamsByFile = (type, file) => {
@@ -572,6 +572,9 @@ export const MessageInput = (props: Props): JSX.Element => {
             case "voice":
                 handleSendSoundMessage()
                 break;
+            case "video":
+                selectVideoMessage()
+                break;
             case "phone":
                 // handleSendPhoneMessage()
                 break;
@@ -624,8 +627,10 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const onAtPopupCallback = (userName) => {
         resetState()
-        if (userName) {
-            setEditorState(ContentUtils.insertText(editorState, `@${userName} `))
+        if (userId) {
+            const atText = userName || userId;
+            setAtUserMap(pre => ({...pre, [atText]: userId}));
+            setEditorState(ContentUtils.insertText(editorState, `${atText} `))
         }
     }
 
@@ -758,6 +763,16 @@ export const MessageInput = (props: Props): JSX.Element => {
         sendMessages(fileType, data)
     }
     useEffect(() => {
+        const listener = (event, params) => {
+           setVideoInfos(pre => [...pre, params]);
+        }
+        ipcRenderer.on("GET_VIDEO_INFO_CALLBACK", listener)
+        return () => {
+            ipcRenderer.off("GET_VIDEO_INFO_CALLBACK", listener)
+        }
+    }, [convId, convType])
+
+    useEffect(() => {
         setEditorState(ContentUtils.clear(editorState))
     }, [convId, convType]);
 
@@ -820,7 +835,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     return (
         <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
-                atPopup && <AtPopup callback={(name) => onAtPopupCallback(name)} group_id={convId} />
+                atPopup && <AtPopup callback={(userId, name) => onAtPopupCallback(userId, name)} atUserNameInput={atUserNameInput} group_id={convId} />
             }
             <div className="message-input__feature-area">
                 {
@@ -844,6 +859,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             </div>
             <div className="message-input__text-area disabled" onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}>
                 <BraftEditor
+                    stripPastedStyles
                     //@ts-ignore
                     disabled={isShutUpAll}
                     onChange={editorChange}
@@ -855,6 +871,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ref={instance => editorInstance = instance}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     placeholder={placeHolderText}
+                    actions={[]}
                 />
             </div>
             <span className="message-input__button-area">
