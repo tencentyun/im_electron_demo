@@ -98,7 +98,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [isTextNullEmpty, setIsTextNullEmpty] = useState(true);
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const [shouldShowCallMenu, setShowCallMenu] = useState(false);
-    let inputAt = false;
     // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null))
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -112,6 +111,7 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const userSig = window.localStorage.getItem('usersig')
     const uid = window.localStorage.getItem('uid')
+    window.localStorage.setItem('inputAt', '0')
     window.localStorage.setItem('convId', convId)
     // 上传逻辑
     const handleUpload = (base64Data) => {
@@ -543,7 +543,7 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handleSendAtMessage = () => {
         // resetState()
-        inputAt = false;
+        window.localStorage.setItem('inputAt', '0')
         convType === 2 && setAtPopup(true)
     }
 
@@ -620,8 +620,8 @@ export const MessageInput = (props: Props): JSX.Element => {
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 // console.log('换行', '----------------------', editorState)
             } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-                e.preventDefault();
-                inputAt = true
+                window.localStorage.setItem('inputAt', '1')
+                e.preventDefault()
                 setAtPopup(true)
             }
         }
@@ -630,9 +630,10 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const onAtPopupCallback = (userName) => {
         resetState()
-        console.log(inputAt, '-----------------------==================================')
         if (userName) {
-            const text = inputAt ? `${userName} ` : `@${userName} `
+            const isInputAt = window.localStorage.getItem('inputAt')
+            console.log(isInputAt, '0000000000000')
+            const text = Number(isInputAt) ? `${userName} ` : `@${userName} `
             setEditorState(ContentUtils.insertText(editorState, text))
         }
     }
