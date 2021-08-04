@@ -596,6 +596,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         <div className="message-view__item--avatar face-url">
                                             <Bubble
                                                 placement={"right-start"}
+                                                trigger="click"
                                                 content={
                                                 <div className="card-content">
                                                     <div className="main-info">
@@ -617,15 +618,15 @@ export const MessageView = (props: Props): JSX.Element => {
                                                 </div>
                                                 }
                                             >
-                                                <span style={{display:'none'}}>占位</span><Avatar url={user_profile_face_url.replace('30003','30004/oaim')+'?imageView2/3/w/40/h/40'} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                                <span style={{display:'none'}}>占位</span><Avatar url={user_profile_face_url}  isClick={false} isPreview={true} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                                             </Bubble>
                                         </div>
                                         {
                                             message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                                 return (
-                                                    elment.elem_type === 3 ? 
+                                                    elment.elem_type === 900 ? 
                                                     <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-                                                        <span className="message-view__item--text text right-menu-item">{elment?.custom_elem_data}创建了群组</span>
+                                                        <span className="message-view__item--text text right-menu-item">{elment?.custom_elem_data}创建了群组</span>{elment.elem_type}
                                                     </div>
                                                     :
                                                     <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>

@@ -35,7 +35,7 @@ export const CreateGroupDialog = (props: {
       convType: 2,
       messageElementArray: [
         {
-          elem_type: 3,
+          elem_type: 900,
           custom_elem_data: defaultForm.userId.toString(),
         },
       ],

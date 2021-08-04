@@ -1,7 +1,8 @@
 .contacter-result {
     padding-left: 8px;
+    overflow-y: visible;
+    overflow-x: hidden;
     height: calc(80vh - 125px);
-    overflow: hidden;
     box-sizing: border-box;
 
     &__item {
