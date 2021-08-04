@@ -567,6 +567,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
+                    actions={[]}
                 />
             </div>
             <div className="message-input__button-area">

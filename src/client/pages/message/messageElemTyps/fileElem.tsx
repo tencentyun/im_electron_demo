@@ -1,17 +1,15 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { downloadFilesByUrl, showDialog, checkFileExist } from "../../../utils/tools";
+import { downloadFilesByUrl, showDialog } from "../../../utils/tools";
 import { cancelSendMsg } from "../api";
 import { shell } from 'electron'
 import { Icon, message as teaMessage } from "tea-component";
 import { checkPathInLS, setPathToLS } from "../../../utils/messageUtils";
-import { ipcRenderer } from "electron";
-import { RENDERPROCESSCALL, SELECT_FILES } from "../../../../app/const/const";
-
+import path from 'path';
 export const FileElem = (props: any): JSX.Element => {
     const { message, element, index } = props
     const { message_conv_id, message_conv_type, message_status, message_msg_id, message_is_from_self } = message
-    const { file_elem_file_name, file_elem_file_size, file_elem_file_id, file_elem_file_path, file_elem_url } = element
+    const { file_elem_file_name, file_elem_file_size,  file_elem_file_path, file_elem_url } = element
     const { uploadProgressList } = useSelector((state: State.RootState) => state.historyMessage);
     const progressKey = `${message_msg_id}_${index}`
     const uploadProgress = uploadProgressList.get(progressKey);
@@ -28,9 +26,9 @@ export const FileElem = (props: any): JSX.Element => {
     const getFilePath = () => {
         const match = file_elem_url.match(/\/([\w|\.]+$)/)
         if(message_is_from_self) 
-            return file_elem_file_path
+            return path.resolve(file_elem_file_path)
         else 
-            return process.cwd() + '/download/' + (match ? match[1] : "")
+            return path.resolve(process.cwd() + '/download/' + (match ? match[1] : ""))
     }
     
     const calcuSize = () => {
@@ -47,7 +45,14 @@ export const FileElem = (props: any): JSX.Element => {
         return match ? match[1] : "unknow"
     }
     const handleOpen = () => {
-        shell.showItemInFolder(getFilePath())
+        const p = getFilePath()
+        try {
+            shell.openPath(p).catch(err=>{
+                shell.showItemInFolder(p)
+            })
+        }catch {
+            
+        }
     }
     const handleCancel = async () => {
         const {data: {json_params, code}} = await cancelSendMsg({
