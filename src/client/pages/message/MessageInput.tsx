@@ -130,7 +130,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 const results = await Promise.all(fetchList);
 
                 for(const res of results) {
-                    // @ts-ignore
                     const { data: {code, json_params, desc }} = res;
                     if (code === 0) {                
                         dispatch(updateMessages({
@@ -182,30 +181,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
         setDraging(false);
     }
-
-    // const getSendMessageParamsByFile = (type, file) => {
-    //     switch(type) {
-    //         case "image":
-    //             return { 
-    //                 imagePath: file.path 
-    //             }
-    //         case "audio":
-    //             return { 
-    //                 audioPath: file.path 
-    //             }
-    //         case "video":
-    //             return {
-    //                 videoPath: file.value, 
-    //                 videoSize: file.size,
-    //             }
-    //         default:
-    //             return {
-    //                 filePath: file.path,
-    //                 fileName: file.name,
-    //                 fileSize: file.size
-    //             }
-    //     }
-    // }
 
     const sendMessages = (type, params) => {
         switch(type) {
@@ -408,24 +383,25 @@ export const MessageInput = (props: Props): JSX.Element => {
         setActiveFeature(featureId);
     }
 
-    const handleOnkeyPress = (e) => {
-        if (e.keyCode == 13 || e.charCode === 13) {
-            e.preventDefault();
-            if(!atPopup){
-                handleSendMsg();
-            }
-        } else if(e.key === "@" && convType === 2) {
-            e.preventDefault();
-            setAtPopup(true)
-        } 
-    }
+    // const handleOnkeyPress = (e) => {
+    //     console.log('handleOnkeyPress', e)
+    //     if (e.keyCode == 13 || e.charCode === 13) {
+    //         e.preventDefault();
+    //         if(!atPopup){
+    //             handleSendMsg();
+    //         }
+    //     } else if(e.key === "@" && e.shiftkey && convType === 2) {
+    //         e.preventDefault();
+    //         setAtPopup(true)
+    //     } 
+    // }
 
     const onAtPopupCallback = (userId: string, userName: string) => {
         resetState()
         if (userId) {
             const atText = userName || userId;
             setAtUserMap(pre => ({...pre, [atText]: userId}));
-            setEditorState(ContentUtils.insertText(editorState, `@${atText} `))
+            setEditorState(ContentUtils.insertText(editorState, `${atText} `))
         }
     }
 
@@ -482,23 +458,33 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const keyBindingFn = (e) => {
+        e.preventDefault();
         if(e.keyCode === 13 || e.charCode === 13) {
-            e.preventDefault();
             return 'enter';
-        }
+        } 
         if(e.keyCode === 38 || e.charCode === 38) {
-            e.preventDefault();
             return 'arrowUp';
-        }
+        } 
+        if(e.key === "@" && e.shiftKey && convType === 2) {
+            return '@';
+        } 
     }
 
     const handleKeyCommand = (e) => {
         switch(e) {
             case 'enter': {
+                if(!atPopup){
+                    handleSendMsg();
+                }
                 return 'not-handled';
             }
             case 'arrowUp': {
                 return 'not-handled';
+            } 
+            case '@' : {
+                setAtPopup(true);
+                setEditorState(ContentUtils.insertText(editorState, ` @`))
+                return 'handled';
             }
         }
     }
@@ -532,7 +518,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const dragEnterStyle = isDraging ? 'draging-style' : '';
 
     return (
-        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onKeyDown={ handleOnkeyPress} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
+        <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
                 atPopup && <AtPopup callback={(userId, name) => onAtPopupCallback(userId, name)} atUserNameInput={atUserNameInput} group_id={convId} />
             }
