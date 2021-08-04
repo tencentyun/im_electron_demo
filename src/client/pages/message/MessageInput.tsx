@@ -157,18 +157,20 @@ export const MessageInput = (props: Props): JSX.Element => {
     const setFile = async (file: File | {size: number; type: string; path: string; name: string; fileContent: string}) => {
         if(file) {
             const fileSize = file.size;
-            if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
             const type = file.type;
             if (type.includes('png') || type.includes('jpg')) {
+                if(fileSize > 28 * 1024 * 1024) return message.error({content: "image size can not exceed 28m"})
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
                 setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
             } else if ( type.includes('mp4') || type.includes('mov')){
+                if(fileSize > 100 * 1024 * 1024) return message.error({content: "video size can not exceed 100m"})
                 ipcRenderer.send(RENDERPROCESSCALL,{
                     type: GET_VIDEO_INFO,
                     params: { path: file.path }
                 })
                 setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
             } else {
+                if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
                 setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
             }
         }
@@ -435,7 +437,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handlePastedText = (text: string, htmlString: string) => {
         const patseText = getPasteText(htmlString);
         setEditorState(ContentUtils.insertText(editorState, patseText))
-
     }
 
     const handlePastedFiles = async (files: File[]) => {
@@ -444,15 +445,24 @@ export const MessageInput = (props: Props): JSX.Element => {
         }      
     }
 
+    const handleKeyDown = (e) => {
+        if(e.keyCode === 38 || e.charCode === 38) {
+            if(atPopup) {
+                e.preventDefault();
+            }
+        }
+        if(e.keyCode === 40 || e.charCode === 40) {
+            if(atPopup) {
+                e.preventDefault();
+            }
+        }
+    }
+
     const keyBindingFn = (e) => {
         if(e.keyCode === 13 || e.charCode === 13) {
             e.preventDefault();
             return 'enter';
-        } 
-        if(e.keyCode === 38 || e.charCode === 38) {
-            e.preventDefault();
-            return 'arrowUp';
-        } 
+        }  
         if(e.key === "@" && e.shiftKey && convType === 2) {
             e.preventDefault();
             return '@';
@@ -467,9 +477,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }
                 return 'not-handled';
             }
-            case 'arrowUp': {
-                return 'not-handled';
-            } 
             case '@' : {
                 setAtPopup(true);
                 setEditorState(ContentUtils.insertText(editorState, ` @`))
@@ -528,7 +535,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area">
+            <div className="message-input__text-area" onKeyDown={handleKeyDown}>
                 <BraftEditor
                     stripPastedStyles
                     //@ts-ignore
