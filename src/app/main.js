@@ -105,8 +105,6 @@ function createWindow () {
     mainWindow.setTitle("华润银行即时通讯（内测版）");
     mainWindow.show();
     if (!ipc) ipc = new IPC(mainWindow);
-    // 打开调试工具
-    mainWindow.webContents.openDevTools();
     app.setAppUserModelId("华润银行即时通讯（内测版）");
   });
   mainWindow.on("close", function (e) {
@@ -168,6 +166,9 @@ function createWindow () {
       slashes: true,
     })
   );
+
+  // 打开调试工具
+  mainWindow.webContents.openDevTools();
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
