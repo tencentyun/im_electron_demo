@@ -15,6 +15,7 @@ import './message-input.scss';
 import { convertBase64UrlToBlob } from "../../utils/tools";
 import { SDKAPPID, TIM_BASE_URL } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
+import { sendCustomMsg } from '../message/api'
 import { ipcRenderer, clipboard } from 'electron';
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
@@ -482,6 +483,34 @@ export const MessageInput = (props: Props): JSX.Element => {
             setEditorState(ContentUtils.insertText(editorState, text))
         }
     }
+
+    const handleSendCustEmojiMessage = async (url) => {
+        try {
+
+            const { data: { code, json_params, desc } } = await sendCustomMsg({
+                convId,
+                convType,
+                messageElementArray: [{
+                    elem_type: 3,
+                    custom_elem_data: 'CUST_EMOJI',
+                    custom_elem_desc: url,
+                    custom_elem_ext: '自定义表情'
+                }],
+                userId
+            });
+            if (code === 0) {
+                dispatch(reciMessage({
+                    convId,
+                    messages: [JSON.parse(json_params)]
+                }))
+            } else {
+                message.error({ content: `消息发送失败 ${desc}` })
+            }
+        } catch (e) {
+            message.error({ content: `出错了: ${e.message}` })
+        }
+    }
+
     const handleScreenShot = () => {
         clipboard.clear()
         ipcRenderer.send('SCREENSHOT')
@@ -522,10 +551,18 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     }
 
-    const onEmojiPopupCallback = (id) => { 
-        resetState();
-        if (id) {
-            setEditorState(ContentUtils.insertText(editorState, id))
+    const onEmojiPopupCallback = (id, type) => {
+        console.log(id)
+        console.log(type)
+        resetState()
+        if (type === 'CUST_EMOJI') {
+            // 发送自定义表情
+            console.log(768678)
+            handleSendCustEmojiMessage(id)
+        } else {
+            if (id) {
+                setEditorState(ContentUtils.insertText(editorState, id))
+            }
         }
     }
 
