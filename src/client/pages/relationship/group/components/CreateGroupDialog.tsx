@@ -30,17 +30,23 @@ export const CreateGroupDialog = (props: {
   const onSubmit = async (formData: FormValue) => {
     const res = await createGroup(formData);
     const currentGroupId = JSON.parse(res.json_param).create_group_result_groupid;
-    await sendMsg({
-      convId: currentGroupId,
-      convType: 2,
-      messageElementArray: [
-        {
-          elem_type: 900,
-          custom_elem_data: defaultForm.userId.toString(),
-        },
-      ],
-      userId: defaultForm.userId,
-    });
+    
+     const  await sendMsg({
+        convId: currentGroupId,
+        convType: 2,
+        messageElementArray: [
+          {
+            elem_type: 3,
+            custom_elem_data: JSON.stringify({
+              businessID: "group_create",
+              content: "创建群组",
+              opUser: defaultForm.userId,
+              version: 4,
+            }),
+          },
+        ],
+        userId: defaultForm.userId,
+      });
   };
 
   return (
