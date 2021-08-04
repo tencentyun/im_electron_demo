@@ -96,7 +96,7 @@ export const displayDiffMessage = (message, element, index) => {
             resp = <GroupSysElm { ...res }/>  
             break;
         case 9:
-            resp =  <VideoElem { ...res }/>
+            resp =  <VideoElem message={message} { ...res }/>
             break;
         case 10:
             resp = <div>关系消息</div>
