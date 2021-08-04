@@ -4,6 +4,7 @@ import TRTCCloud from 'trtc-electron-sdk';
 import { C2Cvideo } from './C2CVideo';
 import { GroupVideo } from './GroupVideo';
 
+
 import './call-video.scss';
 
 type User = {
