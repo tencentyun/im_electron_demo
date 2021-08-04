@@ -51,7 +51,8 @@ type Props = {
     editorState,
     setEditorState,
     convType: number,
-    convId: string
+    groupType: number;
+    convId: string;
 }
 
 const RIGHT_CLICK_MENU_LIST = [{
@@ -82,7 +83,6 @@ const RIGHT_CLICK_MENU_LIST = [{
     id: 'openFile',
     text: '文件夹目录'
 }];
-
 
 
 
@@ -275,6 +275,27 @@ export const MessageView = (props: Props): JSX.Element => {
         setTransimitPopup(true)
         setForwardType(type)
     }
+
+    const deleteSelectedMessage = async () => {
+        if(!seletedMessage.length) return;
+        const { message_conv_id, message_conv_type} = seletedMessage[0];
+        seletedMessage.map(item => {
+            handleDeleteMsg({
+                convId: item.message_conv_id,
+                msgId: item.message_msg_id,
+                convType: item.message_conv_type
+            })
+        })
+        // const params = {
+        //     convId: message_conv_id,
+        //     convType: message_conv_type,
+        //     messageList: seletedMessage.map(item => item.message_msg_id)
+        // }
+        // const res = await deleteMsgList(params);
+
+        // console.log(res);
+    };
+
     const handleMultiSelectMsg = (params) => {
         setMultiSelect(true)
     }
@@ -596,6 +617,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         <div className="message-view__item--avatar face-url">
                                             <Bubble
                                                 placement={"right-start"}
+                                                trigger="click"
                                                 content={
                                                     <div className="card-content">
                                                         <div className="main-info">
@@ -617,22 +639,22 @@ export const MessageView = (props: Props): JSX.Element => {
                                                     </div>
                                                 }
                                             >
-                                                <span style={{ display: 'none' }}>占位</span><Avatar url={user_profile_face_url ? user_profile_face_url.replace('30003', '30004/oaim') + '?imageView2/3/w/40/h/40' : ''} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                                <span style={{display:'none'}}>占位</span><Avatar url={user_profile_face_url}  isClick={false} isPreview={true} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                                             </Bubble>
                                         </div>
                                         {
                                             message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                                 return (
-                                                    elment.elem_type === 3 ?
-                                                        <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-                                                            <span className="message-view__item--text text right-menu-item">{elment?.custom_elem_data}创建了群</span>
-                                                        </div>
-                                                        :
-                                                        <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-                                                            {
-                                                                displayDiffMessage(elment, index)
-                                                            }
-                                                        </div>
+                                                    elment.elem_type === 900 ? 
+                                                    <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                        <span className="message-view__item--text text right-menu-item">{elment?.custom_elem_data}创建了群组</span>{elment.elem_type}
+                                                    </div>
+                                                    :
+                                                    <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                        {
+                                                            displayDiffMessage(elment, index)
+                                                        }
+                                                    </div>
                                                 )
                                             })
                                         }

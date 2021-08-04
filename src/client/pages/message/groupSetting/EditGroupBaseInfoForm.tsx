@@ -40,7 +40,7 @@ interface Props {
 
 export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
   const { onSubmit, onSuccess, onError, initialValues } = props;
-
+  const [btnDisabled, setBtnDisabled] = useState(false)
   // eslint-disable-next-line
   const _handlerSubmit = async (formValue: FormValue) => {
     formValue.groupFaceUrl = imgUrl
@@ -60,7 +60,10 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
     return false
   
   };
-  const close = () => setVisible(false);
+  const close = () => {
+    setVisible(false)
+    setBtnDisabled(false)
+  };
   const [visible, setVisible] = useState(false);
   const [imgUrl, setImgUrl] = useState('');
   const [formValue, setFormValue] = useState({});
@@ -117,7 +120,10 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
       >
         上传头像
       </Button> */}
-      <ImgCropper {...input} isShowCropper={true} afterUpload={afterUpload}></ImgCropper>
+      <ImgCropper {...input} isShowCropper={true}  isShow={(ages)=> {
+                          // 修改个人头像重复修改消失问题
+                          setBtnDisabled(ages)
+                        }}  afterUpload={afterUpload}></ImgCropper>
                       {/* <Input
                         {...input}
                         placeholder="请输入群头像地址"
@@ -165,6 +171,7 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
                   type="primary"
                   htmlType="submit"
                   loading={submitting}
+                  disabled={btnDisabled}
                 >
                   确认
                 </Button>

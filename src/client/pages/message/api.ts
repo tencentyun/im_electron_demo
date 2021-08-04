@@ -609,3 +609,30 @@ export const deleteGroupMember = async (params: {
   }
   throw new Error(desc);
 };
+
+export const downloadMeregeMessage = async params => {
+  const res = await timRenderInstance.TIMMsgDownloadMergerMessage({
+    params,
+    user_data: '111'
+  });
+  console.log('res', res);
+};
+
+export const deleteMsgList = async params => {
+  const res = await timRenderInstance.TIMMsgListDelete({
+    conv_id: params.convId,
+    conv_type: params.convType,
+    params: params.messageList
+  });
+
+  return res;
+}
+
+export const downloadMergedMsg = async params => {
+  const res = await timRenderInstance.TIMMsgDownloadMergerMessage({
+    params,
+    user_data: '123'
+  });
+
+  return res;
+};

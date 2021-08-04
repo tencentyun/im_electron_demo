@@ -151,7 +151,9 @@ export const GroupMember = (props: {
                 children={
                   <>
                     <Avatar
-                      url={v.user_profile_face_url.replace('30003','30004/oaim')+'?imageView2/3/w/40/h/40'}
+                      url={v.user_profile_face_url}
+                      isClick = {false}
+                      isPreview={true}
                       nickName={v.user_profile_nick_name}
                       userID={v.user_profile_identifier}
                     />

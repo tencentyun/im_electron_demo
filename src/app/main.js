@@ -251,7 +251,11 @@ function createWindow () {
     // "start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
+<<<<<<< HEAD
     child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"), () => {
+=======
+    child_process.exec('start C:\\Users\\MiMyMine\\Desktop\\demo\\cut.exe', () => {
+>>>>>>> 09f468eb5395b7d26c4fa569dc18eedea6b5d05d
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
@@ -291,7 +295,11 @@ function createWindow () {
     //接收到消息后的执行程序
     // path.join(process.cwd(), "/resources/extraResources", "cut.exe")
     const url = downloadUrl + "\\screenShot.png";
+<<<<<<< HEAD
     child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"),
+=======
+    child_process.exec("start C:\\Users\\MiMyMine\\Desktop\\demo\\cut.exe",
+>>>>>>> 09f468eb5395b7d26c4fa569dc18eedea6b5d05d
       () => {
         let pngs = clipboard.readImage().toPNG();
         fs.writeFile(url, pngs, (err) => {

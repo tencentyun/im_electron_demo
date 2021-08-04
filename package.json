@@ -44,6 +44,13 @@
           "filter": [
             "**/*"
           ]
+        },
+        {
+          "from": "node_modules/trtc-electron-sdk/build/Release/",
+          "to": "./resources",
+          "filter": [
+            "**/*"
+          ]
         }
       ],
       "extraResources": [
@@ -54,7 +61,7 @@
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^6.2.0",
-    "electron": "^13.1.7",
+    "electron": "^13.1.8",
     "electron-builder": "^22.11.7"
   },
   "dependencies": {
@@ -79,9 +86,9 @@
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
-    "progress-stream": "^2.0.0",
     "node-gyp": "^8.1.0",
     "node-gyp-build": "^4.2.3",
+    "progress-stream": "^2.0.0",
     "qs": "^6.5.2",
     "redux": "^4.1.0",
     "sass": "^1.35.1",
