@@ -2,6 +2,7 @@ import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIA
 
 import { ipcRenderer, remote } from 'electron';
 
+import { TIM_MASTER_URL_PORT,TIM_BREVIARY_URL_PORT }  from '../constants/index'
 const dialog = remote.dialog;
 const WIN = remote.getCurrentWindow();
 
@@ -23,6 +24,11 @@ const closeWin = () => {
     ipcRenderer.send(RENDERPROCESSCALL, {
         type: CLOSE
     })
+}
+
+const previewVvatar = (face_url, size = 40) => {
+    
+    return  face_url ?  face_url.replace(TIM_MASTER_URL_PORT,TIM_BREVIARY_URL_PORT)+`?imageView2/3/w/${size}/h/${size}` : ""
 }
 
 const showDialog = () => {
@@ -127,5 +133,6 @@ export {
     convertBase64UrlToBlob,
     highlightText,
     openCallWindow,
-    callWindowCloseListiner
+    callWindowCloseListiner,
+    previewVvatar
 }

@@ -86,9 +86,12 @@ interface UserProfileItem {
 export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,onUpdateUserInfo }): JSX.Element => {
   const [isShow, setVisible] = useState(visible)
   const [imgUrl, setImgUrl] = useState('')
-
+  const [btnDisabled, setBtnDisabled] = useState(false)
+  
   const close = () => {
     setVisible(false)
+    // 修改个人头像重复修改消失问题
+    setBtnDisabled(false)
     onClose(false)
   }
 
@@ -162,7 +165,10 @@ const {nickName,faceUrl,gender} = userInfo
                       <Form.Item
                         label="头像"
                       >
-                        <ImgCropper {...input} afterUpload={afterUpload}></ImgCropper>
+                        <ImgCropper {...input} isShow={(ages)=> {
+                          // 修改个人头像重复修改消失问题
+                          setBtnDisabled(ages)
+                        }} afterUpload={afterUpload}></ImgCropper>
                       </Form.Item>
                     )}
                   </Field>
@@ -223,6 +229,8 @@ const {nickName,faceUrl,gender} = userInfo
                   <Button
                     type="primary"
                     htmlType="submit"
+                    // 修改个人头像重复修改消失问题
+                    disabled={btnDisabled}
                     loading={submitting}
                   >
                     提交

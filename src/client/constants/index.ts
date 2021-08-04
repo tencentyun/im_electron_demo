@@ -51,8 +51,10 @@ export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtog
 
 
 export const TIM_BASE_URL = 'http://localhost:3000'
-//export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002'
+// export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002'
 export const TIM_BASE_URLB = 'http://oaim.uat.crbank.com.cn:30002'
+export const TIM_MASTER_URL_PORT = "30003"
+export const TIM_BREVIARY_URL_PORT = "30004/oaim"
 export const SDKAPPID = 1400529075
 export const SECRETKEY = '08349186ecd23fafaf7f98ca0116077e5b507fceac558e3dbd32f0dfeb9393a9' // 不可外传仅本次测试使用
 // export const HUA_RUN_LOGIN_TEST = 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin'

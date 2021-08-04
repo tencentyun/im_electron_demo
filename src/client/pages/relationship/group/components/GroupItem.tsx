@@ -38,8 +38,8 @@ export const GroupItem = (props: {
 
   const directToMsgPage = useMessageDirect();
 
-  const canDeleteGroup = groupOwner === userId && groupType !== 1; // 是群主并且非私有群可以解散
-  const canQuitGroup = groupOwner !== userId || groupType === 1; // 不是群主或者该群为私有群
+  const canDeleteGroup = groupOwner === userId; // 是群主可以解散
+  const canQuitGroup = groupOwner !== userId; // 不是群主或者该群为私有群
 
   const handleItemClick = () => {
     directToMsgPage({
@@ -93,7 +93,7 @@ export const GroupItem = (props: {
   return (
     <div className="group-item">
       <div className="group-item--left" onClick={handleItemClick}>
-        <Avatar url={groupAvatar} nickName={groupName} groupID={groupId} />
+        <Avatar url={groupAvatar} isClick={false}  nickName={groupName} groupID={groupId} />
         <span className="group-item--left__name">{groupName}</span>
       </div>
       <div className="group-item--right">

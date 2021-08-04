@@ -8,6 +8,7 @@ import { Avatar } from "../../components/avatar/avatar";
 import { inviteMemberGroup } from "../../pages/message/api";
 import { createGroup, createGroupParams, getJoinedGroupList } from '../../pages/relationship/group/api'
 import { useMessageDirect } from "../../utils/react-use/useDirectMsgPage";
+import { sendMsg } from "../../pages/message/api";
 //import qunioc from '../../assets/icon/qunioc.png'
 
 import './pull.scss';
@@ -80,7 +81,7 @@ export const AddGroupMemberDialog = (props: {
   const [selectedList, setSelectedList] = useState([]);
   const [selectIdsProp, setSelectIdsProp] = useState([]);
   const [searchList, setSearchList] = useState([]);
-  let { nickName } = useSelector((state: State.RootState) => state.userInfo);
+  let { nickName, userId } = useSelector((state: State.RootState) => state.userInfo);
   const directToMsgPage = useMessageDirect();
 
   const onClose = () => {
@@ -124,6 +125,19 @@ export const AddGroupMemberDialog = (props: {
       }
       const { json_param } = await createGroup(params);
       const resultGroupId = JSON.parse(json_param)?.create_group_result_groupid
+
+      await sendMsg({
+        convId: resultGroupId,
+        convType: 2,
+        messageElementArray: [
+          {
+            elem_type: 900,
+            custom_elem_data: userId.toString(),
+          },
+        ],
+        userId: userId,
+      });
+
       onClose();
       setTimeout(() => {
         showGroupbyId(resultGroupId)
@@ -169,20 +183,20 @@ export const AddGroupMemberDialog = (props: {
   };
 
 
- const searchStaff = (refData)=> {
-    console.log("搜索触发",refData)
-    if(rearrangement(selectedList,refData)){
-        message.warning({
-            content: "该成员已在待添加列表！",
-        })
-    }else{
-        refData.search = true
-        selectedList.push(refData)
-        setSelectedList(JSON.parse(JSON.stringify(selectedList)))
-        setSearchList(JSON.parse(JSON.stringify(selectedList)))
-        console.log(JSON.parse(JSON.stringify(selectedList)))
-        const listmap = selectedList.map(item => item.Uid)
-        setSelectIdsProp(listmap)
+  const searchStaff = (refData) => {
+    console.log("搜索触发", refData)
+    if (rearrangement(selectedList, refData)) {
+      message.warning({
+        content: "该成员已在待添加列表！",
+      })
+    } else {
+      refData.search = true
+      selectedList.push(refData)
+      setSelectedList(JSON.parse(JSON.stringify(selectedList)))
+      setSearchList(JSON.parse(JSON.stringify(selectedList)))
+      console.log(JSON.parse(JSON.stringify(selectedList)))
+      const listmap = selectedList.map(item => item.Uid)
+      setSelectIdsProp(listmap)
     }
   }
 
@@ -225,8 +239,8 @@ export const AddGroupMemberDialog = (props: {
       <Modal.Body>
         <div className="forward-popup__search-list">
           <div className="forward-popup__search-list__list customize-scroll-style">
-                <Search handleCallback= {searchStaff}></Search>
-                <TreeDynamicExample  selectIdsProp={selectIdsProp} searchList={selectedList} personnel={callbackPersonnel} selectable={ true } callback={refreshData}></TreeDynamicExample>    
+            <Search handleCallback={searchStaff}></Search>
+            <TreeDynamicExample selectIdsProp={selectIdsProp} searchList={selectedList} personnel={callbackPersonnel} selectable={true} callback={refreshData}></TreeDynamicExample>
           </div>
         </div>
         <div className="forward-popup__seleted-list customize-scroll-style">

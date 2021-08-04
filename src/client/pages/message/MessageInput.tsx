@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg, sendMsg } from './api'
@@ -11,8 +12,10 @@ import BraftEditor, { EditorState } from 'braft-editor'
 import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
 import './message-input.scss';
+import { convertBase64UrlToBlob } from "../../utils/tools";
+import { SDKAPPID, TIM_BASE_URL } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, clipboard } from 'electron';
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
 import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText } from './message-input-util';
@@ -70,7 +73,96 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
+    const [sendType, setSendType] = useState(null);
     let editorInstance;
+
+    const userSig = window.localStorage.getItem('usersig')
+    const uid = window.localStorage.getItem('uid')
+    window.localStorage.setItem('inputAt', '0')
+    window.localStorage.setItem('convId', convId)
+    // 上传逻辑
+    const handleUpload = (base64Data) => {
+        return new Promise((resolve, reject) => {
+            axios
+                .post(`${TIM_BASE_URL}/huarun/im_cos_msg/pre_sig`, {
+                    sdkappid: SDKAPPID,
+                    uid: uid,
+                    userSig: userSig,
+                    file_type: 1,
+                    file_name: "headUrl/" + new Date().getTime() + 'screenShot.png',
+                    Duration: 900,
+                    upload_method: 0,
+                })
+                .then((res) => {
+                    // console.log(res);
+                    const { download_url } = res.data;
+                    // console.log(111111);
+                    // console.log(download_url);
+                    axios
+                        .put(download_url, convertBase64UrlToBlob(base64Data), {
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                            },
+                        })
+                        .then(() => {
+                            const { download_url } = res.data;
+                            resolve(download_url)
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        })
+                        .finally(() => {
+
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+
+                });
+        });
+    };
+
+    const selectVideoMessage = () => {
+        ipcRenderer.send(RENDERPROCESSCALL, {
+            type: SELECT_FILES,
+            params: {
+                fileType: "video",
+                extensions: ["mp4", "mov", "wmv"],
+                multiSelections: false
+            }
+        })
+    }
+
+    function startapi(requestlist, toTextContent) {
+        //定义counts，用来收集请求的次数，（也可以用reslist的length进行判断）
+        let counts = 0;
+        return function apirequest(data) {
+            let arg = data
+            let a = new Promise((res, rej) => {
+                //setTimeout模拟请求到接收的时间需要5秒钟
+                setTimeout(function () {
+                    res('成功返回数据');
+
+                }, 1000)
+                // handleSendMsg(data,toTextContent).then(res)
+            })
+            //无论成功或者失败都要进行下一次，以免阻塞，成功请求的末尾有s标志，失败的末尾有f标志
+            a.then(() => {
+                counts++;
+                if (counts > requestlist.length) {
+                    return;
+                }
+                console.log('counts', counts)
+
+                apirequest(requestlist[counts])
+            }).catch(err => {
+                //递归调用
+                apirequest(requestlist[counts])
+                console.log(err)
+            })
+        }
+
+    }
 
     const handleSendTextMsg = async () => {
         try {
@@ -230,16 +322,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             }
         })
     }
-    const selectVideoMessage = () => {
-        ipcRenderer.send(RENDERPROCESSCALL,{
-            type: SELECT_FILES,
-            params: {
-                fileType: "video",
-                extensions: ["mp4", "mov"],
-                multiSelections: false
-            }
-        })
-    }
     const sendImageMessage = async ({ imagePath }) => {
         if(!imagePath) return false;
         const { data: { code, desc, json_params } } = await sendImageMsg({
@@ -344,6 +426,7 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handleSendAtMessage = () => {
         // resetState()
+        window.localStorage.setItem('inputAt', '0')
         convType === 2 && setAtPopup(true)
     }
 
@@ -392,6 +475,51 @@ export const MessageInput = (props: Props): JSX.Element => {
             setAtUserMap(pre => ({...pre, [atText]: userId}));
             setEditorState(ContentUtils.insertText(editorState, `${atText} `))
         }
+        if (userName) {
+            const isInputAt = window.localStorage.getItem('inputAt')
+            console.log(isInputAt, '0000000000000')
+            const text = Number(isInputAt) ? `${userName} ` : `@${userName} `
+            setEditorState(ContentUtils.insertText(editorState, text))
+        }
+    }
+    const handleScreenShot = () => {
+        clipboard.clear()
+        ipcRenderer.send('SCREENSHOT')
+    }
+    const handleOnkeyPress = (e) => {
+        // const type = sendType
+        if (editorState?.toText().substring(editorState?.toText().length - 1, editorState?.toText().length) === '@') {
+            setEditorState(ContentUtils.insertText(editorState.substring(0, editorState?.toText().length - 1), ''))
+        }
+        // if(editorState.toText().substring(editorState.toText().length-1,editorState.toText().length) === '@'){
+        //     console.info(787878)
+        //     setEditorState(ContentUtils.insertText(editorState.toText().substring(0,editorState.toText().length-1), ''))
+        // }
+        if (sendType == '0') {
+            // enter发送
+            if (e.ctrlKey && e.keyCode === 13) {
+                // console.log('换行', '----------------------', editorState)
+            } else if (e.keyCode == 13 || e.charCode === 13) {
+                e.preventDefault();
+                handleSendTextMsg();
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+                e.preventDefault();
+                setAtPopup(true)
+            }
+        } else {
+            // Ctrl+enter发送
+            if (e.ctrlKey && e.keyCode === 13) {
+                e.preventDefault();
+                handleSendTextMsg();
+            } else if (e.keyCode == 13 || e.charCode === 13) {
+                // console.log('换行', '----------------------', editorState)
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+                window.localStorage.setItem('inputAt', '1')
+                e.preventDefault()
+                setAtPopup(true)
+            }
+        }
+
     }
 
     const onEmojiPopupCallback = (id) => { 

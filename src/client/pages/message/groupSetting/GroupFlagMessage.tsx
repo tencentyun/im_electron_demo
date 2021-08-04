@@ -5,8 +5,8 @@ import "./group-flag-message.scss";
 
 const flagMsgOptions = [
   { value: "0", text: "接收消息并提示" },
-  { value: "1", text: "接收消息但不提示" },
-  { value: "2", text: "屏蔽消息" },
+  // { value: "1", text: "接收消息但不提示" },
+  // { value: "2", text: "屏蔽消息" },
 ];
 
 export const GroupFlagMessage = (props: {
