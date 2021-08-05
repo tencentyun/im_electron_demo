@@ -37,7 +37,11 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
+    "ant-design": "^1.0.0",
+    "antd": "^4.16.10",
     "braft-editor": "^2.3.9",
+    "braft-extensions": "^0.1.1",
+    "dplayer": "^1.26.0",
     "final-form": "^4.20.2",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
@@ -45,6 +49,7 @@
     "react-audio-player": "^0.17.0",
     "react-contexify": "^5.0.0",
     "react-contextmenu": "^2.14.0",
+    "react-cropper": "^2.1.8",
     "react-dom": "^17.0.2",
     "react-final-form": "^6.5.2",
     "react-loading-skeleton": "^2.2.0",

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, message, Dropdown,List } from 'tea-component';
+import { Button, message, Dropdown, List } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg, sendMsg } from './api'
 import { reciMessage, updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
@@ -16,31 +16,35 @@ import { convertBase64UrlToBlob } from "../../utils/tools";
 import { SDKAPPID, TIM_BASE_URL } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
 import { sendCustomMsg } from '../message/api'
-import { ipcRenderer, clipboard } from 'electron';
+import { ipcRenderer, clipboard, nativeImage } from 'electron';
 import chooseImg from '../../assets/icon/choose.png'
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
 import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText } from './message-input-util';
-  
+import { electron } from 'webpack';
+
 type Props = {
     convId: string,
     convType: number,
     isShutUpAll: boolean,
-    handleOpenCallWindow: (callType: string,convType:number,windowType:string) => void;
+    handleOpenCallWindow: (callType: string, convType: number, windowType: string) => void;
 }
+
+const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
+const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'WMV', 'mp4', 'mov', 'wmv'];
 
 const FEATURE_LIST_GROUP = [{
     id: 'face',
-// },{
-//     id: 'photo'
-// }, {
-//     id: 'file'
-// }
-//  ,{
-//     id: 'video'
-// }
-// ,{
-//     id: 'phone'
+}, {
+    id: 'photo'
+}, {
+    id: 'file'
+    // }
+    //  ,{
+    //     id: 'video'
+    // }
+    // ,{
+    //     id: 'phone'
 }, {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
@@ -50,16 +54,16 @@ const FEATURE_LIST_GROUP = [{
 }]
 const FEATURE_LIST_C2C = [{
     id: 'face',
-// }, {
-//     id: 'photo'
-// }, {
-//     id: 'file'
-// },
-// {
-//     id: 'video'
-// },
-//  {
-//     id: 'phone'
+}, {
+    id: 'photo'
+}, {
+    id: 'file'
+    // },
+    // {
+    //     id: 'video'
+    // },
+    //  {
+    //     id: 'phone'
 }, {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
@@ -72,17 +76,17 @@ const FEATURE_LIST = {
 }
 export const MessageInput = (props: Props): JSX.Element => {
     const { convId, convType, isShutUpAll, handleOpenCallWindow } = props;
-    const [ isDraging, setDraging] = useState(false);
-    const [ activeFeature, setActiveFeature ] = useState('');
-    const [ shouldShowCallMenu, setShowCallMenu] = useState(false);
-    const [ atPopup, setAtPopup ] = useState(false);
-    const [ isEmojiPopup, setEmojiPopup ] = useState(false);
-    const [ isRecordPopup, setRecordPopup ] = useState(false);
+    const [isDraging, setDraging] = useState(false);
+    const [activeFeature, setActiveFeature] = useState('');
+    const [shouldShowCallMenu, setShowCallMenu] = useState(false);
+    const [atPopup, setAtPopup] = useState(false);
+    const [isEmojiPopup, setEmojiPopup] = useState(false);
+    const [isRecordPopup, setRecordPopup] = useState(false);
     const [shotKeyTip, setShotKeyTip] = useState('按Enter键发送消息');
-    const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null, { blockExportFn }))
-    const [ videoInfos, setVideoInfos] = useState([]);
-    const [ atUserNameInput, setAtInput] = useState('');
-    const [ atUserMap, setAtUserMap] = useState({});
+    const [editorState, setEditorState] = useState<EditorState>(BraftEditor.createEditorState(null, { blockExportFn }))
+    const [videoInfos, setVideoInfos] = useState([]);
+    const [atUserNameInput, setAtInput] = useState('');
+    const [atUserMap, setAtUserMap] = useState({});
 
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -140,16 +144,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         });
     };
 
-    const selectVideoMessage = () => {
-        ipcRenderer.send(RENDERPROCESSCALL, {
-            type: SELECT_FILES,
-            params: {
-                fileType: "video",
-                extensions: ["mp4", "mov", "wmv"],
-                multiSelections: false
-            }
-        })
-    }
 
     function startapi(requestlist, toTextContent) {
         //定义counts，用来收集请求的次数，（也可以用reslist的length进行判断）
@@ -204,7 +198,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     messages: [JSON.parse(json_params)]
                 }))
             }
-            
+
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
         }
@@ -216,11 +210,11 @@ export const MessageInput = (props: Props): JSX.Element => {
 
             const messageElementArray = getMessageElemArray(rawData, videoInfos);
 
-            if(messageElementArray.length) {
+            if (messageElementArray.length) {
                 const fetchList = messageElementArray.map((v => {
-                    if(v.elem_type === 0) {
+                    if (v.elem_type === 0) {
                         const atList = getAtList(v.text_elem_content);
-                        return  sendMsg({
+                        return sendMsg({
                             convId,
                             convType,
                             messageElementArray: [v],
@@ -238,16 +232,16 @@ export const MessageInput = (props: Props): JSX.Element => {
 
                 const results = await Promise.all(fetchList);
                 console.log(results)
-                for(const res of results) {
-                    const { data: {code, json_params, desc }} = res;
-                    if (code === 0) {                
+                for (const res of results) {
+                    const { data: { code, json_params, desc } } = res;
+                    if (code === 0) {
                         dispatch(updateMessages({
                             convId,
                             message: JSON.parse(json_params)
                         }))
                     }
                     setEditorState(ContentUtils.clear(editorState));
-                } 
+                }
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
@@ -258,30 +252,33 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const getAtList = (text: string) => {
         const list = text.match(/@[a-zA-Z0-9_\u4e00-\u9fa5]+/g);
-        const atNameList =  list ? list.map(v => v.slice(1)) : [];
+        const atNameList = list ? list.map(v => v.slice(1)) : [];
         return atNameList.map(v => atUserMap[v]);
     }
 
-    
-    const setFile = async (file: File | {size: number; type: string; path: string; name: string; fileContent: string}) => {
-        if(file) {
+
+    const setFile = async (file: File | { size: number; type: string; path: string; name: string; fileContent: string }) => {
+        if (file) {
             const fileSize = file.size;
             const type = file.type;
-            console.log
-            if (type.includes('png') || type.includes('jpg')) {
-                if(fileSize > 28 * 1024 * 1024) return message.error({content: "image size can not exceed 28m"})
-                const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
-                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
-            } else if ( type.includes('mp4') || type.includes('mov')){
-                if(fileSize > 100 * 1024 * 1024) return message.error({content: "video size can not exceed 100m"})
-                ipcRenderer.send(RENDERPROCESSCALL,{
+            if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
+                if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
+                // console.log(file)
+                file = JSON.parse(window.localStorage.getItem('imageObj'))
+                console.log(file)
+                const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(window.localStorage.getItem('imageBuffer'), 'png');
+                console.log(imgUrl, 'imgUrl')
+                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
+            } else if (SUPPORT_VIDEO_TYPE.find(v => type.includes(v))) {
+                if (fileSize > 100 * 1024 * 1024) return message.error({ content: "video size can not exceed 100m" })
+                ipcRenderer.send(RENDERPROCESSCALL, {
                     type: GET_VIDEO_INFO,
                     params: { path: file.path }
                 })
-                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
+                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, { name: file.name, path: file.path, size: file.size }));
             } else {
-                if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
-                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
+                if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
+                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
             }
         }
     }
@@ -295,7 +292,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const sendMessages = (type, params) => {
-        switch(type) {
+        switch (type) {
             case "image":
                 sendImageMessage(params)
                 break
@@ -331,11 +328,11 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const selectImageMessage = () => {
-        ipcRenderer.send(RENDERPROCESSCALL,{
+        ipcRenderer.send(RENDERPROCESSCALL, {
             type: SELECT_FILES,
             params: {
                 fileType: "image",
-                extensions: ["png", "jpg"],
+                extensions: SUPPORT_IMAGE_TYPE,
                 multiSelections: false
             }
         })
@@ -343,7 +340,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const selectSoundMessage = () => {
     }
     const selectFileMessage = () => {
-        ipcRenderer.send(RENDERPROCESSCALL,{
+        ipcRenderer.send(RENDERPROCESSCALL, {
             type: SELECT_FILES,
             params: {
                 fileType: "file",
@@ -352,10 +349,19 @@ export const MessageInput = (props: Props): JSX.Element => {
             }
         })
     }
+    const selectVideoMessage = () => {
+        ipcRenderer.send(RENDERPROCESSCALL, {
+            type: SELECT_FILES,
+            params: {
+                fileType: "video",
+                extensions: SUPPORT_VIDEO_TYPE,
+                multiSelections: false
+            }
+        })
+    }
     const sendImageMessage = async ({ imagePath }) => {
-        console.log(11111)
         console.log(imagePath)
-        if(!imagePath) return false;
+        if (!imagePath) return false;
         const { data: { code, desc, json_params } } = await sendImageMsg({
             convId,
             convType,
@@ -372,14 +378,14 @@ export const MessageInput = (props: Props): JSX.Element => {
                 message: JSON.parse(json_params)
             }))
         } else {
-            message.error({content: `消息发送失败 ${desc}`})
+            message.error({ content: `消息发送失败 ${desc}` })
         }
     }
 
     const sendFileMessage = async ({ filePath, fileSize, fileName }) => {
-        if(!filePath) return false;
+        if (!filePath) return false;
         console.log(44444444444444, fileSize)
-        if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
+        if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
         const { data: { code, desc, json_params } } = await sendFileMsg({
             convId,
             convType,
@@ -398,11 +404,11 @@ export const MessageInput = (props: Props): JSX.Element => {
             }))
             setPathToLS(filePath)
         } else {
-            message.error({content: `消息发送失败 ${desc}`})
+            message.error({ content: `消息发送失败 ${desc}` })
         }
     }
 
-    const sendVideoMessage = async ({ 
+    const sendVideoMessage = async ({
         videoDuration,
         videoPath,
         videoSize,
@@ -437,12 +443,12 @@ export const MessageInput = (props: Props): JSX.Element => {
                 message: JSON.parse(json_params)
             }))
         } else {
-            message.error({content: `消息发送失败 ${desc}`})
+            message.error({ content: `消息发送失败 ${desc}` })
         }
     }
 
     const sendSoundMessage = async (file) => {
-        if(!file) return false;
+        if (!file) return false;
         const { data: { code, json_params } } = await sendSoundMsg({
             convId,
             convType,
@@ -466,7 +472,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         // resetState()
         setEmojiPopup(true)
     }
-    const handleSendPhoneMessage = ()=> {
+    const handleSendPhoneMessage = () => {
         setShowCallMenu(true);
     }
     const handleFeatureClick = (featureId) => {
@@ -478,7 +484,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 if (convType === 2) handleSendAtMessage()
                 break;
             case "photo":
-                handleSendPhotoMessage()
+                selectImageMessage()
                 break;
             case "file":
                 selectFileMessage()
@@ -507,13 +513,13 @@ export const MessageInput = (props: Props): JSX.Element => {
         resetState()
         if (userId) {
             const atText = userName || userId;
-            setAtUserMap(pre => ({...pre, [atText]: userId}));
+            setAtUserMap(pre => ({ ...pre, [atText]: userId }));
             setEditorState(ContentUtils.insertText(editorState, `${atText} `))
         }
         if (userName) {
             const isInputAt = window.localStorage.getItem('inputAt')
             console.log(isInputAt, '0000000000000')
-            const text = Number(isInputAt) ? `${userName} ` : `@${userName} `
+            const text = Number(isInputAt) ? `${userName} ` : `${userName} `
             setEditorState(ContentUtils.insertText(editorState, text))
         }
     }
@@ -550,14 +556,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        // const type = sendType
-        if (editorState?.toText().substring(editorState?.toText().length - 1, editorState?.toText().length) === '@') {
-            setEditorState(ContentUtils.insertText(editorState.substring(0, editorState?.toText().length - 1), ''))
-        }
-        // if(editorState.toText().substring(editorState.toText().length-1,editorState.toText().length) === '@'){
-        //     console.info(787878)
-        //     setEditorState(ContentUtils.insertText(editorState.toText().substring(0,editorState.toText().length-1), ''))
-        // }
         if (sendType == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
@@ -608,7 +606,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleCallMenuClick = (item) => {
-        if(item) handleOpenCallWindow(item.id,convType,"");
+        if (item) handleOpenCallWindow(item.id, convType, "");
         setShowCallMenu(false);
     };
 
@@ -623,13 +621,13 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(newEditorState)
         const text = newEditorState.toText();
         const hasAt = text.includes('@');
-        if(!hasAt) {
+        if (!hasAt) {
             setAtPopup(false);
             return;
         }
         // 取最后一个@后的内容作为搜索条件
         const textArr = text.split('@');
-        const lastInput = textArr[textArr.length - 1]; 
+        const lastInput = textArr[textArr.length - 1];
         setAtInput(lastInput);
     }
 
@@ -641,7 +639,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handlePastedFiles = async (files: File[]) => {
         for (const file of files) {
             setFile(file);
-        }      
+        }
     }
 
     const menu = close => (
@@ -668,38 +666,38 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleKeyDown = (e) => {
-        if(e.keyCode === 38 || e.charCode === 38) {
-            if(atPopup) {
+        if (e.keyCode === 38 || e.charCode === 38) {
+            if (atPopup) {
                 e.preventDefault();
             }
         }
-        if(e.keyCode === 40 || e.charCode === 40) {
-            if(atPopup) {
+        if (e.keyCode === 40 || e.charCode === 40) {
+            if (atPopup) {
                 e.preventDefault();
             }
         }
     }
 
     const keyBindingFn = (e) => {
-        if(e.keyCode === 13 || e.charCode === 13) {
+        if (e.keyCode === 13 || e.charCode === 13) {
             e.preventDefault();
             return 'enter';
-        }  
-        if(e.key === "@" && e.shiftKey && convType === 2) {
+        }
+        if (e.key === "@" && e.shiftKey && convType === 2) {
             e.preventDefault();
             return '@';
-        } 
+        }
     }
 
     const handleKeyCommand = (e) => {
-        switch(e) {
+        switch (e) {
             case 'enter': {
-                if(!atPopup){
+                if (!atPopup) {
                     handleSendMsg();
                 }
                 return 'not-handled';
             }
-            case '@' : {
+            case '@': {
                 setAtPopup(true);
                 setEditorState(ContentUtils.insertText(editorState, ` @`))
                 return 'not-handled';
@@ -707,10 +705,13 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
 
+
     useEffect(() => {
         const listener = (event, params) => {
+            console.log(event)
+            console.log(params)
             const { triggerType, data } = params;
-            switch(triggerType) {
+            switch (triggerType) {
                 case 'SELECT_FILES': {
                     setFile(data);
                     break;
@@ -737,6 +738,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         })
         setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
         ipcRenderer.on('screenShotUrl', (e, { data, url }) => {
+            console.log(data, url, '+++++++++++++++++++')
+
             if (data.length == 0) {
                 message.error({ content: '已取消截图' })
             } else {
@@ -748,15 +751,29 @@ export const MessageInput = (props: Props): JSX.Element => {
                     //@ts-ignore
                     lastModifiedDate: file.lastModifiedDate,
                     name: file.name,
+                    imagePath: url,
+                    size: file.size,
+                    type: file.type,
+                    //@ts-ignore
+                    webkitRelativePath: file.webkitRelativePath
+                }
+                const imageObj = {
+                    lastModified: file.lastModified,
+                    //@ts-ignore
+                    lastModifiedDate: file.lastModifiedDate,
+                    name: file.name,
                     path: url,
                     size: file.size,
                     type: file.type,
                     //@ts-ignore
                     webkitRelativePath: file.webkitRelativePath
                 }
-                console.log(convId, '截图文件对象', file)
-                //@ts-ignore
-                sendImageMessage(fileObj)
+                // console.log(convId, '截图文件对象22222', file, fileObj)
+                // const image = nativeImage.createFromPath(url)
+                // clipboard.writeImage(image)
+                window.localStorage.setItem('imageBuffer', JSON.stringify(data))
+                window.localStorage.setItem('imageObj', JSON.stringify(imageObj))
+                sendMessages('image', fileObj)
                 return
             }
         })
@@ -793,7 +810,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     isEmojiPopup && <EmojiPopup callback={onEmojiPopupCallback} />
                 }
                 {
-                    shouldShowCallMenu && <Menu options={[{text: '语音通话', id: '1' }, {text: '视频通话', id: '2' }]} onSelect={handleCallMenuClick}/>
+                    shouldShowCallMenu && <Menu options={[{ text: '语音通话', id: '1' }, { text: '视频通话', id: '2' }]} onSelect={handleCallMenuClick} />
                 }
                 {
 
@@ -806,14 +823,15 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area" onKeyDown={handleKeyDown}>
+            {/* <div className="message-input__text-area" onKeyDown={handleKeyDown}> */}
+            <div className="message-input__text-area disabled" onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}>
                 <BraftEditor
                     stripPastedStyles
                     //@ts-ignore
                     disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
-                    media={{ pasteImage:false }}
+                    media={{ pasteImage: false }}
                     ref={instance => editorInstance = instance}
                     handlePastedFiles={handlePastedFiles}
                     handlePastedText={handlePastedText}
@@ -823,6 +841,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
+                    maxLength={4480}
                     actions={[]}
                 />
             </div>

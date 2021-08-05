@@ -86,7 +86,7 @@ const getMessageElemItem = (
 export const getMessageElemArray = (rawData: any, videoInfoList: any[]) => {
   try {
     const data = JSON.parse(rawData);
-    const { blocks, entityMap } = data; 
+    const { blocks, entityMap } = data;
 
     const messageElementArray = [];
 
@@ -150,6 +150,7 @@ export const getPasteText = (htmlString: string) => {
 export const fileImgToBase64Url = async (file: File) => {
   return new Promise((res) => {
     const reader = new FileReader();
+    console.log(reader, 'reader')
     reader.readAsDataURL(file);
     reader.onload = function (e) {
       const base64Value = e.target.result;
@@ -160,6 +161,7 @@ export const fileImgToBase64Url = async (file: File) => {
 };
 
 export const bufferToBase64Url = (data: string, type: string) => {
+  // console.log(data)
   const buffer = new Buffer(data, 'binary');
   return `data:image/${type};base64,` + buffer.toString('base64');
-} 
+}

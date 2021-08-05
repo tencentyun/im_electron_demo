@@ -144,7 +144,7 @@ export const App = () => {
   }) => {
     const percentage = Math.round((cur_size * 100) / total_size) + "%";
     console.log(percentage, "下载进度");
-    ipcRenderer.send("UPLOAD", percentage);
+    // ipcRenderer.send("UPLOAD", percentage);
     const ramdon = Math.random();
     if (ramdon > 0.8) {
       dispatch(

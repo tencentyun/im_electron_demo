@@ -252,7 +252,8 @@ function createWindow () {
     // "start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec('start C:\\Users\\p_guowuliu\\Desktop\\demo\\cut.exe', () => {
+    child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"), () => {
+      //child_process.exec('start C:\\Users\\p_guowuliu\\Desktop\\demo\\cut.exe', () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
@@ -292,11 +293,13 @@ function createWindow () {
     //接收到消息后的执行程序
     // path.join(process.cwd(), "/resources/extraResources", "cut.exe")
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"),
+    child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe",
       () => {
         let pngs = clipboard.readImage().toPNG();
+        console.log(clipboard.readImage(), pngs, '-----------')
         fs.writeFile(url, pngs, (err) => {
           fs.readFile(url, (err, data) => {
+            console.log(url, 'path================')
             mainWindow.webContents.send("screenShotUrl", {
               data,
               url,
@@ -306,10 +309,10 @@ function createWindow () {
       }
     );
   });
-  ipcMain.on('UPLOAD', (event, data) => {
-    console.log(data, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    mainWindow.webContents.send('UPLOADPROGRESS', data)
-  })
+  // ipcMain.on('UPLOAD', (event, data) => {
+  //   console.log(data, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+  //   mainWindow.webContents.send('UPLOADPROGRESS', data)
+  // })
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {
     //console.log("123", file);
@@ -376,92 +379,7 @@ function createWindow () {
       shell.openPath(localUrl);
     }
   });
-  // function downloadFilesByUrl(params) {
-  //   const { file_elem_file_path, file_elem_file_name } = params;
-  //   console.log(params);
 
-  //   let savePath = `${app.getPath("downloads")}\\${file_elem_file_name}`; // console.log(savePath)
-  //   realSavePath = savePath;
-  //   mainWindow.webContents.downloadURL(file_elem_file_path);
-  //   mainWindow.webContents.session.on(
-  //     "will-download",
-  //     (event, item, webContents) => {
-  //       if (savePath == realSavePath) {
-  //         item.setSavePath(savePath);
-  //         item.once("done", (event, state) => {
-  //           if (state === "completed") {
-  //             shell.openPath(savePath);
-  //           } else {
-  //             console.log(`Download failed: ${state}`);
-  //           }
-  //         });
-  //       }
-  //     }
-  //   );
-
-  //   // const cwd = process.cwd();
-  //   // const downloadDicPath = path.resolve(cwd, "./download/");
-
-  //   // if (!fs.existsSync(downloadDicPath)) {
-  //   //   fs.mkdirSync(downloadDicPath);
-  //   // }
-  //   // const options = {
-  //   //   host: url.parse(file_elem_url).host.replace(":30003", ""),
-  //   //   port: url.parse(file_elem_url).port,
-  //   //   path: url.parse(file_elem_url).pathname,
-  //   // };
-  //   // console.log(111, options.host);
-  //   // console.log(222, options.port);
-  //   // console.log(333, options.path);
-  //   // if (!fs.existsSync(path.resolve(downloadDicPath, file_elem_file_name))) {
-  //   //   var file = fs.createWriteStream(
-  //   //     path.resolve(downloadDicPath, file_elem_file_name)
-  //   //   );
-
-  //   // http.get(options, (res) => {
-  //   //   const { statusCode } = res;
-  //   //   const contentType = res.headers["content-type"];
-  //   //   let error;
-  //   //   if (statusCode !== 200) {
-  //   //     error = new Error("Request Failed.\n" + `Status Code: ${statusCode}`);
-  //   //   } else if (!/^application\/json/.test(contentType)) {
-  //   //     error = new Error(
-  //   //       "Invalid content-type.\n" +
-  //   //         `Expected application/json but received ${contentType}`
-  //   //     );
-  //   //   }
-  //   //   if (error) {
-  //   //     console.error(error.message);
-  //   //     res.resume();
-  //   //     return;
-  //   //   }
-  //   //   res
-  //   //     .on("data", function (data) {
-  //   //       file.write(data);
-  //   //     })
-  //   //     .on("end", function () {
-  //   //       file.end();
-  //   //       const localUrl = path.join(
-  //   //         process.cwd(),
-  //   //         "/download/",
-  //   //         filename.file_elem_file_name
-  //   //       );
-  //   //       shell.openPath(localUrl);
-  //   //       console.log(file_name + " downloaded to " + downloadDicPath);
-  //   //     });
-  //   // });
-  //   // } else {
-  //   //   // 已存在
-  //   //   console.log(
-  //   //     path.resolve(downloadDicPath, file_elem_file_name),
-  //   //     "已存在，不下载"
-  //   //   );
-  //   // }
-  // }
-  // ipcMain.on("openfilenow", function (event, filename) {
-  //   console.log("666", filename);
-  //   downloadFilesByUrl(filename);
-  // });
   ipcMain.on("OPENFILE", function (event, filename) {
     const name = filename.filename;
     //console.log(name);
