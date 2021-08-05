@@ -21,11 +21,13 @@ import chooseImg from '../../assets/icon/choose.png'
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
 import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText } from './message-input-util';
-  
+
 type Props = {
     convId: string,
     convType: number,
     isShutUpAll: boolean,
+    editorState,
+    setEditorState
     handleOpenCallWindow: (callType: string,convType:number,windowType:string) => void;
 }
 
@@ -74,7 +76,7 @@ const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType, isShutUpAll, handleOpenCallWindow } = props;
+    const { convId, convType, isShutUpAll, handleOpenCallWindow, editorState, setEditorState } = props;
     const [ isDraging, setDraging] = useState(false);
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ shouldShowCallMenu, setShowCallMenu] = useState(false);
@@ -82,7 +84,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ isEmojiPopup, setEmojiPopup ] = useState(false);
     const [ isRecordPopup, setRecordPopup ] = useState(false);
     const [shotKeyTip, setShotKeyTip] = useState('按Enter键发送消息');
-    const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null, { blockExportFn }))
+    // const [ editorState, setEditorState ] = useState<EditorState>(BraftEditor.createEditorState(null, { blockExportFn }))
     const [ videoInfos, setVideoInfos] = useState([]);
     const [ atUserNameInput, setAtInput] = useState('');
     const [ atUserMap, setAtUserMap] = useState({});
@@ -143,16 +145,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         });
     };
 
-    const selectVideoMessage = () => {
-        ipcRenderer.send(RENDERPROCESSCALL, {
-            type: SELECT_FILES,
-            params: {
-                fileType: "video",
-                extensions: ["mp4", "mov", "wmv"],
-                multiSelections: false
-            }
-        })
-    }
 
     function startapi(requestlist, toTextContent) {
         //定义counts，用来收集请求的次数，（也可以用reslist的length进行判断）
@@ -526,7 +518,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (userName) {
             const isInputAt = window.localStorage.getItem('inputAt')
             console.log(isInputAt, '0000000000000')
-            const text = Number(isInputAt) ? `${userName} ` : `@${userName} `
+            const text = Number(isInputAt) ? `${userName} ` : `${userName} `
             setEditorState(ContentUtils.insertText(editorState, text))
         }
     }
@@ -563,14 +555,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        // const type = sendType
-        if (editorState?.toText().substring(editorState?.toText().length - 1, editorState?.toText().length) === '@') {
-            setEditorState(ContentUtils.insertText(editorState.substring(0, editorState?.toText().length - 1), ''))
-        }
-        // if(editorState.toText().substring(editorState.toText().length-1,editorState.toText().length) === '@'){
-        //     console.info(787878)
-        //     setEditorState(ContentUtils.insertText(editorState.toText().substring(0,editorState.toText().length-1), ''))
-        // }
         if (sendType == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
@@ -841,6 +825,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
+                    maxLength={4480}
                     actions={[]}
                 />
             </div>
