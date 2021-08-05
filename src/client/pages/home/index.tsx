@@ -11,6 +11,7 @@ import { UnreadCount } from './unreadCount';
 import { Profile } from './profile';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeFunctionTab } from '../../store/actions/ui';
+import { Myloader } from '../../components/skeleton';
 
 const navList = [
     {
@@ -33,7 +34,7 @@ const navList = [
 
 export const Home = (): JSX.Element => {
     const { function_tab } = useSelector((state: State.RootState) => state.ui);
-
+    const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const location =  useLocation();
     const path = location?.pathname;
 
@@ -52,7 +53,7 @@ export const Home = (): JSX.Element => {
     useEffect(() => {
         dispatch(changeFunctionTab(currentId))
     }, [])
-
+    console.log("userId:",userId)
     return <div className="home">
         
         <div className="nav">
@@ -77,12 +78,14 @@ export const Home = (): JSX.Element => {
                 <Link to="/home/setting" className={`nav--link settings ${addActiveClass('settings')}`} onClick={() => handleLinkClick('settings')}/>
             </div>
         </div>
-        <div className="content">
+        {
+            userId ? <div className="content">
             <Switch>
                 <Route path="/home/message" component={Message}></Route>
                 <Route path="/home/connection" component={RelationShip}></Route>
                 <Route path="/home/setting" component={Setting}></Route>
             </Switch>
-        </div>
+        </div> : <Myloader/>
+        }
     </div>
 }
