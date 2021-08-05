@@ -31,10 +31,10 @@ type Props = {
 
 const FEATURE_LIST_GROUP = [{
     id: 'face',
-// },{
-//     id: 'photo'
-// }, {
-//     id: 'file'
+},{
+    id: 'photo'
+}, {
+    id: 'file'
 // }
 //  ,{
 //     id: 'video'
@@ -50,10 +50,10 @@ const FEATURE_LIST_GROUP = [{
 }]
 const FEATURE_LIST_C2C = [{
     id: 'face',
-// }, {
-//     id: 'photo'
-// }, {
-//     id: 'file'
+}, {
+    id: 'photo'
+}, {
+    id: 'file'
 // },
 // {
 //     id: 'video'
@@ -267,9 +267,10 @@ export const MessageInput = (props: Props): JSX.Element => {
         if(file) {
             const fileSize = file.size;
             const type = file.type;
-            console.log
+            console.log(file)
             if (type.includes('png') || type.includes('jpg')) {
                 if(fileSize > 28 * 1024 * 1024) return message.error({content: "image size can not exceed 28m"})
+                console.log(file)
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
                 setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
             } else if ( type.includes('mp4') || type.includes('mov')){
@@ -478,7 +479,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 if (convType === 2) handleSendAtMessage()
                 break;
             case "photo":
-                handleSendPhotoMessage()
+                selectImageMessage()
                 break;
             case "file":
                 selectFileMessage()
@@ -707,21 +708,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
 
-    const listener = (event, params) => {
-        console.log(event)
-        console.log(params)
-        const { triggerType, data } = params;
-        switch(triggerType) {
-            case 'SELECT_FILES': {
-                setFile(data);
-                break;
-            }
-            case 'GET_VIDEO_INFO': {
-                setVideoInfos(pre => [...pre, data]);
-                break;
-            }
-        }
-    }
 
     useEffect(() => {
         const listener = (event, params) => {
@@ -772,10 +758,10 @@ export const MessageInput = (props: Props): JSX.Element => {
                     //@ts-ignore
                     webkitRelativePath: file.webkitRelativePath
                 }
-                console.log(convId, '截图文件对象', file)
+                console.log(convId, '截图文件对象22222', file)
                 //@ts-ignore
                 //sendImageMessage(fileObj)
-                sendMessages("image", url)
+                sendMessages(fileObj)
                 return
             }
         })
@@ -825,7 +811,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area" onKeyDown={handleKeyDown}>
+            {/* <div className="message-input__text-area" onKeyDown={handleKeyDown}> */}
+            <div className="message-input__text-area disabled" onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}>
                 <BraftEditor
                     stripPastedStyles
                     //@ts-ignore
