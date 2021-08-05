@@ -284,10 +284,9 @@ class IPC {
             type
         };
 
-        if(fileType === 'image') {
+        if(type.includes('png') || type.includes('jpg')) {
             const fileContent = await fs.readFileSync(filePath);
             data.fileContent = fileContent;
-
         }
 
 
