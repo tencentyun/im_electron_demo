@@ -707,8 +707,26 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
 
+    const listener = (event, params) => {
+        console.log(event)
+        console.log(params)
+        const { triggerType, data } = params;
+        switch(triggerType) {
+            case 'SELECT_FILES': {
+                setFile(data);
+                break;
+            }
+            case 'GET_VIDEO_INFO': {
+                setVideoInfos(pre => [...pre, data]);
+                break;
+            }
+        }
+    }
+
     useEffect(() => {
         const listener = (event, params) => {
+            console.log(event)
+            console.log(params)
             const { triggerType, data } = params;
             switch(triggerType) {
                 case 'SELECT_FILES': {
@@ -742,7 +760,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             } else {
                 // debugger
                 const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' })
-                // console.log(file, '截图文件对象')
+                console.log(file, '截图文件对象')
                 const fileObj = {
                     lastModified: file.lastModified,
                     //@ts-ignore
@@ -756,7 +774,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }
                 console.log(convId, '截图文件对象', file)
                 //@ts-ignore
-                sendImageMessage(fileObj)
+                //sendImageMessage(fileObj)
+                sendMessages("image", url)
                 return
             }
         })
