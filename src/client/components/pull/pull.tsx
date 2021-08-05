@@ -137,7 +137,6 @@ export const AddGroupMemberDialog = (props: {
         ],
         userId: userId,
       });
-
       onClose();
       setTimeout(() => {
         showGroupbyId(resultGroupId)
