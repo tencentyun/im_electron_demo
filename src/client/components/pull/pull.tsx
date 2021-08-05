@@ -125,14 +125,18 @@ export const AddGroupMemberDialog = (props: {
       }
       const { json_param } = await createGroup(params);
       const resultGroupId = JSON.parse(json_param)?.create_group_result_groupid
-
       await sendMsg({
         convId: resultGroupId,
         convType: 2,
         messageElementArray: [
           {
-            elem_type: 900,
-            custom_elem_data: userId.toString(),
+            elem_type: 3,
+            custom_elem_data: JSON.stringify({
+              businessID: "group_create",
+              content: "创建讨论组",
+              opUser: userId.toString(),
+              version: 4,
+            }),
           },
         ],
         userId: userId,

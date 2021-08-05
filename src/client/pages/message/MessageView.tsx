@@ -131,7 +131,7 @@ export const MessageView = (props: Props): JSX.Element => {
         newGroupInfo = newGroupInfo ? JSON.parse(newGroupInfo) : []
         const length = messageList.length;
         const isGroupInfo = newGroupInfo.find((item) => item.key === convId)
-        if (length === 3 && messageList[0].message_elem_array[0].elem_type === 8 && !isGroupInfo) {
+        if (length === 3 && messageList[0]?.message_elem_array[0]?.elem_type === 8 && !isGroupInfo) {
             newGroupInfo.push({
                 key: messageList[0].message_elem_array[0].group_report_elem_group_id,
                 value: messageList[0].message_elem_array[0].group_report_elem_op_user

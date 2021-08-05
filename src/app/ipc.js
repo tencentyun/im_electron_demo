@@ -8,7 +8,7 @@ const http = require('http')
 const fetch = require("node-fetch");
 const url = require('url')
 const child_process = require('child_process')
-const shelljs = require("shelljs")
+//const shelljs = require("shelljs")
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const FFmpeg = require("fluent-ffmpeg")
 const ffprobeStatic = require('ffprobe-static');
@@ -22,7 +22,7 @@ class IPC {
     callWindow = null;
     constructor(win) {
         this.win = win;
-        this.initFFmpeg();
+        //this.initFFmpeg();
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             console.log("get message from render process", event.processId, data)
             const { type, params } = data;
@@ -104,14 +104,14 @@ class IPC {
 
         return callWindow;
     }
-    initFFmpeg () {
-        // add ffmpeg to path
-        const command = `export PATH="$PATH:${ffprobeStatic.path}"`
-        // compatable with electron env
-        // issue: https://github.com/shelljs/shelljs/wiki/Electron-compatibility
-        shelljs.config.execPath = shelljs.which('node').toString()
-        shelljs.exec(command)
-    }
+    // initFFmpeg () {
+    //     // add ffmpeg to path
+    //     const command = `export PATH="$PATH:${ffprobeStatic.path}"`
+    //     // compatable with electron env
+    //     // issue: https://github.com/shelljs/shelljs/wiki/Electron-compatibility
+    //     shelljs.config.execPath = shelljs.which('node').toString()
+    //     shelljs.exec(command)
+    // }
     minsizewin () {
         this.win.minimize()
     }

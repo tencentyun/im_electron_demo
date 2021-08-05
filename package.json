@@ -32,7 +32,6 @@
         {
           "target": "nsis",
           "arch": [
-            "ia32",
             "x64"
           ]
         }
@@ -86,13 +85,10 @@
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
-    "node-gyp": "^8.1.0",
-    "node-gyp-build": "^4.2.3",
     "progress-stream": "^2.0.0",
     "qs": "^6.5.2",
     "redux": "^4.1.0",
     "sass": "^1.35.1",
-    "shelljs": "^0.8.4",
     "tea-component": "^2.6.22",
     "trtc-electron-sdk": "^8.6.102-beta.0"
   }

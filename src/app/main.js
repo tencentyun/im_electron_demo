@@ -105,8 +105,6 @@ function createWindow () {
     mainWindow.setTitle("华润银行即时通讯（内测版）");
     mainWindow.show();
     if (!ipc) ipc = new IPC(mainWindow);
-    // 打开调试工具
-    mainWindow.webContents.openDevTools();
     app.setAppUserModelId("华润银行即时通讯（内测版）");
   });
   mainWindow.on("close", function (e) {
@@ -160,14 +158,17 @@ function createWindow () {
       mainWindow.webContents.send("mainProcessMessage", false);
     }
   })
-  mainWindow.loadURL(`http://localhost:3000`);
-  // mainWindow.loadURL(
-  //   url.format({
-  //     pathname: path.join(__dirname, "../../bundle/index.html"),
-  //     protocol: "file:",
-  //     slashes: true,
-  //   })
-  // );
+  // mainWindow.loadURL(`http://localhost:3000`);
+  mainWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, "../../bundle/index.html"),
+      protocol: "file:",
+      slashes: true,
+    })
+  );
+
+  // 打开调试工具
+  mainWindow.webContents.openDevTools();
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
@@ -251,7 +252,7 @@ function createWindow () {
     // "start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"), () => {
+    child_process.exec('start C:\\Users\\p_guowuliu\\Desktop\\demo\\cut.exe', () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
