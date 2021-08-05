@@ -25,7 +25,7 @@ type Props = {
 }
 
 const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF' ];
-const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'WMV', 'mp4', 'mov', 'wmv'];
+const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
 const FEATURE_LIST_GROUP = [{
     id: 'face',
