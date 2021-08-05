@@ -8,7 +8,7 @@ import {
     animation
 } from 'react-contexify';
 import './message-view.scss';
-import { revokeMsg, deleteMsg, sendMsg, sendMergeMsg, TextMsg, getMsgList, deleteMsgList} from './api';
+import { revokeMsg, deleteMsg, sendMsg, sendMergeMsg, TextMsg, getMsgList, deleteMsgList } from './api';
 import { markeMessageAsRevoke, deleteMessage, reciMessage, addMoreMessage } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import {
@@ -115,11 +115,11 @@ export const MessageView = (props: Props): JSX.Element => {
             setPercent(percentage)
             setTips('下载中')
         })
-        ipcRenderer.on('UPLOADPROGRESS', (e, percentage) => {
-            setPercent(percentage)
-            setTips('上传中')
-            console.log(percentage, '进度条-----------------------------------------------------')
-        })
+        // ipcRenderer.on('UPLOADPROGRESS', (e, percentage) => {
+        //     setPercent(percentage)
+        //     setTips('上传中')
+        //     console.log(percentage, '进度条-----------------------------------------------------')
+        // })
     }, [])
     useEffect(() => {
         if (percent == '100%') {
@@ -278,24 +278,24 @@ export const MessageView = (props: Props): JSX.Element => {
     }
 
     const deleteSelectedMessage = async () => {
-        if(!seletedMessage.length) return;
-        const { message_conv_id, message_conv_type} = seletedMessage[0];
+        if (!seletedMessage.length) return;
+        const { message_conv_id, message_conv_type } = seletedMessage[0];
         const messageList = seletedMessage.map(item => item.message_msg_id);
         const params = {
             convId: message_conv_id,
             convType: message_conv_type,
             messageList
         }
-        const { data: {code} } = await deleteMsgList(params);
+        const { data: { code } } = await deleteMsgList(params);
 
-        if(code === 0) {
+        if (code === 0) {
             dispatch(deleteMessage({
                 convId: message_conv_id,
                 messageIdArray: messageList
             }));
             setMultiSelect(false);
         } else {
-            message.warning({content: '删除消息失败'})
+            message.warning({ content: '删除消息失败' })
         }
     };
 
@@ -643,22 +643,22 @@ export const MessageView = (props: Props): JSX.Element => {
                                                     </div>
                                                 }
                                             >
-                                                <span style={{display:'none'}}>占位</span><Avatar url={user_profile_face_url}  isClick={false} isPreview={true} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                                <span style={{ display: 'none' }}>占位</span><Avatar url={user_profile_face_url} isClick={false} isPreview={true} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                                             </Bubble>
                                         </div>
                                         {
                                             message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                                 return (
-                                                    elment.elem_type === 900 ? 
-                                                    <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-                                                        <span className="message-view__item--text text right-menu-item">{elment?.custom_elem_data}创建了群组</span>{elment.elem_type}
-                                                    </div>
-                                                    :
-                                                    <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-                                                        {
-                                                            displayDiffMessage(elment, index)
-                                                        }
-                                                    </div>
+                                                    elment.elem_type === 900 ?
+                                                        <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                            <span className="message-view__item--text text right-menu-item">{elment?.custom_elem_data}创建了群组</span>{elment.elem_type}
+                                                        </div>
+                                                        :
+                                                        <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                            {
+                                                                displayDiffMessage(elment, index)
+                                                            }
+                                                        </div>
                                                 )
                                             })
                                         }

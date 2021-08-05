@@ -253,7 +253,7 @@ function createWindow () {
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
     child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"), () => {
-    //child_process.exec('start C:\\Users\\p_guowuliu\\Desktop\\demo\\cut.exe', () => {
+      //child_process.exec('start C:\\Users\\p_guowuliu\\Desktop\\demo\\cut.exe', () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
@@ -293,11 +293,12 @@ function createWindow () {
     //接收到消息后的执行程序
     // path.join(process.cwd(), "/resources/extraResources", "cut.exe")
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"),
+    child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe",
       () => {
         let pngs = clipboard.readImage().toPNG();
         fs.writeFile(url, pngs, (err) => {
           fs.readFile(url, (err, data) => {
+            console.log(url, 'path================')
             mainWindow.webContents.send("screenShotUrl", {
               data,
               url,
@@ -307,10 +308,10 @@ function createWindow () {
       }
     );
   });
-  ipcMain.on('UPLOAD', (event, data) => {
-    console.log(data, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    mainWindow.webContents.send('UPLOADPROGRESS', data)
-  })
+  // ipcMain.on('UPLOAD', (event, data) => {
+  //   console.log(data, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+  //   mainWindow.webContents.send('UPLOADPROGRESS', data)
+  // })
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {
     //console.log("123", file);
@@ -377,7 +378,7 @@ function createWindow () {
       shell.openPath(localUrl);
     }
   });
-  
+
   ipcMain.on("OPENFILE", function (event, filename) {
     const name = filename.filename;
     //console.log(name);
