@@ -15,8 +15,6 @@ const sizeOf = require('image-size')
 const FileType = require('file-type')
 const ffprobe = require('ffprobe-static');
 
-
-console.log('==============ffprobe.path==========', ffprobe.path);
 const getSrceenSize = () => {
     const display = screen.getPrimaryDisplay();
 
