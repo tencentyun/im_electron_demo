@@ -168,7 +168,7 @@ export const MessageView = (props: Props): JSX.Element => {
         });
         code === 0 && dispatch(deleteMessage({
             convId,
-            messageId: msgId
+            messageIdArray: [msgId]
         }));
     };
 
@@ -243,21 +243,23 @@ export const MessageView = (props: Props): JSX.Element => {
     const deleteSelectedMessage = async () => {
         if(!seletedMessage.length) return;
         const { message_conv_id, message_conv_type} = seletedMessage[0];
-        // seletedMessage.map(item => {
-        //     handleDeleteMsg({
-        //         convId: item.message_conv_id,
-        //         msgId: item.message_msg_id,
-        //         convType: item.message_conv_type
-        //     })
-        // })
+        const messageList = seletedMessage.map(item => item.message_msg_id);
         const params = {
             convId: message_conv_id,
             convType: message_conv_type,
-            messageList: seletedMessage.map(item => item.message_msg_id)
+            messageList
         }
-        const res = await deleteMsgList(params);
+        const { data: {code} } = await deleteMsgList(params);
 
-        console.log(res);
+        if(code === 0) {
+            dispatch(deleteMessage({
+                convId: message_conv_id,
+                messageIdArray: messageList
+            }));
+            setMultiSelect(false);
+        } else {
+            message.warning({content: '删除消息失败'})
+        }
     };
 
     const handleMultiSelectMsg = (params) => {

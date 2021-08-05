@@ -59,7 +59,7 @@ type UpdateMessagePayload= {
 
 type DeleteMessagePayload = {
     convId: string;
-    messageId: string
+    messageIdArray: Array<string>
 }
 
 type MarkeMessageAsReadedPayload = {
