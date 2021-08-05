@@ -33,7 +33,7 @@ export const CallVideo = (props: Props): JSX.Element => {
     return (
         <div className="call-video" ref={videoRef}>
             {
-                isC2CCall ? <C2Cvideo trtcInstance={trtcInstance} /> : <GroupVideo />
+                isC2CCall ? <C2Cvideo trtcInstance={trtcInstance} /> : <GroupVideo trtcInstance={trtcInstance} />
             }
         </div>
     )

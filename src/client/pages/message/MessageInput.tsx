@@ -29,6 +29,9 @@ type Props = {
     handleOpenCallWindow: (callType: string,convType:number,windowType:string) => void;
 }
 
+const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF' ];
+const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'WMV', 'mp4', 'mov', 'wmv'];
+
 const FEATURE_LIST_GROUP = [{
     id: 'face',
 },{
@@ -267,13 +270,12 @@ export const MessageInput = (props: Props): JSX.Element => {
         if(file) {
             const fileSize = file.size;
             const type = file.type;
-            console.log(file)
-            if (type.includes('png') || type.includes('jpg')) {
+            if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
                 if(fileSize > 28 * 1024 * 1024) return message.error({content: "image size can not exceed 28m"})
                 console.log(file)
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
                 setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
-            } else if ( type.includes('mp4') || type.includes('mov')){
+            } else if (SUPPORT_VIDEO_TYPE.find(v=> type.includes(v))){
                 if(fileSize > 100 * 1024 * 1024) return message.error({content: "video size can not exceed 100m"})
                 ipcRenderer.send(RENDERPROCESSCALL,{
                     type: GET_VIDEO_INFO,
@@ -336,7 +338,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             type: SELECT_FILES,
             params: {
                 fileType: "image",
-                extensions: ["png", "jpg"],
+                extensions: SUPPORT_IMAGE_TYPE,
                 multiSelections: false
             }
         })
@@ -349,6 +351,16 @@ export const MessageInput = (props: Props): JSX.Element => {
             params: {
                 fileType: "file",
                 extensions: ["*"],
+                multiSelections: false
+            }
+        })
+    }
+    const selectVideoMessage = () => {
+        ipcRenderer.send(RENDERPROCESSCALL,{
+            type: SELECT_FILES,
+            params: {
+                fileType: "video",
+                extensions: SUPPORT_VIDEO_TYPE,
                 multiSelections: false
             }
         })
