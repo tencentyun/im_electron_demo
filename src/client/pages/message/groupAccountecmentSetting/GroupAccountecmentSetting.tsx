@@ -23,7 +23,6 @@ export const GroupAccountecmentSetting = (props: {
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
   const { value, loading, retry } = useAsyncRetryFunc(async () => {
-    
     return await getGroupMemberInfoList({
       groupId,
     })
@@ -73,7 +72,6 @@ export const GroupAccountecmentSetting = (props: {
    * 群类型  groupTypeMap
    */
   const canEdit = groupType === 1 || [2, 3].includes(userIdentity);
-
   return (
     <LoadingContainer loading={loading} style={{ height: "100%" }}>
       <div className="group-accountecment-setting">

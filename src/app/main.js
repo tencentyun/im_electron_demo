@@ -296,6 +296,7 @@ function createWindow () {
     child_process.exec("start C:\\Users\\admin\\Desktop\\demo\\cut.exe",
       () => {
         let pngs = clipboard.readImage().toPNG();
+        console.log(clipboard.readImage(), pngs, '-----------')
         fs.writeFile(url, pngs, (err) => {
           fs.readFile(url, (err, data) => {
             console.log(url, 'path================')
