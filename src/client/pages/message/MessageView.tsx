@@ -8,7 +8,7 @@ import {
     animation
 } from 'react-contexify';
 import './message-view.scss';
-import { revokeMsg, deleteMsg, sendMsg, sendMergeMsg, TextMsg, getMsgList } from './api';
+import { revokeMsg, deleteMsg, sendMsg, sendMergeMsg, TextMsg, getMsgList, deleteMsgList } from './api';
 import { markeMessageAsRevoke, deleteMessage, reciMessage, addMoreMessage } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import {
@@ -115,11 +115,11 @@ export const MessageView = (props: Props): JSX.Element => {
             setPercent(percentage)
             setTips('下载中')
         })
-        ipcRenderer.on('UPLOADPROGRESS', (e, percentage) => {
-            setPercent(percentage)
-            setTips('上传中')
-            console.log(percentage, '进度条-----------------------------------------------------')
-        })
+        // ipcRenderer.on('UPLOADPROGRESS', (e, percentage) => {
+        //     setPercent(percentage)
+        //     setTips('上传中')
+        //     console.log(percentage, '进度条-----------------------------------------------------')
+        // })
     }, [])
     useEffect(() => {
         if (percent == '100%') {
@@ -206,7 +206,7 @@ export const MessageView = (props: Props): JSX.Element => {
         });
         code === 0 && dispatch(deleteMessage({
             convId,
-            messageId: msgId
+            messageIdArray: [msgId]
         }));
     };
 
@@ -280,21 +280,23 @@ export const MessageView = (props: Props): JSX.Element => {
     const deleteSelectedMessage = async () => {
         if (!seletedMessage.length) return;
         const { message_conv_id, message_conv_type } = seletedMessage[0];
-        seletedMessage.map(item => {
-            handleDeleteMsg({
-                convId: item.message_conv_id,
-                msgId: item.message_msg_id,
-                convType: item.message_conv_type
-            })
-        })
-        // const params = {
-        //     convId: message_conv_id,
-        //     convType: message_conv_type,
-        //     messageList: seletedMessage.map(item => item.message_msg_id)
-        // }
-        // const res = await deleteMsgList(params);
+        const messageList = seletedMessage.map(item => item.message_msg_id);
+        const params = {
+            convId: message_conv_id,
+            convType: message_conv_type,
+            messageList
+        }
+        const { data: { code } } = await deleteMsgList(params);
 
-        // console.log(res);
+        if (code === 0) {
+            dispatch(deleteMessage({
+                convId: message_conv_id,
+                messageIdArray: messageList
+            }));
+            setMultiSelect(false);
+        } else {
+            message.warning({ content: '删除消息失败' })
+        }
     };
 
     const handleMultiSelectMsg = (params) => {
@@ -477,6 +479,7 @@ export const MessageView = (props: Props): JSX.Element => {
     };
 
     const reEdit = (data) => {
+        console.log(data)
         setEditorState(ContentUtils.insertText(editorState, data))
     }
 
