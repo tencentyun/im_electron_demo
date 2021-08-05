@@ -14,12 +14,20 @@ const FFmpeg = require("fluent-ffmpeg")
 const sizeOf = require('image-size')
 const FileType = require('file-type')
 const ffprobe = require('ffprobe-static');
-FFmpeg.setFfprobePath(ffprobe.path);
-FFmpeg.setFfmpegPath(ffmpegPath);
+
+
+console.log('==============ffprobe.path==========', ffprobe.path);
 const getSrceenSize = () => {
     const display = screen.getPrimaryDisplay();
 
     return display.size;
+}
+
+const setPath = isDev => {
+    const ffprobePath = isDev ? ffprobe.path : ffprobe.path.replace('app.asar', 'app.asar.unpacked');
+    const formateFfmpegPath = isDev ? ffmpegPath : ffmpegPath.replace('app.asar', 'app.asar.unpacked');
+    FFmpeg.setFfprobePath(ffprobePath);
+    FFmpeg.setFfmpegPath(formateFfmpegPath);
 }
 
 class IPC {
@@ -29,6 +37,7 @@ class IPC {
     constructor(win){
         const env = process.env?.NODE_ENV?.trim();
         const isDev = env === 'development';
+        setPath(isDev);
         this.win = win;
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             console.log("get message from render process", event.processId, data)
@@ -207,7 +216,7 @@ class IPC {
             console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
         }
     }
-    async _getVideoInfo(filePath) {
+    async _getVideoInfo(event, filePath) {
         let videoDuration, videoSize
         const screenshotName = path.basename(filePath).split('.').shift()+'.png'
         const screenshotPath = path.resolve(DOWNLOAD_PATH, screenshotName)
@@ -232,6 +241,7 @@ class IPC {
                     })
                 })
                 .on('error', (err, info) => {
+                    event.reply('main-process-error', err);
                     reject(err)
                 })
                 .screenshots({
@@ -243,10 +253,12 @@ class IPC {
                     videoDuration = metadata.format.duration
                     videoSize = metadata.format.size
                    }else{
+                        event.reply('main-process-error', err);
                        console.log(err)
                    }
                 })
             }catch(err){
+                event.reply('main-process-error', err);
                 console.log(err)
             }
         })
@@ -261,7 +273,7 @@ class IPC {
 
     async getVideoInfo(event, params) {
         const { path } = params;
-        const data = await this._getVideoInfo(path)
+        const data = await this._getVideoInfo(event, path)
         event.reply(GET_FILE_INFO_CALLBACK, {triggerType: GET_VIDEO_INFO, data}) 
     }
 

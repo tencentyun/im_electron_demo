@@ -499,9 +499,15 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }
             }
         }
+        const errorConsole =(event, data) => {
+            console.error('==========main process error===========', data);
+        }
+        
+        ipcRenderer.on('main-process-error', errorConsole)
         ipcRenderer.on("GET_FILE_INFO_CALLBACK", listener)
         return () => {
             ipcRenderer.off("GET_FILE_INFO_CALLBACK", listener)
+            ipcRenderer.off('main-process-error', errorConsole)
         }
     }, [convId, convType])
 
