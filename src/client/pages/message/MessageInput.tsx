@@ -22,6 +22,12 @@ import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/co
 import { blockRendererFn, blockExportFn } from './CustomBlock';
 import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText } from './message-input-util';
 import { electron } from 'webpack';
+import MaxLength from 'braft-extensions/dist/max-length'
+
+const options = {
+    defaultValue: 4000, // 指定默认限制数，如不指定则为Infinity(无限)
+  };
+  BraftEditor.use(MaxLength(options));
 
 type Props = {
     convId: string,
@@ -263,8 +269,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             const type = file.type;
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
-                // console.log(file)
-                file = JSON.parse(window.localStorage.getItem('imageObj'))
                 console.log(file)
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
                 console.log(imgUrl, 'imgUrl')
@@ -840,7 +844,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
-                    maxLength={4480}
+                    maxLength={4000}
                     actions={[]}
                 />
             </div>
