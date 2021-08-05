@@ -24,7 +24,6 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id, atUserNameInput 
     const refPopup = useRef(null)
     const newCoords = getSelectionCoords(window)
 
-    const ref = useRef({displayList: []});
 
     const addActiveClass = (id: string): string =>
     id === currentSelectMember.memberId ? "is-active" : "";
@@ -39,8 +38,8 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id, atUserNameInput 
         const atAllItem = {group_member_info_identifier:'__kImSDK_MesssageAtALL__', group_member_info_nick_name: '所有人'};
         setList([atAllItem,...arr])
         setDisplayList( [atAllItem,...arr]);
-        ref.current.displayList = [atAllItem,...arr];
     }
+    
     useEffect(() => {
         setCoords({x: newCoords.x - 325, y: 40})
         getData()
@@ -63,7 +62,6 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id, atUserNameInput 
     useEffect(() => {
         const newList = list.filter(v => v.group_member_info_nick_name?.includes(atUserNameInput) || v.group_member_info_identifier?.includes(atUserNameInput));
         setDisplayList(newList)
-        ref.current.displayList = newList;
     }, [atUserNameInput, list]);
 
     const handlePopupClick = (e) => {
