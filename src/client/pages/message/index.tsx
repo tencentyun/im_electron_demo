@@ -71,12 +71,12 @@ export const Message = (): JSX.Element => {
 
 
     const dispatch = useDispatch();
-    const getData = async () => {
+    const getData = async () => { 
         const response = await getConversionList();
         setLoadingStatus(false);
         dispatch(replaceConversaionList(response))
         if (response.length) {
-            if (currentSelectedConversation === null) {
+            if (currentSelectedConversation === null || currentSelectedConversation === undefined) {
                 dispatch(updateCurrentSelectedConversation(response[0]))
             }
         }else{
@@ -124,13 +124,6 @@ export const Message = (): JSX.Element => {
         }
     },[conversationList.length])
 
-    useEffect(() => {
-        if(currentSelectedConversation?.conv_id) {
-            const ref = getRef(currentSelectedConversation.conv_id);
-            // @ts-ignore
-            ref?.current?.scrollIntoViewIfNeeded();
-        }
-    }, [currentSelectedConversation] );
 
     const handleConvListClick = convInfo => {
         if(convInfo.conv_type == 1) {
@@ -345,7 +338,7 @@ export const Message = (): JSX.Element => {
         return <Myloader />
     }
 
-    if (currentSelectedConversation === null) {
+    if (currentSelectedConversation === null ||  currentSelectedConversation === undefined) {
         return <EmptyResult contentText="暂无会话" />
     }
     // console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)

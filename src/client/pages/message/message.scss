@@ -124,7 +124,10 @@
                 background-image: url('../../assets/icon/readed.svg');
             }
             .text {
-                margin-left: 5px;;
+                margin-left: 5px;
+                overflow: hidden;
+                display: block;
+                text-overflow: ellipsis;
             }
             .at-msg {
                 color: #FF584C;

@@ -102,7 +102,6 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
         console.log(res)
         onChange?.()
         isShow?.(false)
-        debugger
         prop.afterUpload?.(download_url);
         setVal(download_url);
         if (!prop.isShowCropper) {

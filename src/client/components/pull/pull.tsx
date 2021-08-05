@@ -124,7 +124,7 @@ export const AddGroupMemberDialog = (props: {
         groupType: '1'
       }
       const { json_param } = await createGroup(params);
-      const resultGroupId = JSON.parse(json_param)?.create_group_result_groupid
+      const resultGroupId = JSON.parse(json_param)?.create_group_result_groupid;
       await sendMsg({
         convId: resultGroupId,
         convType: 2,

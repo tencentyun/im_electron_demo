@@ -646,11 +646,6 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {
                                             message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                                 return (
-                                                    elment.elem_type === 900 ? 
-                                                    <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-                                                        <span className="message-view__item--text text right-menu-item">{elment?.custom_elem_data}创建了群组</span>{elment.elem_type}
-                                                    </div>
-                                                    :
                                                     <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                                         {
                                                             displayDiffMessage(elment, index)

@@ -106,14 +106,14 @@ const InforItem : FC<InforItemInterface> =  ({accounts,callBack,rederBack}): JSX
                      </div>
                      <div>   
                              <div className="info-bar">
-                                 <span className="info-key">名称</span><span className="info-val">{accounts.username || '暂无'}</span>
+                                 <div className="info-key">名称</div><div className="info-val">{accounts.username || '暂无'}</div>
                              </div>
                              <div className="info-bar">
-                                 <span className="info-key">描述</span><span className="info-val">{accounts.desc || '暂无'}</span>
+                                 <div className="info-key">描述</div><div className="info-val">{accounts.desc || '暂无'}</div>
                              </div>
     
                              <div className="info-bar">
-                                 <span className="info-key">账号</span><span className="info-val">{accounts.uid || '暂无'}</span>
+                                 <div className="info-key">账号</div><div className="info-val">{accounts.uid || '暂无'}</div>
                              </div>
                              <div
                                  className="info-message"
