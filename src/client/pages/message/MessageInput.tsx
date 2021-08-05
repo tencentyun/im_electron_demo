@@ -270,7 +270,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
                 console.log(file)
-                const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(window.localStorage.getItem('imageBuffer'), 'png');
+                const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
                 console.log(imgUrl, 'imgUrl')
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
             } else if (SUPPORT_VIDEO_TYPE.find(v => type.includes(v))) {
