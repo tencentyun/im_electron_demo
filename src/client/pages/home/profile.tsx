@@ -3,21 +3,23 @@ import { useDispatch, useSelector } from "react-redux";
 import timRenderInstance from "../../utils/timRenderInstance";
 import { setUserInfo } from '../../store/actions/user';
 import { Avatar } from "../../components/avatar/avatar";
+import { useHistory } from "react-router-dom";
 export const Profile = (): JSX.Element => {
     const dispatch = useDispatch();
-    const { faceUrl,nickName,userId } = useSelector((state: State.RootState) => state.userInfo);
-    const getSelfInfo = async ()=>{
-        const {data: {code, json_param}} = await timRenderInstance.TIMProfileGetUserProfileList({
+    const history = useHistory()
+    const { faceUrl, nickName, userId } = useSelector((state: State.RootState) => state.userInfo);
+    const getSelfInfo = async () => {
+        const { data: { code, json_param } } = await timRenderInstance.TIMProfileGetUserProfileList({
             json_get_user_profile_list_param: {
                 friendship_getprofilelist_param_identifier_array: [userId]
             },
+            hide_tips: true
         });
-        console.log(json_param,'2321')
-        if(code === 0){
+        if (code === 0) {
             const {
-                user_profile_role: role, 
-                user_profile_face_url: faceUrl, 
-                user_profile_nick_name: nickName, 
+                user_profile_role: role,
+                user_profile_face_url: faceUrl,
+                user_profile_nick_name: nickName,
                 user_profile_identifier: userId
             } = JSON.parse(json_param)[0];
             dispatch(setUserInfo({
@@ -28,17 +30,21 @@ export const Profile = (): JSX.Element => {
             }));
         }
     }
-    useEffect(()=>{
-        console.log('获取个人信息')
-        getSelfInfo()
-    },[])
-
+    useEffect(() => {
+        if (userId) {
+            console.log('获取个人信息')
+            getSelfInfo()
+        } else {
+            history.replace('/')
+        }
+    }, [])
+    console.log(userId);
     return (
         <div className="userinfo-avatar">
             <Avatar
-                url={ faceUrl }
-                nickName  = { nickName}
-                userID = { userId }
+                url={faceUrl}
+                nickName={nickName}
+                userID={userId}
             />
         </div>
     )

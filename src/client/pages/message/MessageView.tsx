@@ -9,7 +9,7 @@ import {
 } from 'react-contexify';
 import './message-view.scss';
 import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, TextMsg, getMsgList, deleteMsgList } from './api';
-import { markeMessageAsRevoke, deleteMessage, reciMessage,  addMoreMessage } from '../../store/actions/message';
+import { markeMessageAsRevoke, deleteMessage, reciMessage,  addMoreMessage, updateMessages } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import { 
     getMessageId,
@@ -34,6 +34,7 @@ import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
 import { GroupSysElm } from './messageElemTyps/groupSystemElem';
 import { setCurrentReplyUser } from '../../store/actions/message'
+import timRenderInstance from '../../utils/timRenderInstance';
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -197,7 +198,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     const { data: { code, json_params } } = await sendMsg({
                         convId: getConvId(convItem),
                         convType: getConvType(convItem),
-                        messageElementArray: message.message_elem_array as [TextMsg],
+                        messageElementArray: message.message_elem_array,
                         userId
                     });
                     if(code === 0) {
@@ -337,8 +338,20 @@ export const MessageView = (props: Props): JSX.Element => {
         })
     }
 
-    const handleMessageReSend = (item) => {
-        console.log(item);
+    const handleMessageReSend =async (params) => {
+        console.log(params)
+        const {message_conv_id:conv_id,message_conv_type:conv_type} = params;
+        const {data:{code,json_params}} = await timRenderInstance.TIMMsgSendMessage({
+            conv_id,
+            conv_type,
+            params
+        })
+        if(code===0){
+            dispatch(updateMessages({
+                convId:conv_id,
+                message:JSON.parse(json_params)
+            }))
+        }
     }
 
     

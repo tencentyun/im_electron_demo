@@ -187,22 +187,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         setDraging(false);
     }
 
-    const sendMessages = (type, params) => {
-        switch(type) {
-            case "image":
-                sendImageMessage(params)
-                break
-            case "audio":
-                sendSoundMessage(params)
-                break
-            case "video":
-                sendVideoMessage(params)
-                break
-            default:
-                sendFileMessage(params)
-        }
-    }
-
+    
     const handleDragEnter = e => {
         setDraging(true);
     };
@@ -330,21 +315,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
 
-    const sendSoundMessage = async (file) => {
-        if(!file) return false;
-        const { data: { code, json_params } } = await sendSoundMsg({
-            convId,
-            convType,
-            messageElementArray: [{
-                elem_type: 2,
-                sound_elem_file_path: file.value,
-                sound_elem_file_size: file.size,
-                sound_elem_file_time: 10,
-            }],
-            userId,
-        });
-    }
-
+    
     const handleSendAtMessage = () => {
         // resetState()
         convType === 2 && setAtPopup(true)

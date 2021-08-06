@@ -173,7 +173,6 @@ class IPC {
         const file_name = url.parse(file_url).pathname.split('/').pop()
         const file_path = path.resolve(downloadDicPath, file_name)
         const file_path_temp =  `${file_path}.tmp`
-        
         if (!fs.existsSync(file_path)) {
             
             //创建写入流
