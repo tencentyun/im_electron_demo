@@ -64,10 +64,6 @@
     "electron-builder": "^22.11.7"
   },
   "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "ant-design": "^1.0.0",
-    "axios": "^0.21.1",
-    "braft-editor": "^2.3.9",
     "concurrently": "^6.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.0",
@@ -91,9 +87,7 @@
     "node-gyp-build": "^4.2.3",
     "progress-stream": "^2.0.0",
     "qs": "^6.5.2",
-    "redux": "^4.1.0",
     "sass": "^1.35.1",
-    "tea-component": "^2.6.22",
     "trtc-electron-sdk": "^8.6.102-beta.0"
   }
 }

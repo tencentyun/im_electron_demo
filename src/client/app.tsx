@@ -228,7 +228,7 @@ export const App = () => {
         newConversaionItem,
         "对话item。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
       );
-      if (newConversaionItem.conv_recv_opt) {
+      if (!newConversaionItem.conv_recv_opt) {
         return;
       }
     }

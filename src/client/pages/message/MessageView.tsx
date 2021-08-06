@@ -659,7 +659,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         }
                                         {
                                             shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
-                                                isMessageSendFailed && <Icon className="message-view__item--element-icon-error 999" type="error" onClick={() => handleMessageReSend(item)} />
+                                            isMessageSendFailed &&  <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
                                         }
                                     </div>
                             }

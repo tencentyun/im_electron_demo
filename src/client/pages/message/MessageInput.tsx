@@ -36,8 +36,8 @@ type Props = {
     handleOpenCallWindow: (callType: string, convType: number, windowType: string) => void;
 }
 
-const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
-const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'WMV', 'mp4', 'mov', 'wmv'];
+const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF' ];
+const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
 const FEATURE_LIST_GROUP = [{
     id: 'face',
@@ -235,6 +235,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                         userId,
                     });
                 }));
+
+                setEditorState(ContentUtils.clear(editorState));
 
                 const results = await Promise.all(fetchList);
                 console.log(results)
@@ -737,9 +739,15 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }
             }
         }
+        const errorConsole =(event, data) => {
+            console.error('==========main process error===========', data);
+        }
+
+        ipcRenderer.on('main-process-error', errorConsole)
         ipcRenderer.on("GET_FILE_INFO_CALLBACK", listener)
         return () => {
             ipcRenderer.off("GET_FILE_INFO_CALLBACK", listener)
+            ipcRenderer.off('main-process-error', errorConsole)
         }
     }, [convId, convType])
 

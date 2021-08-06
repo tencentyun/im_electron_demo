@@ -65,13 +65,19 @@ export const LoginContent = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory();
     const [userID, setUserID] = useState(window.localStorage.getItem('uid')||'');
-    const [password, setPassword] = useState('Qaz123456@1');
+    const [password, setPassword] = useState(window.localStorage.getItem('usersig')||'');
     const isDisablelogin = userID && password;
 
     const customizeTabBarRender = (children: JSX.Element) => {
         return <a className="customize-tab-bar">{children}</a>
     }
     const chkIt = (val: string) => {
+        if(val.length === 0){
+            setUserID('')
+            setPassword('')
+            window.localStorage.setItem('uid', '')
+            window.localStorage.setItem('usersig', '')
+        }
         if (val.length > 0 && !/^[A-Za-z0-9]+$/.test(val)) {
             message.warning({content:'不能输入中文！'})
             return
