@@ -252,7 +252,6 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const sendFileMessage = async ({ filePath, fileSize, fileName }) => {
         if(!filePath) return false;
-        console.log(44444444444444, fileSize)
         if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
         const { data: { code, desc, json_params } } = await sendFileMsg({
             convId,

@@ -54,7 +54,7 @@ export const Profile = (): JSX.Element => {
             />
             </div>
             {
-                showProfile? <EditProfile/> : null
+                showProfile? <EditProfile callback={()=>{setShowProfile(false)}}/> : null
             }
         </div>
     )
