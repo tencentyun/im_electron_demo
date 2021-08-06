@@ -217,28 +217,28 @@ class IPC {
     }
     async _getVideoInfo(event, filePath) {
         let videoDuration, videoSize
-        const screenshotName = path.basename(filePath).split('.').shift() + '.png'
+        const screenshotName = path.basename(filePath).split('.').shift()+'.png'
         const screenshotPath = path.resolve(DOWNLOAD_PATH, screenshotName)
 
         const { ext } = await FileType.fromFile(filePath)
-
+        
         return new Promise((resolve, reject) => {
-            try {
+            try{
                 FFmpeg(filePath)
-                    .on('end', async (err, info) => {
-                        const { width, height, type, size } = await this._getImageInfo(screenshotPath)
-                        resolve({
-                            videoDuration,
-                            videoPath: filePath,
-                            videoSize,
-                            videoType: ext,
-                            screenshotPath,
-                            screenshotWidth: width,
-                            screenshotHeight: height,
-                            screenshotType: type,
-                            screenshotSize: size,
-                        })
+                .on('end', async (err, info) => {
+                    const { width, height, type, size } = await this._getImageInfo(screenshotPath)
+                    resolve({
+                        videoDuration,
+                        videoPath: filePath,
+                        videoSize,
+                        videoType: ext,
+                        screenshotPath,
+                        screenshotWidth: width,
+                        screenshotHeight: height,
+                        screenshotType: type,
+                        screenshotSize: size,
                     })
+                })
                 .on('error', (err, info) => {
                     event.reply('main-process-error', err);
                     reject(err)
@@ -260,7 +260,7 @@ class IPC {
                 event.reply('main-process-error', err);
                 console.log(err)
             }
-        }
+        })
     }
     async _getImageInfo (path) {
         const { width, height, type } = await sizeOf(path)
