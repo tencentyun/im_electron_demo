@@ -237,7 +237,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }));
 
                 const results = await Promise.all(fetchList);
-                console.log(results)
+                console.log(results, 'result========================')
                 for (const res of results) {
                     const { data: { code, json_params, desc } } = res;
                     if (code === 0) {
@@ -263,22 +263,28 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
 
-    const setFile = async (file: File | { size: number; type: string; path: string; name: string; fileContent: string }) => {
+    const setFile = async (file: File | { size: number; type: string; path: string; name: string; fileContent: string }, bol: boolean) => {
+        // console.log(file, '文件对象')
         if (file) {
             const fileSize = file.size;
             const type = file.type;
             console.log(type, '========')
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
-                // if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
+                console.log(bol, '111111~~~~~~~~~~~~~~')
+                if (!bol) {
+                    console.log(file, 'file!!!')
+                    if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
+                    const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
+                    setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
+                } else {
+                    file = JSON.parse(window.localStorage.getItem('imageObj'))
+                    console.log(file, 'file!!!')
+                    if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
+                    setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
+                }
                 // file = JSON.parse(window.localStorage.getItem('imageObj'))
-                // const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
-                // console.log(imgUrl)
-                // console.log(file)
-                // setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
-                console.log(111)
-                file = JSON.parse(window.localStorage.getItem('imageObj'))
-                if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
-                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
+                // if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
+                // setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
             } else if (SUPPORT_VIDEO_TYPE.find(v => type.includes(v))) {
                 if (fileSize > 100 * 1024 * 1024) return message.error({ content: "video size can not exceed 100m" })
                 ipcRenderer.send(RENDERPROCESSCALL, {
@@ -297,7 +303,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handleDropFile = (e) => {
         const files = e.dataTransfer?.files || [];
         for (const file of files) {
-            setFile(file);
+            setFile(file, true);
         }
         setDraging(false);
     }
@@ -649,7 +655,7 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handlePastedFiles = async (files: File[]) => {
         for (const file of files) {
-            setFile(file);
+            setFile(file, true);
         }
     }
 
@@ -724,7 +730,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             const { triggerType, data } = params;
             switch (triggerType) {
                 case 'SELECT_FILES': {
-                    setFile(data);
+                    setFile(data, false);
                     break;
                 }
                 case 'GET_VIDEO_INFO': {
@@ -749,7 +755,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         })
         setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
         ipcRenderer.on('screenShotUrl', (e, { data, url }) => {
-            console.log(data, url, '+++++++++++++++++++')
+            console.log(typeof data, data, url, '+++++++++++++++++++')
 
             if (data.length == 0) {
                 message.error({ content: '已取消截图' })
@@ -775,7 +781,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     name: file.name,
                     path: url,
                     size: file.size,
-                    // fileContent: JSON.stringify(data),
+                    fileContent: JSON.stringify(data),
                     type: file.type,
                     //@ts-ignore
                     webkitRelativePath: file.webkitRelativePath
@@ -783,7 +789,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 // console.log(convId, '截图文件对象22222', file, fileObj)
                 // const image = nativeImage.createFromPath(url)
                 // clipboard.writeImage(image)
-                window.localStorage.setItem('imageBuffer', JSON.stringify(data))
+                window.localStorage.setItem('imageBuffer', data)
                 window.localStorage.setItem('imageObj', JSON.stringify(imageObj))
                 sendMessages('image', fileObj)
                 return

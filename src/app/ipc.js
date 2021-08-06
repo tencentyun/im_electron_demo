@@ -26,7 +26,7 @@ class IPC {
     win = null;
     callWindow = null;
     imWindowEvent = null;
-    constructor(win){
+    constructor(win) {
         const env = process.env?.NODE_ENV?.trim();
         const isDev = env === 'development';
         this.win = win;
@@ -63,12 +63,12 @@ class IPC {
         this.eventListiner(isDev);
     }
 
-    eventListiner(isDev) {
+    eventListiner (isDev) {
         const screenSize = getSrceenSize();
         // 当作为接收方，接受电话后，更改窗口尺寸。
         ipcMain.on('accept-call', () => {
             this.callWindow.setSize(800, 600);
-            this.callWindow.setPosition(screenSize.width / 2 - 400, screenSize.height /  2 - 300);
+            this.callWindow.setPosition(screenSize.width / 2 - 400, screenSize.height / 2 - 300);
             // 向聊天窗口通信
             this.imWindowEvent.reply('accept-call-reply');
         });
@@ -99,7 +99,7 @@ class IPC {
         ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
             this.imWindowEvent = event;
             const params = JSON.stringify(data);
-            if(data.windowType === 'notificationWindow') {
+            if (data.windowType === 'notificationWindow') {
                 this.callWindow.setSize(320, 150);
                 this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
             }
@@ -114,7 +114,7 @@ class IPC {
         });
     }
 
-    createNewWindow(isDev) {
+    createNewWindow (isDev) {
         const callWindow = new BrowserWindow({
             height: 600,
             width: 800,
@@ -130,7 +130,7 @@ class IPC {
             },
         });
         callWindow.removeMenu();
-        if(isDev) {
+        if (isDev) {
             callWindow.loadURL(`http://localhost:3000/call.html`);
         } else {
             callWindow.loadURL(
@@ -144,19 +144,19 @@ class IPC {
 
         this.callWindow = callWindow;
     }
-    minsizewin() {
+    minsizewin () {
         this.win.minimize()
     }
-    maxsizewin() {
-        this.win.maximize()
+    maxsizewin () {
+        this.win.isMaximized() ? this.win.unmaximize() : this.win.maximize()
     }
-    close() {
+    close () {
         this.win.close()
     }
-    showDialog() {
+    showDialog () {
         child_process.exec(`start "" ${path.resolve(process.cwd(), './download/')}`);
     }
-    downloadFilesByUrl(file_url) {
+    downloadFilesByUrl (file_url) {
         const cwd = process.cwd();
         const downloadDicPath = path.resolve(cwd, './download/')
         if (!fs.existsSync(downloadDicPath)) {
@@ -166,10 +166,10 @@ class IPC {
         console.log(file_url)
         const file_name = url.parse(file_url).pathname.split('/').pop()
         const file_path = path.resolve(downloadDicPath, file_name)
-        const file_path_temp =  `${file_path}.tmp`
-        
+        const file_path_temp = `${file_path}.tmp`
+
         if (!fs.existsSync(file_path)) {
-            
+
             //创建写入流
             const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
                 console.error('error==>', e)
@@ -199,7 +199,7 @@ class IPC {
                     console.log(percentage);
                 });
                 res.body.pipe(str).pipe(fileStream);
-                }).catch(e => {
+            }).catch(e => {
                 //自定义异常处理
                 console.log(e);
             });
@@ -208,51 +208,51 @@ class IPC {
             console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
         }
     }
-    async _getVideoInfo(filePath) {
+    async _getVideoInfo (filePath) {
         let videoDuration, videoSize
-        const screenshotName = path.basename(filePath).split('.').shift()+'.png'
+        const screenshotName = path.basename(filePath).split('.').shift() + '.png'
         const screenshotPath = path.resolve(DOWNLOAD_PATH, screenshotName)
 
         const { ext } = await FileType.fromFile(filePath)
-        
+
         return new Promise((resolve, reject) => {
-            try{
+            try {
                 FFmpeg(filePath)
-                .on('end', async (err, info) => {
-                    const { width, height, type, size } = await this._getImageInfo(screenshotPath)
-                    resolve({
-                        videoDuration,
-                        videoPath: filePath,
-                        videoSize,
-                        videoType: ext,
-                        screenshotPath,
-                        screenshotWidth: width,
-                        screenshotHeight: height,
-                        screenshotType: type,
-                        screenshotSize: size,
+                    .on('end', async (err, info) => {
+                        const { width, height, type, size } = await this._getImageInfo(screenshotPath)
+                        resolve({
+                            videoDuration,
+                            videoPath: filePath,
+                            videoSize,
+                            videoType: ext,
+                            screenshotPath,
+                            screenshotWidth: width,
+                            screenshotHeight: height,
+                            screenshotType: type,
+                            screenshotSize: size,
+                        })
                     })
-                })
-                .on('error', (err, info) => {
-                    reject(err)
-                })
-                .screenshots({
-                    timestamps: [0],
-                    filename: screenshotName,
-                    folder: DOWNLOAD_PATH
-                }).ffprobe((err, metadata) => {
-                   if(!err){
-                    videoDuration = metadata.format.duration
-                    videoSize = metadata.format.size
-                   }else{
-                       console.log(err)
-                   }
-                })
-            }catch(err){
+                    .on('error', (err, info) => {
+                        reject(err)
+                    })
+                    .screenshots({
+                        timestamps: [0],
+                        filename: screenshotName,
+                        folder: DOWNLOAD_PATH
+                    }).ffprobe((err, metadata) => {
+                        if (!err) {
+                            videoDuration = metadata.format.duration
+                            videoSize = metadata.format.size
+                        } else {
+                            console.log(err)
+                        }
+                    })
+            } catch (err) {
                 console.log(err)
             }
         })
     }
-    async _getImageInfo(path) {
+    async _getImageInfo (path) {
         const { width, height, type } = await sizeOf(path)
         const { size } = fs.statSync(path)
         return {
@@ -260,13 +260,13 @@ class IPC {
         }
     }
 
-    async getVideoInfo(event, params) {
+    async getVideoInfo (event, params) {
         const { path } = params;
         const data = await this._getVideoInfo(path)
-        event.reply(GET_FILE_INFO_CALLBACK, {triggerType: GET_VIDEO_INFO, data}) 
+        event.reply(GET_FILE_INFO_CALLBACK, { triggerType: GET_VIDEO_INFO, data })
     }
 
-    async selectFiles(event, params) {
+    async selectFiles (event, params) {
         const { extensions, fileType, multiSelections } = params
         const [filePath] = dialog.showOpenDialogSync(this.win, {
             properties: ['openFile'],
@@ -274,8 +274,8 @@ class IPC {
                 name: "Images", extensions: extensions
             }]
         })
-        const size =  fs.statSync(filePath).size;
-        const name =  path.parse(filePath).base;
+        const size = fs.statSync(filePath).size;
+        const name = path.parse(filePath).base;
         const type = name.split('.')[1];
 
         const data = {
@@ -286,18 +286,18 @@ class IPC {
         };
         console.log(data)
         console.log(11223344)
-        if(SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
+        if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
             const fileContent = await fs.readFileSync(filePath);
             data.fileContent = fileContent;
             console.log(data)
         }
 
 
-      
+
         event.reply(GET_FILE_INFO_CALLBACK, {
             triggerType: SELECT_FILES,
             data
-        })   
+        })
     }
 }
 
