@@ -270,9 +270,19 @@ export const MessageInput = (props: Props): JSX.Element => {
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
                 console.log(file)
-                const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
-                console.log(imgUrl, 'imgUrl')
-                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
+                if(window.localStorage.getItem('imageObjnew') === '1' && file instanceof File) {
+                    console.log(1111)
+                    file = JSON.parse(window.localStorage.getItem('imageObj'))
+                    const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(window.localStorage.getItem('imageBuffer'), 'png');
+                    console.log(imgUrl)
+                    console.log(file)
+                    setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
+                }else{
+                    console.log(2222)
+                    const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
+                    setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
+                }
+                
             } else if (SUPPORT_VIDEO_TYPE.find(v => type.includes(v))) {
                 if (fileSize > 100 * 1024 * 1024) return message.error({ content: "video size can not exceed 100m" })
                 ipcRenderer.send(RENDERPROCESSCALL, {
@@ -284,6 +294,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
             }
+            window.localStorage.setItem('imageObjnew','2')
         }
     }
 
@@ -777,6 +788,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 // clipboard.writeImage(image)
                 window.localStorage.setItem('imageBuffer', JSON.stringify(data))
                 window.localStorage.setItem('imageObj', JSON.stringify(imageObj))
+                window.localStorage.setItem('imageObjnew', '1')
                 sendMessages('image', fileObj)
                 return
             }

@@ -284,10 +284,12 @@ class IPC {
             name,
             type
         };
-
+        console.log(data)
+        console.log(11223344)
         if(SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
             const fileContent = await fs.readFileSync(filePath);
             data.fileContent = fileContent;
+            console.log(data)
         }
 
 
