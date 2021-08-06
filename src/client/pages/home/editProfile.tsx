@@ -1,17 +1,36 @@
 import React, { useEffect, useRef } from "react"
 import { useSelector } from "react-redux";
+import { useMessageDirect } from "../../utils/react-use/useDirectMsgPage";
 import { Button, Icon } from "tea-component"
 import { Avatar } from "../../components/avatar/avatar"
+import timRenderInstance from "../../utils/timRenderInstance";
 
 type Props = {
-    callback:Function
+    callback: Function
 }
-export const EditProfile = (props:Props): JSX.Element => {
-    const { userId, faceUrl,nickName,role, } = useSelector((state: State.RootState) => state.userInfo);
+export const EditProfile = (props: Props): JSX.Element => {
+    const userProfile = useSelector((state: State.RootState) => state.userInfo);
+    const { userId, faceUrl, nickName, role, } = userProfile
     const { callback } = props;
+    const sendMsg = useMessageDirect()
     const refPopup = useRef(null)
-    const handleMsgReaded = () => { }
-    const handleAvatarClick = () => { }
+    const sendMessage = async () => {
+
+        const data = await timRenderInstance.TIMProfileGetUserProfileList({
+            json_get_user_profile_list_param: {
+                friendship_getprofilelist_param_identifier_array: [userId]
+            }
+        })
+        const { code, json_param } = data.data;
+
+        if (code === 0) {
+            sendMsg({
+                profile: JSON.parse(json_param)[0],
+                convType: 1,
+            })
+            callback()
+        }
+    }
     useEffect(() => {
         document.addEventListener('click', handlePopupClick);
         return () => {
@@ -20,10 +39,10 @@ export const EditProfile = (props:Props): JSX.Element => {
     }, []);
 
     const handlePopupClick = (e) => {
-        if(!refPopup.current) return
+        if (!refPopup.current) return
         if (!refPopup.current.contains(e.target as Node) && refPopup.current !== e.target) {
             callback()
-        } 
+        }
     }
     return <div className="userinfo-avatar--panel" ref={refPopup}>
         <div className="card-content">
@@ -49,7 +68,7 @@ export const EditProfile = (props:Props): JSX.Element => {
             <div className="info-bar">
                 <Button
                     type="primary"
-                    onClick={() => handleMsgReaded()}
+                    onClick={sendMessage}
                     style={{ width: '100%' }}
                 >
                     发消息
