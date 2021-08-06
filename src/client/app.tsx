@@ -37,7 +37,7 @@ import {
     updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
-import { openCallWindow, closeCallWindow } from "./utils/callWindowTools";
+import { openCallWindow, closeCallWindow, acceptCallListiner } from "./utils/callWindowTools";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
@@ -169,7 +169,7 @@ export const App = () => {
         // inviter: "109442"
         // timeout: 30
         const { room_id, call_type } = JSON.parse(data.data)
-        const { inviter, groupID } = data;
+        const { inviter, groupID,inviteID } = data;
         timRenderInstance.TIMProfileGetUserProfileList({
             json_get_user_profile_list_param: {
                 friendship_getprofilelist_param_identifier_array: [inviter],
@@ -188,7 +188,8 @@ export const App = () => {
                         nickName: encodeURIComponent(userdata.user_profile_nick_name),
                         convType: groupID ? 2 : 1,
                     },
-                    roomId: room_id
+                    roomId: room_id,
+                    inviteID
                 });
             }
 
@@ -360,6 +361,13 @@ export const App = () => {
 
     useEffect(() => {
         initIMSDK();
+        acceptCallListiner((inviteID)=>{
+            timRenderInstance.TIMAcceptInvite({
+                inviteID: inviteID
+            }).then(data=>{
+                console.log('接收返回',data)
+            })
+        })
     }, []);
     return (
         <div id="app-container">

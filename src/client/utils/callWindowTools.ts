@@ -14,16 +14,16 @@ const callWindowCloseListiner = (callback) => {
 };
 
 const acceptCallListiner = (callback) => {
-    ipcRenderer.on('accept-call-reply', () => {
-        console.log('接受通话');
-        callback();
+    ipcRenderer.on('accept-call-reply', (event,inviteID) => {
+        console.log('接受通话',inviteID);
+        callback(inviteID);
     })
 };
 
 const refuseCallListiner = (callback) => {
-    ipcRenderer.on('refuse-call-reply', () => {
+    ipcRenderer.on('refuse-call-reply', (inviteID) => {
         console.log('拒绝通话');
-        callback();
+        callback(inviteID);
     })
 }
 

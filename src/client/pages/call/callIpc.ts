@@ -18,8 +18,8 @@ export const eventListiner = {
     remoteUserExit: userId => {
         ipcRenderer.send('remote-user-exit', userId)
     },
-    acceptCall: () => {
-        ipcRenderer.send('accept-call');
+    acceptCall: (inviteID) => {
+        ipcRenderer.send('accept-call', inviteID);
         eventEmiter.emit('changeWindowType', 'callWindow');
     },
     refuseCall: () => {
