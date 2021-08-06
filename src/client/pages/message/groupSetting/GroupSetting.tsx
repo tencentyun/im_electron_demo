@@ -27,7 +27,6 @@ export const GroupSetting = (props: {
   console.log('userId', userId)
 
   const { value, loading, retry } = useAsyncRetryFunc(async () => {
-   
     return await getGroupMemberInfoList({
       groupId,
     })

@@ -467,8 +467,8 @@ export const getGroupMemberList = async (params: {
   const { code, json_param } = data;
   if (code === 0) {
     const result = JSON.parse(json_param);
-    return result;
-  }
+    return result; 
+  } 
   return [] as any;
 };
 

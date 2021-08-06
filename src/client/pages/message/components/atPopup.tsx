@@ -31,7 +31,8 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id, atUserNameInput 
     
     const getData = async () => {
         const list = await getGroupMemberList({
-            groupId: group_id
+            groupId: group_id,
+            nextSeq: 0
         });
         const arr = list.group_get_memeber_info_list_result_info_array
         const atAllItem = {group_member_info_identifier:'__kImSDK_MesssageAtALL__', group_member_info_nick_name: '所有人'};
@@ -40,8 +41,7 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id, atUserNameInput 
     }
     
     useEffect(() => {
-        // setCoords({x: newCoords.x - 325, y: newCoords.y - 35})
-        setCoords({x: newCoords.x - 325, y: 32})
+        setCoords({x: newCoords.x - 325, y: 40})
         getData()
     }, [group_id])
 

@@ -171,7 +171,7 @@ export const App = () => {
         (v) => v.conv_id === data.group_tips_elem_group_id
       );
       if (newConversaionItem) {
-        dispatch(updateCurrentSelectedConversation(newConversaionItem));
+        // dispatch(updateCurrentSelectedConversation(newConversaionItem));
       }
     }
   };
@@ -251,7 +251,7 @@ export const App = () => {
     ipcRenderer.send("asynchronous-message", "setTaryTitle");
     notification.onclick = async () => {
       ipcRenderer.send("asynchronous-message", "openWindow");
-      // dispatch(updateCurrentSelectedConversation(messages));
+      dispatch(updateCurrentSelectedConversation(messages));
       const response = await getConversionList();
       dispatch(updateConversationList(response));
       // console.log(response, '对话列表。。。。。。。。。。。。。。。。。。。')
