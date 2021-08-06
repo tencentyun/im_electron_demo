@@ -26,8 +26,8 @@ import MaxLength from 'braft-extensions/dist/max-length'
 
 const options = {
     defaultValue: 4000, // 指定默认限制数，如不指定则为Infinity(无限)
-  };
-  BraftEditor.use(MaxLength(options));
+};
+BraftEditor.use(MaxLength(options));
 
 type Props = {
     convId: string,
@@ -270,7 +270,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
                 console.log(file)
-                const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(window.localStorage.getItem('imageBuffer'), 'jpeg');
+                const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
                 console.log(imgUrl, 'imgUrl')
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
             } else if (SUPPORT_VIDEO_TYPE.find(v => type.includes(v))) {
@@ -772,7 +772,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     //@ts-ignore
                     webkitRelativePath: file.webkitRelativePath
                 }
-                console.log(convId, '截图文件对象22222', file, fileObj)
+                // console.log(convId, '截图文件对象22222', file, fileObj)
                 // const image = nativeImage.createFromPath(url)
                 // clipboard.writeImage(image)
                 window.localStorage.setItem('imageBuffer', JSON.stringify(data))
