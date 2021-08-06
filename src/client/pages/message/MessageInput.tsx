@@ -222,9 +222,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handleSendMsg = async () => {
         try {
             const rawData = editorState.toRAW();
-
             const messageElementArray = getMessageElemArray(rawData, videoInfos);
-
             if (messageElementArray.length) {
                 const fetchList = messageElementArray.map((v => {
                     if (v.elem_type === 0) {
@@ -391,7 +389,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         console.log(imagePath)
         if (!imagePath) return false;
         const { data: { code, desc, json_params } } = await sendImageMsg({
-            convId,
+            convId: window.localStorage.getItem('convId'),
             convType,
             messageElementArray: [{
                 elem_type: 1,
@@ -402,7 +400,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         });
         if (code === 0) {
             dispatch(updateMessages({
-                convId,
+                convId: window.localStorage.getItem('convId'),
                 message: JSON.parse(json_params)
             }))
         } else {
