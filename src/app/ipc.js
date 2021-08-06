@@ -215,48 +215,49 @@ class IPC {
             console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
         }
     }
-    async _getVideoInfo(event, filePath) {
+    async _getVideoInfo (event, filePath) {
         let videoDuration, videoSize
-        const screenshotName = path.basename(filePath).split('.').shift()+'.png'
+        const screenshotName = path.basename(filePath).split('.').shift() + '.png'
         const screenshotPath = path.resolve(DOWNLOAD_PATH, screenshotName)
 
         const { ext } = await FileType.fromFile(filePath)
-        
+
         return new Promise((resolve, reject) => {
-            try{
+            try {
                 FFmpeg(filePath)
-                .on('end', async (err, info) => {
-                    const { width, height, type, size } = await this._getImageInfo(screenshotPath)
-                    resolve({
-                        videoDuration,
-                        videoPath: filePath,
-                        videoSize,
-                        videoType: ext,
-                        screenshotPath,
-                        screenshotWidth: width,
-                        screenshotHeight: height,
-                        screenshotType: type,
-                        screenshotSize: size,
+                    .on('end', async (err, info) => {
+                        const { width, height, type, size } = await this._getImageInfo(screenshotPath)
+                        resolve({
+                            videoDuration,
+                            videoPath: filePath,
+                            videoSize,
+                            videoType: ext,
+                            screenshotPath,
+                            screenshotWidth: width,
+                            screenshotHeight: height,
+                            screenshotType: type,
+                            screenshotSize: size,
+                        })
                     })
-                })
-                .on('error', (err, info) => {
-                    event.reply('main-process-error', err);
-                    reject(err)
-                })
-                .screenshots({
-                    timestamps: [0],
-                    filename: screenshotName,
-                    folder: DOWNLOAD_PATH
-                }).ffprobe((err, metadata) => {
-                   if(!err){
-                    videoDuration = metadata.format.duration
-                    videoSize = metadata.format.size
-                   }else{
+
+                    .on('error', (err, info) => {
                         event.reply('main-process-error', err);
-                       console.log(err)
-                   }
-                })
-            }catch(err){
+                        reject(err)
+                    })
+                    .screenshots({
+                        timestamps: [0],
+                        filename: screenshotName,
+                        folder: DOWNLOAD_PATH
+                    }).ffprobe((err, metadata) => {
+                        if (!err) {
+                            videoDuration = metadata.format.duration
+                            videoSize = metadata.format.size
+                        } else {
+                            event.reply('main-process-error', err);
+                            console.log(err)
+                        }
+                    })
+            } catch (err) {
                 event.reply('main-process-error', err);
                 console.log(err)
             }
@@ -273,7 +274,7 @@ class IPC {
     async getVideoInfo (event, params) {
         const { path } = params;
         const data = await this._getVideoInfo(event, path)
-        event.reply(GET_FILE_INFO_CALLBACK, {triggerType: GET_VIDEO_INFO, data}) 
+        event.reply(GET_FILE_INFO_CALLBACK, { triggerType: GET_VIDEO_INFO, data })
     }
 
     async selectFiles (event, params) {

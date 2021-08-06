@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, message, Dropdown, List } from 'tea-component';
+import { Button, message, Dropdown, List, Bubble } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg, sendMsg } from './api'
 import { reciMessage, updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
@@ -41,41 +41,50 @@ const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
 const FEATURE_LIST_GROUP = [{
     id: 'face',
+    content: '发表情'
+},
+// {
+// id: 'at',
+// content: '@其他人'
+// },
+{
+    id: 'photo',
+    content: '发图片'
 }, {
-    id: 'photo'
-}, {
-    id: 'file'
-    // }
-    //  ,{
-    //     id: 'video'
-    // }
-    // ,{
-    //     id: 'phone'
-}, {
+    id: 'file',
+    content: '发文件'
+},
+//     {
+//     id: 'video',
+//     content: '发视频'
+// }, {
+//     id: 'phone',
+//     content: '语音'
+//     },
+{
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
-    // }, {
-    //     id: 'more',
-    //     content: '更多'
 }]
 const FEATURE_LIST_C2C = [{
     id: 'face',
+    content: '发表情'
 }, {
-    id: 'photo'
+    id: 'photo',
+    content: '发图片'
 }, {
-    id: 'file'
-    // },
-    // {
-    //     id: 'video'
-    // },
-    //  {
-    //     id: 'phone'
-}, {
+    id: 'file',
+    content: '发文件'
+},
+//     {
+//     id: 'video',
+//     content: '发视频'
+// }, {
+//     id: 'phone',
+//     content: '语音'
+//     },
+{
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
-    // }, {
-    //     id: 'more',
-    //     content: '更多'
 }]
 const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
@@ -213,9 +222,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handleSendMsg = async () => {
         try {
             const rawData = editorState.toRAW();
-
             const messageElementArray = getMessageElemArray(rawData, videoInfos);
-
             if (messageElementArray.length) {
                 const fetchList = messageElementArray.map((v => {
                     if (v.elem_type === 0) {
@@ -241,6 +248,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 const results = await Promise.all(fetchList);
                 console.log(results, 'result========================')
                 for (const res of results) {
+                    console.log(res, '0000000000000000000000')
                     const { data: { code, json_params, desc } } = res;
                     if (code === 0) {
                         dispatch(updateMessages({
@@ -248,8 +256,9 @@ export const MessageInput = (props: Props): JSX.Element => {
                             message: JSON.parse(json_params)
                         }))
                     }
-                    setEditorState(ContentUtils.clear(editorState));
+                    // setEditorState(ContentUtils.clear(editorState));
                 }
+                setEditorState(ContentUtils.clear(editorState));
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
@@ -382,7 +391,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         console.log(imagePath)
         if (!imagePath) return false;
         const { data: { code, desc, json_params } } = await sendImageMsg({
-            convId,
+            convId: window.localStorage.getItem('convId'),
             convType,
             messageElementArray: [{
                 elem_type: 1,
@@ -393,7 +402,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         });
         if (code === 0) {
             dispatch(updateMessages({
-                convId,
+                convId: window.localStorage.getItem('convId'),
                 message: JSON.parse(json_params)
             }))
         } else {
@@ -840,12 +849,15 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }
                 {
 
-                    FEATURE_LIST[convType].map(({ id }) => (
-                        <span
-                            key={id}
-                            className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
-                            onClick={() => handleFeatureClick(id)}
-                        />
+                    FEATURE_LIST[convType].map(({ id, content }) => (
+                        <Bubble content={content} key={id}>
+                            <span
+                                key={id}
+                                className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
+                                onClick={() => handleFeatureClick(id)}
+                            />
+                        </Bubble>
+
                     ))
                 }
             </div>
