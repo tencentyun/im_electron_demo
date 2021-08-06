@@ -130,8 +130,9 @@ export const MessageInput = (props: Props): JSX.Element => {
                     });
                 }));
 
+                setEditorState(ContentUtils.clear(editorState));
+
                 const results = await Promise.all(fetchList);
-                console.log(results)
                 for(const res of results) {
                     const { data: {code, json_params, desc }} = res;
                     if (code === 0) {                
@@ -140,7 +141,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                             message: JSON.parse(json_params)
                         }))
                     }
-                    setEditorState(ContentUtils.clear(editorState));
                 } 
             }
         } catch (e) {
@@ -476,7 +476,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         const errorConsole =(event, data) => {
             console.error('==========main process error===========', data);
         }
-        
+
         ipcRenderer.on('main-process-error', errorConsole)
         ipcRenderer.on("GET_FILE_INFO_CALLBACK", listener)
         return () => {

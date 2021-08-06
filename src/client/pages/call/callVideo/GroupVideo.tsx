@@ -67,7 +67,7 @@ export const GroupVideo = (props) => {
 
             {
                 userList.map(userId => {
-                    return <div ref={setRef(userId)}>{userId}</div>
+                    return <div className="group-video-content__item" ref={setRef(userId)}>{userId}</div>
                 })
             }
         </div>
