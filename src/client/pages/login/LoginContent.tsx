@@ -96,7 +96,7 @@ export const LoginContent = (): JSX.Element => {
             //     userName: userID.toUpperCase(),
             //     userPass: Encypt,
             //     asyuserind: null,
-            //     password: 'MTIzNDU2'
+            //     password: password
             // }).then(async res => {
             const USERLOGIN = userID
             const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
