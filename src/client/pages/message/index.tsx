@@ -102,7 +102,7 @@ export const Message = (): JSX.Element => {
     const handleSearchBoxClick = () => dialogRef.current.open();
 
     const getLastMsgInfo = (lastMsg:State.message,conv_type,conv_group_at_info_array) => {
-        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read,message_is_read } = lastMsg;
+        const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read,message_is_read,message_conv_type } = lastMsg;
         const { user_profile_nick_name } = message_sender_profile;
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
         const firstMsg = message_elem_array[0] || {};
@@ -128,7 +128,7 @@ export const Message = (): JSX.Element => {
         return <React.Fragment>
             
             {
-               <span className={`icon ${isRead ? 'is-read' : ''}`} />
+               message_conv_type=== 1 ? <span className={`icon ${isRead ? 'is-read' : ''}`} /> : null
             }
             {
                 conv_type && hasAtMessage ? <span className="at-msg">{atDisPlayMessage}</span> : null
@@ -238,12 +238,13 @@ export const Message = (): JSX.Element => {
 
         }
     }
+    
 
     if (isLoading) {
         return <Myloader />
     }
 
-    
+   
 
     return (
         <div className="message-content">
@@ -262,6 +263,7 @@ export const Message = (): JSX.Element => {
                                             conv_unread_num > 0 ? <div className="conversion-list__item--profile___unread">{getDisplayUnread(conv_unread_num)}</div> : null
                                         }
                                         <Avatar url={faceUrl} nickName={nickName} userID={conv_id} groupID={conv_id} size='small' />
+                                        
                                     </div>
                                     <div className="conversion-list__item--info">
                                         <div className="conversion-list__item--time-wrapper">

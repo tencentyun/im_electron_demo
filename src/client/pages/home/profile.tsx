@@ -4,10 +4,12 @@ import timRenderInstance from "../../utils/timRenderInstance";
 import { setUserInfo } from '../../store/actions/user';
 import { Avatar } from "../../components/avatar/avatar";
 import { useHistory } from "react-router-dom";
+import { EditProfile } from "./editProfile";
 export const Profile = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory()
     const { faceUrl, nickName, userId } = useSelector((state: State.RootState) => state.userInfo);
+    const [showProfile,setShowProfile] = useState(false)
     const getSelfInfo = async () => {
         const { data: { code, json_param } } = await timRenderInstance.TIMProfileGetUserProfileList({
             json_get_user_profile_list_param: {
@@ -15,6 +17,7 @@ export const Profile = (): JSX.Element => {
             },
             hide_tips: true
         });
+        
         if (code === 0) {
             const {
                 user_profile_role: role,
@@ -38,14 +41,21 @@ export const Profile = (): JSX.Element => {
             history.replace('/')
         }
     }, [])
-    console.log(userId);
+    const showUserProfile = ()=>{
+        setShowProfile(!showProfile)
+    }
     return (
         <div className="userinfo-avatar">
+            <div onClick={showUserProfile}>
             <Avatar
                 url={faceUrl}
                 nickName={nickName}
                 userID={userId}
             />
+            </div>
+            {
+                showProfile? <EditProfile/> : null
+            }
         </div>
     )
 }

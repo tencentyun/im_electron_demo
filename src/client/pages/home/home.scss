@@ -78,5 +78,15 @@
     }
     .userinfo-avatar{
         margin-top: 24px;
+        position: relative;
+        &--panel{
+            position: absolute;
+            width: 100px;
+            height: 200px;
+            background-color: #fff;
+            top: 0;
+            right: -120px;
+            z-index: 10000;
+        }
     }
 }
