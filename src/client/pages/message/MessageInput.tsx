@@ -26,8 +26,8 @@ import MaxLength from 'braft-extensions/dist/max-length'
 
 const options = {
     defaultValue: 4000, // 指定默认限制数，如不指定则为Infinity(无限)
-  };
-  BraftEditor.use(MaxLength(options));
+};
+BraftEditor.use(MaxLength(options));
 
 type Props = {
     convId: string,
@@ -267,22 +267,18 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (file) {
             const fileSize = file.size;
             const type = file.type;
+            console.log(type, '========')
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
-                if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
-                console.log(file)
-                if(window.localStorage.getItem('imageObjnew') === '1' && file instanceof File) {
-                    console.log(1111)
-                    file = JSON.parse(window.localStorage.getItem('imageObj'))
-                    const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(window.localStorage.getItem('imageBuffer'), 'png');
-                    console.log(imgUrl)
-                    console.log(file)
-                    setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
-                }else{
-                    console.log(2222)
-                    const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
-                    setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
-                }
-                
+                // if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
+                // file = JSON.parse(window.localStorage.getItem('imageObj'))
+                // const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
+                // console.log(imgUrl)
+                // console.log(file)
+                // setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
+                console.log(111)
+                file = JSON.parse(window.localStorage.getItem('imageObj'))
+                if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
+                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
             } else if (SUPPORT_VIDEO_TYPE.find(v => type.includes(v))) {
                 if (fileSize > 100 * 1024 * 1024) return message.error({ content: "video size can not exceed 100m" })
                 ipcRenderer.send(RENDERPROCESSCALL, {
@@ -291,10 +287,10 @@ export const MessageInput = (props: Props): JSX.Element => {
                 })
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, { name: file.name, path: file.path, size: file.size }));
             } else {
+                console.log(222)
                 if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
             }
-            window.localStorage.setItem('imageObjnew','2')
         }
     }
 
@@ -779,6 +775,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     name: file.name,
                     path: url,
                     size: file.size,
+                    // fileContent: JSON.stringify(data),
                     type: file.type,
                     //@ts-ignore
                     webkitRelativePath: file.webkitRelativePath
@@ -788,7 +785,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 // clipboard.writeImage(image)
                 window.localStorage.setItem('imageBuffer', JSON.stringify(data))
                 window.localStorage.setItem('imageObj', JSON.stringify(imageObj))
-                window.localStorage.setItem('imageObjnew', '1')
                 sendMessages('image', fileObj)
                 return
             }
