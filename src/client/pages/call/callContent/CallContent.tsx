@@ -81,8 +81,8 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID}) => {
        <header className="call-content__header">
            <CallTime isStart={isStart} />
        </header>
-       <section className="call-content__video">
-            <CallVideo trtcInstance={trtcInstance} convInfo={convInfo} userId={userId} />
+       <section className="call-content__video" >
+            <CallVideo trtcInstance={trtcInstance} convInfo={convInfo} userId={userId} roomId={roomId} />
        </section>
        <footer className="call-content__footer">
             <CallFooter toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={exitRoom} />

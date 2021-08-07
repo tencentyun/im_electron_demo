@@ -19,20 +19,21 @@ type Props = {
         faceUrl: string,
         nickName: string,
         convType: number
-    }
+    },
+    roomId: number
 }
 
 export const CallVideo = (props: Props): JSX.Element => {
     const videoRef = useRef(null);
-    const { trtcInstance, convInfo, userId } = props;
+    const { trtcInstance, convInfo, userId,roomId } = props;
     const convType = convInfo.convType;
 
     const isC2CCall = convType === 1;
-
+    
     return (
         <div className="call-video" ref={videoRef}>
             {
-                isC2CCall ? <C2Cvideo trtcInstance={trtcInstance} /> : <GroupVideo trtcInstance={trtcInstance} />
+                isC2CCall ? <C2Cvideo trtcInstance={trtcInstance} roomId={roomId}/> : <GroupVideo trtcInstance={trtcInstance} />
             }
         </div>
     )

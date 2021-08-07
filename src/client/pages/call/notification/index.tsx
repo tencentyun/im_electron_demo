@@ -20,6 +20,7 @@ export const Notification = (props) => {
 
         return `邀请你进行${typeText}通话`;
     }
+    
     return (
         <div className="notification">
             <div className="notification__title">

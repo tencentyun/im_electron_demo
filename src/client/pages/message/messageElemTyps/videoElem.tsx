@@ -1,7 +1,6 @@
 import React from "react";
 
 export const VideoElem =React.memo((props: any): JSX.Element => {
-    console.log('=============render============');
     const autoRate =  200 / props.video_elem_image_width;
     
     const item = () => {
