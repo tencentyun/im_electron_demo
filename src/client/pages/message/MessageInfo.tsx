@@ -138,10 +138,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
     const roomId = generateRoomID();
 
-    // if (!trtcCheck.isCameraReady() && !trtcCheck.isMicReady()) {
-    //   message.warning({ content: '找不到可用的摄像头和麦克风。请安装摄像头和麦克风后再试' });
-    //   return;
-    // }
+    if (!trtcCheck.isCameraReady() && !trtcCheck.isMicReady()) {
+      message.warning({ content: '找不到可用的摄像头和麦克风。请安装摄像头和麦克风后再试' });
+      return;
+    }
 
 
     // 发起邀请
@@ -206,7 +206,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const popupContainer = document.getElementById("messageInfo");
 
   useEffect(() => {
-    setMessageRead();
+    setTimeout(()=>{
+      setMessageRead();
+    },500)
   }, [msgList]);
 
   useEffect(() => {

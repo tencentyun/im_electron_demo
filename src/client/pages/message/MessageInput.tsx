@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message } from 'tea-component';
-import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg, sendMsg } from './api'
+import { sendTextMsg, sendImageMsg, sendFileMsg, sendVideoMsg, sendMsg } from './api'
 import { reciMessage, updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
@@ -24,7 +24,7 @@ type Props = {
     handleOpenCallWindow: (callType: string,convType:number,windowType:string) => void;
 }
 
-const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF','image/jpeg' ];
+const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF','jpeg'];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
 const FEATURE_LIST_GROUP = [{
@@ -69,6 +69,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ videoInfos, setVideoInfos] = useState([]);
     const [ atUserNameInput, setAtInput] = useState('');
     const [ atUserMap, setAtUserMap] = useState({});
+    const [ isZHCNAndFirstPopup, setIsZHCNAndFirstPopup]  = useState(false);
 
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
@@ -162,6 +163,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             const fileSize = file.size;
             const type = file.type;
             const size = file.size;
+            console.log('file',file)
             if(size === 0){
                 message.error({content: "文件大小异常"})
                 return
@@ -185,11 +187,13 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleDropFile = (e) => {
+        
         const files = e.dataTransfer?.files || [];
         for (const file of files) {
             setFile(file);
         }
         setDraging(false);
+        return 'handled';
     }
 
     
@@ -368,7 +372,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (userId) {
             const atText = userName || userId;
             setAtUserMap(pre => ({...pre, [atText]: userId}));
-            setEditorState(ContentUtils.insertText(editorState, `${atText} `))
+            setEditorState(ContentUtils.insertText(editorState, `${atText} `));
+            setAtInput('');
         }
     }
 
@@ -402,10 +407,15 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(newEditorState)
         const text = newEditorState.toText();
         const hasAt = text.includes('@');
-        if(!hasAt) {
+        /**
+         * 中文输入法下会触发两次change 第一次change时无法拿到真正的输入内容 
+         * 用isZHCNAndFirstPopup字段判断是否中文输入法下按下@ 并且首次change
+         */
+        if(!hasAt && atPopup && !isZHCNAndFirstPopup) {
             setAtPopup(false);
             return;
         }
+        setIsZHCNAndFirstPopup(false);
         // 取最后一个@后的内容作为搜索条件
         const textArr = text.split('@');
         const lastInput = textArr[textArr.length - 1]; 
@@ -417,10 +427,11 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(ContentUtils.insertText(editorState, patseText))
     }
 
-    const handlePastedFiles = async (files: File[]) => {
+    const handlePastedFiles = (files: File[]) => {
         for (const file of files) {
             setFile(file);
-        }      
+        }    
+        return 'handled';  
     }
 
     const handleKeyDown = (e) => {
@@ -439,25 +450,32 @@ export const MessageInput = (props: Props): JSX.Element => {
     const keyBindingFn = (e) => {
         if(e.keyCode === 13 || e.charCode === 13) {
             e.preventDefault();
+            if(!atPopup){
+                handleSendMsg();
+            }
             return 'enter';
-        }  
-        if(e.key === "@" && e.shiftKey && convType === 2) {
+        } else if(e.key === "@" && e.shiftKey && convType === 2) {
             e.preventDefault();
+            setAtPopup(true);
+            setEditorState(ContentUtils.insertText(editorState, ` @`))
             return '@';
-        } 
+        } else if (e.key === "Process" && e.shiftKey && convType === 2){
+            e.preventDefault();
+            setIsZHCNAndFirstPopup(true);
+            setAtPopup(true);
+            return 'zh-cn-@';
+        }
     }
 
     const handleKeyCommand = (e) => {
         switch(e) {
             case 'enter': {
-                if(!atPopup){
-                    handleSendMsg();
-                }
                 return 'not-handled';
             }
             case '@' : {
-                setAtPopup(true);
-                setEditorState(ContentUtils.insertText(editorState, ` @`))
+                return 'not-handled';
+            }
+            case 'zh-cn-@': {
                 return 'not-handled';
             }
         }
@@ -528,14 +546,15 @@ export const MessageInput = (props: Props): JSX.Element => {
                     value={editorState}
                     media={{ pasteImage:false }}
                     ref={instance => editorInstance = instance}
-                    handlePastedFiles={handlePastedFiles}
-                    handlePastedText={handlePastedText}
+                    // handlePastedFiles={handlePastedFiles}
+                    // handlePastedText={handlePastedText}
                     blockRendererFn={blockRendererFn}
                     keyBindingFn={keyBindingFn}
                     handleKeyCommand={handleKeyCommand}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
+                    draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled'}}
                     actions={[]}
                 />
             </div>

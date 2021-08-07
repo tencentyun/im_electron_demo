@@ -8,7 +8,7 @@ import {
     animation
 } from 'react-contexify';
 import './message-view.scss';
-import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, TextMsg, getMsgList, deleteMsgList } from './api';
+import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg,  getMsgList, deleteMsgList } from './api';
 import { markeMessageAsRevoke, deleteMessage, reciMessage,  addMoreMessage, updateMessages } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import { 

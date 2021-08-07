@@ -258,6 +258,7 @@ export const App = () => {
         }
     };
     const _handleUnreadChange = (unreadCount) => {
+        console.log('unreadCount',unreadCount)
         dispatch(setUnreadCount(unreadCount));
     };
     const _handeMessage = (messages: State.message[]) => {
