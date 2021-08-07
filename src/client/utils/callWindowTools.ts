@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import { OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW } from "../../app/const/const";
+import { OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW, END_CALL_WINDOW } from "../../app/const/const";
 
 const openCallWindow = (data) => {
     ipcRenderer.send(OPEN_CALL_WINDOW, data);
@@ -41,7 +41,9 @@ const remoteUserExit = callback => {
     })
 }
 
-
+const endCallWindow = ()=>{
+    ipcRenderer.send(END_CALL_WINDOW);
+}
 
 export {
     openCallWindow,
@@ -50,5 +52,6 @@ export {
     acceptCallListiner,
     refuseCallListiner,
     remoteUserJoin,
-    remoteUserExit
+    remoteUserExit,
+    endCallWindow
 }
