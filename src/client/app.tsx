@@ -204,9 +204,11 @@ export const App = () => {
     }
     const _onCanceled = (data) => {
         // 关闭通知窗口
+        closeCallWindow()
     }
     const _onTimeout = (data) => {
         // 关闭通知窗口
+        closeCallWindow()
     }
     const _handleElemUploadProgres = ({ message, index, cur_size, total_size, user_data }) => {
         dispatch(updateMessageElemProgress({

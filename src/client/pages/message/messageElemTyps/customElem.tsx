@@ -36,7 +36,7 @@ export const CustomElem = (props: any): JSX.Element => {
               case 4:
                 return <span>{parsedData.handleID}拒绝了通话</span>
               case 5:
-                return <span>{parsedData.inviter}邀请超时</span>
+                return <span>{parsedData.inviter}超时未接听</span>
               default:
                 return <span>信令未解析</span>
             }

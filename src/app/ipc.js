@@ -1,5 +1,5 @@
 // import { BrowserWindow } from "electron";
-const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
+const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW,END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
 const { ipcMain, BrowserWindow, dialog } = require('electron')
 const { screen } = require('electron')
 const fs = require('fs')
@@ -91,7 +91,9 @@ class IPC {
         ipcMain.on(CLOSE_CALL_WINDOW, () => {
             this.callWindow.webContents.send('exit-room');
         });
-
+        ipcMain.on(END_CALL_WINDOW,()=>{
+            this.callWindow.close()
+        })
         // 远端用户进入
         ipcMain.on('remote-user-join', (event, userId) => {
             this.imWindowEvent.reply('remote-user-join-reply', userId)
