@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message } from 'tea-component';
-import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg, sendMsg } from './api'
+import { sendTextMsg, sendImageMsg, sendFileMsg, sendVideoMsg, sendMsg } from './api'
 import { reciMessage, updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
@@ -186,6 +186,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleDropFile = (e) => {
+        
         const files = e.dataTransfer?.files || [];
         for (const file of files) {
             setFile(file);
