@@ -23,6 +23,7 @@ const serverCodeMessage: {[key: number]: string} = {
   502: '网关错误(Bad Gateway)',
   503: '服务不可用，服务器暂时过载或维护(Service Unavailable)',
   504: '网关超时(Gateway Timeout)',
+  10007:'操作权限不足'
 };
 
 /**

@@ -42,12 +42,12 @@ export const GroupMember = (props: {
     onRefresh,
   } = props;
 
-
+  const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
   const popupContainer = document.getElementById("messageInfo");
 
   const dialogRef = useDialogRef<GroupMemberListDrawerRecordsType>();
 
-  const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
+  const elem_type = useDialogRef<AddMemberRecordsType>();
 
   const deleteMemberDialogRef = useDialogRef<DeleteMemberRecordsType>();
 
@@ -152,6 +152,8 @@ export const GroupMember = (props: {
                   <>
                     <Avatar
                       url={v.user_profile_face_url}
+                      isClick = {false}
+                      isPreview={true}
                       nickName={v.user_profile_nick_name}
                       userID={v.user_profile_identifier}
                     />

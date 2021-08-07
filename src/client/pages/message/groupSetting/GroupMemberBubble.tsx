@@ -38,6 +38,7 @@ export const GroupMemberBubble = (props: {
 
   return (
     <Bubble
+        trigger="click"
         placement={"right-start"}
         content={
           <div className="card-content">
@@ -46,6 +47,7 @@ export const GroupMemberBubble = (props: {
                 <Avatar
                   key={user.user_profile_face_url}
                   url={user.user_profile_face_url}
+                  isPreview={true}
                   nickName={user.user_profile_nick_name}
                   userID={user.user_profile_identifier}
                 />

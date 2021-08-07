@@ -8,7 +8,7 @@ import {
     animation
 } from 'react-contexify';
 import './message-view.scss';
-import { revokeMsg, deleteMsg, sendMsg, sendMergeMsg, TextMsg, getMsgList } from './api';
+import { revokeMsg, deleteMsg, sendMsg, sendMergeMsg, TextMsg, getMsgList, deleteMsgList } from './api';
 import { markeMessageAsRevoke, deleteMessage, reciMessage, addMoreMessage } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import {
@@ -31,7 +31,7 @@ import { MergeElem } from './messageElemTyps/mergeElem';
 import { ForwardPopup } from './components/forwardPopup';
 import formateTime from '../../utils/timeFormat';
 import { ContentUtils } from 'braft-utils'
-import { Icon, message, Progress, StatusTip } from 'tea-component';
+import { Icon, message, Progress, StatusTip, Bubble, Button } from 'tea-component';
 import { custEmojiUpsert } from '../../services/custEmoji'
 import { custEmojiUpsertParams } from '../../services/custEmoji'
 import { showDialog } from "../../utils/tools";
@@ -41,6 +41,8 @@ import { GroupSysElm } from './messageElemTyps/groupSystemElem';
 import { setCurrentReplyUser } from '../../store/actions/message'
 import { setImgViewerAction } from '../../store/actions/imgViewer';
 import { ipcRenderer } from 'electron';
+import timRenderInstance from "../../utils/timRenderInstance";
+import { useMessageDirect } from "../../utils/react-use/useDirectMsgPage";
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
 
@@ -49,7 +51,8 @@ type Props = {
     editorState,
     setEditorState,
     convType: number,
-    convId: string
+    groupType: number;
+    convId: string;
 }
 
 const RIGHT_CLICK_MENU_LIST = [{
@@ -83,7 +86,6 @@ const RIGHT_CLICK_MENU_LIST = [{
 
 
 
-
 export const MessageView = (props: Props): JSX.Element => {
     const { messageList, editorState, setEditorState, convType, convId } = props;
     const messageViewRef = useRef(null);
@@ -96,7 +98,10 @@ export const MessageView = (props: Props): JSX.Element => {
     const dispatch = useDispatch();
     const [anchor, setAnchor] = useState('')
     const [percent, setPercent] = useState('0%')
+    const [tips, setTips] = useState('')
     const { isShow, isCanOpenFileDir, index: imgPreViewUrlIndex, imgs } = useSelector((state: State.RootState) => state.imgViewer)
+    const directToMsgPage = useMessageDirect();
+    console.log('messageList---------------------------------------------------------------------', messageList);
     useEffect(() => {
         if (!anchor) {
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
@@ -106,9 +111,15 @@ export const MessageView = (props: Props): JSX.Element => {
     }, [messageList.length])
     useEffect(() => {
         ipcRenderer.on('PERCENTAGE', (e, percentage) => {
-            console.log(percentage, '进度条。。。。。。。。。。。。。。。。。。。。。')
+            // console.log(percentage, '进度条。。。。。。。。。。。。。。。。。。。。。')
             setPercent(percentage)
+            setTips('下载中')
         })
+        // ipcRenderer.on('UPLOADPROGRESS', (e, percentage) => {
+        //     setPercent(percentage)
+        //     setTips('上传中')
+        //     console.log(percentage, '进度条-----------------------------------------------------')
+        // })
     }, [])
     useEffect(() => {
         if (percent == '100%') {
@@ -120,7 +131,7 @@ export const MessageView = (props: Props): JSX.Element => {
         newGroupInfo = newGroupInfo ? JSON.parse(newGroupInfo) : []
         const length = messageList.length;
         const isGroupInfo = newGroupInfo.find((item) => item.key === convId)
-        if (length === 3 && messageList[0].message_elem_array[0].elem_type === 8 && !isGroupInfo) {
+        if (length === 3 && messageList[0]?.message_elem_array[0]?.elem_type === 8 && !isGroupInfo) {
             newGroupInfo.push({
                 key: messageList[0].message_elem_array[0].group_report_elem_group_id,
                 value: messageList[0].message_elem_array[0].group_report_elem_op_user
@@ -150,7 +161,7 @@ export const MessageView = (props: Props): JSX.Element => {
         if (percent == '100%' || percent == '0%') {
             return <></>
         } else {
-            return <StatusTip.LoadingTip className='loading' loadingText={`下载中${percent}`} />
+            return <StatusTip.LoadingTip className='loading' loadingText={`${tips}${percent}`} />
         }
     }
     // 添加到自定义表情, 图片和自定义表情可添加
@@ -195,11 +206,12 @@ export const MessageView = (props: Props): JSX.Element => {
         });
         code === 0 && dispatch(deleteMessage({
             convId,
-            messageId: msgId
+            messageIdArray: [msgId]
         }));
     };
 
     const handleTransimitMsg = (params) => {
+        console.log(params)
         const { message } = params;
         setTransimitPopup(true)
         setSeletedMessage([message])
@@ -264,6 +276,29 @@ export const MessageView = (props: Props): JSX.Element => {
         setTransimitPopup(true)
         setForwardType(type)
     }
+
+    const deleteSelectedMessage = async () => {
+        if (!seletedMessage.length) return;
+        const { message_conv_id, message_conv_type } = seletedMessage[0];
+        const messageList = seletedMessage.map(item => item.message_msg_id);
+        const params = {
+            convId: message_conv_id,
+            convType: message_conv_type,
+            messageList
+        }
+        const { data: { code } } = await deleteMsgList(params);
+
+        if (code === 0) {
+            dispatch(deleteMessage({
+                convId: message_conv_id,
+                messageIdArray: messageList
+            }));
+            setMultiSelect(false);
+        } else {
+            message.warning({ content: '删除消息失败' })
+        }
+    };
+
     const handleMultiSelectMsg = (params) => {
         setMultiSelect(true)
     }
@@ -429,7 +464,22 @@ export const MessageView = (props: Props): JSX.Element => {
         }
     }
 
+    const handleMsgReaded = async (UserId: Array<string>) => {
+        const {
+            data: { code, json_param },
+        } = await timRenderInstance.TIMProfileGetUserProfileList({
+            json_get_user_profile_list_param: {
+                friendship_getprofilelist_param_identifier_array: UserId,
+            },
+        });
+        directToMsgPage({
+            convType: 1,
+            profile: JSON.parse(json_param)[0],
+        });
+    };
+
     const reEdit = (data) => {
+        console.log(data)
         setEditorState(ContentUtils.insertText(editorState, data))
     }
 
@@ -438,13 +488,18 @@ export const MessageView = (props: Props): JSX.Element => {
         const { elem_type, custom_elem_data = '', text_elem_content } = currMenuMessage.message_elem_array[0];
         // elemtype:1图片, 3 自定义消息为CUST_EMOJI类型
         const isEmoji = elem_type === 1 || onIsCustEmoji(elem_type, custom_elem_data) || onIsIncludeImg(elem_type, text_elem_content)
+        const message_is_from_self = currMenuMessage.message_is_from_self
         let menuData = RIGHT_CLICK_MENU_LIST
+        if (elem_type !== 4) {
+            // 非文件过滤打开文件夹按钮
+            menuData = menuData.filter(item => item.id !== 'openFile')
+        }
         if (!isEmoji) {
             // 过滤添加到表情MenuItem
             menuData = menuData.filter(item => item.id !== 'addCustEmoji')
         }
-        if (new Date().getTime() / 1000 - currMenuMessage.message_client_time > 120) {
-            // 超时则过滤撤回按钮
+        if (new Date().getTime() / 1000 - currMenuMessage.message_client_time > 120 || !message_is_from_self) {
+            // 超时或者不是本人发送消息则过滤撤回按钮
             menuData = menuData.filter(item => item.id !== 'revoke')
         }
         return menuData
@@ -470,7 +525,6 @@ export const MessageView = (props: Props): JSX.Element => {
         if (currentMsgItem.elem_type !== 10 && currentMsgItem.elem_type !== 1 && onIsCustEmoji(currentMsgItem.elem_type, currentMsgItem.custom_elem_data)) {
             return
         }
-        console.log('messageList', messageList);
         console.log('item', currentMsgItem);
         console.log('event', event);
         let imgsUrl = []
@@ -545,7 +599,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     }
                     // console.warn(item,'查看发送内容')
                     const { message_elem_array, message_sender_profile, message_is_from_self, message_msg_id, message_status, message_is_peer_read, message_conv_type, message_conv_id, message_sender, message_client_time } = item;
-                    const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
+                    const { user_profile_face_url, user_profile_nick_name, user_profile_identifier, user_profile_gender } = message_sender_profile;
                     const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
                     const isMessageSendFailed = message_status === 3 && message_is_from_self;
                     const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self && !isMessageSendFailed;
@@ -560,12 +614,37 @@ export const MessageView = (props: Props): JSX.Element => {
                                     </div>
                                 ) :
                                     <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self && item ? 'is-self' : ''}`} key={message_msg_id}>
-                                        {isMultiSelect && (seleted ?
+                                        {isMultiSelect && (seleted && message_is_peer_read ?
                                             <Icon className="message-view__item--icon" type="success" /> :
                                             <i className="message-view__item--icon-normal" ></i>)
                                         }
                                         <div className="message-view__item--avatar face-url">
-                                            <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                            <Bubble
+                                                placement={"right-start"}
+                                                trigger="click"
+                                                content={
+                                                    <div className="card-content">
+                                                        <div className="main-info">
+                                                            <div className="info-item">
+                                                                <Avatar
+                                                                    key={user_profile_face_url}
+                                                                    url={user_profile_face_url}
+                                                                    nickName={user_profile_nick_name}
+                                                                    userID={user_profile_identifier}
+                                                                />
+                                                                <div className="nickname">{user_profile_nick_name || ''}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="info-bar">
+                                                            <Button type="primary" onClick={() => handleMsgReaded([user_profile_identifier])} style={{ width: "100%" }}>
+                                                                发消息
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            >
+                                                <span style={{ display: 'none' }}>占位</span><Avatar url={user_profile_face_url} isClick={false} isPreview={true} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                            </Bubble>
                                         </div>
                                         {
                                             message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
@@ -580,7 +659,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         }
                                         {
                                             shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
-                                                isMessageSendFailed && <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
+                                            isMessageSendFailed &&  <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
                                         }
                                     </div>
                             }

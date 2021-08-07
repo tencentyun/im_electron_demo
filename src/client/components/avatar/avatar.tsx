@@ -3,13 +3,15 @@ import { RouteComponentProps } from "react-router-dom"
 import './avatar.scss'
 import { useDispatch } from 'react-redux';
 import { setImgViewerAction } from '../../store/actions/imgViewer';
-
+import { previewVvatar } from '../../utils/tools'
 
 type AvatarSizeEnum = "default" | "large" | "small" | "mini"
 
 interface AvatarProps  {
     size?: AvatarSizeEnum,
     url?: string,
+    isClick?:boolean,
+    isPreview?:boolean,
     extralClass?: string,
     nickName?: string,
     userID?: string,
@@ -18,7 +20,7 @@ interface AvatarProps  {
 
 
 
-export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass = '',nickName:nick,userID:uid,groupID:gid } ): JSX.Element => {
+export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass = '',isClick = true,isPreview = false, nickName:nick,userID:uid,groupID:gid } ): JSX.Element => {
     const [nickName,setNickName] = useState(nick)
     const [url,setUrl] = useState(avatar)
     const [userID,setUserID] = useState(uid)
@@ -33,10 +35,12 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
     }
 
     const handleOpen = () => {
+        console.log(url)
+        console.log(previewVvatar(url,200))
         if(!url) return
         dispatch(setImgViewerAction({
             isShow: true,
-            imgs: url,
+            imgs:previewVvatar(url,200),
             isCanOpenFileDir: false,
             index:0
         }))
@@ -64,15 +68,17 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
     const defaltComp:JSX.Element = <div className={`avatar ${size} ${extralClass}`}>
         未知
     </div>;
+
     useEffect(()=>{
         setNickName(nick)
-        setUrl(avatar)
+        isPreview ?  setUrl(previewVvatar(avatar))  :   setUrl(avatar)
         setUserID(uid)
         setGroupID(gid)
     },[avatar,nick,uid,gid])
+
     return (
         <>
-            <div onClick={handleOpen}>
+            <div  onClick={ isClick ? handleOpen : ()=>{}}>
                 {
                 url ? urlComp : nickName ? nickComp : userID ? userIDComp : groupID ? groupIDComp : defaltComp
                 }

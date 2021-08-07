@@ -1,7 +1,7 @@
 {
   "name": "im-electron-demo",
   "productName": "IM Electron Demo",
-  "version": "3.3.10",
+  "version": "3.3.27",
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {
@@ -32,7 +32,6 @@
         {
           "target": "nsis",
           "arch": [
-            "ia32",
             "x64"
           ]
         }
@@ -41,6 +40,13 @@
         {
           "from": "./node_modules/im_electron_sdk/lib/",
           "to": "./node_modules/im_electron_sdk/lib/",
+          "filter": [
+            "**/*"
+          ]
+        },
+        {
+          "from": "node_modules/trtc-electron-sdk/build/Release/",
+          "to": "./resources",
           "filter": [
             "**/*"
           ]
@@ -54,11 +60,12 @@
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^6.2.0",
-    "electron": "^13.1.7",
+    "electron": "^13.1.8",
     "electron-builder": "^22.11.7"
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "ant-design": "^1.0.0",
     "axios": "^0.21.1",
     "braft-editor": "^2.3.9",
     "concurrently": "^6.2.0",
@@ -71,29 +78,20 @@
     "ffprobe": "^1.1.2",
     "ffprobe-static": "^3.0.0",
     "file-loader": "^6.2.0",
-    "file-type": "^16.5.2",
+    "file-type": "^16.5.3",
     "final-form": "^4.20.2",
     "fluent-ffmpeg": "^2.1.2",
-    "im_electron_sdk": "^1.0.44",
+    "get-video-duration": "^3.1.0",
+    "im_electron_sdk": "^1.0.51",
     "image-size": "^1.0.0",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
+    "node-gyp": "^8.1.0",
+    "node-gyp-build": "^4.2.3",
     "progress-stream": "^2.0.0",
     "qs": "^6.5.2",
-    "react": "^17.0.2",
-    "react-contexify": "^5.0.0",
-    "react-contextmenu": "^2.14.0",
-    "react-cropper": "^2.1.8",
-    "react-dom": "^17.0.2",
-    "react-final-form": "^6.5.2",
-    "react-loading-skeleton": "^2.2.0",
-    "react-redux": "^7.2.4",
-    "react-router-dom": "^5.2.0",
-    "redux": "^4.1.0",
     "sass": "^1.35.1",
-    "shelljs": "^0.8.4",
-    "tea-component": "^2.6.22",
     "trtc-electron-sdk": "^8.6.102-beta.0"
   }
 }

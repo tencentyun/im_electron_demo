@@ -43,7 +43,8 @@
         width: 36px;
         height: 36px;
         line-height: 36px;
-        background: #f2f2f2;
+        background: #5cadff;
+        color: #fff;
         margin-right: 20px;
         border-radius: 50%;
         overflow: hidden;
@@ -114,14 +115,18 @@
 
 				.info-bar {
 					margin-top: 20px;
-
+                    display: flex;
+                    align-items: center;
 					.info-key {
-						color: #9E9E9E;
+                        color: #9E9E9E;
+                        min-width: 30px;
 					}
 
 					.info-val {
 						color: #000000;
-						margin-left: 20px;
+                        margin-left: 20px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
 					}
 				}
 			}

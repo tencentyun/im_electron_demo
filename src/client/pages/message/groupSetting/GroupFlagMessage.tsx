@@ -5,8 +5,8 @@ import "./group-flag-message.scss";
 
 const flagMsgOptions = [
   { value: "0", text: "接收消息并提示" },
-  { value: "1", text: "接收消息但不提示" },
-  { value: "2", text: "屏蔽消息" },
+  // { value: "1", text: "接收消息但不提示" },
+  // { value: "2", text: "屏蔽消息" },
 ];
 
 export const GroupFlagMessage = (props: {
@@ -16,16 +16,17 @@ export const GroupFlagMessage = (props: {
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
   const { flagMsg, userId, groupId, onRefresh } = props;
-
   const handleChange = async (value: string) => {
+    console.log(value, userId, groupId, '==========================================================')
     try {
-      await modifyGroupMemberInfo({
+      const data = await modifyGroupMemberInfo({
         groupId,
         userId,
         modifyGroupMemberParams: {
           group_modify_member_info_msg_flag: Number(value),
         },
       });
+      console.log(data, '返回信息。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。')
       await onRefresh();
     } catch (e) {
       console.log(e);

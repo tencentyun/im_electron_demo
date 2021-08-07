@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Tabs, TabPanel, Input, Button, Checkbox, message } from "tea-component";
-import { DEFAULT_USERID, DEFAULT_USER_SIG, SDKAPPID, SECRETKEY, HUA_RUN_SYSTEMID } from '../../constants';
+import { SDKAPPID, SECRETKEY, HUA_RUN_SYSTEMID } from '../../constants';
 import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
 import { changeFunctionTab } from '../../store/actions/ui';
@@ -65,13 +65,19 @@ export const LoginContent = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory();
     const [userID, setUserID] = useState(window.localStorage.getItem('uid')||'');
-    const [password, setPassword] = useState('Qaz123456@1');
+    const [password, setPassword] = useState(window.localStorage.getItem('usersig')||'');
     const isDisablelogin = userID && password;
 
     const customizeTabBarRender = (children: JSX.Element) => {
         return <a className="customize-tab-bar">{children}</a>
     }
     const chkIt = (val: string) => {
+        if(val.length === 0){
+            setUserID('')
+            setPassword('')
+            window.localStorage.setItem('uid', '')
+            window.localStorage.setItem('usersig', '')
+        }
         if (val.length > 0 && !/^[A-Za-z0-9]+$/.test(val)) {
             message.warning({content:'不能输入中文！'})
             return
@@ -90,7 +96,7 @@ export const LoginContent = (): JSX.Element => {
             //     userName: userID.toUpperCase(),
             //     userPass: Encypt,
             //     asyuserind: null,
-            //     password: 'MTIzNDU2'
+            //     password: password
             // }).then(async res => {
             const USERLOGIN = userID
             const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)

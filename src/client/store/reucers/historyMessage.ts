@@ -57,9 +57,9 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
     }
 
     case ActionTypeEnum.DELETE_MESSAGE: {
-      const { convId, messageId } = payload;
+      const { convId, messageIdArray } = payload;
       const history = state.historyMessageList.get(convId);
-      const replacedMessageList = history.filter(item => !item.isTimeDivider && item.message_msg_id !== messageId);
+      const replacedMessageList = history.filter(item => !item.isTimeDivider && !messageIdArray.includes(item.message_msg_id));
       return {
         ...state,
         historyMessageList: state.historyMessageList.set(convId, replacedMessageList)
@@ -117,7 +117,12 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
         currentReplyUser: payload.profile
       }
     }
-
+    case ActionTypeEnum.CLEAR_HISTORY:
+      return {
+        historyMessageList: new Map(),
+        uploadProgressList: new Map(),
+        currentReplyUser: null
+      }
     default:
       return state;
   }

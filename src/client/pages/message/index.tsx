@@ -71,12 +71,12 @@ export const Message = (): JSX.Element => {
 
 
     const dispatch = useDispatch();
-    const getData = async () => {
+    const getData = async () => { 
         const response = await getConversionList();
         setLoadingStatus(false);
         dispatch(replaceConversaionList(response))
         if (response.length) {
-            if (currentSelectedConversation === null) {
+            if (currentSelectedConversation === null || currentSelectedConversation === undefined) {
                 dispatch(updateCurrentSelectedConversation(response[0]))
             }
         }else{
@@ -115,18 +115,15 @@ export const Message = (): JSX.Element => {
     }, [currentSelectedConversation]);
 
     useEffect(()=>{
-        if(currentSelectedConversation===null && conversationList.length > 0){
+        if(currentSelectedConversation !=null && (conversationList.filter(item => item.conv_id == currentSelectedConversation.conv_id).length <= 0)){
             dispatch(updateCurrentSelectedConversation(conversationList[0]))
+        }else{
+            if(currentSelectedConversation===null && conversationList.length > 0){
+                dispatch(updateCurrentSelectedConversation(conversationList[0]))
+            }
         }
     },[conversationList.length])
 
-    useEffect(() => {
-        if(currentSelectedConversation?.conv_id) {
-            const ref = getRef(currentSelectedConversation.conv_id);
-            // @ts-ignore
-            ref?.current?.scrollIntoViewIfNeeded();
-        }
-    }, [currentSelectedConversation] );
 
     const handleConvListClick = convInfo => {
         if(convInfo.conv_type == 1) {
@@ -341,7 +338,7 @@ export const Message = (): JSX.Element => {
         return <Myloader />
     }
 
-    if (currentSelectedConversation === null) {
+    if (currentSelectedConversation === null ||  currentSelectedConversation === undefined) {
         return <EmptyResult contentText="暂无会话" />
     }
     // console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
@@ -361,7 +358,7 @@ export const Message = (): JSX.Element => {
                                         {
                                             conv_unread_num > 0 ? <div className="conversion-list__item--profile___unread">{getDisplayUnread(conv_unread_num)}</div> : null
                                         }
-                                        <Avatar url={faceUrl} nickName={nickName} userID={conv_id} groupID={conv_id} size='small' />
+                                        <Avatar url={faceUrl}  isClick={false} nickName={nickName} userID={conv_id} groupID={conv_id} size='small' />
                                     </div>
                                     <div className="conversion-list__item--info">
                                         <div className="conversion-list__item--time-wrapper">

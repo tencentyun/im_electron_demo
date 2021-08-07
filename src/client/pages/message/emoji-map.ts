@@ -1,4 +1,4 @@
-export const emojiUrl = 'https://oaim.uat.crbank.com.cn:30003/emoji/'
+export const emojiUrl = 'http://oaim.uat.crbank.com.cn:30003/emoji/'
 export const emojiMap = {
   '[NO]': '[NO]@2x.png',
   '[OK]': '[OK]@2x.png',

@@ -467,8 +467,8 @@ export const getGroupMemberList = async (params: {
   const { code, json_param } = data;
   if (code === 0) {
     const result = JSON.parse(json_param);
-    return result;
-  }
+    return result; 
+  } 
   return [] as any;
 };
 
@@ -608,4 +608,31 @@ export const deleteGroupMember = async (params: {
     return {};
   }
   throw new Error(desc);
+};
+
+export const downloadMeregeMessage = async params => {
+  const res = await timRenderInstance.TIMMsgDownloadMergerMessage({
+    params,
+    user_data: '111'
+  });
+  console.log('res', res);
+};
+
+export const deleteMsgList = async params => {
+  const res = await timRenderInstance.TIMMsgListDelete({
+    conv_id: params.convId,
+    conv_type: params.convType,
+    params: params.messageList
+  });
+
+  return res;
+}
+
+export const downloadMergedMsg = async params => {
+  const res = await timRenderInstance.TIMMsgDownloadMergerMessage({
+    params,
+    user_data: '123'
+  });
+
+  return res;
 };

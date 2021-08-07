@@ -88,5 +88,5 @@ package-lock.json
 .webpack/
 
 # Electron-Forge
-out/
+out/ 
 package-lock.json
