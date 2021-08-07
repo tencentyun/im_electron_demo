@@ -186,30 +186,32 @@ class IPC {
                 //下载完成后重命名文件
                 fs.renameSync(file_path_temp, file_path);
                 console.log('文件下载完成:', file_path);
-            });
-            //请求文件
-            fetch(file_url, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/octet-stream' },
-            }).then(res => {
-                //获取请求头中的文件大小数据
-                let fsize = res.headers.get("content-length");
-                //创建进度
-                let str = progressStream({
-                    length: fsize,
-                    time: 100 /* ms */
+
+                //请求文件
+                fetch(file_url, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/octet-stream' },
+                }).then(res => {
+                    //获取请求头中的文件大小数据
+                    let fsize = res.headers.get("content-length");
+                    //创建进度
+                    let str = progressStream({
+                        length: fsize,
+                        time: 100 /* ms */
+                    });
+                    // 下载进度 
+                    str.on('progress', function (progressData) {
+                        //不换行输出
+                        let percentage = Math.round(progressData.percentage) + '%';
+                        console.log(percentage);
+                    });
+                    res.body.pipe(str).pipe(fileStream);
+                }).catch(e => {
+                    //自定义异常处理
+                    console.log(e);
                 });
-                // 下载进度 
-                str.on('progress', function (progressData) {
-                    //不换行输出
-                    let percentage = Math.round(progressData.percentage) + '%';
-                    console.log(percentage);
-                });
-                res.body.pipe(str).pipe(fileStream);
-            }).catch(e => {
-                //自定义异常处理
-                console.log(e);
             });
+
         } else {
             // 已存在
             console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
