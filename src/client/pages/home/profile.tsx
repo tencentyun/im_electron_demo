@@ -23,13 +23,19 @@ export const Profile = (): JSX.Element => {
                 user_profile_role: role,
                 user_profile_face_url: faceUrl,
                 user_profile_nick_name: nickName,
-                user_profile_identifier: userId
+                user_profile_identifier: userId,
+                user_profile_gender: gender,
+                user_profile_self_signature: signature,
+                user_profile_add_permission: addPermission
             } = JSON.parse(json_param)[0];
             dispatch(setUserInfo({
                 userId,
                 faceUrl,
                 nickName,
-                role
+                role,
+                signature,
+                gender,
+                addPermission
             }));
         }
     }

@@ -10,7 +10,7 @@ type Props = {
 }
 export const EditProfile = (props: Props): JSX.Element => {
     const userProfile = useSelector((state: State.RootState) => state.userInfo);
-    const { userId, faceUrl, nickName, role, } = userProfile
+    const { userId, faceUrl, nickName, gender, signature, addPermission } = userProfile
     const { callback } = props;
     const sendMsg = useMessageDirect()
     const refPopup = useRef(null)
@@ -44,12 +44,21 @@ export const EditProfile = (props: Props): JSX.Element => {
             callback()
         }
     }
+    const getGender = (gender) => {
+        const arr = ['未知', '男', '女']
+        return arr[Number(gender)] || arr[0]
+    }
+    const getAddPermission = (addPermission) => {
+        const arr = ['未知', '允许任何人添加好友', '添加好友需要验证', '拒绝任何人添加好友']
+        return arr[Number(addPermission)] || arr[0]
+    }
+
     return <div className="userinfo-avatar--panel" ref={refPopup}>
         <div className="card-content">
             <div className="main-info">
                 <div className="info-item">
                     <Avatar nickName={nickName} userID={userId} url={faceUrl} />
-                    <div className="nickname">{nickName || '未设置'}</div>
+                    <div className="nickname">{nickName || userId}</div>
                 </div>
                 {/* <div className="info-btn" onClick={handleAvatarClick}><Icon type="setting" /></div> */}
             </div>
@@ -59,11 +68,19 @@ export const EditProfile = (props: Props): JSX.Element => {
             </div>
             <div className="info-bar">
                 <span className="info-key">昵称</span>
-                <span className="info-val">{nickName}</span>
+                <span className="info-val">{nickName || '未设置'}</span>
             </div>
             <div className="info-bar">
-                <span className="info-key">角色</span>
-                <span className="info-val">{role}</span>
+                <span className="info-key">性别</span>
+                <span className="info-val">{getGender(gender)}</span>
+            </div>
+            <div className="info-bar">
+                <span className="info-key">签名</span>
+                <span className="info-val">{signature || '未设置'}</span>
+            </div>
+            <div className="info-bar">
+                <span className="info-key">加好友选项</span>
+                <span className="info-val">{getAddPermission(addPermission)}</span>
             </div>
             <div className="info-bar">
                 <Button

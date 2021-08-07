@@ -82,7 +82,7 @@
         &--panel{
             position: absolute;
             width: 274px;
-            height: 310px;
+            height: auto;
             background-color: #fff;
             top: 0;
             right: -294px;
@@ -134,7 +134,6 @@
                 }
             
                 .info-bar {
-                    margin-top: 20px;
                     display: flex;
                     justify-content: space-between;
                     padding: 0 10px;

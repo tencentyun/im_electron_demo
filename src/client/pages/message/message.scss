@@ -22,7 +22,7 @@
     &:hover {
         &::-webkit-scrollbar {
             width:8px;
-            background-color:#fff;
+            background-color:transparent;
         }
         &::-webkit-scrollbar-thumb {
             border-radius:8px;
@@ -32,11 +32,11 @@
     } 
     &::-webkit-scrollbar {
         width:0px;
-        background-color:#fff;
+        background-color:transparent;
     }
    
     &::-webkit-scrollbar-track {
-        background-color:#fff;
+        background-color:transparent;
     }
     
     &::-webkit-scrollbar-thumb {
