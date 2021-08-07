@@ -21,6 +21,8 @@ import './call-content.scss';
 
 export const CallContent = ({ userId, convInfo, roomId, inviteID}) => {
     const [ isStart, setStartStatus ] = useState(false);
+    const convType = convInfo.convType;
+    const isC2CCall = convType === 1; 
 
     const onExitRoom = () => {
         const win = remote.getCurrentWindow();
@@ -28,7 +30,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID}) => {
     }
 
     const onRemoteUserEnterRoom = userId => {
-        eventListiner.remoteUserJoin (userId);
+        eventListiner.remoteUserJoin(userId);
         setStartStatus(true);
     }
 
@@ -37,6 +39,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID}) => {
 
         trtcInstance.on('onExitRoom', onExitRoom);
         trtcInstance.on('onRemoteUserEnterRoom', onRemoteUserEnterRoom);
+        trtcInstance.on('onRemoteUserLeaveRoom', onRemoteUserLeaveRoom);
         trtcInstance.setCurrentCameraDevice(deviceId);
         let encParam = new TRTCVideoEncParam();
         encParam.videoResolution = TRTCVideoResolution.TRTCVideoResolution_640_360;
@@ -67,6 +70,11 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID}) => {
     useEffect(() => {
         event.on('exitRoom', exitRoom)
     }, []);
+
+    const onRemoteUserLeaveRoom = (userId) => {
+        eventListiner.remoteUserExit(userId);
+        isC2CCall && trtcInstance.exitRoom();
+    };
 
     const toggleVideo = isOpenCamera => {
         trtcInstance.muteLocalVideo(isOpenCamera);

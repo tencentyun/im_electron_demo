@@ -1,4 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import {
+    TRTCVideoFillMode,
+    TRTCVideoRotation,
+    TRTCRenderParams,
+    TRTCAppScene,
+    TRTCParams,
+} from "trtc-electron-sdk/liteav/trtc_define";
 
 import useDynamicRef from '../../../utils/react-use/useDynamicRef';
 
@@ -11,10 +18,20 @@ function randomString(e) { 
   return n
 }
 
+const splitUserList = (array, count) => {
+    const catchArray = [];
+    for(let i=0; i<array.length; i+=count){
+        catchArray.push(array.slice(i,i+count));
+    }
+    return catchArray;
+};
+
 
 export const GroupVideo = (props) => {
     const { trtcInstance } = props;
     const [userList, setUserList ] = useState([]);
+    const [groupSplit, setGroupSplit ] = useState([]);
+    const [currentPage, setCurrentPage ] = useState(0);
     const [enteringUser, setEnteringUser ] = useState('');
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
 
@@ -26,26 +43,42 @@ export const GroupVideo = (props) => {
     }, []);
 
     useEffect(() => {
-        if(enteringUser) {
-            const ref = getRef(enteringUser);
-            console.log('current ref', ref.current);
-        }
+        const resultArray = splitUserList(userList, 9);
+        setGroupSplit(resultArray);
     }, [userList]);
+
+    useEffect(() => {
+        let timeout;
+        if(enteringUser) {
+            // timeout = setTimeout(() => {
+                const ref = getRef(enteringUser);
+                if(enteringUser === 'self-view') {
+                    openLocalVideo(ref);
+                    console.log('current ref', ref.current);
+                    return;
+                }
+            // }, 0);
+        }
+
+        return () => {
+            timeout && clearTimeout(timeout);
+        }
+    }, [enteringUser]);
+
+    const openLocalVideo = (selfViewRef) => {
+        trtcInstance.startLocalPreview(selfViewRef.current);
+        trtcInstance.startLocalAudio();
+        const params = new TRTCRenderParams(TRTCVideoRotation.TRTCVideoRotation0, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
+        trtcInstance.setLocalRenderParams(params);
+        trtcInstance.muteLocalVideo(false);
+    };
 
     const onEnterRoom = (result) => {
         if(result > 0) {
             setUserList(['self-view']);
             setEnteringUser('self-view');
-            console.log('========enter room========', result);
         };
     };
-
-    const renderItem = userId => {
-        return <div ref={setRef(userId)}>{userId}</div>
-    }
-
-    const RenderItemWithMemo = React.memo(renderItem);
-    
 
     const onRemoteUserEnterRoom = (userId) => {
         setUserList(prev => [...prev, userId]);
@@ -53,23 +86,75 @@ export const GroupVideo = (props) => {
     }
 
     const onRemoteUserLeaveRoom =(userId) => {
-
+        setUserList(prev => prev.filter(item => item !== userId));
     }
 
     const onUserVideoAvailable =(uid, available) => {
-
+        const ref = getRef(uid);
+        if(available === 1) {
+            trtcInstance.startRemoteView(uid, ref.current);
+            trtcInstance.setRemoteViewFillMode(uid, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
+        } else {
+            console.log('remote-ref', ref);
+        }
     }
+
+    const cacluateStyle = () => {
+        const count = groupSplit[currentPage]?.length;
+
+        if(count === 1) {
+            return {
+                width: '99%',
+                height: '99%'
+            }  
+        }
+
+        if (count <= 2) {
+            return {
+                width: '50%',
+                height: '100%'
+            }
+        }
+
+        if (count <=  4 ) {
+            return {
+                width: '50%',
+                height: '50%'
+            }
+        }
+
+        if (count <= 6) {
+            return {
+                width: '33%',
+                height: '50%'
+            }
+        }
+
+        return {
+            width: '33%',
+            height: '33%'
+        }
+
+    };
     
     return (
+        <>
+        {/* <button onClick={() => onEnterRoom(222)}>add self enter room</button> */}
+            {/* <button onClick={() => onRemoteUserEnterRoom(randomString(6))}>remote user enter room</button> */}
         <div className="group-video-content">
-            <button onClick={() => onEnterRoom(222)}>add self enter room</button>
-            <button onClick={() => onRemoteUserEnterRoom(randomString(6))}>remote user enter room</button>
-
             {
-                userList.map(userId => {
-                    return <div className="group-video-content__item" ref={setRef(userId)}>{userId}</div>
+                groupSplit.length > 0  && groupSplit.map((item) => {
+                    return <div className="group-video-content__page">
+                        {
+                             item.map(userId => {
+                                return <div key={userId} className="group-video-content__page-item" style={cacluateStyle()} ref={setRef(userId)}>{userId}</div>
+                            })
+                        }
+                    </div>
                 })
             }
         </div>
+        </>
+
     )
 };

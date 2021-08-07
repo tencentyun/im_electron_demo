@@ -34,10 +34,15 @@
     .group-video-content {
         width: 100%;
         height: 100%;
-        display: flex;
+       
 
-        &__item {
-            flex: 1;
+        &__page {
+            width: 100%;
+            height: 100%;
+        }
+
+        &__page-item {
+            display: inline-block;
         }
     }
 
