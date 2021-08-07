@@ -718,19 +718,19 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleKeyCommand = (e) => {
-        switch (e) {
-            case 'enter': {
-                if (!atPopup) {
-                    handleSendMsg();
-                }
-                return 'not-handled';
-            }
-            case '@': {
-                setAtPopup(true);
-                setEditorState(ContentUtils.insertText(editorState, ` @`))
-                return 'not-handled';
-            }
-        }
+        // switch (e) {
+        //     case 'enter': {
+        //         if (!atPopup) {
+        //             handleSendMsg();
+        //         }
+        //         return 'not-handled';
+        //     }
+        //     case '@': {
+        //         setAtPopup(true);
+        //         setEditorState(ContentUtils.insertText(editorState, ` @`))
+        //         return 'not-handled';
+        //     }
+        // }
     }
 
 
