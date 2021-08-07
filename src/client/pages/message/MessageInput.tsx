@@ -192,6 +192,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             setFile(file);
         }
         setDraging(false);
+        return 'handled';
     }
 
     
@@ -419,10 +420,11 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(ContentUtils.insertText(editorState, patseText))
     }
 
-    const handlePastedFiles = async (files: File[]) => {
+    const handlePastedFiles = (files: File[]) => {
         for (const file of files) {
             setFile(file);
-        }      
+        }    
+        return 'handled';  
     }
 
     const handleKeyDown = (e) => {
@@ -530,14 +532,15 @@ export const MessageInput = (props: Props): JSX.Element => {
                     value={editorState}
                     media={{ pasteImage:false }}
                     ref={instance => editorInstance = instance}
-                    handlePastedFiles={handlePastedFiles}
-                    handlePastedText={handlePastedText}
+                    // handlePastedFiles={handlePastedFiles}
+                    // handlePastedText={handlePastedText}
                     blockRendererFn={blockRendererFn}
                     keyBindingFn={keyBindingFn}
                     handleKeyCommand={handleKeyCommand}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
+                    draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled'}}
                     actions={[]}
                 />
             </div>
