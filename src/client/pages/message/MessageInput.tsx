@@ -24,7 +24,7 @@ type Props = {
     handleOpenCallWindow: (callType: string,convType:number,windowType:string) => void;
 }
 
-const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF','image/jpeg' ];
+const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF','jpeg'];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
 const FEATURE_LIST_GROUP = [{
@@ -162,6 +162,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             const fileSize = file.size;
             const type = file.type;
             const size = file.size;
+            console.log('file',file)
             if(size === 0){
                 message.error({content: "文件大小异常"})
                 return
