@@ -145,19 +145,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
 
     // 发起邀请
-
-    openCallWindow({
-      windowType: 'callWindow',
-      callType,
-      convId: encodeURIComponent(conv_id),
-      convInfo: {
-        faceUrl: encodeURIComponent(faceUrl),
-        nickName: encodeURIComponent(nickName),
-        convType: conv_type
-      },
-      roomId
-    });
-  
     let data
     if (convType === 1) {
       data = await timRenderInstance.TIMInvite({
@@ -171,7 +158,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     }
     if (convType === 2) {
       data = await timRenderInstance.TIMInviteInGroup({
-        userID: ['xhc_test'],
+        userIDs: ['109442'],
         groupID: conv_id,
         senderID: userId,
         data: "",
