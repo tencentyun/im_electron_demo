@@ -69,6 +69,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ videoInfos, setVideoInfos] = useState([]);
     const [ atUserNameInput, setAtInput] = useState('');
     const [ atUserMap, setAtUserMap] = useState({});
+    const [ isZHCNAndFirstPopup, setIsZHCNAndFirstPopup]  = useState(false);
 
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
@@ -371,7 +372,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (userId) {
             const atText = userName || userId;
             setAtUserMap(pre => ({...pre, [atText]: userId}));
-            setEditorState(ContentUtils.insertText(editorState, `${atText} `))
+            setEditorState(ContentUtils.insertText(editorState, `${atText} `));
+            setAtInput('');
         }
     }
 
@@ -405,10 +407,15 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(newEditorState)
         const text = newEditorState.toText();
         const hasAt = text.includes('@');
-        if(!hasAt) {
+        /**
+         * 中文输入法下会触发两次change 第一次change时无法拿到真正的输入内容 
+         * 用isZHCNAndFirstPopup字段判断是否中文输入法下按下@ 并且首次change
+         */
+        if(!hasAt && atPopup && !isZHCNAndFirstPopup) {
             setAtPopup(false);
             return;
         }
+        setIsZHCNAndFirstPopup(false);
         // 取最后一个@后的内容作为搜索条件
         const textArr = text.split('@');
         const lastInput = textArr[textArr.length - 1]; 
@@ -443,25 +450,32 @@ export const MessageInput = (props: Props): JSX.Element => {
     const keyBindingFn = (e) => {
         if(e.keyCode === 13 || e.charCode === 13) {
             e.preventDefault();
+            if(!atPopup){
+                handleSendMsg();
+            }
             return 'enter';
-        }  
-        if(e.key === "@" && e.shiftKey && convType === 2) {
+        } else if(e.key === "@" && e.shiftKey && convType === 2) {
             e.preventDefault();
+            setAtPopup(true);
+            setEditorState(ContentUtils.insertText(editorState, ` @`))
             return '@';
-        } 
+        } else if (e.key === "Process" && e.shiftKey && convType === 2){
+            e.preventDefault();
+            setIsZHCNAndFirstPopup(true);
+            setAtPopup(true);
+            return 'zh-cn-@';
+        }
     }
 
     const handleKeyCommand = (e) => {
         switch(e) {
             case 'enter': {
-                if(!atPopup){
-                    handleSendMsg();
-                }
                 return 'not-handled';
             }
             case '@' : {
-                setAtPopup(true);
-                setEditorState(ContentUtils.insertText(editorState, ` @`))
+                return 'not-handled';
+            }
+            case 'zh-cn-@': {
                 return 'not-handled';
             }
         }
