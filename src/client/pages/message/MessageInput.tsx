@@ -807,8 +807,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                 // clipboard.writeImage(image)
                 window.localStorage.setItem('imageBuffer', data)
                 window.localStorage.setItem('imageObj', JSON.stringify(imageObj))
-                handlePastedFiles([imageObj])
                 // sendMessages('image', fileObj)
+                handlePastedFiles([imageObj])
                 return
             }
         })

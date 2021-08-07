@@ -28,6 +28,7 @@ export const AccountSetting = (): JSX.Element => {
   const logOutHandler = async () => {
     await timRenderInstance.TIMLogout();
     dispatch(userLogout());
+    window.localStorage.clear()
     history.replace('/login');
     dispatch(setIsLogInAction(false));
     dispatch(clearConversation())
