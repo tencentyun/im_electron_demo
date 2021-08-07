@@ -104,7 +104,7 @@ export const GroupVideo = (props) => {
 
         if(count === 1) {
             return {
-                width: '99%',
+                width: '100%',
                 height: '99%'
             }  
         }
@@ -112,7 +112,7 @@ export const GroupVideo = (props) => {
         if (count <= 2) {
             return {
                 width: '50%',
-                height: '100%'
+                height: '50%'
             }
         }
 
@@ -147,7 +147,7 @@ export const GroupVideo = (props) => {
                     return <div className="group-video-content__page">
                         {
                              item.map(userId => {
-                                return <div key={userId} className="group-video-content__page-item" style={cacluateStyle()} ref={setRef(userId)}>{userId}</div>
+                                return <div key={userId} className="group-video-content__page-item" style={cacluateStyle()} ref={setRef(userId)} />
                             })
                         }
                     </div>
