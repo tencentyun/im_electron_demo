@@ -36,7 +36,7 @@ type Props = {
     handleOpenCallWindow: (callType: string, convType: number, windowType: string) => void;
 }
 
-const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF' ];
+const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
 const FEATURE_LIST_GROUP = [{
@@ -750,7 +750,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }
             }
         }
-        const errorConsole =(event, data) => {
+        const errorConsole = (event, data) => {
             console.error('==========main process error===========', data);
         }
 
@@ -773,7 +773,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
         ipcRenderer.on('screenShotUrl', (e, { data, url }) => {
             console.log(typeof data, data, url, '+++++++++++++++++++')
-
             if (data.length == 0) {
                 message.error({ content: '已取消截图' })
             } else {
@@ -808,28 +807,13 @@ export const MessageInput = (props: Props): JSX.Element => {
                 // clipboard.writeImage(image)
                 window.localStorage.setItem('imageBuffer', data)
                 window.localStorage.setItem('imageObj', JSON.stringify(imageObj))
-                sendMessages('image', fileObj)
+                // sendMessages('image', fileObj)
                 return
             }
         })
-        ipcRenderer.on('getFile', async (e, { data, filedirPath }) => {
-            //  console.log('getFile url', filedirPath);
-            const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' })
-            const fileObj = {
-                lastModified: file.lastModified,
-                //@ts-ignore
-                lastModifiedDate: file.lastModifiedDate,
-                name: file.name,
-                path: filedirPath,
-                size: file.size,
-                type: file.type,
-                //@ts-ignore
-                webkitRelativePath: file.webkitRelativePath
-            }
-            //@ts-ignore
-            await sendImageMessage(fileObj)
-            setEditorState(ContentUtils.clear(editorState))
-        })
+        return () => {
+            ipcRenderer.removeAllListeners('screenShotUrl')
+        }
     }, [])
 
     const shutUpStyle = isShutUpAll ? 'disabled-style' : '';

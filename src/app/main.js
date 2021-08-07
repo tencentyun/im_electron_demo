@@ -158,14 +158,14 @@ function createWindow () {
       mainWindow.webContents.send("mainProcessMessage", false);
     }
   })
-  // mainWindow.loadURL(`http://localhost:3000`);
-  mainWindow.loadURL(
-    url.format({
-      pathname: path.join(__dirname, "../../bundle/index.html"),
-      protocol: "file:",
-      slashes: true,
-    })
-  );
+  mainWindow.loadURL(`http://localhost:3000`);
+  // mainWindow.loadURL(
+  //   url.format({
+  //     pathname: path.join(__dirname, "../../bundle/index.html"),
+  //     protocol: "file:",
+  //     slashes: true,
+  //   })
+  // );
 
   // 打开调试工具
   mainWindow.webContents.openDevTools();
@@ -264,26 +264,6 @@ function createWindow () {
       });
     }
     );
-  });
-
-  // 保存文件
-  ipcMain.on("saveFile", (e, { str }) => {
-    // const shotcutPath = downloadUrl + '\\shotcut\\'
-    // if (fs.existsSync(path)) fs.rmdirSync(shotcutPath)
-    let pngs = clipboard.readImage().toPNG();
-    const fileName =
-      new Date().getTime().toString() +
-      Math.floor(Math.random() * 1000) +
-      ".png";
-    const filedirPath = downloadUrl + "\\" + fileName;
-    fs.writeFile(filedirPath, pngs, (err) => {
-      fs.readFile(filedirPath, (err, data) => {
-        mainWindow.webContents.send("getFile", {
-          data,
-          filedirPath,
-        });
-      });
-    });
   });
 
   // 接受截图事件
