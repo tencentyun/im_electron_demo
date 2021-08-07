@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { LoadingContainer } from "../../../components/loadingContainer";
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
-import { getGroupMemberList } from "../api";
+import { getConversationInfo, getGroupInfoList, getGroupMemberList } from "../api";
 import { Divider } from "./Divider";
 import { GroupAccountecment } from "./GroupAccountecment";
 import { GroupAllMute } from "./groupAllMute";
@@ -19,25 +19,30 @@ export const GroupSetting = (props: {
 }): JSX.Element => {
   const { conversationInfo, close } = props;
   const groupId = conversationInfo.conv_id;
-  const groupDetail: Partial<State.conversationItem['conv_profile']> = conversationInfo.conv_profile || {};
+  
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
   // 当前用户的群配置
   const { value, loading, retry } = useAsyncRetryFunc(async () => {
-      return await getGroupMemberList({
-        groupId,
-        userIds: userId.length ?  [userId] : [],
-        nextSeq: 0,
-      })
+      return await Promise.all([
+        // 群成员信息
+        getGroupMemberList({
+          groupId,
+          userIds: userId.length ?  [userId] : [],
+          nextSeq: 0,
+        }),
+        // 群组信息
+        getGroupInfoList([groupId])
+      ])
   }, []);
-
-  const memberList = value?.group_get_memeber_info_list_result_info_array || [];
+  const memberList = value ? value[0]?.group_get_memeber_info_list_result_info_array || [] : [];
 
   const currentUserSetting: any = memberList?.[0] || {};
-
-  console.log("currentUserSetting", currentUserSetting);
-
+  const groupDetail: Partial<State.conversationItem['conv_profile']> = value ? value[1][0] || conversationInfo.conv_profile || {} : {};
+  if(!Object.keys(groupDetail).length){
+    return null
+  }
   return (
     <LoadingContainer loading={loading}>
       <GroupBaseInfo
@@ -75,7 +80,7 @@ export const GroupSetting = (props: {
       />
       <Divider />
       <GroupFlagMessage
-        flagMsg={currentUserSetting.group_member_info_msg_flag}
+        flagMsg={groupDetail.group_base_info_msg_flag}
         groupId={groupDetail.group_detial_info_group_id}
         userId={userId}
         onRefresh={retry}
