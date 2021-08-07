@@ -7,8 +7,10 @@ import { useState } from "react"
 import timRenderInstance from "../../utils/timRenderInstance";
 import { setIsLogInAction, userLogout } from "../../store/actions/login";
 import "./AccountSetting.scss";
-const { ipcRenderer } = require("electron");
+import { clearConversation } from '../../store/actions/conversation'
+import { clearHistory } from '../../store/actions/message';
 
+const { ipcRenderer } = require("electron");
 export const AccountSetting = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -26,9 +28,11 @@ export const AccountSetting = (): JSX.Element => {
   const logOutHandler = async () => {
     await timRenderInstance.TIMLogout();
     dispatch(userLogout());
-    history.replace("/login");
+    history.replace('/login');
     dispatch(setIsLogInAction(false));
-  };
+    dispatch(clearConversation())
+    dispatch(clearHistory())
+};
   return (
     <div className="connect">
       <header className="connect-header">
