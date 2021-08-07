@@ -24,7 +24,7 @@ type Props = {
     handleOpenCallWindow: (callType: string,convType:number,windowType:string) => void;
 }
 
-const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF' ];
+const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF','image/jpeg' ];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
 const FEATURE_LIST_GROUP = [{
@@ -161,6 +161,11 @@ export const MessageInput = (props: Props): JSX.Element => {
         if(file) {
             const fileSize = file.size;
             const type = file.type;
+            const size = file.size;
+            if(size === 0){
+                message.error({content: "文件大小异常"})
+                return
+            }
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
                 if(fileSize > 28 * 1024 * 1024) return message.error({content: "image size can not exceed 28m"})
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);

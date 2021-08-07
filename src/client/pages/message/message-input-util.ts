@@ -137,12 +137,12 @@ export const getPasteText = (htmlString: string) => {
 export const fileImgToBase64Url = async (file: File) => {
   return new Promise((res) => {
     const reader = new FileReader();
-    reader.readAsDataURL(file);
     reader.onload = function (e) {
       const base64Value = e.target.result;
       // target.result 该属性表示目标对象的DataURL
       res(base64Value);
     };
+    reader.readAsDataURL(file);
   });
 };
 
