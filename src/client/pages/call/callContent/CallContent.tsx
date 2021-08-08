@@ -20,14 +20,13 @@ import event from '../event';
 
 import './call-content.scss';
 
-export const CallContent = ({ userId, convInfo, roomId, inviteID }) => {
+export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList }) => {
     console.log('==============roomId=================', roomId, inviteID);
     const [ isStart, setStartStatus ] = useState(false);
     const convType = convInfo.convType;
     const isC2CCall = convType === 1; 
 
     const onExitRoom = () => {
-        !isStart && eventListiner.cancelCall(inviteID);
         const win = remote.getCurrentWindow();
         win.close();
     }
@@ -85,14 +84,17 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID }) => {
 
     const toggleVoice = isMute => trtcInstance.muteLocalAudio(isMute);
 
-    const exitRoom = () => trtcInstance.exitRoom();
+    const exitRoom = () => {
+        !isStart && eventListiner.cancelCall(inviteID);
+        trtcInstance.exitRoom();
+    }
      
     return <div className="call-content">
        <header className="call-content__header">
            <CallTime isStart={isStart} />
        </header>
        <section className="call-content__video" >
-            <CallVideo trtcInstance={trtcInstance} convInfo={convInfo} userId={userId} />
+            <CallVideo trtcInstance={trtcInstance} convInfo={convInfo} userId={userId} inviteList={inviteList} />
        </section>
        <footer className="call-content__footer">
             <CallFooter toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={exitRoom} />

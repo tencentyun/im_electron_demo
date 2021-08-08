@@ -62,7 +62,22 @@
             background-position: center;
             overflow: hidden;
 
-            span {
+            &--loading {
+                position: absolute;
+                top: 0;
+                right: 0;
+                left: 0;
+                bottom: 0;
+                color: #fff;
+                vertical-align: middle;
+                background: #000;
+                text-align: center;
+                opacity: 0.9;
+                line-height: 5;
+                height: 100%;
+            }
+
+            &--user-id {
                 font-size: 14px;
                 color: #999;
                 position: absolute;

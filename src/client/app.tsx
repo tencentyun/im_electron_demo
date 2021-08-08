@@ -176,7 +176,7 @@ export const App = () => {
         // timeout: 30
         const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
         const { room_id, call_type } = JSON.parse(formatedData.data)
-        const { inviter, groupID, inviteID } = formatedData;
+        const { inviter, groupID, inviteID,inviteeList } = formatedData;
         timRenderInstance.TIMProfileGetUserProfileList({
             json_get_user_profile_list_param: {
                 friendship_getprofilelist_param_identifier_array: [inviter],
@@ -197,7 +197,8 @@ export const App = () => {
                     },
                     roomId: room_id,
                     inviteID,
-                    userID: userId
+                    userID: userId,
+                    inviteeList: encodeURIComponent(JSON.stringify(inviteeList))
                 });
             }
 

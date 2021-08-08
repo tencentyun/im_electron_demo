@@ -191,7 +191,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       },
       roomId,
       inviteID: inviteId,
-      userID:userId
+      userID:userId,
+      inviteList: encodeURIComponent(JSON.stringify(userList))
     });
   }
 
