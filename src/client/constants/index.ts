@@ -50,8 +50,8 @@ export const DEFAULT_USERID = 'LIXIAOJUN26';
 export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
 
 
-// export const TIM_BASE_URL = 'http://localhost:3000'
-export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002'
+export const TIM_BASE_URL = 'http://localhost:3000'
+// export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002'
 export const TIM_BASE_URLB = 'http://oaim.uat.crbank.com.cn:30002'
 export const SDKAPPID = 1400529075
 export const SECRETKEY = '08349186ecd23fafaf7f98ca0116077e5b507fceac558e3dbd32f0dfeb9393a9' // 不可外传仅本次测试使用

@@ -84,7 +84,57 @@ const RIGHT_CLICK_MENU_LIST = [{
     text: '文件夹目录'
 }];
 
-
+export const displayDiffMessage = (element, index) => {
+    const { elem_type, ...res } = element;
+    let resp
+    switch (elem_type) {
+        case 0:
+            resp = <TextElemItem {...res} />
+            break;
+        case 1:
+            resp = <PicElemItem {...res} />
+            break;
+        case 2:
+            resp = <VoiceElem {...res} />
+            break;
+        case 3:
+            resp = <CustomElem {...res} />
+            break;
+        case 4:
+            resp = <FileElem message={message} element={element} />
+            break;
+        case 5:
+            resp = <GroupTipsElemItem {...res} />
+            break;
+        case 6:
+            resp = <div>表情消息</div>
+            break;
+        case 7:
+            resp = <div>位置消息</div>
+            break;
+        case 8:
+            resp = <GroupSysElm {...res} />
+            // resp = <div>群组系统通知{res.group_report_elem_op_user}: 创建了群聊</div>
+            //resp = null
+            break;
+        case 9:
+            resp = <VideoElem {...res} />
+            break;
+        case 10:
+            resp = <div>关系消息</div>
+            break;
+        case 11:
+            resp = <div>资料消息</div>
+            break;
+        case 12:
+            resp = <MergeElem {...res} />
+            break;
+        default:
+            resp = null;
+            break;
+    }
+    return resp;
+}
 
 export const MessageView = (props: Props): JSX.Element => {
     const { messageList, editorState, setEditorState, convType, convId } = props;
@@ -370,58 +420,6 @@ export const MessageView = (props: Props): JSX.Element => {
         console.log(item)
         showDialog()
     }
-    const displayDiffMessage = (element, index) => {
-        const { elem_type, ...res } = element;
-        let resp
-        switch (elem_type) {
-            case 0:
-                resp = <TextElemItem {...res} />
-                break;
-            case 1:
-                // console.log(element, '=============================')
-                resp = <PicElemItem {...res} />
-                break;
-            case 2:
-                resp = <VoiceElem {...res} />
-                break;
-            case 3:
-                resp = <CustomElem {...res} />
-                break;
-            case 4:
-                resp = <FileElem message={message} element={element} />
-                break;
-            case 5:
-                resp = <GroupTipsElemItem {...res} />
-                break;
-            case 6:
-                resp = <div>表情消息</div>
-                break;
-            case 7:
-                resp = <div>位置消息</div>
-                break;
-            case 8:
-                resp = <GroupSysElm {...res} />
-                // resp = <div>群组系统通知{res.group_report_elem_op_user}: 创建了群聊</div>
-                //resp = null
-                break;
-            case 9:
-                resp = <VideoElem {...res} />
-                break;
-            case 10:
-                resp = <div>关系消息</div>
-                break;
-            case 11:
-                resp = <div>资料消息</div>
-                break;
-            case 12:
-                resp = <MergeElem {...res} />
-                break;
-            default:
-                resp = null;
-                break;
-        }
-        return resp;
-    }
     const validatelastMessage = (messageList: State.message[]) => {
         let msg: State.message;
         for (let i = messageList.length - 1;i > -1;i--) {
@@ -614,7 +612,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                     </div>
                                 ) :
                                     <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self && item ? 'is-self' : ''}`} key={message_msg_id}>
-                                        {isMultiSelect && (seleted && message_is_peer_read ?
+                                        {isMultiSelect && (seleted && !isMessageSendFailed ?
                                             <Icon className="message-view__item--icon" type="success" /> :
                                             <i className="message-view__item--icon-normal" ></i>)
                                         }
@@ -659,7 +657,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         }
                                         {
                                             shouldShowPerReadIcon ? <span className={`message-view__item--element-icon ${message_is_peer_read ? 'is-read' : ''}`}></span> :
-                                            isMessageSendFailed &&  <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
+                                                isMessageSendFailed && <Icon className="message-view__item--element-icon-error" type="error" onClick={() => handleMessageReSend(item)} />
                                         }
                                     </div>
                             }
