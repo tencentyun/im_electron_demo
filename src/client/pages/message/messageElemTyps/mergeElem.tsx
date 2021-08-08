@@ -70,6 +70,7 @@ export const MergeElem = (props: any): JSX.Element => {
                                                     {shouldShowAvatar && <span className="merge-message-item__nick-name">{displayText}</span>}
                                                     {
                                                         message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                                            console.log(displayDiffMessage(item,elment, index), 'elment=========================', elment)
                                                             return (
                                                                 <div className="message-view__item--element" key={index} >
                                                                     {

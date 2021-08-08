@@ -306,6 +306,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             setFile(file);
         }
         setDraging(false);
+        return 'handled';
     }
 
     const sendMessages = (type, params) => {
@@ -654,9 +655,10 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handlePastedFiles = async (files: File[]) => {
-        for (let file of files) {
+        for (const file of files) {
             setFile(file);
         }
+        return 'handled';
     }
 
     const menu = close => (
@@ -715,8 +717,9 @@ export const MessageInput = (props: Props): JSX.Element => {
             //     return 'not-handled';
             // }
             case '@': {
-                setAtPopup(true);
-                setEditorState(ContentUtils.insertText(editorState, ` @`))
+                return 'not-handled';
+            }
+            case 'zh-cn-@': {
                 return 'not-handled';
             }
         }
@@ -852,6 +855,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
                     maxLength={4000}
+                    draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled' }}
                     actions={[]}
                 />
             </div>
