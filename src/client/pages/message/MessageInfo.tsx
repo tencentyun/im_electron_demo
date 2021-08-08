@@ -404,6 +404,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
           handleClose();
         }}
       />
+      <GroupMemberSelector dialogRef={groupMemberSelectorRef}
+        onSuccess={(data) => {
+          inviteInGourp(data)
+        }} />
     </>
   );
 };
