@@ -169,7 +169,7 @@ export const App = () => {
         // inviter: "109442"
         // timeout: 30
         const { room_id, call_type } = JSON.parse(data.data)
-        const { inviter, groupID,inviteID } = data;
+        const { inviter, groupID, inviteID } = data;
         timRenderInstance.TIMProfileGetUserProfileList({
             json_get_user_profile_list_param: {
                 friendship_getprofilelist_param_identifier_array: [inviter],
@@ -197,7 +197,7 @@ export const App = () => {
 
     }
     const _onRejected = (data) => {
-
+        
     }
     const _onAccepted = (data) => {
 
@@ -249,7 +249,6 @@ export const App = () => {
         }, {});
 
         if (!failedList) return;
-
         for (const i in failedList) {
             dispatch(
                 reciMessage({
@@ -260,7 +259,7 @@ export const App = () => {
         }
     };
     const _handleUnreadChange = (unreadCount) => {
-        console.log('unreadCount',unreadCount)
+        console.log('unreadCount', unreadCount)
         dispatch(setUnreadCount(unreadCount));
     };
     const _handeMessage = (messages: State.message[]) => {
@@ -327,7 +326,7 @@ export const App = () => {
             handleMessageSendFailed(convList);
             if (conversationList[0]?.conv_last_msg?.message_status === 1) {
                 const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
-                if(elemType === 4 || elemType === 9) {
+                if (elemType === 4 || elemType === 9) {
                     dispatch(updateMessages({
                         convId: conversationList[0].conv_id,
                         message: conversationList[0].conv_last_msg
@@ -364,11 +363,18 @@ export const App = () => {
 
     useEffect(() => {
         initIMSDK();
-        acceptCallListiner((inviteID)=>{
+        acceptCallListiner((inviteID) => {
             timRenderInstance.TIMAcceptInvite({
                 inviteID: inviteID
-            }).then(data=>{
-                console.log('接收返回',data)
+            }).then(data => {
+                console.log('接收返回', data)
+            })
+        })
+        refuseCallListiner((inviteID) => {
+            timRenderInstance.TIMRejectInvite({
+                inviteID: inviteID
+            }).then(data => {
+                console.log('接收返回', data)
             })
         });
 

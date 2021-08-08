@@ -6,7 +6,18 @@ const initState = {
   uploadProgressList: new Map(),
   currentReplyUser: null
 }
-
+const deduplicationMessages = (oldMessages:State.message[],messages:State.message[])=>{
+  for(let i = 0;i<messages.length;i++){
+    const { message_msg_id } = messages[i]
+    for(let j = 0;j<oldMessages.length;j++){
+      const {message_msg_id:old_msg_id} = oldMessages[j]
+      if(message_msg_id === old_msg_id){
+        //同一个消息
+        
+      }
+    }
+  }
+}
 const messageReducer = (state = initState, action: Action): State.historyMessage => {
   const { type, payload } = action;
   switch (type) {

@@ -21,7 +21,7 @@ const acceptCallListiner = (callback) => {
 };
 
 const refuseCallListiner = (callback) => {
-    ipcRenderer.on('refuse-call-reply', (inviteID) => {
+    ipcRenderer.on('refuse-call-reply', (event,inviteID) => {
         console.log('拒绝通话');
         callback(inviteID);
     })
