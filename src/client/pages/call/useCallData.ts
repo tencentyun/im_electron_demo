@@ -33,7 +33,7 @@ export const useCallData = () => {
                 roomId: roomId,
                 inviteID: inviteID,
                 userID: userID,
-                inviteList: JSON.parse(decodeURIComponent(inviteList))
+                inviteList: inviteList
             })
         });
 

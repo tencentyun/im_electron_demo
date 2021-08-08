@@ -182,13 +182,17 @@ export const App = () => {
                 friendship_getprofilelist_param_identifier_array: [inviter],
                 friendship_getprofilelist_param_force_update: false
             }
-        }).then(data => {
+        }).then(async (data) => {
+            const userID = (await timRenderInstance.TIMGetLoginUserID({})).data.json_param
+            if(!userID){
+                return
+            }
             const { data: { code, json_param } } = data;
             if (code === 0) {
                 const [userdata] = JSON.parse(json_param)
                 openCallWindow({
                     windowType: 'notificationWindow',
-                    callType: call_type,
+                    callType: call_type + '',
                     convId: encodeURIComponent(groupID ? groupID : inviter),
                     convInfo: {
                         faceUrl: encodeURIComponent(userdata.user_profile_face_url),
@@ -197,8 +201,8 @@ export const App = () => {
                     },
                     roomId: room_id,
                     inviteID,
-                    userID: userId,
-                    inviteeList: encodeURIComponent(JSON.stringify(inviteeList))
+                    userID: userID,
+                    inviteeList: inviteeList
                 });
             }
 
