@@ -205,6 +205,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
         userList: group_get_memeber_info_list_result_info_array
       })
     }
+    
   }
 
   useEffect(() => {

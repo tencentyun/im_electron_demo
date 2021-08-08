@@ -19,7 +19,7 @@ export const CallFooter = (props: Props) => {
     };
 
     const handleToggleVoice = () => {
-        toggleVoice(!isOpenMic);
+        toggleVoice(isOpenMic);
         setMute(!isOpenMic);
     };
 

@@ -46,6 +46,12 @@
         &__page {
             width: 100%;
             height: 100%;
+            animation: hideIndex 0.3s;
+        }
+
+        @keyframes hideIndex{
+            0%{ opacity: 0; }
+            100%{opacity: 1;}
         }
 
         &__page-item {
@@ -54,6 +60,7 @@
             background-image: url('../../../assets/icon/forbiden_video.svg');
             background-repeat: no-repeat;
             background-position: center;
+            overflow: hidden;
 
             span {
                 font-size: 14px;
@@ -71,6 +78,13 @@
             top: 50%;
             left: 20px;
             display: none;
+            font-size: 0.8em;
+            padding: 0.4em;
+            width: 14px;
+            height: 14px;
+            border-top: 3px solid #b9b9b9;
+            border-right: 3px solid #b9b9b9;
+            transform: rotate(-135deg);
         }
 
         .next-button {
@@ -79,6 +93,13 @@
             top: 50%;
             right: 20px;
             display: none;
+            font-size: 0.8em;
+            padding: 0.4em;
+            width: 14px;
+            height: 14px;
+            border-top: 3px solid #b9b9b9;
+            border-right: 3px solid #b9b9b9;
+            transform: rotate(45deg);
         }
     }
 

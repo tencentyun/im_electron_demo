@@ -52,14 +52,12 @@ export const GroupVideo = (props) => {
     useEffect(() => {
         let timeout;
         if(enteringUser) {
-            // timeout = setTimeout(() => {
-                const ref = getRef(enteringUser);
-                if(enteringUser === 'self-view') {
-                    // openLocalVideo(ref);
-                    console.log('current ref', ref.current);
-                    return;
-                }
-            // }, 0);
+            const ref = getRef(enteringUser);
+            if(enteringUser === 'self-view') {
+                openLocalVideo(ref);
+                console.log('current ref', ref.current);
+                return;
+            }
         }
 
         return () => {
@@ -97,7 +95,10 @@ export const GroupVideo = (props) => {
             trtcInstance.startRemoteView(uid, ref.current);
             trtcInstance.setRemoteViewFillMode(uid, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
         } else {
-            console.log('remote-ref', ref);
+            const canvasDom = ref.current.getElementsByTagName('canvas')[0];
+
+            canvasDom.style.display = 'none';
+            console.log('remote-ref', canvasDom);
         }
     }
 
@@ -155,12 +156,10 @@ export const GroupVideo = (props) => {
     
     return (
         <>
-        <button onClick={() => onEnterRoom(222)}>add self enter room</button>
-        <button onClick={() => onRemoteUserEnterRoom(randomString(6))}>remote user enter room</button>
         <div className="group-video-content">
             {
                 groupSplit.length > 0  && groupSplit.map((item, index) => {
-                    return <div className="group-video-content__page" style={cacluatePageStyle(index)}>
+                    return <div className="group-video-content__page" style={cacluatePageStyle(index)} key={index}>
                         {
                              item.map(userId => {
                                 return <div key={userId} className="group-video-content__page-item" style={cacluateStyle()} ref={setRef(userId)}><span>{userId}</span></div>
@@ -170,10 +169,10 @@ export const GroupVideo = (props) => {
                 })
             }
             {
-                shouldShowPrevButton && <span className="prev-button" onClick={handlePagePrev}>{'<' }</span>
+                shouldShowPrevButton && <span className="prev-button" onClick={handlePagePrev} />
             }
             {
-                shouldShowNextButton && <span className="next-button" onClick={handlePageNext}>{'>' }</span>
+                shouldShowNextButton && <span className="next-button" onClick={handlePageNext} />
             }
         </div>
         </>
