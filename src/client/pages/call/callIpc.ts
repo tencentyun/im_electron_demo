@@ -23,6 +23,6 @@ export const eventListiner = {
         eventEmiter.emit('changeWindowType', 'callWindow');
     },
     refuseCall: (inviteID) => {
-        ipcRenderer.send('refuse-call',inviteID);
+        ipcRenderer.send('refuse-call', inviteID);
     }
 }

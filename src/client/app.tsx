@@ -376,6 +376,14 @@ export const App = () => {
             }).then(data => {
                 console.log('接收返回', data)
             })
+        });
+
+        refuseCallListiner((inviteID)=>{
+            timRenderInstance.TIMRejectInvite({
+                inviteID: inviteID
+            }).then(data=>{
+                console.log('接收返回',data)
+            })
         })
     }, []);
     return (

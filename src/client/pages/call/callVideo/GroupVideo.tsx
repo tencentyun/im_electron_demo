@@ -34,6 +34,8 @@ export const GroupVideo = (props) => {
     const [currentPage, setCurrentPage ] = useState(0);
     const [enteringUser, setEnteringUser ] = useState('');
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
+    const shouldShowPrevButton = currentPage >= 1;
+    const shouldShowNextButton = groupSplit.length > 1 && currentPage < groupSplit.length - 1;
 
     useEffect(() => {
         trtcInstance.on('onEnterRoom', onEnterRoom);
@@ -53,7 +55,7 @@ export const GroupVideo = (props) => {
             // timeout = setTimeout(() => {
                 const ref = getRef(enteringUser);
                 if(enteringUser === 'self-view') {
-                    openLocalVideo(ref);
+                    // openLocalVideo(ref);
                     console.log('current ref', ref.current);
                     return;
                 }
@@ -112,7 +114,7 @@ export const GroupVideo = (props) => {
         if (count <= 2) {
             return {
                 width: '50%',
-                height: '50%'
+                height: '99%'
             }
         }
 
@@ -136,22 +138,42 @@ export const GroupVideo = (props) => {
         }
 
     };
+
+    const handlePagePrev = () => {
+        setCurrentPage(prev => prev -1);
+    }
+
+    const handlePageNext = () => {
+        setCurrentPage(next => next + 1);
+    }
+
+    const cacluatePageStyle = (index) => {
+        return {
+            display: index === currentPage ? 'block' : 'none'
+        }
+    }
     
     return (
         <>
-        {/* <button onClick={() => onEnterRoom(222)}>add self enter room</button> */}
-            {/* <button onClick={() => onRemoteUserEnterRoom(randomString(6))}>remote user enter room</button> */}
+        <button onClick={() => onEnterRoom(222)}>add self enter room</button>
+        <button onClick={() => onRemoteUserEnterRoom(randomString(6))}>remote user enter room</button>
         <div className="group-video-content">
             {
-                groupSplit.length > 0  && groupSplit.map((item) => {
-                    return <div className="group-video-content__page">
+                groupSplit.length > 0  && groupSplit.map((item, index) => {
+                    return <div className="group-video-content__page" style={cacluatePageStyle(index)}>
                         {
                              item.map(userId => {
-                                return <div key={userId} className="group-video-content__page-item" style={cacluateStyle()} ref={setRef(userId)} />
+                                return <div key={userId} className="group-video-content__page-item" style={cacluateStyle()} ref={setRef(userId)}><span>{userId}</span></div>
                             })
                         }
                     </div>
                 })
+            }
+            {
+                shouldShowPrevButton && <span className="prev-button" onClick={handlePagePrev}>{'<' }</span>
+            }
+            {
+                shouldShowNextButton && <span className="next-button" onClick={handlePageNext}>{'>' }</span>
             }
         </div>
         </>
