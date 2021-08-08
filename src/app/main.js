@@ -158,17 +158,20 @@ function createWindow () {
       mainWindow.webContents.send("mainProcessMessage", false);
     }
   })
-  mainWindow.loadURL(`http://localhost:3000`);
-  // mainWindow.loadURL(
-  //   url.format({
-  //     pathname: path.join(__dirname, "../../bundle/index.html"),
-  //     protocol: "file:",
-  //     slashes: true,
-  //   })
-  // );
+  if (process.env?.NODE_ENV?.trim() === 'development') {
+    mainWindow.loadURL(`http://localhost:3000`);
+    // 打开调试工具
+    mainWindow.webContents.openDevTools();
+  } else {
+    mainWindow.loadURL(
+      url.format({
+        pathname: path.join(__dirname, '../../bundle/index.html'),
+        protocol: 'file:',
+        slashes: true
+      })
+    );
+  }
 
-  // 打开调试工具
-  mainWindow.webContents.openDevTools();
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
@@ -252,10 +255,11 @@ function createWindow () {
     // "start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"), () => {
+    child_process.exec('start C:\\Users\\admin\\Desktop\\demo\\cut.exe', () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
+          console.log(data, 'data............')
           mainWindow.webContents.send("screenShotUrl", {
             data,
             url,

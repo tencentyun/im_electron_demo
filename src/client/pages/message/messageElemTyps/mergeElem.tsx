@@ -8,28 +8,29 @@ import { downloadMergedMsg } from '../api';
 import { displayDiffMessage } from "../MessageView";
 
 export const MergeElem = (props: any): JSX.Element => {
-    const [showModal, setShowModal ] = useState(false);
-    const [ mergedMsg, setMergedMsg ] = useState([]); 
+    const [showModal, setShowModal] = useState(false);
+    const [mergedMsg, setMergedMsg] = useState([]);
     const showMergeDitail = async () => {
-        if(props.merge_elem_message_array) {
+        if (props.merge_elem_message_array) {
             setMergedMsg(props.merge_elem_message_array);
         } else {
-            const { data: {code, json_params} } = await downloadMergedMsg(props.message);
+            console.log(props, 'props')
+            const { data: { code, json_params } } = await downloadMergedMsg(props.message);
             const mergedMsg = JSON.parse(json_params);
             setMergedMsg(mergedMsg);
         }
         setShowModal(true);
-     }
-     
+    }
 
-     const handleModalClose = () => {
-         setShowModal(false);
-     }
+
+    const handleModalClose = () => {
+        setShowModal(false);
+    }
 
 
     const item = (props) => {
         return (
-            <div className="message-view__item--merge right-menu-item" style={{height: 'auto'}} onClick={showMergeDitail} >
+            <div className="message-view__item--merge right-menu-item" style={{ height: 'auto' }} onClick={showMergeDitail} >
                 {/* 标题 */}
                 <div className="message-view__item--merge___title" >{props.merge_elem_title}</div>
                 {/* 消息摘要 */}
@@ -38,10 +39,10 @@ export const MergeElem = (props: any): JSX.Element => {
                         return <div key={index} className="message-view__item--merge___abst">{item}</div>
                     })
                 }
-                <Modal 
-                    className="message-info-modal" 
-                    disableEscape 
-                    visible={showModal} 
+                <Modal
+                    className="message-info-modal"
+                    disableEscape
+                    visible={showModal}
                     size="85%"
                     onClose={handleModalClose}
                 >
@@ -50,8 +51,8 @@ export const MergeElem = (props: any): JSX.Element => {
                             <header className="merge-mesage-header">{props.merge_elem_title}</header>
                             <div className="merge-message-content customize-scroll-style">
                                 {
-                                    mergedMsg.length > 0 && mergedMsg.reverse().map((item: State.message,index) => {
-                                        const previousMessage = mergedMsg[index -1];
+                                    mergedMsg.length > 0 && mergedMsg.reverse().map((item: State.message, index) => {
+                                        const previousMessage = mergedMsg[index - 1];
                                         const previousMessageSender = previousMessage?.message_sender_profile?.user_profile_identifier;
                                         const { message_sender_profile, message_elem_array, message_client_time } = item;
                                         const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
@@ -66,20 +67,20 @@ export const MergeElem = (props: any): JSX.Element => {
                                                     }
                                                 </div>
                                                 <div className="merge-message-item__message">
-                                                    {shouldShowAvatar &&  <span className="merge-message-item__nick-name">{displayText}</span> }
+                                                    {shouldShowAvatar && <span className="merge-message-item__nick-name">{displayText}</span>}
                                                     {
-                                                    message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
-                                                        return (
-                                                            <div className="message-view__item--element" key={index} >
-                                                                {
-                                                                    displayDiffMessage(item, elment, index)
-                                                                }
-                                                            </div>
+                                                        message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
+                                                            return (
+                                                                <div className="message-view__item--element" key={index} >
+                                                                    {
+                                                                        displayDiffMessage(item, elment, index)
+                                                                    }
+                                                                </div>
                                                             )
                                                         })
                                                     }
                                                 </div>
-                                                
+
                                             </ div>
                                         )
 
