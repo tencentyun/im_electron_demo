@@ -160,6 +160,7 @@ function createWindow () {
   })
   if (process.env?.NODE_ENV?.trim() === 'development') {
     mainWindow.loadURL(`http://localhost:3000`);
+    // 打开调试工具
     mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadURL(
@@ -171,8 +172,6 @@ function createWindow () {
     );
   }
 
-  // 打开调试工具
-  mainWindow.webContents.openDevTools();
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
