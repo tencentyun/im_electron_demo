@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { message } from 'tea-component';
 
 import { Avatar } from "../../components/avatar/avatar";
-import { getMsgList, markMessageAsRead } from "./api";
+import { getGroupMemberList, getMsgList, markMessageAsRead } from "./api";
 import { MessageInput } from "./MessageInput";
 import { MessageView } from "./MessageView";
 
@@ -14,7 +14,7 @@ import { updateCallingStatus } from "../../store/actions/ui";
 import { AddUserPopover } from "./AddUserPopover";
 import { addTimeDivider } from "../../utils/addTimeDivider";
 import { generateRoomID } from "../../utils/tools";
-import {  openCallWindow, callWindowCloseListiner } from '../../utils/callWindowTools';
+import { openCallWindow, callWindowCloseListiner } from '../../utils/callWindowTools';
 import trtcCheck from '../../utils/trtcCheck';
 
 import {
@@ -24,6 +24,7 @@ import {
 import { GroupToolsDrawer } from "./GroupToolsDeawer";
 import { GroupToolBar } from "./GroupToolBar";
 import timRenderInstance from "../../utils/timRenderInstance";
+import { GroupMemberSelector } from "./groupMemberSelector";
 
 type Info = {
   faceUrl: string;
@@ -32,11 +33,12 @@ type Info = {
 
 export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const { conv_id, conv_type, conv_profile } = props;
+  const [callType,setCallType] = useState(0)
   const {
     group_detial_info_group_type: groupType,
     group_detial_info_add_option: addOption,
   } = conv_profile;
-
+  const groupMemberSelectorRef = useRef(null)
   const isShutUpAll =
     conv_type === 2 && conv_profile.group_detial_info_is_shutup_all;
 
@@ -50,8 +52,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const { callingStatus: { callingId, callingType } } = useSelector(
     (state: State.RootState) => state.ui
   );
-  
-  const { userId } = useSelector((state:State.RootState)=>state.userInfo)
+
+  const { userId } = useSelector((state: State.RootState) => state.userInfo)
   const msgList = historyMessageList.get(conv_id);
   const getDisplayConvInfo = () => {
     const info: Info = {
@@ -129,62 +131,79 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));
-  
-  const handleOpenCallWindow =async (callType,convType ) => {
-    if(callingId) {
-      message.warning({content: '正在通话中'});
+
+  const inviteC2C = async () => {
+    const roomId = generateRoomID();
+    const data = await timRenderInstance.TIMInvite({
+      userID: conv_id,
+      senderID: userId,
+      data: "",
+      roomID: roomId,
+      callType: Number(callType)
+    })
+    const { data: { code } } = data;
+    if(code === 0){
+      openLocalCallWindow(callType,roomId)
+    }
+  }
+  const inviteInGourp =async (groupMember) => {
+    const roomId = generateRoomID();
+   const data = await timRenderInstance.TIMInviteInGroup({
+      userIDs: groupMember.map((v) => v.group_member_info_identifier),
+      groupID: conv_id,
+      senderID: userId,
+      data: "",
+      roomID: roomId,
+      callType: Number(callType)
+    })
+    const { data: { code } } = data;
+    if(code === 0){
+      openLocalCallWindow(callType,roomId)
+    }
+  }
+  const openLocalCallWindow = (callType,roomId)=>{
+    dispatch(updateCallingStatus({
+      callingId: conv_id,
+      callingType: conv_type
+    }));
+    const { faceUrl, nickName } = getDisplayConvInfo();
+    openCallWindow({
+      windowType: 'callWindow',
+      callType,
+      convId: encodeURIComponent(conv_id),
+      convInfo: {
+        faceUrl: encodeURIComponent(faceUrl),
+        nickName: encodeURIComponent(nickName),
+        convType: conv_type
+      },
+      roomId
+    });
+  }
+  const handleOpenCallWindow = async (callType, convType) => {
+    if (callingId) {
+      message.warning({ content: '正在通话中' });
       return;
     }
-
-    const roomId = generateRoomID();
 
     if (!trtcCheck.isCameraReady() && !trtcCheck.isMicReady()) {
       message.warning({ content: '找不到可用的摄像头和麦克风。请安装摄像头和麦克风后再试' });
       return;
     }
 
-
-    // 发起邀请
-    let data
+    setCallType(callType)
     if (convType === 1) {
-      data = await timRenderInstance.TIMInvite({
-        userID: conv_id,
-        type: Number(callType),
-        senderID: userId,
-        data: "",
-        roomID: roomId,
-        callType: Number(callType)
-      })
+      inviteC2C()
     }
-    if (convType === 2) {
-      data = await timRenderInstance.TIMInviteInGroup({
-        userIDs: ['109442','64424'],
-        groupID: conv_id,
-        senderID: userId,
-        data: "",
-        roomID: roomId,
-        callType: Number(callType)
+    else if (convType === 2) {
+      // 获取群成员
+      const { group_get_memeber_info_list_result_info_array } = await getGroupMemberList({
+        groupId: conv_id,
+        nextSeq: 0,
       })
-    }
-
-    const { data:{code} } = data;
-    if (code === 0) {
-      dispatch(updateCallingStatus({
-        callingId: conv_id,
-        callingType: conv_type
-      }));
-      const { faceUrl, nickName } = getDisplayConvInfo();
-      openCallWindow({
-        windowType: 'callWindow',
-        callType,
-        convId: encodeURIComponent(conv_id),
-        convInfo: {
-          faceUrl: encodeURIComponent(faceUrl),
-          nickName: encodeURIComponent(nickName),
-          convType: conv_type
-        },
-        roomId
-      });
+      groupMemberSelectorRef.current.open({
+        groupId: conv_id,
+        userList: group_get_memeber_info_list_result_info_array
+      })
     }
   }
 
@@ -200,9 +219,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const popupContainer = document.getElementById("messageInfo");
 
   useEffect(() => {
-    setTimeout(()=>{
+    setTimeout(() => {
       setMessageRead();
-    },500)
+    }, 500)
   }, [msgList]);
 
   useEffect(() => {
@@ -284,6 +303,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
           handleClose();
         }}
       />
+      <GroupMemberSelector dialogRef={groupMemberSelectorRef}
+        onSuccess={(data) => {
+          inviteInGourp(data)
+        }} />
     </>
   );
 };
