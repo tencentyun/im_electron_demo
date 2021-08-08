@@ -74,6 +74,7 @@ export const GroupVideo = (props) => {
     };
 
     const onEnterRoom = (result) => {
+        console.log('进房了一个人',props)
         if(result > 0) {
             setUserList(['self-view']);
             setEnteringUser('self-view');
