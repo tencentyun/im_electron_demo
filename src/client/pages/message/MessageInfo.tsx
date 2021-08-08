@@ -156,6 +156,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const inviteInGourp =async (groupMember) => {
     const { callType } = callInfo
     const roomId = generateRoomID();
+    console.log('roomId',roomId)
     const userList = groupMember.map((v) => v.group_member_info_identifier)
    const data = await timRenderInstance.TIMInviteInGroup({
       userIDs: userList,

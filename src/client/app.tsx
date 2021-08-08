@@ -7,7 +7,7 @@ import {
     Route,
     useHistory,
 } from "react-router-dom";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 
 import store from "./store";
 
@@ -47,8 +47,11 @@ window.closeCallWindow = closeCallWindow;
 
 export const App = () => {
     const dispatch = useDispatch();
-
     const history = useHistory();
+    const { callingStatus } = useSelector(
+        (state: State.RootState) => state.ui
+    );
+
     const initIMSDK = async () => {
         if (!isInited) {
             //   const privite = await timRenderInstance.callExperimentalAPI({
@@ -169,8 +172,9 @@ export const App = () => {
         // inviteeList: ["3708"]
         // inviter: "109442"
         // timeout: 30
-        const { room_id, call_type } = JSON.parse(data.data)
-        const { inviter, groupID, inviteID } = data;
+        const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
+        const { room_id, call_type } = JSON.parse(formatedData.data)
+        const { inviter, groupID, inviteID } = formatedData;
         timRenderInstance.TIMProfileGetUserProfileList({
             json_get_user_profile_list_param: {
                 friendship_getprofilelist_param_identifier_array: [inviter],
@@ -197,8 +201,34 @@ export const App = () => {
         })
 
     }
+    const _removeFromArr = (arr: any[], target: any) => {
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i] = target) {
+                arr.splice(i, 1)
+                break;
+            }
+        }
+        return arr;
+    }
     const _onRejected = (data) => {
-        
+        if (data) {
+            const message: State.message = JSON.parse(data)[0];
+            const { message_sender } = message;
+            const { callingId, callingType, inviteeList } = callingStatus;
+            console.log(message, JSON.stringify(callingStatus))
+            if (inviteeList.includes(message_sender)) {
+                const newInviteeList = _removeFromArr(inviteeList, message_sender)
+                if (newInviteeList.length === 0) {
+                    closeCallWindow()
+                } else {
+                    dispatch(updateCallingStatus({
+                        callingId,
+                        callingType,
+                        inviteeList: newInviteeList
+                    }));
+                }
+            }
+        }
     }
     const _onAccepted = (data) => {
 
@@ -324,7 +354,12 @@ export const App = () => {
         if (conversationList.length) {
             const convList = await addProfileForConversition(conversationList);
             dispatch(updateConversationList(convList));
-            handleMessageSendFailed(convList);
+            // 更新失败消息上屏
+            try {
+                handleMessageSendFailed(convList);
+            } catch (err) {
+                console.error(err)
+            }
             if (conversationList[0]?.conv_last_msg?.message_status === 1) {
                 const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
                 if (elemType === 4 || elemType === 9) {
@@ -380,9 +415,9 @@ export const App = () => {
         });
         callWindowCloseListiner(() => {
             dispatch(updateCallingStatus({
-              callingId: '',
-              callingType: 0,
-              inviteeList:[]
+                callingId: '',
+                callingType: 0,
+                inviteeList: []
             }));
           });
         cancelCallInvite((inviteID) => {
