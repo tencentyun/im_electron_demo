@@ -54,6 +54,7 @@ export const GroupVideo = (props) => {
         if(enteringUser) {
             const ref = getRef(enteringUser);
             if(enteringUser === 'self-view') {
+                openLocalVideo(ref);
                 console.log('current ref', ref.current);
                 return;
             }
@@ -94,7 +95,10 @@ export const GroupVideo = (props) => {
             trtcInstance.startRemoteView(uid, ref.current);
             trtcInstance.setRemoteViewFillMode(uid, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
         } else {
-            console.log('remote-ref', ref);
+            const canvasDom = ref.current.getElementsByTagName('canvas')[0];
+
+            canvasDom.style.display = 'none';
+            console.log('remote-ref', canvasDom);
         }
     }
 
@@ -152,8 +156,6 @@ export const GroupVideo = (props) => {
     
     return (
         <>
-        {/* <button onClick={() => onEnterRoom(222)}>add self enter room</button>
-        <button onClick={() => onRemoteUserEnterRoom(randomString(6))}>remote user enter room</button> */}
         <div className="group-video-content">
             {
                 groupSplit.length > 0  && groupSplit.map((item, index) => {
