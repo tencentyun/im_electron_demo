@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import TRTCCloud from 'trtc-electron-sdk';
 
 import { C2Cvideo } from './C2CVideo';
@@ -19,13 +19,12 @@ type Props = {
         faceUrl: string,
         nickName: string,
         convType: number
-    },
-    roomId: number
+    }
 }
 
 export const CallVideo = (props: Props): JSX.Element => {
     const videoRef = useRef(null);
-    const { trtcInstance, convInfo, userId,roomId } = props;
+    const { trtcInstance, convInfo } = props;
     const convType = convInfo.convType;
 
     const isC2CCall = convType === 1;
@@ -33,7 +32,7 @@ export const CallVideo = (props: Props): JSX.Element => {
     return (
         <div className="call-video" ref={videoRef}>
             {
-                isC2CCall ? <C2Cvideo trtcInstance={trtcInstance} roomId={roomId}/> : <GroupVideo trtcInstance={trtcInstance} />
+                isC2CCall ? <C2Cvideo trtcInstance={trtcInstance} /> : <GroupVideo trtcInstance={trtcInstance} />
             }
         </div>
     )

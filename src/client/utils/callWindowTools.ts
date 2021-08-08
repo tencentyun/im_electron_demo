@@ -41,6 +41,13 @@ const remoteUserExit = callback => {
     })
 }
 
+const cancelCallInvite = callback => {
+    ipcRenderer.on('cancel-call-invite-reply', (event, inviteId) => {
+        console.log('取消邀请', inviteId);
+        callback(inviteId);
+    });
+}
+
 const endCallWindow = ()=>{
     ipcRenderer.send(END_CALL_WINDOW);
 }
@@ -53,5 +60,6 @@ export {
     refuseCallListiner,
     remoteUserJoin,
     remoteUserExit,
-    endCallWindow
+    endCallWindow,
+    cancelCallInvite
 }

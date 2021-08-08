@@ -37,7 +37,7 @@ import {
     updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
-import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner } from "./utils/callWindowTools";
+import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite } from "./utils/callWindowTools";
 import { updateCallingStatus } from "./store/actions/ui";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
@@ -405,7 +405,7 @@ export const App = () => {
             }).then(data => {
                 console.log('接收返回', data)
             })
-        })
+        });
         refuseCallListiner((inviteID) => {
             timRenderInstance.TIMRejectInvite({
                 inviteID: inviteID
@@ -419,6 +419,13 @@ export const App = () => {
                 callingType: 0,
                 inviteeList: []
             }));
+          });
+        cancelCallInvite((inviteID) => {
+            timRenderInstance.TIMCancelInvite({
+                inviteID: inviteID
+            }).then(data => {
+                console.log('关闭邀请===', data)
+            })
         });
     }, []);
     return (
