@@ -158,7 +158,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     }
     if (convType === 2) {
       data = await timRenderInstance.TIMInviteInGroup({
-        userIDs: ['109442'],
+        userIDs: ['109442','64424'],
         groupID: conv_id,
         senderID: userId,
         data: "",

@@ -13,7 +13,7 @@ export const Notification = (props) => {
     };
 
     const refuse = () => {
-        eventListiner.refuseCall();
+        eventListiner.refuseCall(inviteID);
     }
 
     const getDisplayText = () => {

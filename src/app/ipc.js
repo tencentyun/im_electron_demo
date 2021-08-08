@@ -81,10 +81,10 @@ class IPC {
         });
 
         // 当作为接收方，挂断电话，关闭窗口
-        ipcMain.on('refuse-call', () => {
+        ipcMain.on('refuse-call', (event,inviteID) => {
             this.callWindow.close();
             // 向聊天窗口通信
-            this.imWindowEvent.reply('refuse-call-reply');
+            this.imWindowEvent.reply('refuse-call-reply',inviteID);
         });
 
         // 当接受方拒绝通话后，调用该方法可关闭窗口，并退出房间
