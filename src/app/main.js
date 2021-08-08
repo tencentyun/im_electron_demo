@@ -249,10 +249,11 @@ function createWindow () {
   }
   // 注册截图快捷键
   globalShortcut.register("CommandOrControl+Shift+X", () => {
-    // "start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
+    // "start C:\\Users\\MiMyMine\\Desktop\\demo\\cut.exe";
+    //path.join(process.cwd(), "/resources/extraResources", "cut.exe")
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"), () => {
+    child_process.exec("start C:\\Users\\MiMyMine\\Desktop\\demo\\cut.exe", () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
@@ -272,7 +273,7 @@ function createWindow () {
     //接收到消息后的执行程序
     // path.join(process.cwd(), "/resources/extraResources", "cut.exe")
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"),
+    child_process.exec("start C:\\Users\\MiMyMine\\Desktop\\demo\\cut.exe",
       () => {
         let pngs = clipboard.readImage().toPNG();
         console.log(clipboard.readImage(), pngs, '-----------')

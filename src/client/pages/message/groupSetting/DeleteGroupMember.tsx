@@ -9,7 +9,7 @@ import './delete-group-member.scss';
 
 const getId = (item) => {
   if (!item) return false;
-  return item.user_profile_identifier;
+  return item.group_member_info_identifier;
 };
 
 interface UserItemProps {
@@ -33,9 +33,9 @@ export const UserItem: FC<UserItemProps> = ({
   hasCloseIcon,
   hasSelectedIcon,
 }): JSX.Element => {
-  const name = item?.user_profile_nick_name || "";
-  const faceUrl = item?.user_profile_face_url || "";
-  const id = item?.user_profile_identifier || "";
+  const name = item?.group_member_info_nick_name || "";
+  const faceUrl = item?.group_member_info_face_url&&item?.group_member_info_face_url.indexOf('http') > -1  ? item?.group_member_info_face_url : "";
+  const id = item?.group_member_info_identifier || "";
   return (
     <div onClick={() => onItemClick(id, item)} className="user-item">
       {hasSelectedIcon &&
@@ -45,7 +45,7 @@ export const UserItem: FC<UserItemProps> = ({
           <i className="user-item__icon-normal"></i>
         ))}
       <Avatar size="mini" url={faceUrl} nickName={name} userID={id} />
-      <span>{name}</span>
+      <span>{name||id}</span>
       {hasCloseIcon && (
         <Icon type="dismiss" onClick={(e) => onRemove(e, id, item)} />
       )}
@@ -80,7 +80,7 @@ export const DeleteGroupMemberDialog = (props: {
     }
     const copyUserList = [...userList];
     const list = copyUserList.filter((v) =>
-      v?.user_profile_nick_name?.includes(value)
+      v?.group_member_info_nick_name?.includes(value)
     );
     setUserList(list || []);
   };
@@ -111,7 +111,7 @@ export const DeleteGroupMemberDialog = (props: {
     try {
       await deleteGroupMember({
         groupId: defaultForm.groupId,
-        userIdList: selectedList.map((v) => v.user_profile_identifier),
+        userIdList: selectedList.map((v) => v.group_member_info_identifier),
       });
       setSelectedList([])
       onClose();
@@ -127,7 +127,6 @@ export const DeleteGroupMemberDialog = (props: {
   useEffect(() => {
     setUserList(defaultForm.userList);
   }, [defaultForm.userList]);
-
   return (
     <Modal
       className="forward-popup"
@@ -156,9 +155,9 @@ export const DeleteGroupMemberDialog = (props: {
             />
           </div> */}
           <div className="forward-popup__search-list__list customize-scroll-style">
-            {userList.map((v, k) => (
+            {userList.map((v) => (
               <UserItem
-                key={k}
+                key={v.group_member_info_identifier}
                 onItemClick={handleItemClick}
                 onRemove={handleItemClose}
                 seleted={

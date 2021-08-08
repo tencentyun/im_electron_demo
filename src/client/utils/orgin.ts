@@ -23,24 +23,28 @@ const getDepartment = (data) => {
 
 //筛选部门人员
 const filterGetDepartment = (data, callback, userId) => {
-    getDepartment(data).then(res => {
-        if (res.status == 200) {
-            if (Lead.indexOf(userId) !== -1) {
-                callback(res.data.DepInfo)
-            } else {
-                if (res.data.DepInfo.StaffInfoList && res.data.DepInfo.StaffInfoList.length > 0) {
-                    let filterData = res.data.DepInfo.StaffInfoList.filter(item => {
-                        console.log(Lead.indexOf(item.Uid))
-                        return Lead.indexOf(item.Uid) <= -1
-                    })
-                    res.data.DepInfo.StaffInfoList = filterData
-                    callback(res.data.DepInfo)
-                } else {
-                    callback(res.data.DepInfo)
+        getDepartment(data).then(res => {
+            try {
+                if (res.status == 200) {
+                    if (Lead.indexOf(userId) !== -1) {
+                        callback(res.data.DepInfo)
+                    } else {
+                        if (res.data.DepInfo.StaffInfoList && res.data.DepInfo.StaffInfoList.length > 0) {
+                            let filterData = res.data.DepInfo.StaffInfoList.filter(item => {
+                                console.log(Lead.indexOf(item.Uid))
+                                return Lead.indexOf(item.Uid) <= -1
+                            })
+                            res.data.DepInfo.StaffInfoList = filterData
+                            callback(res.data.DepInfo)
+                        } else {
+                            callback(res.data.DepInfo)
+                        }
+                    }
                 }
+            } catch (error) {
+                
             }
-        }
-    })
+        })
 }
 
 

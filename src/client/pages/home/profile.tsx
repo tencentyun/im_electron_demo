@@ -6,6 +6,8 @@ import { Avatar } from "../../components/avatar/avatar";
 import { UserInfo } from "../../components/EditUserInfo";
 import { Bubble, Button, Icon } from "tea-component";
 import { useMessageDirect } from '../../utils/react-use/useDirectMsgPage';
+import { useHistory } from "react-router-dom";
+import { EditProfile } from "./editProfile";
 import "./profile.scss";
 
 
@@ -13,6 +15,7 @@ export const Profile = (): JSX.Element => {
   const dispatch = useDispatch();
   const [userVisible, setUserVisible] = useState(false)
   const uId = localStorage.getItem('uid');
+  const history = useHistory()
   // eslint-disable-next-line prefer-const
   let { faceUrl, nickName, userId, gender, role } = useSelector((state: State.RootState) => state.userInfo);
   const fillStyle = { width: "100%" };

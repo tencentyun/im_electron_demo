@@ -61,13 +61,13 @@ type MergeMsg = {
   merge_elem_compatible_text: string;
   merge_elem_message_array: any[];
 };
-  
+
 type CustomMsg = {
   elem_type: number;
-  custom_elem_data?:string;
-  custom_elem_desc?:string;
-  custom_elem_ext?:string;
-  custom_elem_sound?:string;
+  custom_elem_data?: string;
+  custom_elem_desc?: string;
+  custom_elem_ext?: string;
+  custom_elem_sound?: string;
 }
 type MsgResponse = {
   data: {
@@ -102,7 +102,18 @@ export const getUserInfoList = async (userIdList: Array<string>) => {
   });
   return JSON.parse(json_param);
 };
-
+export const getConversationInfo = async (conv_id, conv_type) => {
+  const {data:{code,json_param}} =  await timRenderInstance.TIMConvGetConvInfo({
+    json_get_conv_list_param: [{
+      get_conversation_list_param_conv_id: conv_id,
+      get_conversation_list_param_conv_type: conv_type
+    }]
+  })
+  if(code === 0){
+    return JSON.parse(json_param)
+  }
+  return {}
+}
 export const getLoginUserID = async () => {
   const {
     data: { code, json_param },
@@ -119,6 +130,9 @@ export const getGroupInfoList = async (groupIdList: Array<string>) => {
   } = await timRenderInstance.TIMGroupGetGroupInfoList({
     groupIds: groupIdList,
   });
+  if(code !== 0){
+    return []
+  }
   const groupInfoList = JSON.parse(json_param);
   console.log('groupInfoList', groupInfoList)
 
@@ -202,7 +216,6 @@ export const getUsetStatusRequest = async (sdkappid, uid, To_Account) => {
  * @returns
  */
 export const TIMConvPinConversation = async (convId, convType, isPinned) => {
-  console.log(isPinned,'ispinner')
 
   const res = await timRenderInstance.TIMConvPinConversation({
     convId,
@@ -244,7 +257,7 @@ export const TIMMsgClearHistoryMessage = async (conv_id, conv_type) => {
  */
 export const TIMMsgSetC2CReceiveMessageOpt = async (userid, opt) => {
   return await timRenderInstance.TIMMsgSetC2CReceiveMessageOpt({
-    params:[userid],
+    params: [userid],
     opt,
   });
 };
@@ -262,7 +275,7 @@ export const TIMMsgSetGroupReceiveMessageOpt = async (group_id, opt) => {
   });
 };
 
-export const getMsgList = async (convId, convType,lastMsg=null) => {
+export const getMsgList = async (convId, convType, lastMsg = null) => {
   const {
     data: { json_params },
   } = await timRenderInstance.TIMMsgGetMsgList({
@@ -335,7 +348,7 @@ export const sendCustomMsg = (params: SendMsgParams<CustomMsg>): Promise<MsgResp
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 // export const sendTextMsg = (params: SendMsgParams<TextMsg>): Promise<MsgResponse> => sendMsg(params);
 export const cancelSendMsg = async (params: CancelSendMsgParams): Promise<MsgResponse> => {
-  const {conv_id, conv_type, message_id, user_data } = params
+  const { conv_id, conv_type, message_id, user_data } = params
   const res = await timRenderInstance.TIMMsgCancelSend({
     conv_id,
     conv_type,
@@ -457,7 +470,15 @@ export const searchFriends = async (params: {
 export const getGroupMemberList = async (params: {
   groupId: string;
 }): Promise<MemberInfo> => {
-  const { groupId } = params;
+  const { groupId, userIds, nextSeq } = params;
+  const queryParams: any = {
+    group_get_members_info_list_param_group_id: groupId,
+    group_get_members_info_list_param_next_seq: nextSeq
+  };
+
+  if (userIds && userIds?.length) {
+    queryParams.group_get_members_info_list_param_identifier_array = userIds;
+  }
   const { data } = await timRenderInstance.TIMGroupGetMemberInfoList({
     params: {
       group_get_members_info_list_param_group_id: groupId,
@@ -475,20 +496,26 @@ export const getGroupMemberList = async (params: {
 export const getGroupMemberInfoList = async (params: {
   groupId: string;
 }): Promise<any> => {
-  const { groupId } = params;
-  const res = await getGroupMemberList({ groupId });
-  const { group_get_memeber_info_list_result_info_array: memberList } = res;
-  const userIdList = memberList.map((v) => v.group_member_info_identifier);
-  const result = await getUserInfoList(userIdList);
-  const userList = result.map((v) => {
-    const member =
-      memberList.find(
-        (item) =>
-          item.group_member_info_identifier === v.user_profile_identifier
-      ) || {};
-    return { ...v, ...member };
-  });
-  return userList;
+  try {
+    const { groupId, nextSeq, userIds } = params;
+    const res = await getGroupMemberList({ groupId, nextSeq, userIds });
+    const { group_get_memeber_info_list_result_info_array: memberList, group_get_memeber_info_list_result_next_seq: seq } = res;
+    const userIdList = memberList?.map((v) => v.group_member_info_identifier) || [];
+    if (userIdList.length) {
+      const result = await getUserInfoList(userIdList);
+      const userList = result.map((v) => {
+        const member =
+          memberList.find(
+            (item) =>
+              item.group_member_info_identifier === v.user_profile_identifier
+          ) || {};
+        return { ...v, ...member };
+      });
+      return { userList, nextSeq: seq };
+    }
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 const modifyFlagMap = {

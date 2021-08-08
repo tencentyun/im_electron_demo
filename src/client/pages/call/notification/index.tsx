@@ -4,11 +4,11 @@ import './notification.scss';
 import { eventListiner } from '../callIpc';
 
 export const Notification = (props) => {
-    const { convInfo: { nickName, faceUrl}, callType } = props;
+    const { convInfo: { nickName, faceUrl}, callType,inviteID } = props;
     console.log(props);
 
     const accept = () => {
-        eventListiner.acceptCall();
+        eventListiner.acceptCall(inviteID);
     };
 
     const refuse = () => {
@@ -20,12 +20,11 @@ export const Notification = (props) => {
 
         return `邀请你进行${typeText}通话`;
     }
-    
     return (
         <div className="notification">
             <div className="notification__title">
-                <img src={faceUrl} />
-                <span className="notification__title--nick-name">{nickName}</span><br></br>
+                <img src={decodeURIComponent(faceUrl)} className="notification__avatar"/>
+                <span className="notification__title--nick-name">{decodeURIComponent(nickName)}</span><br></br>
                 <span className="notification__title--text">{getDisplayText()}</span>
             </div>
             <div className="notification__btn">

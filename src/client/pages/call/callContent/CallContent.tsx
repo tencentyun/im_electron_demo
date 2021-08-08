@@ -19,7 +19,7 @@ import event from '../event';
 
 import './call-content.scss';
 
-export const CallContent = ({ userId, convInfo, roomId}) => {
+export const CallContent = ({ userId, convInfo, roomId, inviteID}) => {
     const [ isStart, setStartStatus ] = useState(false);
 
     const onExitRoom = () => {

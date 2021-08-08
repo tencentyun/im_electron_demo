@@ -73,11 +73,11 @@ class IPC {
     eventListiner (isDev) {
         const screenSize = getSrceenSize();
         // 当作为接收方，接受电话后，更改窗口尺寸。
-        ipcMain.on('accept-call', () => {
+        ipcMain.on('accept-call', (event,inviteID) => {
             this.callWindow.setSize(800, 600);
             this.callWindow.setPosition(screenSize.width / 2 - 400, screenSize.height / 2 - 300);
             // 向聊天窗口通信
-            this.imWindowEvent.reply('accept-call-reply');
+            this.imWindowEvent.reply('accept-call-reply',inviteID);
         });
 
         // 当作为接收方，挂断电话，关闭窗口
@@ -173,8 +173,7 @@ class IPC {
         console.log(file_url)
         const file_name = url.parse(file_url).pathname.split('/').pop()
         const file_path = path.resolve(downloadDicPath, file_name)
-        const file_path_temp = `${file_path}.tmp`
-
+        const file_path_temp =  `${file_path}.tmp`
         if (!fs.existsSync(file_path)) {
 
             //创建写入流

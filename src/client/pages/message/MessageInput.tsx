@@ -36,7 +36,7 @@ type Props = {
     handleOpenCallWindow: (callType: string, convType: number, windowType: string) => void;
 }
 
-const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
+const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif','PNG', 'JPG', 'GIF'];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
 const FEATURE_LIST_GROUP = [{
@@ -54,13 +54,14 @@ const FEATURE_LIST_GROUP = [{
     id: 'file',
     content: '发文件'
 },
-//     {
-//     id: 'video',
-//     content: '发视频'
-// }, {
+    {
+    id: 'video',
+    content: '发视频'
+}, 
+// {
 //     id: 'phone',
 //     content: '语音'
-//     },
+// },
 {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
@@ -75,13 +76,13 @@ const FEATURE_LIST_C2C = [{
     id: 'file',
     content: '发文件'
 },
-//     {
-//     id: 'video',
-//     content: '发视频'
-// }, {
-//     id: 'phone',
-//     content: '语音'
-//     },
+    {
+    id: 'video',
+    content: '发视频'
+}, {
+    id: 'phone',
+    content: '语音'
+    },
 {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
@@ -102,6 +103,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [videoInfos, setVideoInfos] = useState([]);
     const [atUserNameInput, setAtInput] = useState('');
     const [atUserMap, setAtUserMap] = useState({});
+    const [ isZHCNAndFirstPopup, setIsZHCNAndFirstPopup]  = useState(false);
 
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -274,39 +276,30 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
 
-    const setFile = async (file: File | { size: number; type: string; path: string; name: string; fileContent: string }, bol: boolean) => {
-        // console.log(file, '文件对象')
-        if (file) {
+    const setFile = async (file: File | {size: number; type: string; path: string; name: string; fileContent: string}) => {
+        if(file) {
             const fileSize = file.size;
-            const type = file.type;
-            console.log(type, '========')
+            const type = file.type.indexOf('/') ? file.path.split('.')[1] : file.type;
+            const size = file.size;
+            console.log('file',file)
+            if(size === 0){
+                message.error({content: "文件大小异常"})
+                return
+            }
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
-                console.log(bol, '111111~~~~~~~~~~~~~~')
-                if (!bol) {
-                    console.log(file, 'file!!!')
-                    if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
-                    const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
-                    setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
-                } else {
-                    file = JSON.parse(window.localStorage.getItem('imageObj'))
-                    console.log(file, 'file!!!')
-                    if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
-                    setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
-                }
-                // file = JSON.parse(window.localStorage.getItem('imageObj'))
-                // if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
-                // setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
-            } else if (SUPPORT_VIDEO_TYPE.find(v => type.includes(v))) {
-                if (fileSize > 100 * 1024 * 1024) return message.error({ content: "video size can not exceed 100m" })
-                ipcRenderer.send(RENDERPROCESSCALL, {
+                if(fileSize > 28 * 1024 * 1024) return message.error({content: "image size can not exceed 28m"})
+                const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
+                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
+            } else if (SUPPORT_VIDEO_TYPE.find(v=> type.includes(v))){
+                if(fileSize > 100 * 1024 * 1024) return message.error({content: "video size can not exceed 100m"})
+                ipcRenderer.send(RENDERPROCESSCALL,{
                     type: GET_VIDEO_INFO,
                     params: { path: file.path }
                 })
-                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, { name: file.name, path: file.path, size: file.size }));
+                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
             } else {
-                console.log(222)
-                if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
-                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
+                if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
+                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
             }
         }
     }
@@ -319,21 +312,21 @@ export const MessageInput = (props: Props): JSX.Element => {
         setDraging(false);
     }
 
-    const sendMessages = (type, params) => {
-        switch (type) {
-            case "image":
-                sendImageMessage(params)
-                break
-            case "audio":
-                sendSoundMessage(params)
-                break
-            case "video":
-                sendVideoMessage(params)
-                break
-            default:
-                sendFileMessage(params)
-        }
-    }
+    // const sendMessages = (type, params) => {
+    //     switch (type) {
+    //         case "image":
+    //             sendImageMessage(params)
+    //             break
+    //         case "audio":
+    //             sendSoundMessage(params)
+    //             break
+    //         case "video":
+    //             sendVideoMessage(params)
+    //             break
+    //         default:
+    //             sendFileMessage(params)
+    //     }
+    // }
 
     const handleDragEnter = e => {
         setDraging(true);
@@ -411,9 +404,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const sendFileMessage = async ({ filePath, fileSize, fileName }) => {
-        if (!filePath) return false;
-        console.log(44444444444444, fileSize)
-        if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
+        if(!filePath) return false;
+        if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
         const { data: { code, desc, json_params } } = await sendFileMsg({
             convId,
             convType,
@@ -649,13 +641,18 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(newEditorState)
         const text = newEditorState.toText();
         const hasAt = text.includes('@');
-        if (!hasAt) {
+        /**
+         * 中文输入法下会触发两次change 第一次change时无法拿到真正的输入内容 
+         * 用isZHCNAndFirstPopup字段判断是否中文输入法下按下@ 并且首次change
+         */
+        if(!hasAt && atPopup && !isZHCNAndFirstPopup) {
             setAtPopup(false);
             return;
         }
+        setIsZHCNAndFirstPopup(false);
         // 取最后一个@后的内容作为搜索条件
         const textArr = text.split('@');
-        const lastInput = textArr[textArr.length - 1];
+        const lastInput = textArr[textArr.length - 1]; 
         setAtInput(lastInput);
     }
 
@@ -664,10 +661,12 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(ContentUtils.insertText(editorState, patseText))
     }
 
+
     const handlePastedFiles = async (files: File[]) => {
         for (const file of files) {
             setFile(file, true);
         }
+        return 'handled';  
     }
 
     const menu = close => (
@@ -707,30 +706,37 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const keyBindingFn = (e) => {
-        if (e.keyCode === 13 || e.charCode === 13) {
-            e.preventDefault();
+        if(e.keyCode === 13 || e.charCode === 13) {
+            // e.preventDefault();
+            // if(!atPopup){
+            //     handleSendMsg();
+            // }
             return 'enter';
-        }
-        if (e.key === "@" && e.shiftKey && convType === 2) {
+        } else if(e.key === "@" && e.shiftKey && convType === 2) {
             e.preventDefault();
+            setAtPopup(true);
+            setEditorState(ContentUtils.insertText(editorState, ` @`))
             return '@';
+        } else if (e.key === "Process" && e.shiftKey && convType === 2){
+            e.preventDefault();
+            setIsZHCNAndFirstPopup(true);
+            setAtPopup(true);
+            return 'zh-cn-@';
         }
     }
 
     const handleKeyCommand = (e) => {
-        // switch (e) {
-        //     case 'enter': {
-        //         if (!atPopup) {
-        //             handleSendMsg();
-        //         }
-        //         return 'not-handled';
-        //     }
-        //     case '@': {
-        //         setAtPopup(true);
-        //         setEditorState(ContentUtils.insertText(editorState, ` @`))
-        //         return 'not-handled';
-        //     }
-        // }
+        switch(e) {
+            case 'enter': {
+                return 'not-handled';
+            }
+            case '@' : {
+                return 'not-handled';
+            }
+            case 'zh-cn-@': {
+                return 'not-handled';
+            }
+        }
     }
 
 
@@ -856,14 +862,15 @@ export const MessageInput = (props: Props): JSX.Element => {
                     value={editorState}
                     media={{ pasteImage: false }}
                     ref={instance => editorInstance = instance}
-                    handlePastedFiles={handlePastedFiles}
-                    handlePastedText={handlePastedText}
+                    // handlePastedFiles={handlePastedFiles}
+                    // handlePastedText={handlePastedText}
                     blockRendererFn={blockRendererFn}
                     keyBindingFn={keyBindingFn}
                     handleKeyCommand={handleKeyCommand}
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
+                    draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled'}}
                     maxLength={4000}
                     actions={[]}
                 />
