@@ -202,10 +202,11 @@ export const App = () => {
     dispatch(setUnreadCount(unreadCount));
   };
   const _handeMessage = async (messages: State.message[]) => {
+    handleNotify(messages);
     console.log(messages, "消息---------------");
     // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
     const obj = {};
-    for (let i = 0; i < messages.length; i++) {
+    for (let i = 0;i < messages.length;i++) {
       if (!obj[messages[i].message_conv_id]) {
         obj[messages[i].message_conv_id] = [];
       }
@@ -232,10 +233,10 @@ export const App = () => {
         return;
       }
     }
-    handleNotify(messages);
+    // handleNotify(messages);
   };
   const handleNotify = (messages) => {
-    // console.log(showApp, '[[[[[[[[[[[[[[[')
+    console.log(showApp, '[[[[[[[[[[[[[[[')
     if (showApp) {
       return;
     }
