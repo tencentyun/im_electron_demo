@@ -34,6 +34,10 @@ type Info = {
 export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const { conv_id, conv_type, conv_profile } = props;
   const [callType,setCallType] = useState(0)
+  const [callInfo,setCallInfo] = useState({
+    callType:0,
+    convType:0
+  })
   const {
     group_detial_info_group_type: groupType,
     group_detial_info_add_option: addOption,
@@ -134,6 +138,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   const inviteC2C = async () => {
     const roomId = generateRoomID();
+    const { callType } = callInfo
     const data = await timRenderInstance.TIMInvite({
       userID: conv_id,
       senderID: userId,
@@ -143,13 +148,15 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     })
     const { data: { code } } = data;
     if(code === 0){
-      openLocalCallWindow(callType,roomId)
+      openLocalCallWindow(callType,roomId,[conv_id])
     }
   }
   const inviteInGourp =async (groupMember) => {
+    const { callType } = callInfo
     const roomId = generateRoomID();
+    const userList = groupMember.map((v) => v.group_member_info_identifier)
    const data = await timRenderInstance.TIMInviteInGroup({
-      userIDs: groupMember.map((v) => v.group_member_info_identifier),
+      userIDs: userList,
       groupID: conv_id,
       senderID: userId,
       data: "",
@@ -158,13 +165,14 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     })
     const { data: { code } } = data;
     if(code === 0){
-      openLocalCallWindow(callType,roomId)
+      openLocalCallWindow(callType,roomId,userList)
     }
   }
-  const openLocalCallWindow = (callType,roomId)=>{
+  const openLocalCallWindow = (callType,roomId,userList)=>{
     dispatch(updateCallingStatus({
       callingId: conv_id,
-      callingType: conv_type
+      callingType: conv_type,
+      inviteeList: userList
     }));
     const { faceUrl, nickName } = getDisplayConvInfo();
     openCallWindow({
@@ -179,6 +187,17 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       roomId
     });
   }
+
+  useEffect(()=>{
+    const {callType,convType} = callInfo
+    if(callType!==0 && convType !== 0){
+      if(convType == 1){
+        inviteC2C()
+      }else if(convType === 2){
+        openGroupMemberSelector()
+      }
+    }
+  },[callInfo])
   const handleOpenCallWindow = async (callType, convType) => {
     if (callingId) {
       message.warning({ content: '正在通话中' });
@@ -190,32 +209,23 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       return;
     }
 
-    setCallType(callType)
-    if (convType === 1) {
-      inviteC2C()
-    }
-    else if (convType === 2) {
-      // 获取群成员
-      const { group_get_memeber_info_list_result_info_array } = await getGroupMemberList({
-        groupId: conv_id,
-        nextSeq: 0,
-      })
-      groupMemberSelectorRef.current.open({
-        groupId: conv_id,
-        userList: group_get_memeber_info_list_result_info_array
-      })
-    }
+    setCallInfo({
+      callType,
+      convType
+    })
+   
     
   }
-
-  useEffect(() => {
-    callWindowCloseListiner(() => {
-      dispatch(updateCallingStatus({
-        callingId: '',
-        callingType: 0
-      }));
-    });
-  }, [])
+const openGroupMemberSelector = async ()=>{
+  const { group_get_memeber_info_list_result_info_array } = await getGroupMemberList({
+    groupId: conv_id,
+    nextSeq: 0,
+  })
+  groupMemberSelectorRef.current.open({
+    groupId: conv_id,
+    userList: group_get_memeber_info_list_result_info_array
+  })
+}
 
   const popupContainer = document.getElementById("messageInfo");
 

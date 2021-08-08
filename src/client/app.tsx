@@ -37,7 +37,8 @@ import {
     updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
-import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner } from "./utils/callWindowTools";
+import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner } from "./utils/callWindowTools";
+import { updateCallingStatus } from "./store/actions/ui";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
@@ -377,14 +378,13 @@ export const App = () => {
                 console.log('接收返回', data)
             })
         });
-
-        refuseCallListiner((inviteID)=>{
-            timRenderInstance.TIMRejectInvite({
-                inviteID: inviteID
-            }).then(data=>{
-                console.log('接收返回',data)
-            })
-        })
+        callWindowCloseListiner(() => {
+            dispatch(updateCallingStatus({
+              callingId: '',
+              callingType: 0,
+              inviteeList:[]
+            }));
+          });
     }, []);
     return (
         <div id="app-container">

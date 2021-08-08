@@ -19,7 +19,8 @@ declare namespace State {
         replace_router: boolean,
         callingStatus: {
             callingType: number,
-            callingId: string
+            callingId: string,
+            inviteeList: Array<string>
         }
     }
     export type historyMessage = {
