@@ -12,49 +12,49 @@ export const GroupTipsElemItem = (props: any): JSX.Element => {
         // kTIMGroupTipChangeFlag_Owner,        // 修改群所有者
         // kTIMGroupTipChangeFlag_Custom,       // 修改群自定义信息
         // kTIMGroupTipChangeFlag_Attribute,    // 群属性变更 (新增)
-        const changeDisplay = ['未知','群名称','群简介','群公告','群头像','群主','群自定义信息','群属性']
+        const changeDisplay = ['未知', '群名称', '群简介', '群公告', '群头像', '群主', '群自定义信息', '群属性']
         const { group_tips_group_change_info_flag, group_tips_group_change_info_value } = item;
-        return `将${changeDisplay[group_tips_group_change_info_flag]}修改为${group_tips_group_change_info_value}`
+        return `将${changeDisplay[group_tips_group_change_info_flag]}修改`
     }
-    const inviteInfo = (item)=>{
+    const inviteInfo = (item) => {
         return item.group_member_info_identifier;
     }
-    const tips_6 = ()=>{
-        const { group_tips_elem_op_user_info,group_tips_elem_group_change_info_array } = props;
-        const { user_profile_nick_name,user_profile_identifier } = group_tips_elem_op_user_info;
-        const res= []
-        for(let i = 0;i<group_tips_elem_group_change_info_array.length;i++){
-            res.push(`${user_profile_nick_name||user_profile_identifier}${groupInfoChange(group_tips_elem_group_change_info_array[i])}`)
+    const tips_6 = () => {
+        const { group_tips_elem_op_user_info, group_tips_elem_group_change_info_array } = props;
+        const { user_profile_nick_name, user_profile_identifier } = group_tips_elem_op_user_info;
+        const res = []
+        for (let i = 0;i < group_tips_elem_group_change_info_array.length;i++) {
+            res.push(`${user_profile_nick_name || user_profile_identifier}${groupInfoChange(group_tips_elem_group_change_info_array[i])}`)
         }
         return res
     }
-    const tips_1 = ()=>{
-        const { group_tips_elem_op_user_info,group_tips_elem_changed_group_memberinfo_array } = props;
-        const { user_profile_nick_name,user_profile_identifier } = group_tips_elem_op_user_info;
-        const res= []
-        for(let i = 0;i<group_tips_elem_changed_group_memberinfo_array.length;i++){
-            res.push(`${user_profile_nick_name||user_profile_identifier}邀请${inviteInfo(group_tips_elem_changed_group_memberinfo_array[i])}进入群聊`)
+    const tips_1 = () => {
+        const { group_tips_elem_op_user_info, group_tips_elem_changed_group_memberinfo_array } = props;
+        const { user_profile_nick_name, user_profile_identifier } = group_tips_elem_op_user_info;
+        const res = []
+        for (let i = 0;i < group_tips_elem_changed_group_memberinfo_array.length;i++) {
+            res.push(`${user_profile_nick_name || user_profile_identifier}邀请${inviteInfo(group_tips_elem_changed_group_memberinfo_array[i])}进入群聊`)
         }
         return res
     }
-    const tips_2 = ()=>{
+    const tips_2 = () => {
         const { group_tips_elem_op_user_info } = props;
-        
-        return [`${group_tips_elem_op_user_info.user_profile_nick_name||group_tips_elem_op_user_info.user_profile_identifier}退出群聊`]
+
+        return [`${group_tips_elem_op_user_info.user_profile_nick_name || group_tips_elem_op_user_info.user_profile_identifier}退出群聊`]
     }
-    const tips_3 = ()=>{
-        const { group_tips_elem_op_user_info,group_tips_elem_changed_group_memberinfo_array } = props;
-        const { user_profile_nick_name,user_profile_identifier } = group_tips_elem_op_user_info;
-        const res= []
-        for(let i = 0;i<group_tips_elem_changed_group_memberinfo_array.length;i++){
-            res.push(`${inviteInfo(group_tips_elem_changed_group_memberinfo_array[i])}被${user_profile_nick_name||user_profile_identifier}移出群聊`)
+    const tips_3 = () => {
+        const { group_tips_elem_op_user_info, group_tips_elem_changed_group_memberinfo_array } = props;
+        const { user_profile_nick_name, user_profile_identifier } = group_tips_elem_op_user_info;
+        const res = []
+        for (let i = 0;i < group_tips_elem_changed_group_memberinfo_array.length;i++) {
+            res.push(`${inviteInfo(group_tips_elem_changed_group_memberinfo_array[i])}被${user_profile_nick_name || user_profile_identifier}移出群聊`)
         }
         return res
     }
-    const tips_4 = ()=>{
+    const tips_4 = () => {
         const { group_tips_elem_op_user_info } = props;
-        
-        return [`${group_tips_elem_op_user_info.user_profile_nick_name||group_tips_elem_op_user_info.user_profile_identifier}退出群聊`]
+
+        return [`${group_tips_elem_op_user_info.user_profile_nick_name || group_tips_elem_op_user_info.user_profile_identifier}退出群聊`]
     }
     const getChangeType = () => {
         const { group_tips_elem_tip_type } = props;
@@ -97,7 +97,7 @@ export const GroupTipsElemItem = (props: any): JSX.Element => {
 
     const item = () => <span className="message-view__item--text text right-menu-item">
         {
-            getChangeType().map((item,index)=>{
+            getChangeType().map((item, index) => {
                 return <div key={index}>{item}</div>
             })
         }

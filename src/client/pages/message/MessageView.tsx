@@ -86,7 +86,7 @@ const RIGHT_CLICK_MENU_LIST = [{
 
 export const displayDiffMessage = (element, index) => {
     const { elem_type, ...res } = element;
-    console.log(element, index, '======----')
+    // console.log(element, index, '======----')
     let resp
     switch (elem_type) {
         case 0:
