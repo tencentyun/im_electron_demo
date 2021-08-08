@@ -190,7 +190,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
         convType: conv_type
       },
       roomId,
-      inviteID: inviteId
+      inviteID: inviteId,
+      userID:userId
     });
   }
 

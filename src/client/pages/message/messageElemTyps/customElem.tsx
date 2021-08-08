@@ -1,9 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 export const CustomElem = (props: any): JSX.Element => {
 
   const item = (props) => {
-    const { custom_elem_data } = props;
+    const { message } = props;
+    const { message_sender } = message;
+    const { custom_elem_data } = message.message_elem_array[0];
     let data = custom_elem_data;
     try {
      data =  JSON.parse(custom_elem_data)
@@ -24,19 +26,23 @@ export const CustomElem = (props: any): JSX.Element => {
             const parsedData = JSON.parse(data.data);
             switch(data.actionType){
               case 1:
+                
                 return <span>{data.inviter}邀请{
                   data.inviteeList.map((item,index)=>{
-                    return <span className="" key={index}>{item}</span>
+                    return <span className="" key={index}>{item}{index===data.inviteeList.length-1 ? '' : '、'}</span>
                   })
                 }通话</span>
               case 2:
                 return <span>{data.inviter}取消了通话</span>
               case 3:
-                return <span>{parsedData.inviter}的接受通话</span>
+                console.log(custom_elem_data,typeof custom_elem_data)
+                return <span>{
+                  message_sender
+                }接受通话</span>
               case 4:
-                return <span>{parsedData.handleID}拒绝了通话</span>
+                return <span>{message_sender}拒绝了通话</span>
               case 5:
-                return <span>{parsedData.inviter}超时未接听</span>
+                return <span>{data.inviter}超时未接听</span>
               default:
                 return <span>信令未解析</span>
             }

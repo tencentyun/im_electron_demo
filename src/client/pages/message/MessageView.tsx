@@ -79,7 +79,7 @@ export const displayDiffMessage = (message, element, index) => {
             resp = <VoiceElem { ...res }/>
             break;
         case 3:
-            resp = <CustomElem { ...res }/>
+            resp = <CustomElem message={message}/>
             break;
         case 4:
             resp = <FileElem message={message} element={element} index={index}/>

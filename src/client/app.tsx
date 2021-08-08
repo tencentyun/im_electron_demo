@@ -51,7 +51,9 @@ export const App = () => {
     const { callingStatus } = useSelector(
         (state: State.RootState) => state.ui
     );
-
+    const { userId } = useSelector(
+        (state: State.RootState) => state.userInfo
+    );
     const initIMSDK = async () => {
         if (!isInited) {
             //   const privite = await timRenderInstance.callExperimentalAPI({
@@ -194,7 +196,8 @@ export const App = () => {
                         convType: groupID ? 2 : 1,
                     },
                     roomId: room_id,
-                    inviteID
+                    inviteID,
+                    userID: userId
                 });
             }
 

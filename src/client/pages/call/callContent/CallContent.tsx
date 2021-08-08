@@ -3,6 +3,7 @@ import { remote } from 'electron';
 import {
     TRTCAppScene, 
     TRTCParams, 
+    TRTCRoleType, 
     TRTCVideoEncParam,
     TRTCVideoResolution,
     TRTCVideoResolutionMode,
@@ -58,7 +59,6 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID }) => {
         param.userSig = userSig;
         param.roomId = Number(roomId);
         param.userId = userId;
-
         trtcInstance.enterRoom(param, TRTCAppScene.TRTCAppSceneVideoCall);
     }
 

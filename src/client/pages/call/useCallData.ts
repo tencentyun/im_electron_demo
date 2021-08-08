@@ -9,16 +9,17 @@ export const useCallData = () => {
             nickName: '',
             convType: 0
         },
-        userId: '',
+        convId: '',
         callType: '',
         windowType: 'callWindow',
         roomId: 0,
-        inviteID: ''
+        inviteID: '',
+        userID:''
     });
 
     useEffect(() => {
         eventEmiter.on('getData', (data) => {
-            const { convInfo, convId, callType, windowType, roomId, inviteID } = data;
+            const { convInfo, convId, callType, windowType, roomId, inviteID,userID } = data;
             setData({
                 windowType,
                 callType,
@@ -27,9 +28,10 @@ export const useCallData = () => {
                     nickName: convInfo.nickName,
                     convType: convInfo.convType
                 },
-                userId: convId,
+                convId: convId,
                 roomId: roomId,
-                inviteID: inviteID
+                inviteID: inviteID,
+                userID: userID
             })
         });
 
