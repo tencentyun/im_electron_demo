@@ -8,6 +8,8 @@ import {
 } from "trtc-electron-sdk/liteav/trtc_define";
 
 import useDynamicRef from '../../../utils/react-use/useDynamicRef';
+import event from '../event';
+
 
 const splitUserList = (array, count) => {
     const catchArray = [];
@@ -19,9 +21,9 @@ const splitUserList = (array, count) => {
 
 
 export const GroupVideo = (props) => {
-    const { trtcInstance } = props;
-    const [userList, setUserList ] = useState([]);
-    const [groupSplit, setGroupSplit ] = useState([]);
+    const { trtcInstance, inviteList } = props;
+    const [userList, setUserList ] = useState(inviteList);
+    const [groupSplit, setGroupSplit ] = useState(splitUserList(inviteList, 9));
     const [currentPage, setCurrentPage ] = useState(0);
     const [enteringUser, setEnteringUser ] = useState('');
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
@@ -29,6 +31,7 @@ export const GroupVideo = (props) => {
     const shouldShowNextButton = groupSplit.length > 1 && currentPage < groupSplit.length - 1;
 
     useEffect(() => {
+        event.on('toggleVideo', onVideoChanged);
         trtcInstance.on('onEnterRoom', onEnterRoom);
         trtcInstance.on('onRemoteUserLeaveRoom', onRemoteUserLeaveRoom);
         trtcInstance.on('onRemoteUserEnterRoom', onRemoteUserEnterRoom);
@@ -51,6 +54,11 @@ export const GroupVideo = (props) => {
         }
     }, [enteringUser]);
 
+    const onVideoChanged = (shouldShow) => {
+        const selfViewRef = getRef('self-view');
+        selfViewRef.current.getElementsByTagName('canvas')[0].style.display = shouldShow ? 'block' : 'none';
+    }
+
     const openLocalVideo = (selfViewRef) => {
         trtcInstance.startLocalPreview(selfViewRef.current);
         trtcInstance.startLocalAudio();
@@ -62,13 +70,13 @@ export const GroupVideo = (props) => {
     const onEnterRoom = (result) => {
         console.log('=============enter room===================');
         if(result > 0) {
-            setUserList(['self-view']);
+            setUserList(prev =>  ['self-view', ...prev]);
             setEnteringUser('self-view');
         };
     };
 
     const onRemoteUserEnterRoom = (userId) => {
-        setUserList(prev => [...prev, userId]);
+        setUserList(prev =>  Array.from(new Set([...prev, userId])));
         setEnteringUser(userId);
     }
 
@@ -149,7 +157,12 @@ export const GroupVideo = (props) => {
                     return <div className="group-video-content__page" style={cacluatePageStyle(index)} key={index}>
                         {
                              item.map(userId => {
-                                return <div key={userId} className="group-video-content__page-item" style={cacluateStyle()} ref={setRef(userId)}><span>{userId}</span></div>
+                                return <div key={userId} className="group-video-content__page-item" style={cacluateStyle()}>
+                                    <div ref={setRef(userId)} style={{position: 'relative', width: '100%', height: '100%'}}>
+                                        <span className="group-video-content__page-item--loading">正在等待对方接受邀请...</span>
+                                    </div>
+                                    <span className="group-video-content__page-item--user-id">{userId}</span>
+                                </div>
                             })
                         }
                     </div>
