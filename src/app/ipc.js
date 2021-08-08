@@ -134,6 +134,7 @@ class IPC {
             width: 800,
             show: false,
             frame: false,
+            resizable:false,
             webPreferences: {
                 parent: this.win,
                 webSecurity: true,
