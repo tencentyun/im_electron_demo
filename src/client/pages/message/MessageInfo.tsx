@@ -146,9 +146,11 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       roomID: roomId,
       callType: Number(callType)
     })
-    const { data: { code } } = data;
+    const { data: { code, json_params } } = data;
     if(code === 0){
-      openLocalCallWindow(callType,roomId,[conv_id])
+      const customerData = JSON.parse(json_params)?.message_elem_array[0].custom_elem_data;
+      const inviteId = JSON.parse(customerData)?.inviteID;
+      openLocalCallWindow(callType,roomId,[conv_id], inviteId)
     }
   }
   const inviteInGourp =async (groupMember) => {
@@ -162,13 +164,15 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       data: "",
       roomID: roomId,
       callType: Number(callType)
-    })
-    const { data: { code } } = data;
+    });
+    const { data: { code, json_params } } = data;
     if(code === 0){
-      openLocalCallWindow(callType,roomId,userList)
+      const customerData = JSON.parse(json_params)?.message_elem_array[0].custom_elem_data;
+      const inviteId = JSON.parse(customerData)?.inviteID;
+      openLocalCallWindow(callType,roomId,userList, inviteId)
     }
   }
-  const openLocalCallWindow = (callType,roomId,userList)=>{
+  const openLocalCallWindow = (callType,roomId,userList, inviteId)=>{
     dispatch(updateCallingStatus({
       callingId: conv_id,
       callingType: conv_type,
@@ -184,7 +188,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
         nickName: encodeURIComponent(nickName),
         convType: conv_type
       },
-      roomId
+      roomId,
+      inviteID: inviteId
     });
   }
 

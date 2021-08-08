@@ -104,6 +104,11 @@ class IPC {
             this.imWindowEvent.reply('remote-user-exit-reply', userId)
         });
 
+        // 取消通话邀请
+        ipcMain.on('cancel-call-invite', (event, inviteID) => {
+            this.imWindowEvent.reply('cancel-call-invite-reply', inviteID);
+        })
+
 
         ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
             this.imWindowEvent = event;

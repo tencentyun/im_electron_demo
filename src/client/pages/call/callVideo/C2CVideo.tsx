@@ -11,7 +11,7 @@ import {
 import event from '../event';
 
 export const C2Cvideo = (props) => {
-    const { trtcInstance, roomId } = props;
+    const { trtcInstance } = props;
     const [shouldShow, setShouldSHow] = useState(false);
     const selfViewRef = useRef(null);
     const remoteViewRef = useRef(null);

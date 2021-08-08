@@ -9,15 +9,6 @@ import {
 
 import useDynamicRef from '../../../utils/react-use/useDynamicRef';
 
-function randomString(e) {  
-  e = e || 32;
-  var t = "ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678",
-  a = t.length,
-  n = "";
-  for (var i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a));
-  return n
-}
-
 const splitUserList = (array, count) => {
     const catchArray = [];
     for(let i=0; i<array.length; i+=count){
@@ -50,7 +41,6 @@ export const GroupVideo = (props) => {
     }, [userList]);
 
     useEffect(() => {
-        let timeout;
         if(enteringUser) {
             const ref = getRef(enteringUser);
             if(enteringUser === 'self-view') {
@@ -58,10 +48,6 @@ export const GroupVideo = (props) => {
                 console.log('current ref', ref.current);
                 return;
             }
-        }
-
-        return () => {
-            timeout && clearTimeout(timeout);
         }
     }, [enteringUser]);
 
@@ -74,6 +60,7 @@ export const GroupVideo = (props) => {
     };
 
     const onEnterRoom = (result) => {
+        console.log('=============enter room===================');
         if(result > 0) {
             setUserList(['self-view']);
             setEnteringUser('self-view');

@@ -5,6 +5,7 @@ import eventEmiter from './event';
 export const eventListiner = {
     init: () => {
         ipcRenderer.on('pass-call-data', (event, data) => {
+            console.log('=================data=========', JSON.parse(data));
             eventEmiter.emit('getData', JSON.parse(data));
         });
 
@@ -24,5 +25,8 @@ export const eventListiner = {
     },
     refuseCall: (inviteID) => {
         ipcRenderer.send('refuse-call', inviteID);
-    }
+    },
+    cancelCall: (inviteId) => {
+        ipcRenderer.send('cancel-call-invite', inviteId);
+    },
 }
