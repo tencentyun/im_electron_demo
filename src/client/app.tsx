@@ -202,7 +202,7 @@ export const App = () => {
                     roomId: room_id,
                     inviteID,
                     userID: userID,
-                    inviteeList: inviteeList
+                    inviteList: inviteeList
                 });
             }
 

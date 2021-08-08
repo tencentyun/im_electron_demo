@@ -21,7 +21,7 @@ import event from '../event';
 import './call-content.scss';
 
 export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList }) => {
-    console.log('==============roomId=================', roomId, inviteID);
+    console.log('==============roomId=================', roomId, inviteID,inviteList);
     const [ isStart, setStartStatus ] = useState(false);
     const convType = convInfo.convType;
     const isC2CCall = convType === 1; 

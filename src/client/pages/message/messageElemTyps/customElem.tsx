@@ -35,7 +35,6 @@ export const CustomElem = (props: any): JSX.Element => {
               case 2:
                 return <span>{data.inviter}取消了通话</span>
               case 3:
-                console.log(custom_elem_data,typeof custom_elem_data)
                 return <span>{
                   message_sender
                 }接受通话</span>
