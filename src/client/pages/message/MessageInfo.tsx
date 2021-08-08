@@ -131,61 +131,78 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const handleClose = () => dispatch(changeDrawersVisible(false));
   
   const handleOpenCallWindow =async (callType,convType ) => {
-    if(callingId) {
-      message.warning({content: '正在通话中'});
-      return;
+    try {
+      if(callingId) {
+        message.warning({content: '正在通话中'});
+        return;
+      }
+  
+      const roomId = generateRoomID();
+  
+      if (!trtcCheck.isCameraReady() && !trtcCheck.isMicReady()) {
+        message.warning({ content: '找不到可用的摄像头和麦克风。请安装摄像头和麦克风后再试' });
+        return;
+      }
+  
+      // openCallWindow({
+      //   windowType: 'callWindow',
+      //   callType,
+      //   convId: encodeURIComponent(conv_id),
+      //   convInfo: {
+      //     faceUrl: encodeURIComponent(faceUrl),
+      //     nickName: encodeURIComponent(nickName),
+      //     convType: conv_type
+      //   },
+      //   roomId
+      // });
+  
+  
+      // 发起邀请
+      let data
+      if (convType === 1) {
+        data = await timRenderInstance.TIMInvite({
+          userID: conv_id,
+          type: Number(callType),
+          senderID: userId,
+          data: "",
+          roomID: roomId,
+          callType: Number(callType)
+        })
+      }
+      if (convType === 2) {
+        data = await timRenderInstance.TIMInviteInGroup({
+          userIDs: ['109442'],
+          groupID: conv_id,
+          senderID: userId,
+          data: "",
+          roomID: roomId,
+          callType: Number(callType)
+        })
+      }
+  
+      const { data:{code} } = data;
+      if (code === 0) {
+        dispatch(updateCallingStatus({
+          callingId: conv_id,
+          callingType: conv_type
+        }));
+        const { faceUrl, nickName } = getDisplayConvInfo();
+        openCallWindow({
+          windowType: 'callWindow',
+          callType,
+          convId: encodeURIComponent(conv_id),
+          convInfo: {
+            faceUrl: encodeURIComponent(faceUrl),
+            nickName: encodeURIComponent(nickName),
+            convType: conv_type
+          },
+          roomId
+        });
+      }
+    } catch(err) {
+      console.log('errr', err);
     }
-
-    const roomId = generateRoomID();
-
-    if (!trtcCheck.isCameraReady() && !trtcCheck.isMicReady()) {
-      message.warning({ content: '找不到可用的摄像头和麦克风。请安装摄像头和麦克风后再试' });
-      return;
-    }
-
-
-    // 发起邀请
-    let data
-    if (convType === 1) {
-      data = await timRenderInstance.TIMInvite({
-        userID: conv_id,
-        type: Number(callType),
-        senderID: userId,
-        data: "",
-        roomID: roomId,
-        callType: Number(callType)
-      })
-    }
-    if (convType === 2) {
-      data = await timRenderInstance.TIMInviteInGroup({
-        userIDs: ['109442'],
-        groupID: conv_id,
-        senderID: userId,
-        data: "",
-        roomID: roomId,
-        callType: Number(callType)
-      })
-    }
-
-    const { data:{code} } = data;
-    if (code === 0) {
-      dispatch(updateCallingStatus({
-        callingId: conv_id,
-        callingType: conv_type
-      }));
-      const { faceUrl, nickName } = getDisplayConvInfo();
-      openCallWindow({
-        windowType: 'callWindow',
-        callType,
-        convId: encodeURIComponent(conv_id),
-        convInfo: {
-          faceUrl: encodeURIComponent(faceUrl),
-          nickName: encodeURIComponent(nickName),
-          convType: conv_type
-        },
-        roomId
-      });
-    }
+    
   }
 
   useEffect(() => {
