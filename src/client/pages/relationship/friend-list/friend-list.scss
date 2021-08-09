@@ -41,6 +41,10 @@
         display: flex;
         &__info {
           margin-left: 8px;
+          display: flex;
+          // flex-direction: column;
+          align-items: center;
+
           &__name {
             font-size: 14px;
             font-weight: 400;
