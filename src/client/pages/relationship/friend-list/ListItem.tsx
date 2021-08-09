@@ -12,19 +12,16 @@ export const ListItem = (props: {
   onRefresh: () => Promise<any>;
 }) => {
   const { faceUrl, userId, userName, depName, onRefresh } = props;
-  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const handleDelete = async (close: () => any) => {
-    setDeleteLoading(true);
-    try{
+    try {
       await deleteFriend(userId);
-      await onRefresh();
       close();
-    }catch(e) {
+      onRefresh();
+    } catch (e) {
       console.log(e);
     }
-    setDeleteLoading(false);
-  }
+  };
 
   return (
     <div className="friend-list--content__item">
@@ -38,25 +35,23 @@ export const ListItem = (props: {
         </div>
       </div>
       <div className="item-right">
-      <PopConfirm
-            title="确认要删除该好友吗?"
-            footer={(close) => (
-              <>
-                <Button
-                  type="link"
-                  loading={deleteLoading}
-                  onClick={ () => handleDelete(close)}
-                >
-                  确认
-                </Button>
-                <Button type="text" onClick={close}>
-                  取消
-                </Button>
-              </>
-            )}
-          >
-       <Button type="link" className="item-right__btn">删除</Button>
-       </PopConfirm>
+        <PopConfirm
+          title="确认要删除该好友吗?"
+          footer={(close) => (
+            <>
+              <Button type="link" onClick={() => handleDelete(close)}>
+                确认
+              </Button>
+              <Button type="text" onClick={close}>
+                取消
+              </Button>
+            </>
+          )}
+        >
+          <Button type="link" className="item-right__btn">
+            删除
+          </Button>
+        </PopConfirm>
       </div>
     </div>
   );

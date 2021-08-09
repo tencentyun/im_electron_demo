@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ListItem } from "./ListItem";
 import _ from "lodash";
-import { getFriendShipPendencyList } from "./api";
+import { getFriendShipPendencyList, LIMITE_SIZE } from "./api";
 import "./friend-apply.scss";
 import { Table } from "tea-component";
 import { isWin } from "../../../utils/tools";
@@ -52,7 +52,7 @@ export const FriendApply = () => {
         startTime: time,
       });
       const { applyList = [] } = res;
-      setFriendApplyList(pre => [...pre.slice(0,pre.length - 100,), ...applyList]);
+      setFriendApplyList(pre => [...pre.slice(0,pre.length - LIMITE_SIZE), ...applyList]);
     } catch (e) {
       console.log(e);
     }
