@@ -71,10 +71,10 @@ const RIGHT_CLICK_MENU_LIST = [{
     id: 'transimit',
     text: '转发'
 },
-{
-    id: 'reply',
-    text: '回复'
-},
+// {
+//     id: 'reply',
+//     text: '回复'
+// },
 {
     id: 'multiSelect',
     text: '多选'
@@ -100,7 +100,7 @@ export const displayDiffMessage = (message, element, index) => {
             resp = <VoiceElem { ...res }/>
             break;
         case 3:
-            resp = <CustomElem { ...res }/>
+            resp = <CustomElem message={message}/>
             break;
         case 4:
             resp = <FileElem message={message} element={element} index={index}/>

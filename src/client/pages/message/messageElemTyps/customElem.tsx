@@ -9,7 +9,6 @@ export const CustomElem = (props: any): JSX.Element => {
             data =  JSON.parse(custom_elem_data)
            }catch(err){
          }
-
          switch (data.businessID) {
             case "group_create":
               return (
@@ -40,9 +39,9 @@ export const CustomElem = (props: any): JSX.Element => {
                   default:
                     return <span>信令未解析</span>
                 }
-            default:
-                <div className="message-view__item--text text right-menu-item" >
-                {
+               default:
+                  <div className="message-view__item--text text right-menu-item" >
+                  {
 
                     custom_elem_data === 'CUST_EMOJI' ?
                        

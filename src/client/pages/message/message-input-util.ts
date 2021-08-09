@@ -157,6 +157,7 @@ export const fileImgToBase64Url = async (file: File) => {
       // target.result 该属性表示目标对象的DataURL
       res(base64Value);
     };
+    reader.readAsDataURL(file);
   });
 };
 

@@ -305,11 +305,13 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleDropFile = (e) => {
+        
         const files = e.dataTransfer?.files || [];
         for (const file of files) {
             setFile(file, true);
         }
         setDraging(false);
+        return 'handled';
     }
 
     // const sendMessages = (type, params) => {
@@ -533,8 +535,9 @@ export const MessageInput = (props: Props): JSX.Element => {
         resetState()
         if (userId) {
             const atText = userName || userId;
-            setAtUserMap(pre => ({ ...pre, [atText]: userId }));
-            setEditorState(ContentUtils.insertText(editorState, `${atText} `))
+            setAtUserMap(pre => ({...pre, [atText]: userId}));
+            setEditorState(ContentUtils.insertText(editorState, `${atText} `));
+            setAtInput('');
         }
         if (userName) {
             const isInputAt = window.localStorage.getItem('inputAt')

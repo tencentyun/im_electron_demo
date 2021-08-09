@@ -3,13 +3,13 @@ import { remote } from 'electron';
 import {
     TRTCAppScene, 
     TRTCParams, 
+    TRTCRoleType, 
     TRTCVideoEncParam,
     TRTCVideoResolution,
     TRTCVideoResolutionMode,
 } from "trtc-electron-sdk/liteav/trtc_define";
 
 import trtcInstance from '../../../utils/trtcInstance';
-import generateTestUserSig from '../../../utils/generateUserSig';
 import { CallVideo } from '../callVideo/CallVideo';
 import { CallFooter } from '../callFooter/CallFooter';
 import { CallTime } from './CallTime';
@@ -19,8 +19,8 @@ import event from '../event';
 
 import './call-content.scss';
 
-export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList }) => {
-    console.log('==============roomId=================', roomId, inviteID);
+export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, userSig, sdkAppid }) => {
+    console.log('==============call window params=================', roomId, inviteID, inviteList, sdkAppid, userSig);
     const [ isStart, setStartStatus ] = useState(false);
     const convType = convInfo.convType;
     const isC2CCall = convType === 1; 
@@ -50,14 +50,11 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList }) 
         encParam.enableAdjustRes = true;
         trtcInstance.setVideoEncoderParam(encParam);
 
-        const { sdkappid, userSig} = generateTestUserSig(userId);
-
         let param = new TRTCParams();
-        param.sdkAppId = sdkappid;
+        param.sdkAppId = sdkAppid;
         param.userSig = userSig;
         param.roomId = Number(roomId);
         param.userId = userId;
-
         trtcInstance.enterRoom(param, TRTCAppScene.TRTCAppSceneVideoCall);
     }
 

@@ -80,7 +80,7 @@ export const DeleteGroupMemberDialog = (props: {
     }
     const copyUserList = [...userList];
     const list = copyUserList.filter((v) =>
-      v?.group_member_info_nick_name?.includes(value)
+      v?.group_member_info_nick_name?.includes(value) || v?.group_member_info_identifier?.includes(value)
     );
     setUserList(list || []);
   };
@@ -145,15 +145,6 @@ export const DeleteGroupMemberDialog = (props: {
               onChange={handleInoputOnchange}
             />
           </div>
-          {/* <div className="forward-popup__search-list__search">
-            <Icon className="forward-popup__search-list__icon" type="search" />
-            <Input
-              className="forward-popup__search-list__input"
-              type="search"
-              placeholder="查找群成员"
-              onChange={handleInoputOnchange}
-            />
-          </div> */}
           <div className="forward-popup__search-list__list customize-scroll-style">
             {userList.map((v) => (
               <UserItem

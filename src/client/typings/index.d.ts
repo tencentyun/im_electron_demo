@@ -35,7 +35,8 @@ declare namespace State {
         replace_router: boolean,
         callingStatus: {
             callingType: number,
-            callingId: string
+            callingId: string,
+            inviteeList: Array<string>
         }
     }
     
@@ -176,7 +177,8 @@ declare namespace State {
         role?: number,
         signature?:string,
         gender?: number,
-        addPermission?:number
+        addPermission?:number,
+        userSig?: string,
     }
 
     export type actcionType<T> = {

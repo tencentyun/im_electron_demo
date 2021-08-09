@@ -112,7 +112,8 @@ export const LoginContent = (): JSX.Element => {
             // let sectionData = assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children
             // window.localStorage.setItem('section', JSON.stringify(sectionData))
             dispatch(setUserInfo({
-                userId: userID
+                userId: userID,
+                userSig: userSig
             }));
             // dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children))
             dispatch(setIsLogInAction(true));

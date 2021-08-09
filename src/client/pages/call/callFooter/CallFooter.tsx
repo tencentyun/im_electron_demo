@@ -11,7 +11,7 @@ type Props = {
 export const CallFooter = (props: Props) => {
     const { toggleVoice, toggleVideo, exitRoom } = props;
     const [isOpenMic, setMute] = useState(true);
-    const [isOpenCamera, setOpenCamera ] = useState(false);
+    const [isOpenCamera, setOpenCamera ] = useState(true);
 
     const handleToggleVideo = () => {
         toggleVideo(isOpenCamera);
@@ -19,7 +19,7 @@ export const CallFooter = (props: Props) => {
     };
 
     const handleToggleVoice = () => {
-        toggleVoice(!isOpenMic);
+        toggleVoice(isOpenMic);
         setMute(!isOpenMic);
     };
 

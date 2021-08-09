@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import './notification.scss';
 import { eventListiner } from '../callIpc';
-
+import { endCallWindow } from '../../../utils/callWindowTools';
+import event from '../event';
 export const Notification = (props) => {
     const { convInfo: { nickName, faceUrl}, callType,inviteID } = props;
     console.log(props);
@@ -12,7 +13,7 @@ export const Notification = (props) => {
     };
 
     const refuse = () => {
-        eventListiner.refuseCall();
+        eventListiner.refuseCall(inviteID);
     }
 
     const getDisplayText = () => {
@@ -20,6 +21,13 @@ export const Notification = (props) => {
 
         return `邀请你进行${typeText}通话`;
     }
+    useEffect(()=>{
+        console.log('注册退出事件')
+        event.on('exitRoom',()=>{
+            // 如果没有接通，走这个退出逻辑
+            endCallWindow()
+        })
+    },[])
     return (
         <div className="notification">
             <div className="notification__title">

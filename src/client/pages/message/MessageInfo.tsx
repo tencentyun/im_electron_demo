@@ -21,7 +21,9 @@ import {
 
 import { AddUserPopover } from "./AddUserPopover";
 import { addTimeDivider } from "../../utils/addTimeDivider";
-import { openCallWindow, callWindowCloseListiner,generateRoomID } from "../../utils/tools";
+import { generateRoomID } from "../../utils/tools";
+import { openCallWindow, callWindowCloseListiner } from '../../utils/callWindowTools';
+
 
 import { useDialogRef } from "../../utils/react-use/useDialog";
 import BraftEditor, { EditorState } from 'braft-editor'
@@ -39,15 +41,16 @@ type Info = {
 
 export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const { conv_id, conv_type, conv_profile } = props;
+  const [callType,setCallType] = useState(0)
+  const [callInfo,setCallInfo] = useState({
+    callType:0,
+    convType:0
+  })
   const {
     group_detial_info_group_type: groupType,
     group_detial_info_add_option: addOption
   } = conv_profile;
 
-  const [callInfo,setCallInfo] = useState({
-    callType:0,
-    convType:0
-  })
 
   const groupMemberSelectorRef = useRef(null)
   const popupContainer = document.getElementById("messageInfo");
@@ -62,7 +65,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const [editorState, setEditorState] = useState<EditorState>(BraftEditor.createEditorState(null))
   const [isPress, setIsPress] = useState(false)
   const [editorHeight, seteditorHeight] = useState(250)
-  const { userId } = useSelector((state: State.RootState) => state.userInfo)
+  const { userId,userSig } = useSelector((state: State.RootState) => state.userInfo)
   const { toolsTab, toolsDrawerVisible } = useSelector(
     (state: State.RootState) => state.groupDrawer
   );
@@ -210,7 +213,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       openLocalCallWindow(callType,roomId,userList, inviteId)
     }
   }
-
   const openLocalCallWindow = (callType,roomId,userList, inviteId)=>{
     dispatch(updateCallingStatus({
       callingId: conv_id,
@@ -228,7 +230,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
         convType: conv_type
       },
       roomId,
-      inviteID: inviteId
+      inviteID: inviteId,
+      userID: userId,
+      userSig: encodeURIComponent(userSig),
+      inviteList: userList
     });
   }
 
@@ -244,29 +249,24 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     }
   },[callInfo])
 
-  useEffect(() => {
-    callWindowCloseListiner(() => {
-      dispatch(updateCallingStatus({
-        callingId: '',
-        callingType: 0
-      }));
-    });
-  }, [])
 
-  const openGroupMemberSelector = async ()=>{
-    const { group_get_memeber_info_list_result_info_array } = await getGroupMemberList({
-      groupId: conv_id,
-      nextSeq: 0,
-    })
-    groupMemberSelectorRef.current.open({
-      groupId: conv_id,
-      userList: group_get_memeber_info_list_result_info_array
-    })
-  }
-  const popupContainer = document.getElementById("messageInfo");
+const openGroupMemberSelector = async ()=>{
+  const { group_get_memeber_info_list_result_info_array } = await getGroupMemberList({
+    groupId: conv_id,
+    nextSeq: 0,
+  })
+  groupMemberSelectorRef.current.open({
+    groupId: conv_id,
+    userList: group_get_memeber_info_list_result_info_array
+  })
+}
+
+
 
   useEffect(() => {
-    setMessageRead();
+    setTimeout(() => {
+      setMessageRead();
+    }, 500)
   }, [msgList]);
 
   useEffect(() => {
@@ -366,7 +366,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
           </header>
           <section className="message-info-view__content">
             <div className="message-info-view__content--view">
-              <MessageView messageList={msgList || []} convId={conv_id} convType={conv_type} editorState={editorState} setEditorState={setEditorState} />
+              <MessageView messageList={msgList || []} groupType={groupType} convId={conv_id} convType={conv_type} editorState={editorState} setEditorState={setEditorState} />
             </div>
             <div className="message-info-view__content--slider"
               onMouseDown={() => setIsPress(true)}
@@ -376,8 +376,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 convId={conv_id}
                 convType={conv_type}
                 isShutUpAll={isShutUpAll}
-                editorState={editorState}
-                setEditorState={setEditorState}
                 handleOpenCallWindow={handleOpenCallWindow}
               />
             </div>
