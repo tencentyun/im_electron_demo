@@ -197,14 +197,17 @@ export const App = () => {
     const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
         const { room_id, call_type } = JSON.parse(formatedData.data)
         const { inviter, groupID, inviteID,inviteeList } = formatedData;
+        if(call_end > 0){
+            return
+        }
         timRenderInstance.TIMProfileGetUserProfileList({
             json_get_user_profile_list_param: {
                 friendship_getprofilelist_param_identifier_array: [inviter],
                 friendship_getprofilelist_param_force_update: false
             }
         }).then(async (data) => {
-            const userID = (await timRenderInstance.TIMGetLoginUserID({})).data.json_param
-            if(!userID){
+            const { catchUserId, catchUserSig  } = ref.current;
+            if(!catchUserId){
                 return
             }
             const { data: { code, json_param } } = data;
@@ -221,8 +224,9 @@ export const App = () => {
                     },
                     roomId: room_id,
                     inviteID,
-                    userID: userID,
-                    inviteList: inviteeList
+                    userID: catchUserId,
+                    inviteList: inviteeList,
+                    userSig: catchUserSig
                 });
       }
 

@@ -25,7 +25,7 @@ export const CustomElem = (props: any): JSX.Element => {
                   case 1:
                     return <span>{data.inviter}邀请{
                       data.inviteeList.map((item,index)=>{
-                        return <span className="" key={index}>{item}</span>
+                        return <span className="" key={index}>{item}{index===data.inviteeList.length-1 ? '' : '、'}</span>
                       })
                     }通话</span>
                   case 2:
