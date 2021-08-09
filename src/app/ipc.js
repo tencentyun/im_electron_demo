@@ -124,7 +124,7 @@ class IPC {
             if(data.windowType === 'notificationWindow') {
                 this.callWindow.setSize(320, 150);
                 this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
-            } else if( convType === 1 && callType === 1 ) {
+            } else if( convType === 1 && Number(callType) === 1) {
                 this.callWindow.setSize(400, 600);
                 this.callWindow.setPosition((screenSize.width - 400) / 2, (screenSize.height - 600) / 2);
             }
