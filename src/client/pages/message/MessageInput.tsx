@@ -102,7 +102,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [videoInfos, setVideoInfos] = useState([]);
     const [atUserNameInput, setAtInput] = useState('');
     const [atUserMap, setAtUserMap] = useState({});
-
+    const [isZHCNAndFirstPopup, setIsZHCNAndFirstPopup] = useState(false);
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
@@ -639,10 +639,11 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(newEditorState)
         const text = newEditorState.toText();
         const hasAt = text.includes('@');
-        if (!hasAt) {
+        if (!hasAt && atPopup && !isZHCNAndFirstPopup) {
             setAtPopup(false);
             return;
         }
+        setIsZHCNAndFirstPopup(false);
         // 取最后一个@后的内容作为搜索条件
         const textArr = text.split('@');
         const lastInput = textArr[textArr.length - 1];
@@ -700,11 +701,20 @@ export const MessageInput = (props: Props): JSX.Element => {
     const keyBindingFn = (e) => {
         if (e.keyCode === 13 || e.charCode === 13) {
             e.preventDefault();
+            if (!atPopup) {
+                handleSendMsg();
+            }
             return 'enter';
-        }
-        if (e.key === "@" && e.shiftKey && convType === 2) {
+        } else if (e.key === "@" && e.shiftKey && convType === 2) {
             e.preventDefault();
+            setAtPopup(true);
+            setEditorState(ContentUtils.insertText(editorState, ` @`))
             return '@';
+        } else if (e.key === "Process" && e.shiftKey && convType === 2) {
+            e.preventDefault();
+            setIsZHCNAndFirstPopup(true);
+            setAtPopup(true);
+            return 'zh-cn-@';
         }
     }
 
@@ -771,19 +781,16 @@ export const MessageInput = (props: Props): JSX.Element => {
                 const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' })
                 const fileObj = {
                     lastModified: file.lastModified,
-                    //@ts-ignore
                     lastModifiedDate: file.lastModifiedDate,
                     name: file.name,
                     path: url,
                     size: file.size,
                     type: 'png',
                     fileContent: data,
-                    //@ts-ignore
                     webkitRelativePath: file.webkitRelativePath
                 }
                 const imageObj = {
                     lastModified: file.lastModified,
-                    //@ts-ignore
                     lastModifiedDate: file.lastModifiedDate,
                     name: file.name,
                     path: url,
@@ -840,7 +847,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             <div className="message-input__text-area disabled" onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}>
                 <BraftEditor
                     stripPastedStyles
-                    //@ts-ignore
                     disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}

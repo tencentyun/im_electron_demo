@@ -5,7 +5,7 @@
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {
-    "start": "concurrently \"npm run dev:electron\"",
+    "start": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
     "build": "electron-builder -w",
     "build:react": "cd ./src/client && npm run build:react",
     "dev:electron": "set NODE_ENV=development && electron .",
