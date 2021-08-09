@@ -26,8 +26,8 @@ export const Notification = (props) => {
     return (
         <div className="notification">
             <div className="notification__title">
-                <img src={decodeURIComponent(faceUrl)} className="notification__avatar"/>
-                <span className="notification__title--nick-name">{decodeURIComponent(nickName)}</span><br></br>
+                <img src={faceUrl} className="notification__avatar"/>
+                <span className="notification__title--nick-name">{nickName}</span><br></br>
                 <span className="notification__title--text">{getDisplayText()}</span>
             </div>
             <div className="notification__btn">
