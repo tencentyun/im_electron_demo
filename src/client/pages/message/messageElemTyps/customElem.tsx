@@ -26,7 +26,6 @@ export const CustomElem = (props: any): JSX.Element => {
             const parsedData = JSON.parse(data.data);
             switch(data.actionType){
               case 1:
-                console.log(data)
                 return <span>{data.inviter}邀请{
                   data.inviteeList.map((item,index)=>{
                     return <span className="" key={index}>{item}{index===data.inviteeList.length-1 ? '' : '、'}</span>
