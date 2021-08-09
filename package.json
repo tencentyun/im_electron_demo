@@ -93,6 +93,6 @@
     "progress-stream": "^2.0.0",
     "qs": "^6.5.2",
     "sass": "^1.35.1",
-    "trtc-electron-sdk": "^8.6.102-beta.0"
+    "trtc-electron-sdk": "^8.9.107-beta.0"
   }
 }
