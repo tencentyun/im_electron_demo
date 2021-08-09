@@ -37,8 +37,8 @@ export const ListItem = (props: {
           <Avatar url={faceUrl} userID={userId} nickName={userName} />
         </div>
         <div className="item-left__info">
-          <span className="item-left__info--name">{userName}</span>
-          <span className="item-left__info--dep">{depName}</span>
+          <span className="item-left__info--name">{userName || userId}</span>
+          {/* <span className="item-left__info--dep">{depName}</span> */}
         </div>
       </div>
       <div className="item-right">

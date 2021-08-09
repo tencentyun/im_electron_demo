@@ -14,11 +14,12 @@ export const ListItem = (props: {
   const { faceUrl, userId, userName, depName, onRefresh } = props;
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const handleDelete = async () => {
+  const handleDelete = async (close: () => any) => {
     setDeleteLoading(true);
     try{
       await deleteFriend(userId);
       await onRefresh();
+      close();
     }catch(e) {
       console.log(e);
     }
@@ -44,10 +45,7 @@ export const ListItem = (props: {
                 <Button
                   type="link"
                   loading={deleteLoading}
-                  onClick={async () => {
-                    await handleDelete();
-                    close();
-                  }}
+                  onClick={ () => handleDelete(close)}
                 >
                   确认
                 </Button>
