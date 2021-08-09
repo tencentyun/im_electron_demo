@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import ReactDOM from "react-dom";
 import "tea-component/dist/tea.css";
 import "antd/dist/antd.css";
@@ -47,10 +47,28 @@ let isInited = false;
 export const App = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const ref = useRef({
+    catchUserId: '',
+    catchUserSig: '',
+    catchCalling: {
+        callingType: 0,
+        callingId: '',
+        inviteeList: []
+    }
+})
   let showApp = true;
-
+  const { callingStatus } = useSelector(
+    (state: State.RootState) => state.ui
+  );
+  const { userId, userSig } = useSelector(
+    (state: State.RootState) => state.userInfo
+  );
+  ref.current = {
+    catchCalling: callingStatus,
+    catchUserId: userId,
+    catchUserSig: userSig
+  }
   const initIMSDK = async () => {
-    debugger
     if (!isInited) {
       const privite = await timRenderInstance.callExperimentalAPI({
         json_param: {
@@ -70,11 +88,9 @@ export const App = () => {
       });
       console.log("私有化", privite);
       timRenderInstance.TIMInit().then(async ({ data }) => {
-        console.log(1234);
-        console.log(data);
         if (data === 0) {
           isInited = true;
-          // console.log("初始化成功");
+          console.log("初始化成功");
           initListeners((callback) => {
             const { data, type } = callback;
             console.info(
@@ -283,6 +299,7 @@ export const App = () => {
     history.replace("/login");
     dispatch(setIsLogInAction(false));
   };
+  
   const _handleGroupInfoModify = async (data) => {
     const response = await getConversionList();
     dispatch(updateConversationList(response));

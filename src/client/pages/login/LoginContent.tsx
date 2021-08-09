@@ -107,40 +107,30 @@ export const LoginContent = (): JSX.Element => {
             const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
             window.localStorage.setItem('uid', userID)
             window.localStorage.setItem('usersig', Encypt)
-
-
             // let sectionData = assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children
             // window.localStorage.setItem('section', JSON.stringify(sectionData))
-            dispatch(setUserInfo({
-                userId: userID,
-                userSig: userSig
-            }));
-            // dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children))
-            dispatch(setIsLogInAction(true));
-            dispatch(changeFunctionTab('message'));
-            history.replace('/home/message');
-
+            // dispatch(setUserInfo({
+            //     userId: userID,
+            //     userSig: userSig
+            // }));
+            // // dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children))
+            // dispatch(setIsLogInAction(true));
+            // dispatch(changeFunctionTab('message'));
+            // history.replace('/home/message');
             //获取部门
-            // filterGetDepartment({
-            //     DepId: "root_1"
-            // }, (data) => {
-            //     let sectionData = assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children
-            //     window.localStorage.setItem('section', JSON.stringify(sectionData))
-            //     dispatch(setUserInfo({
-            //         userId: userID
-            //     }));
-            //     dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children))
-            //     dispatch(setIsLogInAction(true));
-            //     dispatch(changeFunctionTab('message'));
-            //     history.replace('/home/message');
-            // }, userID)
-            //}
-            // }).catch(err => {
-            //     const { ERRCODE } = err.data
-            //     message.error({
-            //         content: "登录失败：" + err.message || errType(ERRCODE),
-            //     })
-            // })
+            filterGetDepartment({
+                DepId: "root_1"
+            }, (data) => {
+                let sectionData = assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children
+                window.localStorage.setItem('section', JSON.stringify(sectionData))
+                dispatch(setUserInfo({
+                    userId: userID
+                }));
+                dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children))
+                dispatch(setIsLogInAction(true));
+                dispatch(changeFunctionTab('message'));
+                history.replace('/home/message');
+            }, userID)
         }).catch(err => {
             message.error({
                 content: "登录失败：" + err.message || err.ErrorInfo,

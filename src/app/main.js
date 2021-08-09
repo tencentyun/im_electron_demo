@@ -35,8 +35,8 @@ const downloadUrl = app.getPath("downloads");
 const progressStream = require("progress-stream");
 let ipc;
 new TimMain({
-  // sdkappid: 1400529075
-  sdkappid: SDK_APP_ID
+  sdkappid: 1400529075
+  // sdkappid: SDK_APP_ID
 });
 
 // 设置系统托盘
@@ -160,17 +160,19 @@ function createWindow () {
       mainWindow.webContents.send("mainProcessMessage", false);
     }
   })
-  mainWindow.loadURL(`http://localhost:3000`);
-  // mainWindow.loadURL(
-  //   url.format({
-  //     pathname: path.join(__dirname, "../../bundle/index.html"),
-  //     protocol: "file:",
-  //     slashes: true,
-  //   })
-  // );
-
-  // 打开调试工具
-  mainWindow.webContents.openDevTools();
+  if (process.env?.NODE_ENV?.trim() === 'development') {
+    mainWindow.loadURL(`http://localhost:3000`);
+    // 打开调试工具
+    mainWindow.webContents.openDevTools();
+  } else {
+    mainWindow.loadURL(
+      url.format({
+        pathname: path.join(__dirname, '../../bundle/index.html'),
+        protocol: 'file:',
+        slashes: true
+      })
+    );
+  }
 
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {

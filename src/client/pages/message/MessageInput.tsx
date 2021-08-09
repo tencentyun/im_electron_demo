@@ -665,7 +665,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
 
-    const handlePastedFiles = async (files: File[]) => {
+    const handlePastedFiles =  (files: File[]) => {
         for (const file of files) {
             setFile(file, true);
         }

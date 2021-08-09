@@ -9,7 +9,7 @@ export const CustomElem = (props: any): JSX.Element => {
             data =  JSON.parse(custom_elem_data)
            }catch(err){
          }
-         switch (data.businessID) {
+         switch (data?.businessID) {
             case "group_create":
               return (
                 <>
