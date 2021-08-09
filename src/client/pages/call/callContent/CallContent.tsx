@@ -3,7 +3,6 @@ import { remote } from 'electron';
 import {
     TRTCAppScene, 
     TRTCParams, 
-    TRTCRoleType, 
     TRTCVideoEncParam,
     TRTCVideoResolution,
     TRTCVideoResolutionMode,
@@ -19,11 +18,12 @@ import event from '../event';
 
 import './call-content.scss';
 
-export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, userSig, sdkAppid }) => {
-    console.log('==============call window params=================', roomId, inviteID, inviteList, sdkAppid, userSig);
+export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, userSig, sdkAppid, callType }) => {
+    console.log('==============call window params=================', roomId, inviteID, inviteList, sdkAppid, userSig, callType);
     const [ isStart, setStartStatus ] = useState(false);
     const convType = convInfo.convType;
-    const isC2CCall = convType === 1; 
+    const isC2CCall = convType === 1; // 1: c2c, 2: 群聊
+    const isVideoCall = callType === 2; // 1: 语音通话, 2: 视频通话
 
     const onExitRoom = () => {
         const win = remote.getCurrentWindow();
@@ -35,13 +35,19 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
         setStartStatus(true);
     }
 
-    const startVideo = (currentCamera) => {
-        const { deviceId } = currentCamera;
-
+    const startVideo = () => {
         trtcInstance.on('onExitRoom', onExitRoom);
         trtcInstance.on('onRemoteUserEnterRoom', onRemoteUserEnterRoom);
         trtcInstance.on('onRemoteUserLeaveRoom', onRemoteUserLeaveRoom);
+        isVideoCall && setVideoParams(); 
+        enterRoom();
+    }
+
+    const setVideoParams = () => {
+        const currentCamera = trtcInstance.getCurrentCameraDevice();
+        const { deviceId } = currentCamera;
         trtcInstance.setCurrentCameraDevice(deviceId);
+
         let encParam = new TRTCVideoEncParam();
         encParam.videoResolution = TRTCVideoResolution.TRTCVideoResolution_640_360;
         encParam.resMode = TRTCVideoResolutionMode.TRTCVideoResolutionModeLandscape;
@@ -49,7 +55,9 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
         encParam.videoBitrate = 600;
         encParam.enableAdjustRes = true;
         trtcInstance.setVideoEncoderParam(encParam);
+    }
 
+    const enterRoom = () => {
         let param = new TRTCParams();
         param.sdkAppId = sdkAppid;
         param.userSig = userSig;
@@ -60,8 +68,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
 
     useEffect(() => {
         if(userId) {
-            const currentCamera = trtcInstance.getCurrentCameraDevice();
-            startVideo(currentCamera);
+            startVideo();
         }
     }, [userId]);
 
@@ -95,10 +102,10 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
            <CallTime isStart={isStart} />
        </header>
        <section className="call-content__video" >
-            <CallVideo trtcInstance={trtcInstance} convInfo={convInfo} userId={userId} inviteList={inviteList} />
+            <CallVideo trtcInstance={trtcInstance} isVideoCall={isVideoCall} convInfo={convInfo} userId={userId} inviteList={inviteList} />
        </section>
        <footer className="call-content__footer">
-            <CallFooter toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={handleExitRoom} />
+            <CallFooter isVideoCall={isVideoCall} toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={handleExitRoom} />
        </footer>
     </div>
 };

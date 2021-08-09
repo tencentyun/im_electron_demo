@@ -17,17 +17,19 @@
             height: 100%;
         }
 
-        &--remote, &--none-video {
+        &--remote {
             position: absolute;
             width: 160px;
             height: 120px;
             top: 20px;
             right: 40px;
         }
-        
-        &--none-video {
-            z-index: 999;
-            background: black;
+
+        &--voice-call {
+            height: 100%;
+            background: #000;
+            text-align: center;
+            color: #fff;
         }
     }
 

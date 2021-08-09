@@ -5,22 +5,16 @@ import { eventListiner } from '../callIpc';
 import { endCallWindow } from '../../../utils/callWindowTools';
 import event from '../event';
 export const Notification = (props) => {
-    const { convInfo: { nickName, faceUrl}, callType,inviteID } = props;
-    console.log(props);
+    const { convInfo: { nickName, faceUrl}, callType, inviteID } = props;
+    console.log('callType', callType);
+    const isVoiceCall = callType === 1;
 
-    const accept = () => {
-        eventListiner.acceptCall(inviteID);
-    };
+    const accept = () => eventListiner.acceptCall({inviteID, isVoiceCall});
 
-    const refuse = () => {
-        eventListiner.refuseCall(inviteID);
-    }
+    const refuse = () => eventListiner.refuseCall(inviteID);
 
-    const getDisplayText = () => {
-        const typeText = callType === 1 ? '语音' : '视频';
+    const getDisplayText = () => `邀请你进行${isVoiceCall ? '语音' : '视频'}通话`;
 
-        return `邀请你进行${typeText}通话`;
-    }
     useEffect(()=>{
         console.log('注册退出事件')
         event.on('exitRoom',()=>{
@@ -28,6 +22,7 @@ export const Notification = (props) => {
             endCallWindow()
         })
     },[])
+
     return (
         <div className="notification">
             <div className="notification__title">

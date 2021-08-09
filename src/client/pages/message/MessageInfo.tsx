@@ -222,8 +222,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       callType,
       convType
     })
-   
-    
   }
 const openGroupMemberSelector = async ()=>{
   const { group_get_memeber_info_list_result_info_array } = await getGroupMemberList({

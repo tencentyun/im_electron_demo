@@ -10,7 +10,7 @@ export const useCallData = () => {
             convType: 0
         },
         convId: '',
-        callType: '',
+        callType: 1,
         windowType: 'callWindow',
         roomId: 0,
         inviteID: '',
@@ -25,7 +25,7 @@ export const useCallData = () => {
             const { convInfo, convId, callType, windowType, roomId, inviteID,userID,inviteList, sdkAppid, userSig } = data;
             setData({
                 windowType,
-                callType,
+                callType: Number(callType),
                 convInfo: {
                     faceUrl: convInfo.faceUrl,
                     nickName: convInfo.nickName,
