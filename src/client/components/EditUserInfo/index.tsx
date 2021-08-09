@@ -83,11 +83,11 @@ interface UserProfileItem {
 }
 
 
-export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,onUpdateUserInfo }): JSX.Element => {
+export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, onUpdateUserInfo }): JSX.Element => {
   const [isShow, setVisible] = useState(visible)
   const [imgUrl, setImgUrl] = useState('')
   const [btnDisabled, setBtnDisabled] = useState(false)
-  
+
   const close = () => {
     setVisible(false)
     // 修改个人头像重复修改消失问题
@@ -97,8 +97,8 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,on
 
   function afterUpload(imgUrl) {
     setImgUrl(imgUrl)
-    console.log('imgUrl',imgUrl)
- }
+    console.log('imgUrl', imgUrl)
+  }
 
   useEffect(() => {
     setVisible(visible)
@@ -114,7 +114,7 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo,on
     }
     return meta.error ? "error" : "success";
   }
-console.log('userinfo',userInfo);
+  console.log('userinfo', userInfo);
   async function onSubmit(values: IUser) {
     console.log(11111)
     const formData: submitUserInfoData = {
@@ -126,20 +126,20 @@ console.log('userinfo',userInfo);
       user_data: ''
     }
     console.log('formData', formData)
-     const {data: {code}} = await timRenderInstance.TIMProfileModifySelfUserProfile(formData)
-      if (code === 0) {
-        message.success({
-              content:'修改成功'
-        })
+    const { data: { code } } = await timRenderInstance.TIMProfileModifySelfUserProfile(formData)
+    if (code === 0) {
+      message.success({
+        content: '修改成功'
+      })
       onUpdateUserInfo && onUpdateUserInfo()
-      } else {
-         message.error({
-              content:'修改失败'
-            })
-      }
-      close()
+    } else {
+      message.error({
+        content: '修改失败'
+      })
+    }
+    close()
   }
-const {nickName,faceUrl,gender} = userInfo
+  const { nickName, faceUrl, gender } = userInfo
   return (
     <Modal visible={isShow} caption="编辑个人资料" onClose={close}>
       <Modal.Body>
@@ -161,11 +161,11 @@ const {nickName,faceUrl,gender} = userInfo
                     validateFields={[]}
                   >
                     {({ input, meta }) => (
-                      
+
                       <Form.Item
                         label="头像"
                       >
-                        <ImgCropper {...input} isShow={(ages)=> {
+                        <ImgCropper {...input} isShow={(ages) => {
                           // 修改个人头像重复修改消失问题
                           setBtnDisabled(ages)
                         }} afterUpload={afterUpload}></ImgCropper>
@@ -195,6 +195,7 @@ const {nickName,faceUrl,gender} = userInfo
                           {...input}
                           autoComplete="off"
                           placeholder="你是谁"
+                          readonly={true}
                           maxLength={10}
                         />
                       </Form.Item>
@@ -204,7 +205,7 @@ const {nickName,faceUrl,gender} = userInfo
                     name="gender"
                     validateFields={[]}
                     validate={value =>
-                       value ? value.length < 1 ? "请至少选择一个哦" : undefined : undefined
+                      value ? value.length < 1 ? "请至少选择一个哦" : undefined : undefined
                     }
                   >
                     {({ input, meta }) => (

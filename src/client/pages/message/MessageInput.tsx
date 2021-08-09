@@ -293,7 +293,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 })
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, { name: file.name, path: file.path, size: file.size }));
             } else {
-                console.log(222)
+                console.log(11111111111)
                 if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
             }
@@ -843,8 +843,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            {/* <div className="message-input__text-area" onKeyDown={handleKeyDown}> */}
-            <div className="message-input__text-area disabled" onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}>
+            <div className="message-input__text-area" onKeyDown={handleKeyDown}>
+                {/* <div className="message-input__text-area disabled" onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}> */}
                 <BraftEditor
                     stripPastedStyles
                     disabled={isShutUpAll}
@@ -852,8 +852,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                     value={editorState}
                     media={{ pasteImage: false }}
                     ref={instance => editorInstance = instance}
-                    handlePastedFiles={handlePastedFiles}
-                    handlePastedText={handlePastedText}
+                    // handlePastedFiles={handlePastedFiles}
+                    // handlePastedText={handlePastedText}
                     blockRendererFn={blockRendererFn}
                     keyBindingFn={keyBindingFn}
                     handleKeyCommand={handleKeyCommand}
