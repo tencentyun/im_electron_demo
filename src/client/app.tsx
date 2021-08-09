@@ -245,7 +245,6 @@ export const App = () => {
             const message: State.message = JSON.parse(data)[0];
             const { message_sender } = message;
             const { callingId, callingType, inviteeList } = ref.current.catchCalling;
-            console.log(message, JSON.stringify(callingStatus))
             if (inviteeList.includes(message_sender)) {
                 const newInviteeList = _removeFromArr(inviteeList, message_sender)
                 if (newInviteeList.length === 0) {
@@ -320,7 +319,6 @@ export const App = () => {
         }
     };
     const _handleUnreadChange = (unreadCount) => {
-        console.log('unreadCount', unreadCount)
         dispatch(setUnreadCount(unreadCount));
     };
     const _handeMessage = (messages: State.message[]) => {

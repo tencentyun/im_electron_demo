@@ -3,8 +3,6 @@ import {
     TRTCVideoFillMode,
     TRTCVideoRotation,
     TRTCRenderParams,
-    TRTCAppScene,
-    TRTCParams,
 } from "trtc-electron-sdk/liteav/trtc_define";
 
 import useDynamicRef from '../../../utils/react-use/useDynamicRef';
@@ -79,9 +77,7 @@ export const GroupVideo = (props) => {
         setEnteringUser(userId);
     }
 
-    const onRemoteUserLeaveRoom = (userId) => {
-        setUserList(prev => prev.filter(item => item !== userId));
-    }
+    const onRemoteUserLeaveRoom = (userId) => setUserList(prev => prev.filter(item => item !== userId));
 
     const onUserVideoAvailable = (uid, available) => {
         const ref = getRef(uid);
@@ -135,19 +131,11 @@ export const GroupVideo = (props) => {
 
     };
 
-    const handlePagePrev = () => {
-        setCurrentPage(prev => prev - 1);
-    }
+    const handlePagePrev = () => setCurrentPage(prev => prev - 1);
 
-    const handlePageNext = () => {
-        setCurrentPage(next => next + 1);
-    }
+    const handlePageNext = () => setCurrentPage(next => next + 1);
 
-    const cacluatePageStyle = (index) => {
-        return {
-            display: index === currentPage ? 'block' : 'none'
-        }
-    }
+    const cacluatePageStyle = (index) => ({ display: index === currentPage ? 'block' : 'none' });
 
     return (
         <>

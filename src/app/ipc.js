@@ -75,9 +75,8 @@ class IPC {
         // 当作为接收方，接受电话后，更改窗口尺寸。
         ipcMain.on('accept-call', (event, acceptParams) => {
             const { inviteID, isVoiceCall } = acceptParams;
-            const windowWidth = isVoiceCall ? 500 : 800;
+            const windowWidth = isVoiceCall ? 400 : 800;
             const windowHeight = 600;
-            console.log('accept params', acceptParams);
          
             this.callWindow.setSize(windowWidth, windowHeight);
             this.callWindow.setPosition( (screenSize.width - windowWidth) / 2, (screenSize.height - windowHeight) / 2);
@@ -122,9 +121,13 @@ class IPC {
                 sdkAppid: SDK_APP_ID
             }
             const params = JSON.stringify(addSdkAppid);
+            const { convInfo: { convType } } = data;
             if(data.windowType === 'notificationWindow') {
                 this.callWindow.setSize(320, 150);
                 this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
+            } else if( convType === 1) {
+                this.callWindow.setSize(400, 600);
+                this.callWindow.setPosition((screenSize.width - 400) / 2, (screenSize.height - 600) / 2);
             }
             this.callWindow.show();
             this.callWindow.webContents.send('pass-call-data', params);

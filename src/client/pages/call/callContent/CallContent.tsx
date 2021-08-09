@@ -99,7 +99,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
      
     return <div className="call-content">
        <header className="call-content__header">
-           <CallTime isStart={isStart} />
+           <CallTime isStart={isStart} prefix={"通话时间: "} />
        </header>
        <section className="call-content__video" >
             <CallVideo trtcInstance={trtcInstance} isVideoCall={isVideoCall} convInfo={convInfo} userId={userId} inviteList={inviteList} />
