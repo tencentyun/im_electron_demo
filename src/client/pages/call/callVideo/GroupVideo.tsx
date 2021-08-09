@@ -18,7 +18,7 @@ const splitUserList = (array, count) => {
 
 
 export const GroupVideo = (props) => {
-    const { trtcInstance, inviteList, userId } = props;
+    const { trtcInstance, inviteList, userId, isVideoCall } = props;
     const [userList, setUserList] = useState(inviteList);
     const [groupSplit, setGroupSplit] = useState(splitUserList(inviteList, 9));
     const [currentPage, setCurrentPage] = useState(0);
@@ -32,7 +32,7 @@ export const GroupVideo = (props) => {
         trtcInstance.on('onEnterRoom', onEnterRoom);
         trtcInstance.on('onRemoteUserLeaveRoom', onRemoteUserLeaveRoom);
         trtcInstance.on('onRemoteUserEnterRoom', onRemoteUserEnterRoom);
-        trtcInstance.on('onUserVideoAvailable', onUserVideoAvailable);
+        isVideoCall && trtcInstance.on('onUserVideoAvailable', onUserVideoAvailable);
     }, []);
 
     useEffect(() => {
@@ -44,8 +44,8 @@ export const GroupVideo = (props) => {
         if (enteringUser) {
             const ref = getRef(enteringUser);
             if (enteringUser === userId) {
-                openLocalVideo(ref);
-                console.log('current ref', ref.current);
+                trtcInstance.startLocalAudio();
+                isVideoCall && openLocalVideo(ref);
                 return;
             }
         }
@@ -58,14 +58,12 @@ export const GroupVideo = (props) => {
 
     const openLocalVideo = (selfViewRef) => {
         trtcInstance.startLocalPreview(selfViewRef.current);
-        trtcInstance.startLocalAudio();
         const params = new TRTCRenderParams(TRTCVideoRotation.TRTCVideoRotation0, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
         trtcInstance.setLocalRenderParams(params);
         trtcInstance.muteLocalVideo(false);
     };
 
     const onEnterRoom = (result) => {
-        console.log('=============enter room===================');
         if (result > 0) {
             setUserList(prev => Array.from(new Set([userId, ...prev])));
             setEnteringUser(userId);
@@ -86,7 +84,7 @@ export const GroupVideo = (props) => {
             trtcInstance.setRemoteViewFillMode(uid, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
         } else {
             const canvasDom = ref.current.getElementsByTagName('canvas')[0];
-            canvasDom.style.display = 'none';
+            canvasDom && (canvasDom.style.display = 'none');
         }
     }
 
@@ -147,7 +145,9 @@ export const GroupVideo = (props) => {
                                 item.map(userId => {
                                     return <div key={userId} className="group-video-content__page-item" style={cacluateStyle()}>
                                         <div ref={setRef(userId)} style={{ position: 'relative', width: '100%', height: '100%' }}>
-                                            <span className="group-video-content__page-item--loading">正在等待对方接受邀请...</span>
+                                            {
+                                            isVideoCall && <span className="group-video-content__page-item--loading">正在等待对方接受邀请...</span>
+                                            }
                                         </div>
                                         <span className="group-video-content__page-item--user-id">{userId}</span>
                                     </div>

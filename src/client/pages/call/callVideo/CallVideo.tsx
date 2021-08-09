@@ -20,7 +20,7 @@ type Props = {
         nickName: string,
         convType: number
     },
-    inviteList: Array<string>,
+    inviteList: Array<State.userInfo>,
     isVideoCall: boolean
 }
 
@@ -34,7 +34,7 @@ export const CallVideo = (props: Props): JSX.Element => {
     return (
         <div className="call-video" ref={videoRef}>
             {
-                isC2CCall ? <C2Cvideo isVideoCall={isVideoCall} convInfo={convInfo} trtcInstance={trtcInstance} inviteList={inviteList} /> : <GroupVideo isVideoCall={isVideoCall} trtcInstance={trtcInstance} inviteList={inviteList} userId={userId} />
+                isC2CCall ? <C2Cvideo isVideoCall={isVideoCall} convInfo={convInfo} trtcInstance={trtcInstance} /> : <GroupVideo isVideoCall={isVideoCall} trtcInstance={trtcInstance} inviteList={inviteList} userId={userId} />
             }
         </div>
     )

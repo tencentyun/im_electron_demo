@@ -194,13 +194,13 @@ export const App = () => {
         // timeout: 30
         const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
         const { room_id, call_type,call_end } = JSON.parse(formatedData.data)
-        const { inviter, groupID, inviteID,inviteeList } = formatedData;
+        const { inviter, groupID, inviteID, inviteeList } = formatedData;
         if(call_end > 0){
             return
         }
         timRenderInstance.TIMProfileGetUserProfileList({
             json_get_user_profile_list_param: {
-                friendship_getprofilelist_param_identifier_array: [inviter],
+                friendship_getprofilelist_param_identifier_array: [inviter, ...inviteeList],
                 friendship_getprofilelist_param_force_update: false
             }
         }).then(async (data) => {
@@ -210,7 +210,8 @@ export const App = () => {
             }
             const { data: { code, json_param } } = data;
             if (code === 0) {
-                const [userdata] = JSON.parse(json_param)
+                const [userdata, ...inviteList] = JSON.parse(json_param);
+                console.log('============inviteeList==============', inviteList);
                 openCallWindow({
                     windowType: 'notificationWindow',
                     callType: call_type + '',
@@ -227,7 +228,6 @@ export const App = () => {
                     userSig: catchUserSig
                 });
             }
-
         })
 
     }

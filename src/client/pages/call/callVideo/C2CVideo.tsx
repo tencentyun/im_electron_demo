@@ -59,7 +59,7 @@ export const C2Cvideo = (props) => {
                         <div className="c2c-content--remote" ref={remoteViewRef} />
                     </React.Fragment>
                 ) : <div className="c2c-content--voice-call">
-                    <Avatar url={faceUrl} nickName={nickName} size={"large"}/>
+                    <Avatar url={decodeURIComponent(faceUrl)} nickName={decodeURIComponent(nickName)} size={"large"}/>
                     <span className="c2c-content--voice-call__nick-name">{nickName}</span>
                     <span className="c2c-content--voice-call__text"> {isUserEntering ? '正在通话中...' : '等待对方加入...'}</span>
                 </div>
