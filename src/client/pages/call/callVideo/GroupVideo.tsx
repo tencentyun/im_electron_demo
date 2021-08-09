@@ -20,7 +20,7 @@ const splitUserList = (array, count) => {
 
 
 export const GroupVideo = (props) => {
-    const { trtcInstance, inviteList } = props;
+    const { trtcInstance, inviteList, userId } = props;
     const [userList, setUserList] = useState(inviteList);
     const [groupSplit, setGroupSplit] = useState(splitUserList(inviteList, 9));
     const [currentPage, setCurrentPage] = useState(0);
@@ -45,7 +45,7 @@ export const GroupVideo = (props) => {
     useEffect(() => {
         if (enteringUser) {
             const ref = getRef(enteringUser);
-            if (enteringUser === 'self-view') {
+            if (enteringUser === userId) {
                 openLocalVideo(ref);
                 console.log('current ref', ref.current);
                 return;
@@ -54,7 +54,7 @@ export const GroupVideo = (props) => {
     }, [enteringUser]);
 
     const onVideoChanged = (shouldShow) => {
-        const selfViewRef = getRef('self-view');
+        const selfViewRef = getRef(userId);
         selfViewRef.current.getElementsByTagName('canvas')[0].style.display = shouldShow ? 'block' : 'none';
     }
 
@@ -69,8 +69,8 @@ export const GroupVideo = (props) => {
     const onEnterRoom = (result) => {
         console.log('=============enter room===================');
         if (result > 0) {
-            setUserList(prev => ['self-view', ...prev]);
-            setEnteringUser('self-view');
+            setUserList(prev => Array.from(new Set([userId, ...prev])));
+            setEnteringUser(userId);
         };
     };
 

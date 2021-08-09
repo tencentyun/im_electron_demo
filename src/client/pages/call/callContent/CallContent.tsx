@@ -82,8 +82,12 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     const toggleVoice = isMute => trtcInstance.muteLocalAudio(isMute);
 
     const exitRoom = () => {
-        !isStart && eventListiner.cancelCall(inviteID);
         trtcInstance.exitRoom();
+    }
+
+    const handleExitRoom =() => {
+        !isStart && eventListiner.cancelCall(inviteID); //挂断逻辑
+        exitRoom();
     }
      
     return <div className="call-content">
@@ -94,7 +98,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
             <CallVideo trtcInstance={trtcInstance} convInfo={convInfo} userId={userId} inviteList={inviteList} />
        </section>
        <footer className="call-content__footer">
-            <CallFooter toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={exitRoom} />
+            <CallFooter toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={handleExitRoom} />
        </footer>
     </div>
 };

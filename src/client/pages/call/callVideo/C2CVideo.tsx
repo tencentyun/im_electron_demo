@@ -50,12 +50,10 @@ export const C2Cvideo = (props) => {
         }
     };
 
-    
-
     return (
         <div className="c2c-content">
-            <div className="c2c-content--self" ref={selfViewRef} />
-            <div className="c2c-content--remote" ref={remoteViewRef} />
+            <div className="c2c-content--remote" ref={selfViewRef} />
+            <div className="c2c-content--self" ref={remoteViewRef} />
             {
                 shouldShow && <div className="c2c-content--none-video" > user</div>
             }
