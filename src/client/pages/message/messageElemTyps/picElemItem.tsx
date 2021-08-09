@@ -1,14 +1,14 @@
 import { shell } from "electron";
 import React, { useEffect } from "react";
-import { downloadFilesByUrl, showDialog } from "../../../utils/tools";
-
+import { downloadFilesByUrl } from "../../../utils/tools";
+import path from 'path'
 export const PicElemItem = (props: any): JSX.Element => {
     const showPic = () => {
         try {
-            const imageName = props.image_elem_large_id.match(/([\d|a-z]+\.\w+)$/)[1]
-            const path = process.cwd() + '/download/' + imageName
-            console.log(path)
-            shell.showItemInFolder(path)
+            const imageName = props.image_elem_orig_id.split('_').pop()
+            const p = path.resolve(process.cwd() + '/download/' + imageName)
+            console.log(p)
+            shell.openPath(p)
         } catch(e) {}
     }
     const item = ({ image_elem_thumb_url, image_elem_orig_url, image_elem_large_url }) => {

@@ -25,6 +25,7 @@ const Store = require("electron-store");
 const store = new Store();
 const IPC = require("./ipc");
 const fetch = require("node-fetch");
+const { SDK_APP_ID } = require('./const/const');
 // https://oaim.uat.crbank.com.cn:30003/headUrl/1627475525455839399.png
 let trayIcon = nativeImage.createFromPath(
   path.join(process.cwd(), "/resources/extraResources", "notification.png")
@@ -34,7 +35,8 @@ const downloadUrl = app.getPath("downloads");
 const progressStream = require("progress-stream");
 let ipc;
 new TimMain({
-  sdkappid: 1400529075,
+  sdkappid: 1400529075
+  // sdkappid: SDK_APP_ID
 });
 
 // 设置系统托盘
@@ -172,7 +174,6 @@ function createWindow () {
     );
   }
 
-
   let sendUpdateMessage = (message, data) => {
     mainWindow.webContents.send("message", {
       message,
@@ -252,7 +253,8 @@ function createWindow () {
   }
   // 注册截图快捷键
   globalShortcut.register("CommandOrControl+Shift+X", () => {
-    // "start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
+    // "start C:\\Users\\MiMyMine\\Desktop\\demo\\cut.exe";
+    //path.join(process.cwd(), "/resources/extraResources", "cut.exe")
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
     child_process.exec('start C:\\Users\\admin\\Desktop\\demo\\cut.exe', () => {
@@ -276,7 +278,7 @@ function createWindow () {
     //接收到消息后的执行程序
     // path.join(process.cwd(), "/resources/extraResources", "cut.exe")
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"),
+    child_process.exec("start C:\\Users\\MiMyMine\\Desktop\\demo\\cut.exe",
       () => {
         let pngs = clipboard.readImage().toPNG();
         console.log(clipboard.readImage(), pngs, '-----------')

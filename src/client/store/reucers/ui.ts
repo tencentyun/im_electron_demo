@@ -5,7 +5,8 @@ const initState = {
     replace_router: false,
     callingStatus: {
         callingType: '',
-        callingId: ''
+        callingId: '',
+        inviteeList: []
     }
 }
 

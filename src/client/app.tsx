@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import ReactDOM from "react-dom";
 import "tea-component/dist/tea.css";
 import "antd/dist/antd.css";
@@ -39,15 +39,35 @@ import {
   updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
-
+import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite } from "./utils/callWindowTools";
+import { updateCallingStatus } from "./store/actions/ui";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
 export const App = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const ref = useRef({
+    catchUserId: '',
+    catchUserSig: '',
+    catchCalling: {
+        callingType: 0,
+        callingId: '',
+        inviteeList: []
+    }
+})
   let showApp = true;
-
+  const { callingStatus } = useSelector(
+    (state: State.RootState) => state.ui
+  );
+  const { userId, userSig } = useSelector(
+    (state: State.RootState) => state.userInfo
+  );
+  ref.current = {
+    catchCalling: callingStatus,
+    catchUserId: userId,
+    catchUserSig: userSig
+  }
   const initIMSDK = async () => {
     if (!isInited) {
       const privite = await timRenderInstance.callExperimentalAPI({
@@ -68,11 +88,9 @@ export const App = () => {
       });
       console.log("私有化", privite);
       timRenderInstance.TIMInit().then(async ({ data }) => {
-        console.log(1234);
-        console.log(data);
         if (data === 0) {
           isInited = true;
-          // console.log("初始化成功");
+          console.log("初始化成功");
           initListeners((callback) => {
             const { data, type } = callback;
             console.info(
@@ -129,12 +147,134 @@ export const App = () => {
               case "TIMSetKickedOfflineCallback":
                 _handleKickedout();
                 break;
+              /**
+                           * 收到音视频邀请
+                           */
+              case "TIMOnInvited":
+                _onInvited(data)
+                break;
+              /**
+               * 自己的邀请被拒绝
+               */
+              case "TIMOnRejected":
+                _onRejected(data)
+                break;
+              /**
+               * 自己的邀请被接收
+               */
+              case "TIMOnAccepted":
+                _onAccepted(data)
+                break;
+              /**
+               * 收到的音视频邀请被取消
+               */
+              case "TIMOnCanceled":
+                _onCanceled(data)
+                break;
+              /**
+               * 收到的音视频邀请已經超时
+               */
+              case "TIMOnTimeout":
+                _onTimeout(data)
+                break;
             }
           });
         }
       });
     }
   };
+
+
+  const _onInvited = (data) => {
+    // actionType: 1
+    // businessID: 1
+    // data: "{\"version\":0,\"call_type\":1,\"room_id\":30714513}"
+    // groupID: ""
+    // inviteID: "19455b33-c8fc-4fef-ab60-9347ebea78cc"
+    // inviteeList: ["3708"]
+    // inviter: "109442"
+    // timeout: 30
+    const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
+        const { room_id, call_type } = JSON.parse(formatedData.data)
+        const { inviter, groupID, inviteID,inviteeList } = formatedData;
+        if(call_end > 0){
+            return
+        }
+        timRenderInstance.TIMProfileGetUserProfileList({
+            json_get_user_profile_list_param: {
+                friendship_getprofilelist_param_identifier_array: [inviter],
+                friendship_getprofilelist_param_force_update: false
+            }
+        }).then(async (data) => {
+            const { catchUserId, catchUserSig  } = ref.current;
+            if(!catchUserId){
+                return
+            }
+            const { data: { code, json_param } } = data;
+            if (code === 0) {
+                const [userdata] = JSON.parse(json_param)
+                openCallWindow({
+                    windowType: 'notificationWindow',
+                    callType: call_type + '',
+                    convId: encodeURIComponent(groupID ? groupID : inviter),
+                    convInfo: {
+                        faceUrl: encodeURIComponent(userdata.user_profile_face_url),
+                        nickName: encodeURIComponent(userdata.user_profile_nick_name),
+                        convType: groupID ? 2 : 1,
+                    },
+                    roomId: room_id,
+                    inviteID,
+                    userID: catchUserId,
+                    inviteList: inviteeList,
+                    userSig: catchUserSig
+                });
+      }
+
+    })
+
+  }
+
+  const _removeFromArr = (arr: any[], target: any) => {
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i] = target) {
+            arr.splice(i, 1)
+            break;
+        }
+    }
+    return arr;
+}
+
+  const _onRejected = (data) => {
+    if (data) {
+        const message: State.message = JSON.parse(data)[0];
+        const { message_sender } = message;
+        const { callingId, callingType, inviteeList } = callingStatus;
+        console.log(message, JSON.stringify(callingStatus))
+        if (inviteeList.includes(message_sender)) {
+            const newInviteeList = _removeFromArr(inviteeList, message_sender)
+            if (newInviteeList.length === 0) {
+                closeCallWindow()
+            } else {
+                dispatch(updateCallingStatus({
+                    callingId,
+                    callingType,
+                    inviteeList: newInviteeList
+                }));
+            }
+        }
+    }
+  }
+  const _onAccepted = (data) => {
+
+  }
+  const _onCanceled = (data) => {
+    closeCallWindow()
+    // 关闭通知窗口
+  }
+  const _onTimeout = (data) => {
+    closeCallWindow
+    // 关闭通知窗口
+  }
   const _handleElemUploadProgres = ({
     message,
     index,
@@ -163,10 +303,11 @@ export const App = () => {
     history.replace("/login");
     dispatch(setIsLogInAction(false));
   };
+  
   const _handleGroupInfoModify = async (data) => {
     const response = await getConversionList();
     dispatch(updateConversationList(response));
-    if (response?.length) {
+    if (response ?.length) {
       const newConversaionItem = response.find(
         (v) => v.conv_id === data.group_tips_elem_group_id
       );
@@ -177,7 +318,7 @@ export const App = () => {
   };
   const handleMessageSendFailed = (convList) => {
     const failedList = convList.reduce((acc, cur) => {
-      if (cur.conv_last_msg && cur?.conv_last_msg.message_status === 3) {
+      if (cur.conv_last_msg && cur ?.conv_last_msg.message_status === 3) {
         return {
           ...acc,
           [cur.conv_id]: [...[acc[cur.conv_id]], cur.conv_last_msg].filter(
@@ -221,7 +362,7 @@ export const App = () => {
       );
     }
     const response = await getConversionList();
-    if (response?.length) {
+    if (response ?.length) {
       const newConversaionItem = response.find(
         (v) => v.conv_id === messages[0].message_conv_id
       );
@@ -256,7 +397,7 @@ export const App = () => {
       const response = await getConversionList();
       dispatch(updateConversationList(response));
       // console.log(response, '对话列表。。。。。。。。。。。。。。。。。。。')
-      if (response?.length) {
+      if (response ?.length) {
         const newConversaionItem = response.find(
           (v) => v.conv_id === messages[0].message_conv_id
         );
@@ -317,9 +458,9 @@ export const App = () => {
       const convList = await addProfileForConversition(conversationList);
       dispatch(updateConversationList(convList));
       handleMessageSendFailed(convList);
-      if (conversationList[0]?.conv_last_msg?.message_status === 1) {
+      if (conversationList[0] ?.conv_last_msg ?.message_status === 1) {
         const elemType =
-          conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
+          conversationList[0].conv_last_msg ?.message_elem_array ?.[0] ?.elem_type;
         if (elemType === 4 || elemType === 9) {
           dispatch(
             updateMessages({
@@ -366,6 +507,34 @@ export const App = () => {
   useEffect(() => {
     initIMSDK();
     ipcRenderer.on("mainProcessMessage", ipcRendererLister);
+    acceptCallListiner((inviteID) => {
+      timRenderInstance.TIMAcceptInvite({
+          inviteID: inviteID
+      }).then(data => {
+          console.log('接收返回', data)
+      })
+    });
+    refuseCallListiner((inviteID) => {
+        timRenderInstance.TIMRejectInvite({
+            inviteID: inviteID
+        }).then(data => {
+            console.log('接收返回', data)
+        })
+    });
+    callWindowCloseListiner(() => {
+        dispatch(updateCallingStatus({
+            callingId: '',
+            callingType: 0,
+            inviteeList: []
+        }));
+      });
+    cancelCallInvite((inviteID) => {
+        timRenderInstance.TIMCancelInvite({
+            inviteID: inviteID
+        }).then(data => {
+            console.log('关闭邀请===', data)
+        })
+    });
   }, []);
   useEffect(() => {
     return () => {

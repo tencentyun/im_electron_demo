@@ -36,7 +36,7 @@ type Props = {
     handleOpenCallWindow: (callType: string, convType: number, windowType: string) => void;
 }
 
-const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF', 'jpeg'];
+const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
 const FEATURE_LIST_GROUP = [{
@@ -55,8 +55,8 @@ const FEATURE_LIST_GROUP = [{
     content: '发文件'
 },
 // {
-// id: 'video',
-// content: '发视频'
+//     id: 'video',
+//     content: '发视频'
 // },
 {
     id: 'phone',
@@ -77,8 +77,8 @@ const FEATURE_LIST_C2C = [{
     content: '发文件'
 },
 // {
-// id: 'video',
-// content: '发视频'
+//     id: 'video',
+//     content: '发视频'
 // },
 {
     id: 'phone',
@@ -105,6 +105,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [atUserNameInput, setAtInput] = useState('');
     const [atUserMap, setAtUserMap] = useState({});
     const [isZHCNAndFirstPopup, setIsZHCNAndFirstPopup] = useState(false);
+
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
@@ -281,6 +282,10 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (file) {
             const fileSize = file.size;
             const type = file.type;
+            if (fileSize === 0) {
+                message.error({ content: "文件大小异常" })
+                return
+            }
             console.log(type, '========')
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
@@ -302,6 +307,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleDropFile = (e) => {
+
         const files = e.dataTransfer?.files || [];
         for (const file of files) {
             setFile(file);
@@ -403,7 +409,6 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const sendFileMessage = async ({ filePath, fileSize, fileName }) => {
         if (!filePath) return false;
-        console.log(44444444444444, fileSize)
         if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
         const { data: { code, desc, json_params } } = await sendFileMsg({
             convId,
@@ -531,7 +536,8 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (userId) {
             const atText = userName || userId;
             setAtUserMap(pre => ({ ...pre, [atText]: userId }));
-            setEditorState(ContentUtils.insertText(editorState, `${atText} `))
+            setEditorState(ContentUtils.insertText(editorState, `${atText} `));
+            setAtInput('');
         }
         if (userName) {
             const text = `${userName} `
@@ -621,6 +627,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleCallMenuClick = (item) => {
+        console.log(item)
         if (item) handleOpenCallWindow(item.id, convType, "");
         setShowCallMenu(false);
     };
@@ -636,6 +643,10 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(newEditorState)
         const text = newEditorState.toText();
         const hasAt = text.includes('@');
+        /**
+         * 中文输入法下会触发两次change 第一次change时无法拿到真正的输入内容 
+         * 用isZHCNAndFirstPopup字段判断是否中文输入法下按下@ 并且首次change
+         */
         if (!hasAt && atPopup && !isZHCNAndFirstPopup) {
             setAtPopup(false);
             return;
@@ -651,6 +662,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         const patseText = getPasteText(htmlString);
         setEditorState(ContentUtils.insertText(editorState, patseText))
     }
+
 
     const handlePastedFiles = (files: File[]) => {
         for (const file of files) {
@@ -720,10 +732,10 @@ export const MessageInput = (props: Props): JSX.Element => {
     const keyBindingFn = (e) => {
         if (e.keyCode === 13 || e.charCode === 13) {
             // e.preventDefault();
-            // if (!atPopup) {
+            // if(!atPopup){
             //     handleSendMsg();
             // }
-            // return 'enter';
+            return 'enter';
         } else if (e.key === "@" && e.shiftKey && convType === 2) {
             e.preventDefault();
             setAtPopup(true);
@@ -740,9 +752,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handleKeyCommand = (e) => {
         switch (e) {
             // case 'enter': {
-            //     if (!atPopup) {
-            //         handleSendMsg();
-            //     }
             //     return 'not-handled';
             // }
             case '@': {
@@ -850,9 +859,10 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }
                 {
 
-                    FEATURE_LIST[convType].map(({ id }) => (
+                    FEATURE_LIST[convType].map(({ id, content }) => (
                         <span
                             key={id}
+                            title={content}
                             className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
                             onClick={() => handleFeatureClick(id)}
                         />

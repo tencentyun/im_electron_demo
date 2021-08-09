@@ -1,31 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import './notification.scss';
 import { eventListiner } from '../callIpc';
-
+import { endCallWindow } from '../../../utils/callWindowTools';
+import event from '../event';
 export const Notification = (props) => {
-    const { convInfo: { nickName, faceUrl}, callType } = props;
-    console.log(props);
+    const { convInfo: { nickName, faceUrl}, callType, inviteID } = props;
+    console.log('callType', callType);
+    const isVoiceCall = callType === 1;
 
-    const accept = () => {
-        eventListiner.acceptCall();
-    };
+    const accept = () => eventListiner.acceptCall({inviteID, isVoiceCall});
 
-    const refuse = () => {
-        eventListiner.refuseCall();
-    }
+    const refuse = () => eventListiner.refuseCall(inviteID);
 
-    const getDisplayText = () => {
-        const typeText = callType === 1 ? '语音' : '视频';
+    const getDisplayText = () => `邀请你进行${isVoiceCall ? '语音' : '视频'}通话`;
 
-        return `邀请你进行${typeText}通话`;
-    }
-    
+    useEffect(()=>{
+        console.log('注册退出事件')
+        event.on('exitRoom',()=>{
+            // 如果没有接通，走这个退出逻辑
+            endCallWindow()
+        })
+    },[])
+
     return (
         <div className="notification">
             <div className="notification__title">
-                <img src={faceUrl} />
-                <span className="notification__title--nick-name">{nickName}</span><br></br>
+                <img src={decodeURIComponent(faceUrl)} className="notification__avatar"/>
+                <span className="notification__title--nick-name">{decodeURIComponent(nickName)}</span><br></br>
                 <span className="notification__title--text">{getDisplayText()}</span>
             </div>
             <div className="notification__btn">

@@ -1,11 +1,11 @@
-import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
-import { Button, Icon, Input, Modal, message } from "tea-component";
+import { DialogRef, useDialog } from "../../utils/react-use/useDialog";
+import { Button, Icon, Input, Modal } from "tea-component";
 import React, { FC, useState, useEffect } from "react";
 import { debounce } from "lodash";
-import { Avatar } from "../../../components/avatar/avatar";
-import { deleteGroupMember } from "../api";
+import { Avatar } from "../../components/avatar/avatar";
+import { deleteGroupMember } from "./api";
 
-import './delete-group-member.scss';
+import './groupSetting/delete-group-member.scss';
 
 const getId = (item) => {
   if (!item) return false;
@@ -53,19 +53,20 @@ export const UserItem: FC<UserItemProps> = ({
   );
 };
 
-export interface DeleteMemberRecordsType {
+export interface GroupMemberSelectorProps {
   groupId: string;
   userList: any[];
 }
 
-export const DeleteGroupMemberDialog = (props: {
-  onSuccess?: () => void;
-  dialogRef: DialogRef<DeleteMemberRecordsType>;
+export const GroupMemberSelector = (props: {
+  onSuccess?: (selectData) => void;
+  dialogRef: DialogRef<GroupMemberSelectorProps>;
+  title?: string
 }): JSX.Element => {
-  const { onSuccess, dialogRef } = props;
+  const { onSuccess, dialogRef, title='群成员选择' } = props;
 
   const [visible, setShowState, defaultForm] =
-    useDialog<DeleteMemberRecordsType>(dialogRef, {
+    useDialog<GroupMemberSelectorProps>(dialogRef, {
       userList: [],
       groupId: "",
     });
@@ -107,18 +108,12 @@ export const DeleteGroupMemberDialog = (props: {
     setSelectedList(list);
   };
 
-  const onDelete = async () => {
+  const onSure = async () => {
     try {
-      await deleteGroupMember({
-        groupId: defaultForm.groupId,
-        userIdList: selectedList.map((v) => v.group_member_info_identifier),
-      });
+      
       setSelectedList([])
       onClose();
-      onSuccess?.();
-      message.success({
-        content: "移除成员成功",
-      })
+      onSuccess?.(selectedList);
     } catch (e) {
       console.log(e.message);
     }
@@ -131,7 +126,7 @@ export const DeleteGroupMemberDialog = (props: {
     <Modal
       className="forward-popup"
       visible={visible}
-      caption="移除群成员"
+      caption={title}
       onClose={() => onClose()}
     >
       <Modal.Body>
@@ -177,9 +172,9 @@ export const DeleteGroupMemberDialog = (props: {
         <Button
           type="primary"
           disabled={selectedList.length === 0}
-          onClick={(e) => onDelete()}
+          onClick={(e) => onSure()}
         >
-          移除
+          确定
         </Button>
         <Button type="weak" onClick={() => onClose()}>
           取消
