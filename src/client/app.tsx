@@ -193,8 +193,11 @@ export const App = () => {
         // inviter: "109442"
         // timeout: 30
         const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
-        const { room_id, call_type } = JSON.parse(formatedData.data)
+        const { room_id, call_type,call_end } = JSON.parse(formatedData.data)
         const { inviter, groupID, inviteID,inviteeList } = formatedData;
+        if(call_end > 0){
+            return
+        }
         timRenderInstance.TIMProfileGetUserProfileList({
             json_get_user_profile_list_param: {
                 friendship_getprofilelist_param_identifier_array: [inviter],
