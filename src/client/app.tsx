@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import "tea-component/dist/tea.css";
 import {
@@ -48,12 +48,30 @@ window.closeCallWindow = closeCallWindow;
 export const App = () => {
     const dispatch = useDispatch();
     const history = useHistory();
+    const ref = useRef({
+        catchUserId: '',
+        catchUserSig: '',
+        catchCalling: {
+            callingType: 0,
+            callingId: '',
+            inviteeList: []
+        }
+    });
+
     const { callingStatus } = useSelector(
         (state: State.RootState) => state.ui
     );
-    const { userId } = useSelector(
+
+    const { userId, userSig } = useSelector(
         (state: State.RootState) => state.userInfo
     );
+
+    ref.current = {
+        catchCalling: callingStatus,
+        catchUserId: userId,
+        catchUserSig: userSig
+    }
+
     const initIMSDK = async () => {
         if (!isInited) {
             //   const privite = await timRenderInstance.callExperimentalAPI({
@@ -183,8 +201,8 @@ export const App = () => {
                 friendship_getprofilelist_param_force_update: false
             }
         }).then(async (data) => {
-            const userID = (await timRenderInstance.TIMGetLoginUserID({})).data.json_param
-            if(!userID){
+            const { catchUserId, catchUserSig  } = ref.current;
+            if(!catchUserId){
                 return
             }
             const { data: { code, json_param } } = data;
@@ -201,8 +219,9 @@ export const App = () => {
                     },
                     roomId: room_id,
                     inviteID,
-                    userID: userID,
-                    inviteList: inviteeList
+                    userID: catchUserId,
+                    inviteList: inviteeList,
+                    userSig: catchUserSig
                 });
             }
 
@@ -222,7 +241,7 @@ export const App = () => {
         if (data) {
             const message: State.message = JSON.parse(data)[0];
             const { message_sender } = message;
-            const { callingId, callingType, inviteeList } = callingStatus;
+            const { callingId, callingType, inviteeList } = ref.current.catchCalling;
             console.log(message, JSON.stringify(callingStatus))
             if (inviteeList.includes(message_sender)) {
                 const newInviteeList = _removeFromArr(inviteeList, message_sender)
