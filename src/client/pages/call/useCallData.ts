@@ -16,7 +16,7 @@ export const useCallData = () => {
         inviteID: '',
         userID:'',
         inviteList: [],
-        sdkAppid: '',
+        sdkAppid: 0,
         userSig: '',
     });
 
@@ -36,7 +36,7 @@ export const useCallData = () => {
                 inviteID: inviteID,
                 userID: userID,
                 inviteList: inviteList,
-                sdkAppid: sdkAppid,
+                sdkAppid: Number(sdkAppid) ,
                 userSig: decodeURIComponent(userSig),
             })
         });
