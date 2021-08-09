@@ -43,7 +43,8 @@ export const LoginContent = (): JSX.Element => {
         if(code === 0) {
             dispatch(setIsLogInAction(true));
             dispatch(setUserInfo({
-                userId: userID
+                userId: userID,
+                userSig: usersig
             }));
             dispatch(changeFunctionTab('message'));
             history.replace('/home/message');

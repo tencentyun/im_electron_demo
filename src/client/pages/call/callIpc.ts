@@ -5,7 +5,6 @@ import eventEmiter from './event';
 export const eventListiner = {
     init: () => {
         ipcRenderer.on('pass-call-data', (event, data) => {
-            console.log('=================data=========', JSON.parse(data));
             eventEmiter.emit('getData', JSON.parse(data));
         });
 

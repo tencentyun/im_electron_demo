@@ -151,7 +151,8 @@ declare namespace State {
         role?: number,
         signature?:string,
         gender?: number,
-        addPermission?:number
+        addPermission?:number,
+        userSig?: string,
     }
 
     export type actcionType<T> = {

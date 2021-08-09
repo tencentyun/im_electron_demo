@@ -90,17 +90,15 @@ export const GroupVideo = (props) => {
             trtcInstance.setRemoteViewFillMode(uid, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
         } else {
             const canvasDom = ref.current.getElementsByTagName('canvas')[0];
-
             canvasDom.style.display = 'none';
-            console.log('remote-ref', canvasDom);
         }
     }
 
     const cacluateStyle = () => {
         const count = groupSplit[currentPage]?.length;
         const [width, height] = remote.getCurrentWindow().getSize();
-        const footerHeight = 76
-        const statusBarHeight = 36
+        const footerHeight = 76;
+        const statusBarHeight = 36;
         const callWindowInnerHeight = height - footerHeight - statusBarHeight
         if (count === 1) {
             return {

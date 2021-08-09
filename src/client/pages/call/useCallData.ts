@@ -16,11 +16,13 @@ export const useCallData = () => {
         inviteID: '',
         userID:'',
         inviteList: [],
+        sdkAppid: '',
+        userSig: '',
     });
 
     useEffect(() => {
         eventEmiter.on('getData', (data) => {
-            const { convInfo, convId, callType, windowType, roomId, inviteID,userID,inviteList } = data;
+            const { convInfo, convId, callType, windowType, roomId, inviteID,userID,inviteList, sdkAppid, userSig } = data;
             setData({
                 windowType,
                 callType,
@@ -33,7 +35,9 @@ export const useCallData = () => {
                 roomId: roomId,
                 inviteID: inviteID,
                 userID: userID,
-                inviteList: inviteList
+                inviteList: inviteList,
+                sdkAppid: sdkAppid,
+                userSig: decodeURIComponent(userSig),
             })
         });
 

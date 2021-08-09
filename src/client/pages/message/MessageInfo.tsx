@@ -57,7 +57,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     (state: State.RootState) => state.ui
   );
 
-  const { userId } = useSelector((state: State.RootState) => state.userInfo)
+  const { userId, userSig } = useSelector((state: State.RootState) => state.userInfo)
   const msgList = historyMessageList.get(conv_id);
   const getDisplayConvInfo = () => {
     const info: Info = {
@@ -191,7 +191,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       },
       roomId,
       inviteID: inviteId,
-      userID:userId,
+      userID: userId,
+      userSig: encodeURIComponent(userSig),
       inviteList: userList
     });
   }
