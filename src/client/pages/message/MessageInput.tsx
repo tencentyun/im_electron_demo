@@ -115,7 +115,6 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const userSig = window.localStorage.getItem('usersig')
     const uid = window.localStorage.getItem('uid')
-    window.localStorage.setItem('inputAt', '0')
     window.localStorage.setItem('convId', convId)
     // 上传逻辑
     const handleUpload = (base64Data) => {
@@ -481,8 +480,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleSendAtMessage = () => {
-        // resetState()
-        window.localStorage.setItem('inputAt', '0')
         convType === 2 && setAtPopup(true)
     }
 
@@ -535,9 +532,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             setEditorState(ContentUtils.insertText(editorState, `${atText} `))
         }
         if (userName) {
-            const isInputAt = window.localStorage.getItem('inputAt')
-            console.log(isInputAt, '0000000000000')
-            const text = Number(isInputAt) ? `${userName} ` : `${userName} `
+            const text = `${userName} `
             setEditorState(ContentUtils.insertText(editorState, text))
         }
     }
@@ -573,33 +568,33 @@ export const MessageInput = (props: Props): JSX.Element => {
         clipboard.clear()
         ipcRenderer.send('SCREENSHOT')
     }
-    const handleOnkeyPress = (e) => {
-        if (sendType == '0') {
-            // enter发送
-            if (e.ctrlKey && e.keyCode === 13) {
-                // console.log('换行', '----------------------', editorState)
-            } else if (e.keyCode == 13 || e.charCode === 13) {
-                e.preventDefault();
-                handleSendTextMsg();
-            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-                e.preventDefault();
-                setAtPopup(true)
-            }
-        } else {
-            // Ctrl+enter发送
-            if (e.ctrlKey && e.keyCode === 13) {
-                e.preventDefault();
-                handleSendTextMsg();
-            } else if (e.keyCode == 13 || e.charCode === 13) {
-                // console.log('换行', '----------------------', editorState)
-            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-                window.localStorage.setItem('inputAt', '1')
-                e.preventDefault()
-                setAtPopup(true)
-            }
-        }
+    // const handleOnkeyPress = (e) => {
+    //     if (sendType == '0') {
+    //         // enter发送
+    //         if (e.ctrlKey && e.keyCode === 13) {
+    //             // console.log('换行', '----------------------', editorState)
+    //         } else if (e.keyCode == 13 || e.charCode === 13) {
+    //             e.preventDefault();
+    //             handleSendTextMsg();
+    //         } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+    //             e.preventDefault();
+    //             setAtPopup(true)
+    //         }
+    //     } else {
+    //         // Ctrl+enter发送
+    //         if (e.ctrlKey && e.keyCode === 13) {
+    //             e.preventDefault();
+    //             handleSendTextMsg();
+    //         } else if (e.keyCode == 13 || e.charCode === 13) {
+    //             // console.log('换行', '----------------------', editorState)
+    //         } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+    //             window.localStorage.setItem('inputAt', '1')
+    //             e.preventDefault()
+    //             setAtPopup(true)
+    //         }
+    //     }
 
-    }
+    // }
 
     const onEmojiPopupCallback = (id, type) => {
         console.log(id)
@@ -655,13 +650,12 @@ export const MessageInput = (props: Props): JSX.Element => {
         setEditorState(ContentUtils.insertText(editorState, patseText))
     }
 
-    const handlePastedFiles = async (files: File[]) => {
+    const handlePastedFiles = (files: File[]) => {
         for (const file of files) {
             setFile(file);
         }
         return 'handled';
     }
-
     const menu = close => (
         <List type="option" style={{ width: '200px', background: '#ffffff' }}>
             <List.Item onClick={() => changeSendShotcut('1')} style={{ display: 'flex' }}>
@@ -686,25 +680,48 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleKeyDown = (e) => {
-        if (e.keyCode === 38 || e.charCode === 38) {
-            if (atPopup) {
+        console.log(e.ctrlKey && e.keyCode === 13, e, sendType)
+        if (sendType == '0') {
+            // enter发送
+
+            if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
+                handleSendTextMsg();
+            } else if (e.ctrlKey && e.keyCode === 13) {
+
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+                e.preventDefault();
+                setAtPopup(true)
+            }
+        } else {
+            // Ctrl+enter发送
+            if (e.ctrlKey && e.keyCode === 13) {
+                e.preventDefault();
+                handleSendTextMsg();
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+                e.preventDefault()
+                setAtPopup(true)
             }
         }
-        if (e.keyCode === 40 || e.charCode === 40) {
-            if (atPopup) {
-                e.preventDefault();
-            }
-        }
+        // if (e.keyCode === 38 || e.charCode === 38) {
+        //     if (atPopup) {
+        //         e.preventDefault();
+        //     }
+        // }
+        // if (e.keyCode === 40 || e.charCode === 40) {
+        //     if (atPopup) {
+        //         e.preventDefault();
+        //     }
+        // }
     }
 
     const keyBindingFn = (e) => {
         if (e.keyCode === 13 || e.charCode === 13) {
-            e.preventDefault();
-            if (!atPopup) {
-                handleSendMsg();
-            }
-            return 'enter';
+            // e.preventDefault();
+            // if (!atPopup) {
+            //     handleSendMsg();
+            // }
+            // return 'enter';
         } else if (e.key === "@" && e.shiftKey && convType === 2) {
             e.preventDefault();
             setAtPopup(true);
@@ -831,22 +848,19 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }
                 {
 
-                    FEATURE_LIST[convType].map(({ id, content }) => (
-                        <Bubble content={content} key={id}>
-                            <span
-                                key={id}
-                                className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
-                                onClick={() => handleFeatureClick(id)}
-                            />
-                        </Bubble>
-
+                    FEATURE_LIST[convType].map(({ id }) => (
+                        <span
+                            key={id}
+                            className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
+                            onClick={() => handleFeatureClick(id)}
+                        />
                     ))
                 }
             </div>
             <div className="message-input__text-area" onKeyDown={handleKeyDown}>
-                {/* <div className="message-input__text-area disabled" onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}> */}
                 <BraftEditor
                     stripPastedStyles
+                    //@ts-ignore
                     disabled={isShutUpAll}
                     onChange={editorChange}
                     value={editorState}
@@ -860,7 +874,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
-                    maxLength={4000}
                     draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled' }}
                     actions={[]}
                 />
@@ -868,7 +881,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             <div className="message-input__button-area">
                 <Button type="primary" onClick={handleSendMsg} disabled={editorState.toText() === ''}>发送</Button>
             </div>
-            {/* <span className="message-input__down" title='切换发送消息快捷键'></span> */}
             <Dropdown
                 clickClose={true}
                 className="message-input__down"
@@ -885,8 +897,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }
-            <input ref={filePicker} onChange={e => sendFileMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
-            <input ref={imagePicker} accept="image/*" onChange={e => sendImageMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
         </div>
     )
 
