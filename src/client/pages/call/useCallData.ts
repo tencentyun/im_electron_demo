@@ -46,7 +46,11 @@ export const useCallData = () => {
                 ...data,
                 windowType: type,
             }))
-        })
+        });
+
+        eventEmiter.on('updateInviteList', inviteList => {
+            setData(prev => ({...prev, inviteList }))
+        });
     }, []);
 
     return data;

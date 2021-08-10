@@ -29,8 +29,8 @@ const setPath = isDev => {
 
 class IPC {
     win = null;
-    callWindow = null;
-    imWindowEvent = null;
+    callWindow = null; // 通话窗口
+    imWindowEvent = null; // 聊天窗口
     constructor(win){
         const env = process.env?.NODE_ENV?.trim();
         const isDev = env === 'development';
@@ -110,8 +110,12 @@ class IPC {
         // 取消通话邀请
         ipcMain.on('cancel-call-invite', (event, inviteID) => {
             this.imWindowEvent.reply('cancel-call-invite-reply', inviteID);
-        })
+        });
 
+        // 更新邀请列表(当用户拒绝邀请后，需通知通话窗口)
+        ipcMain.on('update-invite-list', (event, inviteList) => {
+            this.callWindow.webContents.send('update-invite-list', inviteList);
+        });
 
         ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
             this.imWindowEvent = event;
