@@ -5,13 +5,14 @@ import './call-footer.scss';
 type Props = {
     toggleVoice: (mute: boolean) => void,
     toggleVideo: (mute: boolean) => void,
-    exitRoom: () => void
+    exitRoom: () => void,
+    isVideoCall: boolean
 }
 
-export const CallFooter = (props: Props) => {
-    const { toggleVoice, toggleVideo, exitRoom } = props;
-    const [isOpenMic, setMute] = useState(true);
-    const [isOpenCamera, setOpenCamera ] = useState(false);
+export const CallFooter = (props: Props) : JSX.Element => {
+    const { toggleVoice, toggleVideo, exitRoom, isVideoCall } = props;
+    const [isOpenMic, setMute] = useState<boolean>(true);
+    const [isOpenCamera, setOpenCamera ] = useState<boolean>(true);
 
     const handleToggleVideo = () => {
         toggleVideo(isOpenCamera);
@@ -19,7 +20,7 @@ export const CallFooter = (props: Props) => {
     };
 
     const handleToggleVoice = () => {
-        toggleVoice(!isOpenMic);
+        toggleVoice(isOpenMic);
         setMute(!isOpenMic);
     };
 
@@ -27,7 +28,9 @@ export const CallFooter = (props: Props) => {
         <div className="call-footer">
             <div className="call-footer__control-btn">
                 <span className={`voice ${isOpenMic ? 'is-active' : '' }`} onClick={handleToggleVoice}></span>
-                <span className={`video ${!isOpenCamera ? 'is-active' : '' }`} onClick={handleToggleVideo}></span>
+                {
+                    isVideoCall && <span className={`video ${!isOpenCamera ? 'is-active' : '' }`} onClick={handleToggleVideo}></span>
+                }
             </div>
             <div className="call-footer__end-btn">
                 <button onClick={exitRoom}>挂断</button>

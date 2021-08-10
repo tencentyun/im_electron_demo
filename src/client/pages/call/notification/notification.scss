@@ -6,6 +6,8 @@
 
     &__title {
         border-bottom: 1px solid #ccc;
+        display: inline-block;
+        vertical-align: middle;
         &--nick-name {
             display: inline-block;
             margin-bottom: 10px;
@@ -19,7 +21,13 @@
             margin-bottom: 10px;
         }
     }
-
+    &__avatar {
+        width: 30px;
+        height: 30px;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 10px;
+    }
     &__btn {
         margin-top: 15px;
         align-self: flex-end;

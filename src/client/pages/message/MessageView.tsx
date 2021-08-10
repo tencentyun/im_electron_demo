@@ -8,8 +8,8 @@ import {
     animation
 } from 'react-contexify';
 import './message-view.scss';
-import { revokeMsg, deleteMsg, sendMsg, sendMergeMsg, TextMsg, getMsgList, deleteMsgList } from './api';
-import { markeMessageAsRevoke, deleteMessage, reciMessage, addMoreMessage } from '../../store/actions/message';
+import { revokeMsg, deleteMsg, sendMsg, sendMergeMsg, TextMsg, getMsgList, deleteMsgList, getLoginUserID} from './api';
+import { markeMessageAsRevoke, deleteMessage, reciMessage, addMoreMessage, updateMessages} from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import {
     getMessageId,
@@ -71,10 +71,10 @@ const RIGHT_CLICK_MENU_LIST = [{
     id: 'transimit',
     text: '转发'
 },
-{
-    id: 'reply',
-    text: '回复'
-},
+// {
+//     id: 'reply',
+//     text: '回复'
+// },
 {
     id: 'multiSelect',
     text: '多选'
@@ -129,6 +129,56 @@ export const displayDiffMessage = (element, index) => {
             break;
         case 12:
             resp = <MergeElem {...res} />
+            break;
+        default:
+            resp = null;
+            break;
+    }
+    return resp;
+}
+
+export const displayDiffMessage = (message, element, index) => {
+    const { elem_type, ...res } = element;
+    let resp
+    switch (elem_type) {
+        case 0:
+            resp = <TextElemItem {...res} />
+            break;
+        case 1:
+            resp = <PicElemItem { ...res }/>
+            break;
+        case 2:
+            resp = <VoiceElem { ...res }/>
+            break;
+        case 3:
+            resp = <CustomElem message={message}/>
+            break;
+        case 4:
+            resp = <FileElem message={message} element={element} index={index}/>
+            break;
+        case 5:
+            resp = <GroupTipsElemItem { ...res }/> 
+            break;
+        case 6:
+            resp = <div>表情消息</div>
+            break;
+        case 7:
+            resp = <div>位置消息</div>
+            break;
+        case 8:
+            resp = <GroupSysElm { ...res }/>  
+            break;
+        case 9:
+            resp =  <VideoElem message={message} { ...res }/>
+            break;
+        case 10:
+            resp = <div>关系消息</div>
+            break;
+        case 11:
+            resp = <div>资料消息</div>
+            break;
+        case 12:
+            resp = <MergeElem { ...res } message={message}/>
             break;
         default:
             resp = null;
@@ -286,7 +336,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     const { data: { code, json_params } } = await sendMsg({
                         convId: getConvId(convItem),
                         convType: getConvType(convItem),
-                        messageElementArray: message.message_elem_array as [TextMsg],
+                        messageElementArray: message.message_elem_array,
                         userId
                     });
                     if (code === 0) {
@@ -414,8 +464,20 @@ export const MessageView = (props: Props): JSX.Element => {
         })
     }
 
-    const handleMessageReSend = (item) => {
-        console.log(item);
+    const handleMessageReSend =async (params) => {
+        console.log(params)
+        const {message_conv_id:conv_id,message_conv_type:conv_type} = params;
+        const {data:{code,json_params}} = await timRenderInstance.TIMMsgSendMessage({
+            conv_id,
+            conv_type,
+            params
+        })
+        if(code===0){
+            dispatch(updateMessages({
+                convId:conv_id,
+                message:JSON.parse(json_params)
+            }))
+        }
     }
     const handleOpenFile = (item) => {
         console.log(item)
@@ -603,6 +665,8 @@ export const MessageView = (props: Props): JSX.Element => {
                     const isMessageSendFailed = message_status === 3 && message_is_from_self;
                     const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self && !isMessageSendFailed;
                     const seleted = seletedMessage.findIndex(i => getMessageId(i) === getMessageId(item)) > -1
+                    const elemType = message_elem_array?.[0]?.elem_type; // 取message array的第一个判断消息类型
+                    const isNotGroupSysAndGroupTipsMessage =  ![5,8].includes(elemType); // 5,8作为群系统消息 不需要多选转发
                     return (
                         <React.Fragment key={index}>
                             {
@@ -613,8 +677,8 @@ export const MessageView = (props: Props): JSX.Element => {
                                     </div>
                                 ) :
                                     <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self && item ? 'is-self' : ''}`} key={message_msg_id}>
-                                        {isMultiSelect && (seleted && !isMessageSendFailed ?
-                                            <Icon className="message-view__item--icon" type="success" /> :
+                                       { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted && !isMessageSendFailed  ? 
+                                            <Icon className="message-view__item--icon" type="success" /> : 
                                             <i className="message-view__item--icon-normal" ></i>)
                                         }
                                         <div className="message-view__item--avatar face-url">
@@ -650,7 +714,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                                 return (
                                                     <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                                         {
-                                                            displayDiffMessage(elment, index)
+                                                            displayDiffMessage(item, elment, index)
                                                         }
                                                     </div>
                                                 )

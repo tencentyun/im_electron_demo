@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import { OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW } from "../../app/const/const";
+import { OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW, END_CALL_WINDOW } from "../../app/const/const";
 
 const openCallWindow = (data) => {
     ipcRenderer.send(OPEN_CALL_WINDOW, data);
@@ -14,16 +14,16 @@ const callWindowCloseListiner = (callback) => {
 };
 
 const acceptCallListiner = (callback) => {
-    ipcRenderer.on('accept-call-reply', () => {
-        console.log('接受通话');
-        callback();
+    ipcRenderer.on('accept-call-reply', (event,inviteID) => {
+        console.log('接受通话',inviteID);
+        callback(inviteID);
     })
 };
 
 const refuseCallListiner = (callback) => {
-    ipcRenderer.on('refuse-call-reply', () => {
+    ipcRenderer.on('refuse-call-reply', (event,inviteID) => {
         console.log('拒绝通话');
-        callback();
+        callback(inviteID);
     })
 }
 
@@ -41,7 +41,16 @@ const remoteUserExit = callback => {
     })
 }
 
+const cancelCallInvite = callback => {
+    ipcRenderer.on('cancel-call-invite-reply', (event, inviteId) => {
+        console.log('取消邀请', inviteId);
+        callback(inviteId);
+    });
+}
 
+const endCallWindow = ()=>{
+    ipcRenderer.send(END_CALL_WINDOW);
+}
 
 export {
     openCallWindow,
@@ -50,5 +59,7 @@ export {
     acceptCallListiner,
     refuseCallListiner,
     remoteUserJoin,
-    remoteUserExit
+    remoteUserExit,
+    endCallWindow,
+    cancelCallInvite
 }

@@ -1,5 +1,5 @@
 // import { BrowserWindow } from "electron";
-const { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
+const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW,END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
 const { ipcMain, BrowserWindow, dialog } = require('electron')
 const { screen } = require('electron')
 const fs = require('fs')
@@ -73,25 +73,32 @@ class IPC {
     eventListiner (isDev) {
         const screenSize = getSrceenSize();
         // 当作为接收方，接受电话后，更改窗口尺寸。
-        ipcMain.on('accept-call', () => {
-            this.callWindow.setSize(800, 600);
-            this.callWindow.setPosition(screenSize.width / 2 - 400, screenSize.height / 2 - 300);
+        ipcMain.on('accept-call', (event, acceptParams) => {
+            const { inviteID, isVoiceCall } = acceptParams;
+            const windowWidth = isVoiceCall ? 500 : 800;
+            const windowHeight = 600;
+            console.log('accept params', acceptParams);
+         
+            this.callWindow.setSize(windowWidth, windowHeight);
+            this.callWindow.setPosition( (screenSize.width - windowWidth) / 2, (screenSize.height - windowHeight) / 2);
             // 向聊天窗口通信
-            this.imWindowEvent.reply('accept-call-reply');
+            this.imWindowEvent.reply('accept-call-reply',inviteID);
         });
 
         // 当作为接收方，挂断电话，关闭窗口
-        ipcMain.on('refuse-call', () => {
+        ipcMain.on('refuse-call', (event,inviteID) => {
             this.callWindow.close();
             // 向聊天窗口通信
-            this.imWindowEvent.reply('refuse-call-reply');
+            this.imWindowEvent.reply('refuse-call-reply',inviteID);
         });
 
         // 当接受方拒绝通话后，调用该方法可关闭窗口，并退出房间
         ipcMain.on(CLOSE_CALL_WINDOW, () => {
             this.callWindow.webContents.send('exit-room');
         });
-
+        ipcMain.on(END_CALL_WINDOW,()=>{
+            this.callWindow.close()
+        })
         // 远端用户进入
         ipcMain.on('remote-user-join', (event, userId) => {
             this.imWindowEvent.reply('remote-user-join-reply', userId)
@@ -102,10 +109,19 @@ class IPC {
             this.imWindowEvent.reply('remote-user-exit-reply', userId)
         });
 
+        // 取消通话邀请
+        ipcMain.on('cancel-call-invite', (event, inviteID) => {
+            this.imWindowEvent.reply('cancel-call-invite-reply', inviteID);
+        })
+
 
         ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
             this.imWindowEvent = event;
-            const params = JSON.stringify(data);
+            const addSdkAppid = {
+                ...data,
+                sdkAppid: SDK_APP_ID
+            }
+            const params = JSON.stringify(addSdkAppid)
             if (data.windowType === 'notificationWindow') {
                 this.callWindow.setSize(320, 150);
                 this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
@@ -117,8 +133,8 @@ class IPC {
             this.callWindow.on('close', () => {
                 event.reply(CALL_WINDOW_CLOSE_REPLY);
                 this.createNewWindow(isDev);
-            });
-        });
+            })
+        })
     }
 
     createNewWindow (isDev) {
@@ -127,6 +143,7 @@ class IPC {
             width: 800,
             show: false,
             frame: false,
+            resizable:false,
             webPreferences: {
                 parent: this.win,
                 webSecurity: true,
@@ -173,8 +190,7 @@ class IPC {
         console.log(file_url)
         const file_name = url.parse(file_url).pathname.split('/').pop()
         const file_path = path.resolve(downloadDicPath, file_name)
-        const file_path_temp = `${file_path}.tmp`
-
+        const file_path_temp =  `${file_path}.tmp`
         if (!fs.existsSync(file_path)) {
 
             //创建写入流

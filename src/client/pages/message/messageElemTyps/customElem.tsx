@@ -9,8 +9,7 @@ export const CustomElem = (props: any): JSX.Element => {
             data =  JSON.parse(custom_elem_data)
            }catch(err){
          }
-
-         switch (data.businessID) {
+         switch (data?.businessID) {
             case "group_create":
               return (
                 <>
@@ -26,7 +25,7 @@ export const CustomElem = (props: any): JSX.Element => {
                   case 1:
                     return <span>{data.inviter}邀请{
                       data.inviteeList.map((item,index)=>{
-                        return <span className="" key={index}>{item}</span>
+                        return <span className="" key={index}>{item}{index===data.inviteeList.length-1 ? '' : '、'}</span>
                       })
                     }通话</span>
                   case 2:
@@ -40,9 +39,9 @@ export const CustomElem = (props: any): JSX.Element => {
                   default:
                     return <span>信令未解析</span>
                 }
-            default:
-                <div className="message-view__item--text text right-menu-item" >
-                {
+               default:
+                  <div className="message-view__item--text text right-menu-item" >
+                  {
 
                     custom_elem_data === 'CUST_EMOJI' ?
                        

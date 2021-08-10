@@ -1,6 +1,6 @@
-import { Select } from "tea-component";
+import { Switch } from "tea-component";
 import React, { useEffect, useState } from "react";
-import { modifyGroupMemberInfo } from "../api";
+import { TIMMsgSetGroupReceiveMessageOpt } from "../api";
 import "./group-flag-message.scss";
 
 const flagMsgOptions = [
@@ -10,35 +10,34 @@ const flagMsgOptions = [
 ];
 
 export const GroupFlagMessage = (props: {
-  flagMsg: string;
+  flagMsg: number;
   userId: string;
   groupId: string;
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
   const { flagMsg, userId, groupId, onRefresh } = props;
-  const handleChange = async (value: string) => {
-    console.log(value, userId, groupId, '==========================================================')
+  const [ revMessageOpt,setRevMessageOpt ] = useState(flagMsg)
+  const handleChange = async (value: number) => {
     try {
-      const data = await modifyGroupMemberInfo({
-        groupId,
-        userId,
-        modifyGroupMemberParams: {
-          group_modify_member_info_msg_flag: Number(value),
-        },
-      });
-      console.log(data, '返回信息。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。')
-      await onRefresh();
+      const { data :{ code}} =  await TIMMsgSetGroupReceiveMessageOpt(groupId,Number(value));
+      if(code === 0){
+        await onRefresh();
+      }
     } catch (e) {
       console.log(e);
     }
   };
-
+  useEffect(()=>{
+    if(flagMsg!==revMessageOpt){
+      handleChange(revMessageOpt)
+    }
+  },[revMessageOpt])
   return (
     <div className="group-flag-message">
       <div className="group-flag-message--title">
-        <span className="group-flag-message--title__text">群消息提示</span>
+        <span className="group-flag-message--title__text">消息免打扰</span><Switch value={revMessageOpt!==0} onChange={(value)=>{setRevMessageOpt(value?1:0)}} />
       </div>
-      <Select
+      {/* <Select
         size="full"
         type="simulate"
         appearance="button"
@@ -46,7 +45,7 @@ export const GroupFlagMessage = (props: {
         value={"" + flagMsg}
         onChange={(value) => handleChange(value)}
         options={flagMsgOptions}
-      />
+      /> */}
     </div>
   );
 };

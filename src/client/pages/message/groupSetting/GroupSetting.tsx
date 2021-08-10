@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { LoadingContainer } from "../../../components/loadingContainer";
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
-import { getGroupMemberInfoList } from "../api";
+import { getGroupMemberInfoList, getConversationInfo, getGroupInfoList, getGroupMemberList } from "../api";
 import { Divider } from "./Divider";
 import { GroupAccountecment } from "./GroupAccountecment";
 import { GroupAllMute } from "./groupAllMute";
@@ -20,37 +20,31 @@ export const GroupSetting = (props: {
 }): JSX.Element => {
   const { conversationInfo, close } = props;
   const groupId = conversationInfo.conv_id;
-  const groupDetail: Partial<State.conversationItem['conv_profile']> = conversationInfo.conv_profile || {};
+  
 
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
 
   console.log('userId', userId)
 
   const { value, loading, retry } = useAsyncRetryFunc(async () => {
-    return await getGroupMemberInfoList({
-      groupId,
-    })
-  }, [groupId]); 
+      return await Promise.all([
+        // 群成员信息
+        getGroupMemberList({
+          groupId,
+          userIds: userId.length ?  [userId] : [],
+          nextSeq: 0,
+        }),
+        // 群组信息
+        getGroupInfoList([groupId])
+      ])
+  }, []);
+  const memberList = value ? value[0]?.group_get_memeber_info_list_result_info_array || [] : [];
 
-  const memberList = value?.filter(item =>  item !== undefined &&  item !== "undefined" && item != "" && item != null) || [];
-
-  // 群主置顶
-  if (memberList?.length > 1) {
-    const index = memberList?.findIndex(item => item?.group_member_info_member_role === 3)
-    const groupOwner = memberList?.find(item => item?.group_member_info_member_role === 3)
-    if(groupOwner){
-      memberList.splice(index, 1) 
-      memberList.unshift(groupOwner)
-    }
-   
+  const currentUserSetting: any = memberList?.[0] || {};
+  const groupDetail: Partial<State.conversationItem['conv_profile']> = value ? value[1][0] || conversationInfo.conv_profile || {} : {};
+  if(!Object.keys(groupDetail).length){
+    return null
   }
-
-   
-  const currentUserSetting =
-    memberList.find((v) => v?.user_profile_identifier === userId) || {};
-
-  console.log("currentUserSetting", currentUserSetting);
-
   return (
     <LoadingContainer loading={loading}>
       <GroupBaseInfo
@@ -101,7 +95,7 @@ export const GroupSetting = (props: {
       }
       <Divider />
       <GroupFlagMessage
-        flagMsg={currentUserSetting.group_member_info_msg_flag}
+        flagMsg={groupDetail.group_base_info_msg_flag}
         groupId={groupDetail.group_detial_info_group_id}
         userId={userId}
         onRefresh={retry}
