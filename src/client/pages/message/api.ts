@@ -4,10 +4,11 @@ import timRenderInstance from "../../utils/timRenderInstance";
 type SendMsgParams<T> = {
   convId: string;
   convType: number;
-  messageElementArray: T[];
+  messageElementArray?: T[];
   userData?: string;
   userId: string;
   messageAtArray?: string[];
+  message?: State.message
 };
 
 export type TextMsg = {
@@ -313,6 +314,29 @@ export const sendMsg = async ({
   });
   return res;
 };
+
+export const sendForwardMessage = async ({
+  convId,
+  convType,
+  message,
+  userId,
+  userData,
+}: SendMsgParams<
+  TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg | MergeMsg | CustomMsg
+>): Promise<MsgResponse> => {
+
+  const res = await timRenderInstance.TIMMsgSendMessage({
+    conv_id: convId,
+    conv_type: convType,
+    params: {
+      ...message,
+      message_sender: userId,
+      message_is_peer_read: false,
+    },
+    user_data: userData,
+  });
+  return res;
+} 
 
 export const sendTextMsg = (
   params: SendMsgParams<TextMsg>
