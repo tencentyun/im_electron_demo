@@ -51,7 +51,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     group_detial_info_add_option: addOption
   } = conv_profile;
 
-
+ 
   const groupMemberSelectorRef = useRef(null)
   const popupContainer = document.getElementById("messageInfo");
   // const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all && conv_profile.group_detial_info_owener_identifier != localStorage.getItem('uid');
@@ -66,6 +66,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const [isPress, setIsPress] = useState(false)
   const [editorHeight, seteditorHeight] = useState(250)
   const { userId,userSig } = useSelector((state: State.RootState) => state.userInfo)
+  const [isHandCal, setIsHandCal] = useState(["",0])
+
   const { toolsTab, toolsDrawerVisible } = useSelector(
     (state: State.RootState) => state.groupDrawer
   );
@@ -366,13 +368,14 @@ const openGroupMemberSelector = async ()=>{
           </header>
           <section className="message-info-view__content">
             <div className="message-info-view__content--view">
-              <MessageView messageList={msgList || []} groupType={groupType} convId={conv_id} convType={conv_type} editorState={editorState} setEditorState={setEditorState} />
+              <MessageView messageList={msgList || []} groupType={groupType} convId={conv_id} convType={conv_type} editorState={(data)=>{setIsHandCal(data)}} setEditorState={setEditorState} />
             </div>
             <div className="message-info-view__content--slider"
               onMouseDown={() => setIsPress(true)}
             ></div>
             <div style={{ ...sliderStyle() }} className="message-info-view__content--input">
               <MessageInput
+                isHandCal={isHandCal}
                 convId={conv_id}
                 convType={conv_type}
                 isShutUpAll={isShutUpAll}
