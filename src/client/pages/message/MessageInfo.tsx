@@ -223,10 +223,10 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     openCallWindow({
       windowType: 'callWindow',
       callType,
-      convId: encodeURIComponent(conv_id),
+      convId: conv_id,
       convInfo: {
-        faceUrl: encodeURIComponent(faceUrl),
-        nickName: encodeURIComponent(nickName),
+        faceUrl: faceUrl,
+        nickName: nickName,
         convType: conv_type
       },
       roomId,

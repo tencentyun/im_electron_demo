@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Avatar } from '../../../components/avatar/avatar';
 import {
     TRTCVideoFillMode,
     TRTCVideoRotation,
@@ -8,7 +9,8 @@ import {
 import event from '../event';
 
 export const C2Cvideo = (props) => {
-    const { trtcInstance, isVideoCall } = props;
+    const { trtcInstance, isVideoCall, convInfo: { nickName, faceUrl} } = props;
+    const [ isUserEntering, setIsUserEntering ] = useState(false);
     const selfViewRef = useRef(null);
     const remoteViewRef = useRef(null);
 
@@ -16,18 +18,19 @@ export const C2Cvideo = (props) => {
         event.on('toggleVideo', onVideoChanged);
         trtcInstance.on('onEnterRoom', onEnterRoom);
         trtcInstance.on('onUserVideoAvailable', onUserVideoAvailable);
+        trtcInstance.on('onRemoteUserEnterRoom', onRemoteUserEnterRoom);
     }, []);
 
     
-    const onVideoChanged = (shouldShow) => {
-        selfViewRef.current.style.display = shouldShow ? 'block' : 'none';
-    }
+    const onVideoChanged = (shouldShow) => selfViewRef.current.style.display = shouldShow ? 'block' : 'none';
+
+    const onRemoteUserEnterRoom = () => setIsUserEntering(true);
 
     const onEnterRoom = (result) => {
         if (result > 0) {
-            isVideoCall && startLocalVideoPreview();
             trtcInstance.startLocalAudio();
-            onVideoChanged(true)
+            isVideoCall && startLocalVideoPreview();
+            isVideoCall && onVideoChanged(true)
         }
     };
 
@@ -43,7 +46,7 @@ export const C2Cvideo = (props) => {
             trtcInstance.startRemoteView(uid, remoteViewRef.current);
             trtcInstance.setRemoteViewFillMode(uid, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
         } else {
-            remoteViewRef.current.getElementsByTagName('canvas')[0].style.display = 'none';
+            isVideoCall && (remoteViewRef.current.getElementsByTagName('div')[0].style.display = 'none');
         }
     };
 
@@ -55,7 +58,11 @@ export const C2Cvideo = (props) => {
                         <div className="c2c-content--self" ref={selfViewRef} />
                         <div className="c2c-content--remote" ref={remoteViewRef} />
                     </React.Fragment>
-                ) : <div className="c2c-content--voice-call">正在通话中...</div>
+                ) : <div className="c2c-content--voice-call">
+                    <Avatar url={faceUrl} nickName={nickName} size={"large"}/>
+                    <span className="c2c-content--voice-call__nick-name">{nickName}</span>
+                    <span className="c2c-content--voice-call__text"> {isUserEntering ? '正在通话中...' : '等待对方加入...'}</span>
+                </div>
             }
         </div>
     )

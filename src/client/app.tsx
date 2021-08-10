@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ReactDOM from "react-dom";
 import "tea-component/dist/tea.css";
 import "antd/dist/antd.css";
@@ -41,7 +41,7 @@ import {
 import { setIsLogInAction, userLogout } from "./store/actions/login";
 import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite } from "./utils/callWindowTools";
 import { updateCallingStatus } from "./store/actions/ui";
-import {  SERVERr_ADDRESS_IP,SERVERr_ADDRESS_PORT } from './constants/index'
+import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from './constants/index'
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
@@ -52,11 +52,11 @@ export const App = () => {
     catchUserId: '',
     catchUserSig: '',
     catchCalling: {
-        callingType: 0,
-        callingId: '',
-        inviteeList: []
+      callingType: 0,
+      callingId: '',
+      inviteeList: []
     }
-})
+  })
   let showApp = true;
   const { callingStatus } = useSelector(
     (state: State.RootState) => state.ui
@@ -79,7 +79,7 @@ export const App = () => {
             longconnection_address_array: [
               {
                 // server_address_ip: "oaim.crbank.com.cn", // ip 生产
-                server_address_ip: SERVERr_ADDRESS_IP, 
+                server_address_ip: SERVERr_ADDRESS_IP,
                 server_address_port: SERVERr_ADDRESS_PORT, // 端口
               },
             ],
@@ -186,7 +186,6 @@ export const App = () => {
     }
   };
 
-
   const _onInvited = (data) => {
     // actionType: 1
     // businessID: 1
@@ -197,39 +196,40 @@ export const App = () => {
     // inviter: "109442"
     // timeout: 30
     const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
-        const { room_id, call_type } = JSON.parse(formatedData.data)
-        const { inviter, groupID, inviteID,inviteeList } = formatedData;
-        if(call_end > 0){
-            return
-        }
-        timRenderInstance.TIMProfileGetUserProfileList({
-            json_get_user_profile_list_param: {
-                friendship_getprofilelist_param_identifier_array: [inviter],
-                friendship_getprofilelist_param_force_update: false
-            }
-        }).then(async (data) => {
-            const { catchUserId, catchUserSig  } = ref.current;
-            if(!catchUserId){
-                return
-            }
-            const { data: { code, json_param } } = data;
-            if (code === 0) {
-                const [userdata] = JSON.parse(json_param)
-                openCallWindow({
-                    windowType: 'notificationWindow',
-                    callType: call_type + '',
-                    convId: encodeURIComponent(groupID ? groupID : inviter),
-                    convInfo: {
-                        faceUrl: encodeURIComponent(userdata.user_profile_face_url),
-                        nickName: encodeURIComponent(userdata.user_profile_nick_name),
-                        convType: groupID ? 2 : 1,
-                    },
-                    roomId: room_id,
-                    inviteID,
-                    userID: catchUserId,
-                    inviteList: inviteeList,
-                    userSig: catchUserSig
-                });
+    const { room_id, call_type, call_end } = JSON.parse(formatedData.data)
+    const { inviter, groupID, inviteID, inviteeList } = formatedData;
+    if (call_end > 0) {
+      return
+    }
+    timRenderInstance.TIMProfileGetUserProfileList({
+      json_get_user_profile_list_param: {
+        friendship_getprofilelist_param_identifier_array: [inviter, ...inviteeList],
+        friendship_getprofilelist_param_force_update: false
+      }
+    }).then(async (data) => {
+      const { catchUserId, catchUserSig } = ref.current;
+      if (!catchUserId) {
+        return
+      }
+      const { data: { code, json_param } } = data;
+      if (code === 0) {
+        const [userdata, ...inviteList] = JSON.parse(json_param);
+        console.log('============inviteeList==============', inviteList);
+        openCallWindow({
+          windowType: 'notificationWindow',
+          callType: call_type + '',
+          convId: groupID ? groupID : inviter,
+          convInfo: {
+            faceUrl: userdata.user_profile_face_url,
+            nickName: userdata.user_profile_nick_name,
+            convType: groupID ? 2 : 1,
+          },
+          roomId: room_id,
+          inviteID,
+          userID: catchUserId,
+          inviteList: inviteeList,
+          userSig: catchUserSig
+        });
       }
 
     })
@@ -237,33 +237,30 @@ export const App = () => {
   }
 
   const _removeFromArr = (arr: any[], target: any) => {
-    for (let i = 0; i < arr.length; i++) {
-        if (arr[i] = target) {
-            arr.splice(i, 1)
-            break;
-        }
+    for (let i = 0;i < arr.length;i++) {
+      if (arr[i] = target) {
+        arr.splice(i, 1)
+        break;
+      }
     }
-    return arr;
-}
-
+  }
   const _onRejected = (data) => {
     if (data) {
-        const message: State.message = JSON.parse(data)[0];
-        const { message_sender } = message;
-        const { callingId, callingType, inviteeList } = callingStatus;
-        console.log(message, JSON.stringify(callingStatus))
-        if (inviteeList.includes(message_sender)) {
-            const newInviteeList = _removeFromArr(inviteeList, message_sender)
-            if (newInviteeList.length === 0) {
-                closeCallWindow()
-            } else {
-                dispatch(updateCallingStatus({
-                    callingId,
-                    callingType,
-                    inviteeList: newInviteeList
-                }));
-            }
+      const message: State.message = JSON.parse(data)[0];
+      const { message_sender } = message;
+      const { callingId, callingType, inviteeList } = ref.current.catchCalling;
+      if (inviteeList.includes(message_sender)) {
+        const newInviteeList = _removeFromArr(inviteeList, message_sender)
+        if (newInviteeList.length === 0) {
+          closeCallWindow()
+        } else {
+          dispatch(updateCallingStatus({
+            callingId,
+            callingType,
+            inviteeList: newInviteeList
+          }));
         }
+      }
     }
   }
   const _onAccepted = (data) => {
@@ -305,11 +302,11 @@ export const App = () => {
     history.replace("/login");
     dispatch(setIsLogInAction(false));
   };
-  
+
   const _handleGroupInfoModify = async (data) => {
     const response = await getConversionList();
     dispatch(updateConversationList(response));
-    if (response ?.length) {
+    if (response?.length) {
       const newConversaionItem = response.find(
         (v) => v.conv_id === data.group_tips_elem_group_id
       );
@@ -320,7 +317,7 @@ export const App = () => {
   };
   const handleMessageSendFailed = (convList) => {
     const failedList = convList.reduce((acc, cur) => {
-      if (cur.conv_last_msg && cur ?.conv_last_msg.message_status === 3) {
+      if (cur.conv_last_msg && cur?.conv_last_msg.message_status === 3) {
         return {
           ...acc,
           [cur.conv_id]: [...[acc[cur.conv_id]], cur.conv_last_msg].filter(
@@ -364,7 +361,7 @@ export const App = () => {
       );
     }
     const response = await getConversionList();
-    if (response ?.length) {
+    if (response?.length) {
       const newConversaionItem = response.find(
         (v) => v.conv_id === messages[0].message_conv_id
       );
@@ -399,7 +396,7 @@ export const App = () => {
       const response = await getConversionList();
       dispatch(updateConversationList(response));
       // console.log(response, '对话列表。。。。。。。。。。。。。。。。。。。')
-      if (response ?.length) {
+      if (response?.length) {
         const newConversaionItem = response.find(
           (v) => v.conv_id === messages[0].message_conv_id
         );
@@ -460,9 +457,9 @@ export const App = () => {
       const convList = await addProfileForConversition(conversationList);
       dispatch(updateConversationList(convList));
       handleMessageSendFailed(convList);
-      if (conversationList[0] ?.conv_last_msg ?.message_status === 1) {
+      if (conversationList[0]?.conv_last_msg?.message_status === 1) {
         const elemType =
-          conversationList[0].conv_last_msg ?.message_elem_array ?.[0] ?.elem_type;
+          conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
         if (elemType === 4 || elemType === 9) {
           dispatch(
             updateMessages({
@@ -511,31 +508,31 @@ export const App = () => {
     ipcRenderer.on("mainProcessMessage", ipcRendererLister);
     acceptCallListiner((inviteID) => {
       timRenderInstance.TIMAcceptInvite({
-          inviteID: inviteID
+        inviteID: inviteID
       }).then(data => {
-          console.log('接收返回', data)
+        console.log('接收返回', data)
       })
     });
     refuseCallListiner((inviteID) => {
-        timRenderInstance.TIMRejectInvite({
-            inviteID: inviteID
-        }).then(data => {
-            console.log('接收返回', data)
-        })
+      timRenderInstance.TIMRejectInvite({
+        inviteID: inviteID
+      }).then(data => {
+        console.log('接收返回', data)
+      })
     });
     callWindowCloseListiner(() => {
-        dispatch(updateCallingStatus({
-            callingId: '',
-            callingType: 0,
-            inviteeList: []
-        }));
-      });
+      dispatch(updateCallingStatus({
+        callingId: '',
+        callingType: 0,
+        inviteeList: []
+      }));
+    });
     cancelCallInvite((inviteID) => {
-        timRenderInstance.TIMCancelInvite({
-            inviteID: inviteID
-        }).then(data => {
-            console.log('关闭邀请===', data)
-        })
+      timRenderInstance.TIMCancelInvite({
+        inviteID: inviteID
+      }).then(data => {
+        console.log('关闭邀请===', data)
+      })
     });
   }, []);
   useEffect(() => {

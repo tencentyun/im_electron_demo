@@ -1,4 +1,3 @@
-// import { BrowserWindow } from "electron";
 const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW,END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
 const { ipcMain, BrowserWindow, dialog } = require('electron')
 const { screen } = require('electron')
@@ -75,9 +74,8 @@ class IPC {
         // 当作为接收方，接受电话后，更改窗口尺寸。
         ipcMain.on('accept-call', (event, acceptParams) => {
             const { inviteID, isVoiceCall } = acceptParams;
-            const windowWidth = isVoiceCall ? 500 : 800;
-            const windowHeight = 600;
-            console.log('accept params', acceptParams);
+            const windowWidth = isVoiceCall ? 450 : 800;
+            const windowHeight = 800;
          
             this.callWindow.setSize(windowWidth, windowHeight);
             this.callWindow.setPosition( (screenSize.width - windowWidth) / 2, (screenSize.height - windowHeight) / 2);
@@ -121,10 +119,14 @@ class IPC {
                 ...data,
                 sdkAppid: SDK_APP_ID
             }
-            const params = JSON.stringify(addSdkAppid)
-            if (data.windowType === 'notificationWindow') {
+            const params = JSON.stringify(addSdkAppid);
+            const { convInfo: { convType }, callType } = data;
+            if(data.windowType === 'notificationWindow') {
                 this.callWindow.setSize(320, 150);
                 this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
+            } else if( convType === 1 && Number(callType) === 1) {
+                this.callWindow.setSize(450, 800);
+                this.callWindow.setPosition((screenSize.width - 450) / 2, (screenSize.height - 800) / 2);
             }
             this.callWindow.show();
             this.callWindow.webContents.send('pass-call-data', params);

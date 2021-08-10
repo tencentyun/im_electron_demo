@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export const CallTime = ({isStart}) => {
+export const CallTime = ({isStart, prefix}) => {
     const [callTime, setCallTime] = useState(0);
 
     useEffect(() => {
@@ -26,7 +26,7 @@ export const CallTime = ({isStart}) => {
        const hour = Math.floor(minutes / 60);
        const seconds = time % 60;
 
-       return `通话时间: ${addZeroForTime(hour)} : ${addZeroForTime(minutes)} : ${addZeroForTime(seconds)}`;
+       return `${prefix}${addZeroForTime(hour)} : ${addZeroForTime(minutes)} : ${addZeroForTime(seconds)}`;
     };
 
     return (
