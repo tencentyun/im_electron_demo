@@ -59,7 +59,7 @@ export const GroupMemberBubble = (props: {
               <span className="info-val nickname">{user.group_member_info_nick_name || ''}</span>
             </div>
             <div className="info-bar">
-              <span className="info-key">名片</span>
+              <span className="info-key">群昵称</span>
               <span className="info-val">{user.group_member_info_name_card ? user.group_member_info_name_card : '暂无'}</span>
             </div>
             <div className="info-bar">

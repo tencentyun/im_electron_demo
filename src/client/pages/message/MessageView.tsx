@@ -28,9 +28,9 @@ import { FileElem } from './messageElemTyps/fileElem';
 import { GroupTipsElemItem } from './messageElemTyps/grouptipsElem';
 import { VideoElem } from './messageElemTyps/videoElem';
 import { MergeElem } from './messageElemTyps/mergeElem';
+import { Expression } from './messageElemTyps/expression';
 import { ForwardPopup } from './components/forwardPopup';
 import formateTime from '../../utils/timeFormat';
-import { ContentUtils } from 'braft-utils'
 import { Icon, message, Progress, StatusTip, Bubble, Button } from 'tea-component';
 import { custEmojiUpsert } from '../../services/custEmoji'
 import { custEmojiUpsertParams } from '../../services/custEmoji'
@@ -45,11 +45,10 @@ import timRenderInstance from "../../utils/timRenderInstance";
 import { useMessageDirect } from "../../utils/react-use/useDirectMsgPage";
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
-
+let  CountId  = 0;
 type Props = {
     messageList: Array<State.message>,
     editorState,
-    setEditorState,
     convType: number,
     groupType: number;
     convId: string;
@@ -92,28 +91,29 @@ export const displayDiffMessage = (message, element, index) => {
             resp = <TextElemItem {...res} />
             break;
         case 1:
-            resp = <PicElemItem {...res} />
+            resp = <PicElemItem { ...res }/>
             break;
         case 2:
-            resp = <VoiceElem {...res} />
+            resp = <VoiceElem { ...res }/>
             break;
         case 3:
-            resp = <CustomElem message={message} />
+            resp = <CustomElem message={message}/>
             break;
         case 4:
-            resp = <FileElem message={message} element={element} index={index} />
+            resp = <FileElem message={message} element={element} index={index}/>
             break;
         case 5:
-            resp = <GroupTipsElemItem {...res} />
+            resp = <GroupTipsElemItem { ...res }/> 
             break;
         case 6:
-            resp = <div>表情消息</div>
+            // resp = <div>表情消息</div>
+            resp = <Expression { ...res }></Expression>
             break;
         case 7:
             resp = <div>位置消息</div>
             break;
         case 8:
-            resp = <GroupSysElm {...res} />
+            resp = <GroupSysElm { ...res }/>  
             break;
         case 9:
             resp = <VideoElem message={message} {...res} />
@@ -135,7 +135,7 @@ export const displayDiffMessage = (message, element, index) => {
 }
 
 export const MessageView = (props: Props): JSX.Element => {
-    const { messageList, editorState, setEditorState, convType, convId } = props;
+    const { messageList, editorState, convType, convId } = props;
     const messageViewRef = useRef(null);
     const [isTransimitPopup, setTransimitPopup] = useState(false);
     const [isMultiSelect, setMultiSelect] = useState(false);
@@ -490,8 +490,8 @@ export const MessageView = (props: Props): JSX.Element => {
     };
 
     const reEdit = (data) => {
-        console.log(data)
-        setEditorState(ContentUtils.insertText(editorState, data))
+        let refSteat = [data,CountId++]
+        editorState(refSteat)
     }
 
     // console.warn('查看当前会话所有消息',messageList)
@@ -662,10 +662,18 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {
                                             message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                                 return (
-                                                    <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
-                                                        {
-                                                            displayDiffMessage(item, elment, index)
-                                                        }
+                                                    <div className="message-view__item--element"  key={index}>
+                                                       {    
+                                                           //群里会话列表添加名称  zwc
+                                                            item.message_conv_type === 2 && <div className="message-view__nick_name">
+                                                                                                { item?.message_sender_group_member_info.group_member_info_name_card || item.message_sender_profile.user_profile_nick_name  }
+                                                                                            </div>
+                                                       }  
+                                                       <div  onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                            {
+                                                                displayDiffMessage(item, elment, index)
+                                                            }
+                                                        </div>
                                                     </div>
                                                 )
                                             })

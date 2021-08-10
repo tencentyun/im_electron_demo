@@ -624,6 +624,14 @@ export const modifyGroupMemberInfo = async (params: {
     (currentFlag) => (modifyFlag = modifyFlag | currentFlag)
   );
 
+  console.log("入参打印",{
+    params: {
+      group_modify_member_info_group_id: groupId,
+      group_modify_member_info_identifier: userId,
+      group_modify_member_info_modify_flag: modifyFlag,
+      ...modifyGroupMemberParams,
+    },
+  })
   const { data } = await timRenderInstance.TIMGroupModifyMemberInfo({
     params: {
       group_modify_member_info_group_id: groupId,
