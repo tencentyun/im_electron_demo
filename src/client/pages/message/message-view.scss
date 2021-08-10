@@ -64,7 +64,6 @@
         display: flex;
         flex-direction: row;
         margin-top: 20px;
-        
         &--withdraw{
             margin-left: 5px;
             color: blue;
@@ -74,7 +73,9 @@
         &.is-self {
             flex-direction: row-reverse;
             display: flex;
-
+            .message-view__nick_name{
+                text-align: right;
+            }
             .face-url {
                 margin-right: 0;
                 margin-left: 8px;
@@ -89,6 +90,9 @@
 
         &--element {
             max-width: 80%;
+            .message-view__nick_name{
+                color: #666;
+            }
         }
 
         &--time-divider {

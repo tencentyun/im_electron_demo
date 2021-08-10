@@ -37,21 +37,21 @@ export const GroupNameCard = (props: {
     <>
       <div className="group-name-card">
         <div className="group-name-card--title">
-          <span className="group-name-card--title__text">群名片</span>
+          <span className="group-name-card--title__text">我在本群的昵称</span>
           {!isEdit && <EditIcon onClick={() => setIsEdit(true)} />}
         </div>
         {isEdit ? (
           <Input
             className="group-name-card--input"
             size="full"
-            placeholder="输入后名片内容后按回车进行设置"
+            placeholder="输入我在本群的昵称后按回车进行设置"
             value={input}
             onChange={(value) => {
               setInput(value);
             }}
             onBlur={() => {
               dialogRef.current.open({
-                description: `是否将群名片修改为`,
+                description: `是否将我在本群的昵称修改为`,
                 modifyContent: input,
                 onConfirm: handleModify,
               });
@@ -59,7 +59,7 @@ export const GroupNameCard = (props: {
             onKeyDown={(e) => {
               if (e.which === 13) {
                 dialogRef.current.open({
-                  description: `是否将群名片修改为`,
+                  description: `是否将我在本群的昵称修改为`,
                   modifyContent: input,
                   onConfirm: handleModify,
                 });

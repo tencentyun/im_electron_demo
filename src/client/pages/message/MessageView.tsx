@@ -21,16 +21,16 @@ import {
 } from '../../utils/messageUtils'
 import { Avatar } from '../../components/avatar/avatar';
 import TextElemItem from './messageElemTyps/textElemItem';
-import PicElemItem  from './messageElemTyps/picElemItem';
+import PicElemItem from './messageElemTyps/picElemItem';
 import CustomElem from './messageElemTyps/customElem';
 import VoiceElem from './messageElemTyps/voiceElem';
 import FileElem from './messageElemTyps/fileElem';
 import GroupTipsElemItem from './messageElemTyps/grouptipsElem';
-import  VideoElem from './messageElemTyps/videoElem';
+import { VideoElem } from './messageElemTyps/videoElem';
 import MergeElem from './messageElemTyps/mergeElem';
+import { Expression } from './messageElemTyps/expression';
 import { ForwardPopup } from './components/forwardPopup';
 import formateTime from '../../utils/timeFormat';
-import { ContentUtils } from 'braft-utils'
 import { Icon, message, Progress, StatusTip, Bubble, Button } from 'tea-component';
 import { custEmojiUpsert } from '../../services/custEmoji'
 import { custEmojiUpsertParams } from '../../services/custEmoji'
@@ -45,11 +45,10 @@ import timRenderInstance from "../../utils/timRenderInstance";
 import { useMessageDirect } from "../../utils/react-use/useDirectMsgPage";
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
-
+let CountId = 0;
 type Props = {
     messageList: Array<State.message>,
     editorState,
-    setEditorState,
     convType: number,
     groupType: number;
     convId: string;
@@ -98,18 +97,25 @@ export const displayDiffMessage = (message, element, index) => {
             resp = <VoiceElem {...res} />
             break;
         case 3:
+<<<<<<< HEAD
             // @ts-ignore
-            resp = <CustomElem message={message}/>
+            resp = <CustomElem message={message} />
             break;
         case 4:
             // @ts-ignore
-            resp = <FileElem message={message} element={element} index={index}/>
+=======
+            resp = <CustomElem message={message}/>
+            break;
+        case 4:
+>>>>>>> 646e20dbfd65f4bde61bd4624982b1e218929004
+            resp = <FileElem message={message} element={element} index={index} />
             break;
         case 5:
             resp = <GroupTipsElemItem {...res} />
             break;
         case 6:
-            resp = <div>表情消息</div>
+            // resp = <div>表情消息</div>
+            resp = <Expression {...res}></Expression>
             break;
         case 7:
             resp = <div>位置消息</div>
@@ -137,7 +143,7 @@ export const displayDiffMessage = (message, element, index) => {
 }
 
 export const MessageView = (props: Props): JSX.Element => {
-    const { messageList, editorState, setEditorState, convType, convId } = props;
+    const { messageList, editorState, convType, convId } = props;
     const messageViewRef = useRef(null);
     const [isTransimitPopup, setTransimitPopup] = useState(false);
     const [isMultiSelect, setMultiSelect] = useState(false);
@@ -492,8 +498,8 @@ export const MessageView = (props: Props): JSX.Element => {
     };
 
     const reEdit = (data) => {
-        console.log(data)
-        setEditorState(ContentUtils.insertText(editorState, data))
+        let refSteat = [data, CountId++]
+        editorState(refSteat)
     }
 
     // console.warn('查看当前会话所有消息',messageList)
@@ -629,8 +635,8 @@ export const MessageView = (props: Props): JSX.Element => {
                                     </div>
                                 ) :
                                     <div key={index} onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
-                                        { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ? 
-                                            <Icon className="message-view__item--icon" type="success" /> : 
+                                        {isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ?
+                                            <Icon className="message-view__item--icon" type="success" /> :
                                             <i className="message-view__item--icon-normal" ></i>)
                                         }
                                         <div className="message-view__item--avatar face-url">
@@ -664,10 +670,18 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {
                                             message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                                 return (
-                                                    <div className="message-view__item--element" onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                    <div className="message-view__item--element" key={index}>
                                                         {
-                                                            displayDiffMessage(item, elment, index)
+                                                            //群里会话列表添加名称  zwc
+                                                            item.message_conv_type === 2 && <div className="message-view__nick_name">
+                                                                {item?.message_sender_group_member_info.group_member_info_name_card || item.message_sender_profile.user_profile_nick_name}
+                                                            </div>
                                                         }
+                                                        <div onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                            {
+                                                                displayDiffMessage(item, elment, index)
+                                                            }
+                                                        </div>
                                                     </div>
                                                 )
                                             })

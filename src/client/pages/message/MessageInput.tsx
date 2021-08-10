@@ -33,6 +33,7 @@ type Props = {
     convId: string,
     convType: number,
     isShutUpAll: boolean,
+    isHandCal?:Array<string|number>,
     handleOpenCallWindow: (callType: string, convType: number, windowType: string) => void;
 }
 
@@ -92,7 +93,7 @@ const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType, isShutUpAll, handleOpenCallWindow } = props;
+    const { convId, convType, isShutUpAll, handleOpenCallWindow,isHandCal } = props;
     const [isDraging, setDraging] = useState(false);
     const [activeFeature, setActiveFeature] = useState('');
     const [shouldShowCallMenu, setShowCallMenu] = useState(false);
@@ -119,6 +120,10 @@ export const MessageInput = (props: Props): JSX.Element => {
     const userSig = window.localStorage.getItem('usersig')
     const uid = window.localStorage.getItem('uid')
     window.localStorage.setItem('convId', convId)
+    //我的
+    useEffect(()=>{
+        reedite(isHandCal)
+    },[isHandCal])
     // 上传逻辑
     const handleUpload = (base64Data) => {
         return new Promise((resolve, reject) => {
@@ -246,7 +251,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }));
 
                 setEditorState(ContentUtils.clear(editorState));
-
                 const results = await Promise.all(fetchList);
                 console.log(results, 'result========================')
                 for (const res of results) {
@@ -552,10 +556,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                 convId,
                 convType,
                 messageElementArray: [{
-                    elem_type: 3,
-                    custom_elem_data: 'CUST_EMOJI',
-                    custom_elem_desc: url,
-                    custom_elem_ext: '自定义表情'
+                    elem_type: 6,
+                    face_elem_buf: url
                 }],
                 userId
             });
@@ -619,6 +621,11 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
 
+    //重新编辑
+    const reedite = (data) => {
+        console.log(data[0], editorState)
+        setEditorState(ContentUtils.insertText(editorState, data[0]))
+    }
     const handleRecordPopupCallback = (path) => {
         resetState()
         if (path) {
@@ -659,7 +666,10 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handlePastedText = (text: string, htmlString: string) => {
-        const patseText = getPasteText(htmlString);
+        let  patseText = text
+        if(htmlString){
+            patseText = getPasteText(htmlString);
+        } 
         setEditorState(ContentUtils.insertText(editorState, patseText))
     }
 
