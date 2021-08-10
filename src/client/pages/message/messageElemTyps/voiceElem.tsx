@@ -2,8 +2,9 @@ import React from "react";
 import { useState } from "react";
 import { useRef } from "react";
 import ReactAudioPlayer from "react-audio-player";
+import withMemo from "../../../utils/componentWithMemo";
 
-export const VoiceElem = (props: any): JSX.Element => {
+const VoiceElem = (props: any): JSX.Element => {
     const audioRef = useRef(null)
     const [playing,setPlaying] = useState(false)
     
@@ -27,3 +28,5 @@ export const VoiceElem = (props: any): JSX.Element => {
    
     return item(props);
 }
+
+export default withMemo(VoiceElem);

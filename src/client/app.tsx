@@ -39,7 +39,7 @@ import {
   updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
-import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite } from "./utils/callWindowTools";
+import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite, updateInviteList } from "./utils/callWindowTools";
 import { updateCallingStatus } from "./store/actions/ui";
 import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from './constants/index'
 import { replaceConversaionList } from './store/actions/conversation';
@@ -186,22 +186,8 @@ export const App = () => {
         }
       });
     }
-  };
-
-  const _onInvited = (data) => {
-    // actionType: 1
-    // businessID: 1
-    // data: "{\"version\":0,\"call_type\":1,\"room_id\":30714513}"
-    // groupID: ""
-    // inviteID: "19455b33-c8fc-4fef-ab60-9347ebea78cc"
-    // inviteeList: ["3708"]
-    // inviter: "109442"
-    // timeout: 30
-    const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
-    const { room_id, call_type, call_end } = JSON.parse(formatedData.data)
-    const { inviter, groupID, inviteID, inviteeList } = formatedData;
-    if (call_end > 0) {
-      return
+    const _onRejected = (data) => {
+      data && _handleRemoteUserReject(JSON.parse(data)[0]);
     }
     timRenderInstance.TIMProfileGetUserProfileList({
       json_get_user_profile_list_param: {
@@ -264,59 +250,56 @@ export const App = () => {
         }
       }
     }
-  }
-  const _onAccepted = (data) => {
-
-  }
-  const _onCanceled = (data) => {
-    closeCallWindow()
-    // 关闭通知窗口
-  }
+  };
   const _onTimeout = (data) => {
-    closeCallWindow
-    // 关闭通知窗口
+    data && _handleRemoteUserTimeOut(JSON.parse(data));
   }
-  const _handleElemUploadProgres = ({
-    message,
-    index,
-    cur_size,
-    total_size,
-    user_data,
-  }) => {
-    const percentage = Math.round((cur_size * 100) / total_size) + "%";
-    console.log(percentage, "下载进度");
-    // ipcRenderer.send("UPLOAD", percentage);
-    const ramdon = Math.random();
-    if (ramdon > 0.8) {
-      dispatch(
-        updateMessageElemProgress({
-          messageId: message.message_msg_id,
-          index,
-          cur_size,
-          total_size,
-        })
-      );
-    }
-  };
 
-  const _handleKickedout = async () => {
-    dispatch(userLogout());
-    history.replace("/login");
-    dispatch(setIsLogInAction(false));
-  };
-
-  const _handleGroupInfoModify = async (data) => {
-    const response = await getConversionList();
-    dispatch(updateConversationList(response));
-    if (response?.length) {
-      const newConversaionItem = response.find(
-        (v) => v.conv_id === data.group_tips_elem_group_id
-      );
-      if (newConversaionItem) {
-        // dispatch(updateCurrentSelectedConversation(newConversaionItem));
+  const _handleRemoteUserTimeOut = (message) => {
+    const timeOutList = JSON.parse(message.message_elem_array[0].custom_elem_data)?.inviteeList;
+    if (timeOutList) {
+      const { callingId, callingType, inviteeList } = ref.current.catchCalling;
+      const newList = inviteeList.filter(item => !timeOutList.includes(item));
+      if (newList.length === 0) {
+        closeCallWindow();
+      } else {
+        dispatch(updateCallingStatus({
+          callingId,
+          callingType,
+          inviteeList: newList
+        }));
+        updateInviteList(newList); //向通话窗口通信
       }
     }
-  };
+
+  }
+
+  const _handleRemoteUserReject = (message) => {
+    const { message_sender } = message;
+    const { callingId, callingType, inviteeList } = ref.current.catchCalling;
+    if (inviteeList.includes(message_sender)) {
+      const newInviteeList = _removeFromArr(inviteeList, message_sender)
+      if (newInviteeList.length === 0) {
+        closeCallWindow();
+      } else {
+        dispatch(updateCallingStatus({
+          callingId,
+          callingType,
+          inviteeList: newInviteeList
+        }));
+        updateInviteList(newInviteeList); //向通话窗口通信
+      }
+    }
+  }
+
+  const _handleElemUploadProgres = ({ message, index, cur_size, total_size, user_data }) => {
+    dispatch(updateMessageElemProgress({
+      messageId: message.message_msg_id,
+      index,
+      cur_size,
+      total_size
+    }));
+  }
   const handleMessageSendFailed = (convList) => {
     const failedList = convList.reduce((acc, cur) => {
       if (cur.conv_last_msg && cur?.conv_last_msg.message_status === 3) {

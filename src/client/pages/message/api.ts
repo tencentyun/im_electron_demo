@@ -285,6 +285,7 @@ export const getMsgList = async (convId, convType, lastMsg = null) => {
     params: {
       msg_getmsglist_param_last_msg: lastMsg,
       msg_getmsglist_param_count: HISTORY_MESSAGE_COUNT,
+      msg_getmsglist_param_is_remble: true
     },
   });
 
