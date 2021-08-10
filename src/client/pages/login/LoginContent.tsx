@@ -64,22 +64,22 @@ interface IEncrptPwdRes {
 export const LoginContent = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const [userID, setUserID] = useState(window.localStorage.getItem('uid')||'');
-    const [password, setPassword] = useState(window.localStorage.getItem('usersig')||'');
+    const [userID, setUserID] = useState(window.localStorage.getItem('uid') || '');
+    const [password, setPassword] = useState(window.localStorage.getItem('usersig') || '');
     const isDisablelogin = userID && password;
 
     const customizeTabBarRender = (children: JSX.Element) => {
         return <a className="customize-tab-bar">{children}</a>
     }
     const chkIt = (val: string) => {
-        if(val.length === 0){
+        if (val.length === 0) {
             setUserID('')
             setPassword('')
             window.localStorage.setItem('uid', '')
             window.localStorage.setItem('usersig', '')
         }
         if (val.length > 0 && !/^[A-Za-z0-9]+$/.test(val)) {
-            message.warning({content:'不能输入中文！'})
+            message.warning({ content: '不能输入中文！' })
             return
         }
         setUserID(val.toLocaleUpperCase())
@@ -96,42 +96,46 @@ export const LoginContent = (): JSX.Element => {
             //     userName: userID.toUpperCase(),
             //     userPass: Encypt,
             //     asyuserind: null,
-            //     password: password
+            //     password: "MTIzNDU2"
             // }).then(async res => {
-            const USERLOGIN = userID
-            const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
-            const params: loginParam = {
-                userID: USERLOGIN.toUpperCase(),
-                userSig: userSig
-            }
-            const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
-            window.localStorage.setItem('uid', userID)
-            window.localStorage.setItem('usersig', Encypt)
-            // let sectionData = assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children
-            // window.localStorage.setItem('section', JSON.stringify(sectionData))
-            // dispatch(setUserInfo({
-            //     userId: userID,
-            //     userSig: userSig
-            // }));
-            // // dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children))
-            // dispatch(setIsLogInAction(true));
-            // dispatch(changeFunctionTab('message'));
-            // history.replace('/home/message');
-            //获取部门
-            filterGetDepartment({
-                DepId: "root_1"
-            }, (data) => {
-                let sectionData = assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children
-                window.localStorage.setItem('section', JSON.stringify(sectionData))
-                dispatch(setUserInfo({
-                    userId: userID,
-                    userSig: userSig
-                }));
-                dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children))
-                dispatch(setIsLogInAction(true));
-                dispatch(changeFunctionTab('message'));
-                history.replace('/home/message');
-            }, userID)
+            //     console.log(res)
+            //     const { RET, USERLOGIN, ERRCODE } = res
+            //     if (RET === 'FALSE') {
+            //         message.error({
+            //             content: "登录失败：" + errType(ERRCODE),
+            //         })
+            //     } else {
+                    const USERLOGIN = userID
+                    const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
+                    const params: loginParam = {
+                        userID: USERLOGIN.toUpperCase(),
+                        userSig: userSig
+                    }
+                    const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
+                    window.localStorage.setItem('uid', USERLOGIN)
+                    window.localStorage.setItem('usersig', Encypt)
+                    //获取部门
+                    filterGetDepartment({
+                        DepId: "root_1"
+                    }, (data) => {
+                        let sectionData = assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children
+                        window.localStorage.setItem('section', JSON.stringify(sectionData))
+                        dispatch(setUserInfo({
+                            userId: USERLOGIN,
+                            userSig: userSig
+                        }));
+                        dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children))
+                        dispatch(setIsLogInAction(true));
+                        dispatch(changeFunctionTab('message'));
+                        history.replace('/home/message');
+                    }, USERLOGIN)
+            //     }
+            // }).catch(err => {
+            //     const { ERRCODE } = err.data
+            //     message.error({
+            //         content: "登录失败：" + err.message || errType(ERRCODE),
+            //     })
+            // })
         }).catch(err => {
             message.error({
                 content: "登录失败：" + err.message || err.ErrorInfo,

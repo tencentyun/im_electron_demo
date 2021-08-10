@@ -36,7 +36,7 @@ type Props = {
     handleOpenCallWindow: (callType: string, convType: number, windowType: string) => void;
 }
 
-const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
+const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF', 'jpeg'];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
 const FEATURE_LIST_GROUP = [{
@@ -316,21 +316,21 @@ export const MessageInput = (props: Props): JSX.Element => {
         return 'handled';
     }
 
-    const sendMessages = (type, params) => {
-        switch (type) {
-            case "image":
-                sendImageMessage(params)
-                break
-            case "audio":
-                sendSoundMessage(params)
-                break
-            case "video":
-                sendVideoMessage(params)
-                break
-            default:
-                sendFileMessage(params)
-        }
-    }
+    // const sendMessages = (type, params) => {
+    //     switch (type) {
+    //         case "image":
+    //             sendImageMessage(params)
+    //             break
+    //         case "audio":
+    //             sendSoundMessage(params)
+    //             break
+    //         case "video":
+    //             sendVideoMessage(params)
+    //             break
+    //         default:
+    //             sendFileMessage(params)
+    //     }
+    // }
 
     const handleDragEnter = e => {
         setDraging(true);
