@@ -576,33 +576,33 @@ export const MessageInput = (props: Props): JSX.Element => {
         clipboard.clear()
         ipcRenderer.send('SCREENSHOT')
     }
-    // const handleOnkeyPress = (e) => {
-    //     if (sendType == '0') {
-    //         // enter发送
-    //         if (e.ctrlKey && e.keyCode === 13) {
-    //             // console.log('换行', '----------------------', editorState)
-    //         } else if (e.keyCode == 13 || e.charCode === 13) {
-    //             e.preventDefault();
-    //             handleSendTextMsg();
-    //         } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-    //             e.preventDefault();
-    //             setAtPopup(true)
-    //         }
-    //     } else {
-    //         // Ctrl+enter发送
-    //         if (e.ctrlKey && e.keyCode === 13) {
-    //             e.preventDefault();
-    //             handleSendTextMsg();
-    //         } else if (e.keyCode == 13 || e.charCode === 13) {
-    //             // console.log('换行', '----------------------', editorState)
-    //         } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-    //             window.localStorage.setItem('inputAt', '1')
-    //             e.preventDefault()
-    //             setAtPopup(true)
-    //         }
-    //     }
+    const handleOnkeyPress = (e) => {
+        if (sendType == '0') {
+            // enter发送
+            if (e.ctrlKey && e.keyCode === 13) {
+                // console.log('换行', '----------------------', editorState)
+            } else if (e.keyCode == 13 || e.charCode === 13) {
+                e.preventDefault();
+                handleSendTextMsg();
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+                e.preventDefault();
+                setAtPopup(true)
+            }
+        } else {
+            // Ctrl+enter发送
+            if (e.ctrlKey && e.keyCode === 13) {
+                e.preventDefault();
+                handleSendTextMsg();
+            } else if (e.keyCode == 13 || e.charCode === 13) {
+                // console.log('换行', '----------------------', editorState)
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+                window.localStorage.setItem('inputAt', '1')
+                e.preventDefault()
+                setAtPopup(true)
+            }
+        }
 
-    // }
+    }
 
     const onEmojiPopupCallback = (id, type) => {
         console.log(id)
@@ -693,50 +693,9 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('CHANGESTORE', index)
     }
 
-    const handleKeyDown = (e) => {
-        console.log(e.ctrlKey && e.keyCode === 13, e, sendType)
-        if (sendType == '0') {
-            // enter发送
-            
-            if (e.keyCode == 13 || e.charCode === 13) {
-                e.preventDefault();
-                handleSendTextMsg();
-            } else if (e.ctrlKey && e.keyCode === 13) {
-
-            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-                e.preventDefault();
-                setAtPopup(true)
-            }
-        } else {
-            // Ctrl+enter发送
-            if (e.ctrlKey && e.keyCode === 13) {
-                e.preventDefault();
-                handleSendTextMsg();
-            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-                e.preventDefault()
-                setAtPopup(true)
-            }
-        }
-        // if (e.keyCode === 38 || e.charCode === 38) {
-        //     if (atPopup) {
-        //         e.preventDefault();
-        //     }
-        // }
-        // if (e.keyCode === 40 || e.charCode === 40) {
-        //     if (atPopup) {
-        //         e.preventDefault();
-        //     }
-        // }
-    }
 
     const keyBindingFn = (e) => {
-        if (e.keyCode === 13 || e.charCode === 13) {
-            // e.preventDefault();
-            // if(!atPopup){
-            //     handleSendMsg();
-            // }
-            return 'enter';
-        } else if (e.key === "@" && e.shiftKey && convType === 2) {
+        if (e.key === "@" && e.shiftKey && convType === 2) {
             e.preventDefault();
             setAtPopup(true);
             setEditorState(ContentUtils.insertText(editorState, ` @`))
@@ -747,6 +706,23 @@ export const MessageInput = (props: Props): JSX.Element => {
             setAtPopup(true);
             return 'zh-cn-@';
         }
+        // if (e.keyCode === 13 || e.charCode === 13) {
+        //     // e.preventDefault();
+        //     // if(!atPopup){
+        //     //     handleSendMsg();
+        //     // }
+        //     return 'enter';
+        // } else if (e.key === "@" && e.shiftKey && convType === 2) {
+        //     e.preventDefault();
+        //     setAtPopup(true);
+        //     setEditorState(ContentUtils.insertText(editorState, ` @`))
+        //     return '@';
+        // } else if (e.key === "Process" && e.shiftKey && convType === 2) {
+        //     e.preventDefault();
+        //     setIsZHCNAndFirstPopup(true);
+        //     setAtPopup(true);
+        //     return 'zh-cn-@';
+        // }
     }
 
     const handleKeyCommand = (e) => {
@@ -869,7 +845,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     ))
                 }
             </div>
-            <div className="message-input__text-area" onKeyDown={handleKeyDown}>
+            <div className="message-input__text-area" onKeyDown={handleOnkeyPress}>
                 <BraftEditor
                     stripPastedStyles
                     //@ts-ignore
