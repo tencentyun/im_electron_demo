@@ -6,7 +6,10 @@ import { shell } from 'electron'
 import { Icon, message as teaMessage } from "tea-component";
 import { checkPathInLS, setPathToLS } from "../../../utils/messageUtils";
 import path from 'path';
-export const FileElem = (props: any): JSX.Element => {
+
+import withMemo from "../../../utils/componentWithMemo";
+
+const FileElem = (props: any): JSX.Element => {
     const { message, element, index } = props
     const { message_conv_id, message_conv_type, message_status, message_msg_id, message_is_from_self } = message
     const { file_elem_file_name, file_elem_file_size,  file_elem_file_path, file_elem_url } = element
@@ -114,3 +117,5 @@ export const FileElem = (props: any): JSX.Element => {
     };
     return item();
 }
+
+export default withMemo(FileElem);

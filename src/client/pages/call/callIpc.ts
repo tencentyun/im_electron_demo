@@ -11,6 +11,10 @@ export const eventListiner = {
         ipcRenderer.on('exit-room', () => {
             eventEmiter.emit('exitRoom');
         });
+
+        ipcRenderer.on('update-invite-list', (event, data) => {
+            eventEmiter.emit('updateInviteList', data);
+        });
     },
     remoteUserJoin: userId => {
         ipcRenderer.send('remote-user-join', userId)

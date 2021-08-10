@@ -20,14 +20,14 @@ import {
     matchUrl
 } from '../../utils/messageUtils'
 import { Avatar } from '../../components/avatar/avatar';
-import { TextElemItem } from './messageElemTyps/textElemItem';
-import { PicElemItem } from './messageElemTyps/picElemItem';
-import { CustomElem } from './messageElemTyps/customElem';
-import { VoiceElem } from './messageElemTyps/voiceElem';
-import { FileElem } from './messageElemTyps/fileElem';
-import { GroupTipsElemItem } from './messageElemTyps/grouptipsElem';
+import TextElemItem from './messageElemTyps/textElemItem';
+import PicElemItem from './messageElemTyps/picElemItem';
+import CustomElem from './messageElemTyps/customElem';
+import VoiceElem from './messageElemTyps/voiceElem';
+import FileElem from './messageElemTyps/fileElem';
+import GroupTipsElemItem from './messageElemTyps/grouptipsElem';
 import { VideoElem } from './messageElemTyps/videoElem';
-import { MergeElem } from './messageElemTyps/mergeElem';
+import MergeElem from './messageElemTyps/mergeElem';
 import { Expression } from './messageElemTyps/expression';
 import { ForwardPopup } from './components/forwardPopup';
 import formateTime from '../../utils/timeFormat';
@@ -37,7 +37,7 @@ import { custEmojiUpsertParams } from '../../services/custEmoji'
 import { showDialog } from "../../utils/tools";
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
-import { GroupSysElm } from './messageElemTyps/groupSystemElem';
+import GroupSysElm from './messageElemTyps/groupSystemElem';
 import { setCurrentReplyUser } from '../../store/actions/message'
 import { setImgViewerAction } from '../../store/actions/imgViewer';
 import { ipcRenderer } from 'electron';
@@ -45,7 +45,7 @@ import timRenderInstance from "../../utils/timRenderInstance";
 import { useMessageDirect } from "../../utils/react-use/useDirectMsgPage";
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
-let  CountId  = 0;
+let CountId = 0;
 type Props = {
     messageList: Array<State.message>,
     editorState,
@@ -91,29 +91,37 @@ export const displayDiffMessage = (message, element, index) => {
             resp = <TextElemItem {...res} />
             break;
         case 1:
-            resp = <PicElemItem { ...res }/>
+            resp = <PicElemItem {...res} />
             break;
         case 2:
-            resp = <VoiceElem { ...res }/>
+            resp = <VoiceElem {...res} />
             break;
         case 3:
+<<<<<<< HEAD
+            // @ts-ignore
+            resp = <CustomElem message={message} />
+            break;
+        case 4:
+            // @ts-ignore
+=======
             resp = <CustomElem message={message}/>
             break;
         case 4:
-            resp = <FileElem message={message} element={element} index={index}/>
+>>>>>>> 646e20dbfd65f4bde61bd4624982b1e218929004
+            resp = <FileElem message={message} element={element} index={index} />
             break;
         case 5:
-            resp = <GroupTipsElemItem { ...res }/> 
+            resp = <GroupTipsElemItem {...res} />
             break;
         case 6:
             // resp = <div>表情消息</div>
-            resp = <Expression { ...res }></Expression>
+            resp = <Expression {...res}></Expression>
             break;
         case 7:
             resp = <div>位置消息</div>
             break;
         case 8:
-            resp = <GroupSysElm { ...res }/>  
+            resp = <GroupSysElm {...res} />
             break;
         case 9:
             resp = <VideoElem message={message} {...res} />
@@ -490,7 +498,7 @@ export const MessageView = (props: Props): JSX.Element => {
     };
 
     const reEdit = (data) => {
-        let refSteat = [data,CountId++]
+        let refSteat = [data, CountId++]
         editorState(refSteat)
     }
 
@@ -626,8 +634,8 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {reeditShowText(item) ? <span className="message-view__item--withdraw" onClick={() => { reEdit(message_elem_array[0].text_elem_content) }}> 重新编辑</span> : <></>}
                                     </div>
                                 ) :
-                                    <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self && item ? 'is-self' : ''}`} key={message_msg_id}>
-                                        {isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted && !isMessageSendFailed ?
+                                    <div key={index} onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
+                                        {isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ?
                                             <Icon className="message-view__item--icon" type="success" /> :
                                             <i className="message-view__item--icon-normal" ></i>)
                                         }
@@ -662,14 +670,14 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {
                                             message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                                 return (
-                                                    <div className="message-view__item--element"  key={index}>
-                                                       {    
-                                                           //群里会话列表添加名称  zwc
+                                                    <div className="message-view__item--element" key={index}>
+                                                        {
+                                                            //群里会话列表添加名称  zwc
                                                             item.message_conv_type === 2 && <div className="message-view__nick_name">
-                                                                                                { item?.message_sender_group_member_info.group_member_info_name_card || item.message_sender_profile.user_profile_nick_name  }
-                                                                                            </div>
-                                                       }  
-                                                       <div  onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                                                {item?.message_sender_group_member_info.group_member_info_name_card || item.message_sender_profile.user_profile_nick_name}
+                                                            </div>
+                                                        }
+                                                        <div onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                                             {
                                                                 displayDiffMessage(item, elment, index)
                                                             }

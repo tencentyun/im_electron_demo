@@ -1,8 +1,10 @@
 import { shell } from "electron";
 import React, { useEffect } from "react";
 import { downloadFilesByUrl } from "../../../utils/tools";
+import withMemo from "../../../utils/componentWithMemo";
 import path from 'path'
-export const PicElemItem = (props: any): JSX.Element => {
+
+const PicElemItem = (props: any): JSX.Element => {
     const showPic = () => {
         try {
             const imageName = props.image_elem_orig_id.split('_').pop()
@@ -32,3 +34,5 @@ export const PicElemItem = (props: any): JSX.Element => {
     }, [])
     return item(props);
 }
+
+export default withMemo(PicElemItem);

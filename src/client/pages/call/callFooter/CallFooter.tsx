@@ -9,7 +9,8 @@ type Props = {
     isVideoCall: boolean
 }
 
-export const CallFooter = (props: Props) : JSX.Element => {
+const CallFooter = (props: Props) : JSX.Element => {
+    console.log('============render call footer==========');
     const { toggleVoice, toggleVideo, exitRoom, isVideoCall } = props;
     const [isOpenMic, setMute] = useState<boolean>(true);
     const [isOpenCamera, setOpenCamera ] = useState<boolean>(true);
@@ -38,3 +39,9 @@ export const CallFooter = (props: Props) : JSX.Element => {
         </div>
     )
 };
+
+const shouldRender = (prevProps, nextProps) => {
+    return prevProps.isStart === nextProps.isStart;
+}
+
+export default React.memo(CallFooter, shouldRender);

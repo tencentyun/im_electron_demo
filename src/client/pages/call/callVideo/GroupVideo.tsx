@@ -36,6 +36,10 @@ export const GroupVideo = (props) => {
     }, []);
 
     useEffect(() => {
+        setUserList(Array.from(new Set([userId, ...inviteList])));
+    }, [inviteList])
+
+    useEffect(() => {
         const resultArray = splitUserList(userList, 9);
         setGroupSplit(resultArray);
     }, [userList]);
