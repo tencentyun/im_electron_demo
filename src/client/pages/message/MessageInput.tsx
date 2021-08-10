@@ -697,7 +697,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         console.log(e.ctrlKey && e.keyCode === 13, e, sendType)
         if (sendType == '0') {
             // enter发送
-
+            
             if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
                 handleSendTextMsg();
@@ -887,6 +887,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
                     draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled' }}
+                    maxLength={4000}
                     actions={[]}
                 />
             </div>

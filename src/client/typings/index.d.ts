@@ -86,6 +86,7 @@ declare namespace State {
         message_server_time: number
         message_status: number
         message_unique_id: number
+        message_is_forward_message: boolean
         isTimeDivider?: boolean
         time?: number
     }

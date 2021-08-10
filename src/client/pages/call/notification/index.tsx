@@ -5,11 +5,11 @@ import { eventListiner } from '../callIpc';
 import { endCallWindow } from '../../../utils/callWindowTools';
 import event from '../event';
 export const Notification = (props) => {
-    const { convInfo: { nickName, faceUrl}, callType, inviteID } = props;
+    const { convInfo: { nickName, faceUrl, convType}, callType, inviteID } = props;
     console.log('callType', callType);
     const isVoiceCall = callType === 1;
 
-    const accept = () => eventListiner.acceptCall({inviteID, isVoiceCall});
+    const accept = () => eventListiner.acceptCall({inviteID, isVoiceCall: isVoiceCall && convType === 1});
 
     const refuse = () => eventListiner.refuseCall(inviteID);
 
@@ -26,8 +26,8 @@ export const Notification = (props) => {
     return (
         <div className="notification">
             <div className="notification__title">
-                <img src={decodeURIComponent(faceUrl)} className="notification__avatar"/>
-                <span className="notification__title--nick-name">{decodeURIComponent(nickName)}</span><br></br>
+                <img src={faceUrl} className="notification__avatar"/>
+                <span className="notification__title--nick-name">{nickName}</span><br></br>
                 <span className="notification__title--text">{getDisplayText()}</span>
             </div>
             <div className="notification__btn">
