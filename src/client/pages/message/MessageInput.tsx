@@ -54,14 +54,14 @@ const FEATURE_LIST_GROUP = [{
     id: 'file',
     content: '发文件'
 },
-    {
-    id: 'video',
-    content: '发视频'
-}, 
-// {
-//     id: 'phone',
-//     content: '语音'
-// },
+//     {
+//     id: 'video',
+//     content: '发视频'
+// }, 
+{
+    id: 'phone',
+    content: '语音'
+},
 {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
@@ -76,13 +76,14 @@ const FEATURE_LIST_C2C = [{
     id: 'file',
     content: '发文件'
 },
-    {
-    id: 'video',
-    content: '发视频'
-}, {
+// {
+// id: 'video',
+// content: '发视频'
+// },
+{
     id: 'phone',
     content: '语音'
-    },
+},
 {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
@@ -103,7 +104,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [videoInfos, setVideoInfos] = useState([]);
     const [atUserNameInput, setAtInput] = useState('');
     const [atUserMap, setAtUserMap] = useState({});
-    const [ isZHCNAndFirstPopup, setIsZHCNAndFirstPopup]  = useState(false);
+    const [isZHCNAndFirstPopup, setIsZHCNAndFirstPopup] = useState(false);
 
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
@@ -283,9 +284,9 @@ export const MessageInput = (props: Props): JSX.Element => {
             const fileSize = file.size;
             const type = file.type.indexOf('/') ? file.path.split('.')[1] : file.type;
             const size = file.size;
-            console.log('file',file)
-            if(size === 0){
-                message.error({content: "文件大小异常"})
+            console.log('file', file)
+            if (size === 0) {
+                message.error({ content: "文件大小异常" })
                 return
             }
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
@@ -298,16 +299,16 @@ export const MessageInput = (props: Props): JSX.Element => {
                     type: GET_VIDEO_INFO,
                     params: { path: file.path }
                 })
-                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
+                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, { name: file.name, path: file.path, size: file.size }));
             } else {
-                if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
-                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
+                if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
+                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
             }
         }
     }
 
     const handleDropFile = (e) => {
-        
+
         const files = e.dataTransfer?.files || [];
         for (const file of files) {
             setFile(file);
@@ -408,8 +409,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const sendFileMessage = async ({ filePath, fileSize, fileName }) => {
-        if(!filePath) return false;
-        if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
+        if (!filePath) return false;
+        if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
         const { data: { code, desc, json_params } } = await sendFileMsg({
             convId,
             convType,
@@ -537,7 +538,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         resetState()
         if (userId) {
             const atText = userName || userId;
-            setAtUserMap(pre => ({...pre, [atText]: userId}));
+            setAtUserMap(pre => ({ ...pre, [atText]: userId }));
             setEditorState(ContentUtils.insertText(editorState, `${atText} `));
             setAtInput('');
         }
@@ -650,14 +651,14 @@ export const MessageInput = (props: Props): JSX.Element => {
          * 中文输入法下会触发两次change 第一次change时无法拿到真正的输入内容 
          * 用isZHCNAndFirstPopup字段判断是否中文输入法下按下@ 并且首次change
          */
-        if(!hasAt && atPopup && !isZHCNAndFirstPopup) {
+        if (!hasAt && atPopup && !isZHCNAndFirstPopup) {
             setAtPopup(false);
             return;
         }
         setIsZHCNAndFirstPopup(false);
         // 取最后一个@后的内容作为搜索条件
         const textArr = text.split('@');
-        const lastInput = textArr[textArr.length - 1]; 
+        const lastInput = textArr[textArr.length - 1];
         setAtInput(lastInput);
     }
 
@@ -667,11 +668,11 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
 
-    const handlePastedFiles =  (files: File[]) => {
+    const handlePastedFiles = (files: File[]) => {
         for (const file of files) {
             setFile(file);
         }
-        return 'handled';  
+        return 'handled';
     }
 
     const menu = close => (
@@ -711,18 +712,18 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const keyBindingFn = (e) => {
-        if(e.keyCode === 13 || e.charCode === 13) {
+        if (e.keyCode === 13 || e.charCode === 13) {
             // e.preventDefault();
             // if(!atPopup){
             //     handleSendMsg();
             // }
             return 'enter';
-        } else if(e.key === "@" && e.shiftKey && convType === 2) {
+        } else if (e.key === "@" && e.shiftKey && convType === 2) {
             e.preventDefault();
             setAtPopup(true);
             setEditorState(ContentUtils.insertText(editorState, ` @`))
             return '@';
-        } else if (e.key === "Process" && e.shiftKey && convType === 2){
+        } else if (e.key === "Process" && e.shiftKey && convType === 2) {
             e.preventDefault();
             setIsZHCNAndFirstPopup(true);
             setAtPopup(true);
@@ -731,11 +732,11 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleKeyCommand = (e) => {
-        switch(e) {
+        switch (e) {
             case 'enter': {
                 return 'not-handled';
             }
-            case '@' : {
+            case '@': {
                 return 'not-handled';
             }
             case 'zh-cn-@': {
@@ -873,7 +874,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     contentStyle={{ height: '100%', fontSize: 14 }}
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
-                    draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled'}}
+                    draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled' }}
                     maxLength={4000}
                     draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled' }}
                     actions={[]}

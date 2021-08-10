@@ -8,8 +8,8 @@ import {
     animation
 } from 'react-contexify';
 import './message-view.scss';
-import { revokeMsg, deleteMsg, sendMsg, sendMergeMsg, TextMsg, getMsgList, deleteMsgList, getLoginUserID} from './api';
-import { markeMessageAsRevoke, deleteMessage, reciMessage, addMoreMessage, updateMessages} from '../../store/actions/message';
+import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg,  getMsgList, deleteMsgList, sendForwardMessage } from './api';
+import { markeMessageAsRevoke, deleteMessage, reciMessage,  addMoreMessage, updateMessages } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import {
     getMessageId,
@@ -329,14 +329,16 @@ export const MessageView = (props: Props): JSX.Element => {
     const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
         const userId = localStorage.getItem('uid')
         const isDivideSending = forwardType === ForwardType.divide
-        const isCombineSending = !isDivideSending
+        const isCombineSending = !isDivideSending;
+        const forwardMessage = seletedMessage.map(item => ({...item, message_is_forward_message: true}));
+        console.log('forwardMessage', forwardMessage);
         convItemGroup.forEach(async (convItem, k) => {
-            if (isDivideSending) {
-                seletedMessage.forEach(async message => {
-                    const { data: { code, json_params } } = await sendMsg({
+            if(isDivideSending) {
+                forwardMessage.forEach(async message => {
+                    const { data: { code, json_params } } = await sendForwardMessage({
                         convId: getConvId(convItem),
                         convType: getConvType(convItem),
-                        messageElementArray: message.message_elem_array,
+                        message: message,
                         userId
                     });
                     if (code === 0) {
@@ -353,10 +355,10 @@ export const MessageView = (props: Props): JSX.Element => {
                     convType: getConvType(convItem),
                     messageElementArray: [{
                         elem_type: 12,
-                        merge_elem_title: getMergeMessageTitle(seletedMessage[0]),
-                        merge_elem_abstract_array: getMergeMessageAbstactArray(seletedMessage),
+                        merge_elem_title: getMergeMessageTitle(forwardMessage[0]),
+                        merge_elem_abstract_array: getMergeMessageAbstactArray(forwardMessage),
                         merge_elem_compatible_text: "你的版本不支持此消息",
-                        merge_elem_message_array: seletedMessage
+                        merge_elem_message_array: forwardMessage
                     }],
                     userId
                 });
@@ -367,7 +369,8 @@ export const MessageView = (props: Props): JSX.Element => {
                     }))
                 }
             }
-        })
+        });
+        setForwardType(ForwardType.divide);
         setTransimitPopup(false)
         setSeletedMessage([])
         setMultiSelect(false)
