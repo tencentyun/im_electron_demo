@@ -6,12 +6,6 @@ import { GroupVideo } from './GroupVideo';
 
 import './call-video.scss';
 
-type User = {
-    id: string,
-    nickName?: string,
-    faceUrl?: string,
-}
-
 type Props = {
     trtcInstance: TRTCCloud,
     userId: string,
@@ -34,7 +28,18 @@ export const CallVideo = (props: Props): JSX.Element => {
     return (
         <div className="call-video" ref={videoRef}>
             {
-                isC2CCall ? <C2Cvideo isVideoCall={isVideoCall} convInfo={convInfo} trtcInstance={trtcInstance} /> : <GroupVideo isVideoCall={isVideoCall} trtcInstance={trtcInstance} inviteList={inviteList} userId={userId} />
+                isC2CCall ? 
+                <C2Cvideo 
+                    isVideoCall={isVideoCall} 
+                    convInfo={convInfo} 
+                    trtcInstance={trtcInstance} 
+                /> : 
+                <GroupVideo 
+                    isVideoCall={isVideoCall} 
+                    trtcInstance={trtcInstance} 
+                    inviteList={inviteList} 
+                    userId={userId} 
+                />
             }
         </div>
     )

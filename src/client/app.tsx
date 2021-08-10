@@ -37,7 +37,7 @@ import {
     updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
-import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite } from "./utils/callWindowTools";
+import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite, updateInviteList } from "./utils/callWindowTools";
 import { updateCallingStatus } from "./store/actions/ui";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
@@ -248,13 +248,14 @@ export const App = () => {
             if (inviteeList.includes(message_sender)) {
                 const newInviteeList = _removeFromArr(inviteeList, message_sender)
                 if (newInviteeList.length === 0) {
-                    closeCallWindow()
+                    closeCallWindow();
                 } else {
                     dispatch(updateCallingStatus({
                         callingId,
                         callingType,
                         inviteeList: newInviteeList
                     }));
+                    updateInviteList(newInviteeList); //向通话窗口通信
                 }
             }
         }
