@@ -1,6 +1,7 @@
 import React from "react";
 import withMemo from "../../../utils/componentWithMemo";
 
+
 const CustomElem = (props: any): JSX.Element => {
 
   const item = (props) => {
@@ -59,5 +60,4 @@ const CustomElem = (props: any): JSX.Element => {
     </div>
   );
 };
-
-export default withMemo(CustomElem);
+export default withMemo(CustomElem)

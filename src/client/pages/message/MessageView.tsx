@@ -20,7 +20,7 @@ import {
     matchUrl
 } from '../../utils/messageUtils'
 import { Avatar } from '../../components/avatar/avatar';
-import { TextElemItem } from './messageElemTyps/textElemItem';
+import TextElemItem  from './messageElemTyps/textElemItem';
 import PicElemItem from './messageElemTyps/picElemItem';
 import CustomElem from './messageElemTyps/customElem';
 import VoiceElem from './messageElemTyps/voiceElem';
@@ -100,6 +100,11 @@ export const displayDiffMessage = (message, element, index) => {
             resp = <CustomElem message={message} />
             break;
         case 4:
+            // @ts-ignore
+            resp = <CustomElem message={message} />
+            break;
+        case 4:
+            // @ts-ignore
             resp = <FileElem message={message} element={element} index={index} />
             break;
         case 5:
