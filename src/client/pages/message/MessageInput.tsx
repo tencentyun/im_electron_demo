@@ -727,9 +727,9 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handleKeyCommand = (e) => {
         switch (e) {
-            case 'enter': {
-                return 'not-handled';
-            }
+            // case 'enter': {
+            //     return 'not-handled';
+            // }
             case '@': {
                 return 'not-handled';
             }
