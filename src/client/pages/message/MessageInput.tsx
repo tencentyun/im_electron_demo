@@ -54,10 +54,10 @@ const FEATURE_LIST_GROUP = [{
     id: 'file',
     content: '发文件'
 },
-//     {
+// {
 //     id: 'video',
 //     content: '发视频'
-// }, 
+// },
 {
     id: 'phone',
     content: '语音'
@@ -77,8 +77,8 @@ const FEATURE_LIST_C2C = [{
     content: '发文件'
 },
 // {
-// id: 'video',
-// content: '发视频'
+//     id: 'video',
+//     content: '发视频'
 // },
 {
     id: 'phone',
@@ -118,7 +118,6 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const userSig = window.localStorage.getItem('usersig')
     const uid = window.localStorage.getItem('uid')
-    window.localStorage.setItem('inputAt', '0')
     window.localStorage.setItem('convId', convId)
     // 上传逻辑
     const handleUpload = (base64Data) => {
@@ -282,13 +281,12 @@ export const MessageInput = (props: Props): JSX.Element => {
         const imageObj = JSON.parse(window.localStorage.getItem('imageObj'))
         if (file) {
             const fileSize = file.size;
-            const type = file.type.indexOf('/') ? file.path.split('.')[1] : file.type;
-            const size = file.size;
-            console.log('file', file)
-            if (size === 0) {
+            const type = file.type;
+            if (fileSize === 0) {
                 message.error({ content: "文件大小异常" })
                 return
             }
+            console.log(type, '========')
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
@@ -301,6 +299,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 })
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, { name: file.name, path: file.path, size: file.size }));
             } else {
+                console.log(11111111111)
                 if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
             }
@@ -488,8 +487,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleSendAtMessage = () => {
-        // resetState()
-        window.localStorage.setItem('inputAt', '0')
         convType === 2 && setAtPopup(true)
     }
 
@@ -543,9 +540,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             setAtInput('');
         }
         if (userName) {
-            const isInputAt = window.localStorage.getItem('inputAt')
-            console.log(isInputAt, '0000000000000')
-            const text = Number(isInputAt) ? `${userName} ` : `${userName} `
+            const text = `${userName} `
             setEditorState(ContentUtils.insertText(editorState, text))
         }
     }
@@ -581,33 +576,33 @@ export const MessageInput = (props: Props): JSX.Element => {
         clipboard.clear()
         ipcRenderer.send('SCREENSHOT')
     }
-    const handleOnkeyPress = (e) => {
-        if (sendType == '0') {
-            // enter发送
-            if (e.ctrlKey && e.keyCode === 13) {
-                // console.log('换行', '----------------------', editorState)
-            } else if (e.keyCode == 13 || e.charCode === 13) {
-                e.preventDefault();
-                handleSendTextMsg();
-            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-                e.preventDefault();
-                setAtPopup(true)
-            }
-        } else {
-            // Ctrl+enter发送
-            if (e.ctrlKey && e.keyCode === 13) {
-                e.preventDefault();
-                handleSendTextMsg();
-            } else if (e.keyCode == 13 || e.charCode === 13) {
-                // console.log('换行', '----------------------', editorState)
-            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-                window.localStorage.setItem('inputAt', '1')
-                e.preventDefault()
-                setAtPopup(true)
-            }
-        }
+    // const handleOnkeyPress = (e) => {
+    //     if (sendType == '0') {
+    //         // enter发送
+    //         if (e.ctrlKey && e.keyCode === 13) {
+    //             // console.log('换行', '----------------------', editorState)
+    //         } else if (e.keyCode == 13 || e.charCode === 13) {
+    //             e.preventDefault();
+    //             handleSendTextMsg();
+    //         } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+    //             e.preventDefault();
+    //             setAtPopup(true)
+    //         }
+    //     } else {
+    //         // Ctrl+enter发送
+    //         if (e.ctrlKey && e.keyCode === 13) {
+    //             e.preventDefault();
+    //             handleSendTextMsg();
+    //         } else if (e.keyCode == 13 || e.charCode === 13) {
+    //             // console.log('换行', '----------------------', editorState)
+    //         } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+    //             window.localStorage.setItem('inputAt', '1')
+    //             e.preventDefault()
+    //             setAtPopup(true)
+    //         }
+    //     }
 
-    }
+    // }
 
     const onEmojiPopupCallback = (id, type) => {
         console.log(id)
@@ -632,6 +627,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleCallMenuClick = (item) => {
+        console.log(item)
         if (item) handleOpenCallWindow(item.id, convType, "");
         setShowCallMenu(false);
     };
@@ -674,7 +670,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
         return 'handled';
     }
-
     const menu = close => (
         <List type="option" style={{ width: '200px', background: '#ffffff' }}>
             <List.Item onClick={() => changeSendShotcut('1')} style={{ display: 'flex' }}>
@@ -699,16 +694,39 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleKeyDown = (e) => {
-        if (e.keyCode === 38 || e.charCode === 38) {
-            if (atPopup) {
+        console.log(e.ctrlKey && e.keyCode === 13, e, sendType)
+        if (sendType == '0') {
+            // enter发送
+            
+            if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
+                handleSendTextMsg();
+            } else if (e.ctrlKey && e.keyCode === 13) {
+
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+                e.preventDefault();
+                setAtPopup(true)
+            }
+        } else {
+            // Ctrl+enter发送
+            if (e.ctrlKey && e.keyCode === 13) {
+                e.preventDefault();
+                handleSendTextMsg();
+            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+                e.preventDefault()
+                setAtPopup(true)
             }
         }
-        if (e.keyCode === 40 || e.charCode === 40) {
-            if (atPopup) {
-                e.preventDefault();
-            }
-        }
+        // if (e.keyCode === 38 || e.charCode === 38) {
+        //     if (atPopup) {
+        //         e.preventDefault();
+        //     }
+        // }
+        // if (e.keyCode === 40 || e.charCode === 40) {
+        //     if (atPopup) {
+        //         e.preventDefault();
+        //     }
+        // }
     }
 
     const keyBindingFn = (e) => {
@@ -733,9 +751,9 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handleKeyCommand = (e) => {
         switch (e) {
-            case 'enter': {
-                return 'not-handled';
-            }
+            // case 'enter': {
+            //     return 'not-handled';
+            // }
             case '@': {
                 return 'not-handled';
             }
@@ -791,19 +809,16 @@ export const MessageInput = (props: Props): JSX.Element => {
                 const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' })
                 const fileObj = {
                     lastModified: file.lastModified,
-                    //@ts-ignore
                     lastModifiedDate: file.lastModifiedDate,
                     name: file.name,
                     path: url,
                     size: file.size,
                     type: 'png',
                     fileContent: data,
-                    //@ts-ignore
                     webkitRelativePath: file.webkitRelativePath
                 }
                 const imageObj = {
                     lastModified: file.lastModified,
-                    //@ts-ignore
                     lastModifiedDate: file.lastModifiedDate,
                     name: file.name,
                     path: url,
@@ -845,19 +860,16 @@ export const MessageInput = (props: Props): JSX.Element => {
                 {
 
                     FEATURE_LIST[convType].map(({ id, content }) => (
-                        <Bubble content={content} key={id}>
-                            <span
-                                key={id}
-                                className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
-                                onClick={() => handleFeatureClick(id)}
-                            />
-                        </Bubble>
-
+                        <span
+                            key={id}
+                            title={content}
+                            className={`message-input__feature-area--icon ${id} ${activeFeature === id ? 'is-active' : ''}`}
+                            onClick={() => handleFeatureClick(id)}
+                        />
                     ))
                 }
             </div>
-            {/* <div className="message-input__text-area" onKeyDown={handleKeyDown}> */}
-            <div className="message-input__text-area disabled" onDragOver={e => e.preventDefault()} onKeyDown={handleOnkeyPress}>
+            <div className="message-input__text-area" onKeyDown={handleKeyDown}>
                 <BraftEditor
                     stripPastedStyles
                     //@ts-ignore
@@ -876,14 +888,12 @@ export const MessageInput = (props: Props): JSX.Element => {
                     placeholder={placeHolderText}
                     draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled' }}
                     maxLength={4000}
-                    draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled' }}
                     actions={[]}
                 />
             </div>
             <div className="message-input__button-area">
                 <Button type="primary" onClick={handleSendMsg} disabled={editorState.toText() === ''}>发送</Button>
             </div>
-            {/* <span className="message-input__down" title='切换发送消息快捷键'></span> */}
             <Dropdown
                 clickClose={true}
                 className="message-input__down"
@@ -900,8 +910,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }
-            <input ref={filePicker} onChange={e => sendFileMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
-            <input ref={imagePicker} accept="image/*" onChange={e => sendImageMessage(e.target.files[0])} type="file" style={{ display: 'none' }} />
         </div>
     )
 

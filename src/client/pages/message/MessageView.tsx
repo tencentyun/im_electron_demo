@@ -8,8 +8,8 @@ import {
     animation
 } from 'react-contexify';
 import './message-view.scss';
-import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg,  getMsgList, deleteMsgList, sendForwardMessage } from './api';
-import { markeMessageAsRevoke, deleteMessage, reciMessage,  addMoreMessage, updateMessages } from '../../store/actions/message';
+import { revokeMsg, deleteMsg, sendMsg, getLoginUserID, sendMergeMsg, getMsgList, deleteMsgList, sendForwardMessage } from './api';
+import { markeMessageAsRevoke, deleteMessage, reciMessage, addMoreMessage, updateMessages } from '../../store/actions/message';
 import { ConvItem, ForwardType } from './type'
 import {
     getMessageId,
@@ -84,9 +84,8 @@ const RIGHT_CLICK_MENU_LIST = [{
     text: '文件夹目录'
 }];
 
-export const displayDiffMessage = (element, index) => {
+export const displayDiffMessage = (message, element, index) => {
     const { elem_type, ...res } = element;
-    // console.log(element, index, '======----')
     let resp
     switch (elem_type) {
         case 0:
@@ -99,10 +98,10 @@ export const displayDiffMessage = (element, index) => {
             resp = <VoiceElem {...res} />
             break;
         case 3:
-            resp = <CustomElem {...res} />
+            resp = <CustomElem message={message} />
             break;
         case 4:
-            resp = <FileElem message={message} element={element} />
+            resp = <FileElem message={message} element={element} index={index} />
             break;
         case 5:
             resp = <GroupTipsElemItem {...res} />
@@ -115,11 +114,9 @@ export const displayDiffMessage = (element, index) => {
             break;
         case 8:
             resp = <GroupSysElm {...res} />
-            // resp = <div>群组系统通知{res.group_report_elem_op_user}: 创建了群聊</div>
-            //resp = null
             break;
         case 9:
-            resp = <VideoElem {...res} />
+            resp = <VideoElem message={message} {...res} />
             break;
         case 10:
             resp = <div>关系消息</div>
@@ -128,57 +125,7 @@ export const displayDiffMessage = (element, index) => {
             resp = <div>资料消息</div>
             break;
         case 12:
-            resp = <MergeElem {...res} />
-            break;
-        default:
-            resp = null;
-            break;
-    }
-    return resp;
-}
-
-export const displayDiffMessage = (message, element, index) => {
-    const { elem_type, ...res } = element;
-    let resp
-    switch (elem_type) {
-        case 0:
-            resp = <TextElemItem {...res} />
-            break;
-        case 1:
-            resp = <PicElemItem { ...res }/>
-            break;
-        case 2:
-            resp = <VoiceElem { ...res }/>
-            break;
-        case 3:
-            resp = <CustomElem message={message}/>
-            break;
-        case 4:
-            resp = <FileElem message={message} element={element} index={index}/>
-            break;
-        case 5:
-            resp = <GroupTipsElemItem { ...res }/> 
-            break;
-        case 6:
-            resp = <div>表情消息</div>
-            break;
-        case 7:
-            resp = <div>位置消息</div>
-            break;
-        case 8:
-            resp = <GroupSysElm { ...res }/>  
-            break;
-        case 9:
-            resp =  <VideoElem message={message} { ...res }/>
-            break;
-        case 10:
-            resp = <div>关系消息</div>
-            break;
-        case 11:
-            resp = <div>资料消息</div>
-            break;
-        case 12:
-            resp = <MergeElem { ...res } message={message}/>
+            resp = <MergeElem {...res} message={message} />
             break;
         default:
             resp = null;
@@ -202,7 +149,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const [tips, setTips] = useState('')
     const { isShow, isCanOpenFileDir, index: imgPreViewUrlIndex, imgs } = useSelector((state: State.RootState) => state.imgViewer)
     const directToMsgPage = useMessageDirect();
-    console.log('messageList---------------------------------------------------------------------', messageList);
+    // console.log('messageList---------------------------------------------------------------------', messageList);
     useEffect(() => {
         if (!anchor) {
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
@@ -330,10 +277,10 @@ export const MessageView = (props: Props): JSX.Element => {
         const userId = localStorage.getItem('uid')
         const isDivideSending = forwardType === ForwardType.divide
         const isCombineSending = !isDivideSending;
-        const forwardMessage = seletedMessage.map(item => ({...item, message_is_forward_message: true}));
+        const forwardMessage = seletedMessage.map(item => ({ ...item, message_is_forward_message: true }));
         console.log('forwardMessage', forwardMessage);
         convItemGroup.forEach(async (convItem, k) => {
-            if(isDivideSending) {
+            if (isDivideSending) {
                 forwardMessage.forEach(async message => {
                     const { data: { code, json_params } } = await sendForwardMessage({
                         convId: getConvId(convItem),
@@ -467,18 +414,18 @@ export const MessageView = (props: Props): JSX.Element => {
         })
     }
 
-    const handleMessageReSend =async (params) => {
+    const handleMessageReSend = async (params) => {
         console.log(params)
-        const {message_conv_id:conv_id,message_conv_type:conv_type} = params;
-        const {data:{code,json_params}} = await timRenderInstance.TIMMsgSendMessage({
+        const { message_conv_id: conv_id, message_conv_type: conv_type } = params;
+        const { data: { code, json_params } } = await timRenderInstance.TIMMsgSendMessage({
             conv_id,
             conv_type,
             params
         })
-        if(code===0){
+        if (code === 0) {
             dispatch(updateMessages({
-                convId:conv_id,
-                message:JSON.parse(json_params)
+                convId: conv_id,
+                message: JSON.parse(json_params)
             }))
         }
     }
@@ -669,7 +616,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     const shouldShowPerReadIcon = message_conv_type === 1 && message_is_from_self && !isMessageSendFailed;
                     const seleted = seletedMessage.findIndex(i => getMessageId(i) === getMessageId(item)) > -1
                     const elemType = message_elem_array?.[0]?.elem_type; // 取message array的第一个判断消息类型
-                    const isNotGroupSysAndGroupTipsMessage =  ![5,8].includes(elemType); // 5,8作为群系统消息 不需要多选转发
+                    const isNotGroupSysAndGroupTipsMessage = ![5, 8].includes(elemType); // 5,8作为群系统消息 不需要多选转发
                     return (
                         <React.Fragment key={index}>
                             {
@@ -680,8 +627,8 @@ export const MessageView = (props: Props): JSX.Element => {
                                     </div>
                                 ) :
                                     <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self && item ? 'is-self' : ''}`} key={message_msg_id}>
-                                       { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted && !isMessageSendFailed  ? 
-                                            <Icon className="message-view__item--icon" type="success" /> : 
+                                        {isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted && !isMessageSendFailed ?
+                                            <Icon className="message-view__item--icon" type="success" /> :
                                             <i className="message-view__item--icon-normal" ></i>)
                                         }
                                         <div className="message-view__item--avatar face-url">

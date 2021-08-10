@@ -28,7 +28,7 @@ import {
 
 import {
   addProfileForConversition,
-  getConversionList,
+  getConversionList, TIMConvDelete
 } from "./pages/message/api";
 import {
   reciMessage,
@@ -42,6 +42,7 @@ import { setIsLogInAction, userLogout } from "./store/actions/login";
 import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite } from "./utils/callWindowTools";
 import { updateCallingStatus } from "./store/actions/ui";
 import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from './constants/index'
+import { replaceConversaionList } from './store/actions/conversation';
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
@@ -103,6 +104,7 @@ export const App = () => {
             console.info(
               "======================== 接收到IM事件 end =============================="
             );
+
             switch (type) {
               /**
                * 处理收到消息逻辑
@@ -341,38 +343,66 @@ export const App = () => {
   const _handleUnreadChange = (unreadCount) => {
     dispatch(setUnreadCount(unreadCount));
   };
-  const _handeMessage = async (messages: State.message[]) => {
-    handleNotify(messages);
-    console.log(messages, "消息---------------");
-    // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
-    const obj = {};
-    for (let i = 0;i < messages.length;i++) {
-      if (!obj[messages[i].message_conv_id]) {
-        obj[messages[i].message_conv_id] = [];
-      }
-      obj[messages[i].message_conv_id].push(messages[i]);
-    }
-    for (const i in obj) {
-      dispatch(
-        reciMessage({
-          convId: i,
-          messages: obj[i],
-        })
-      );
-    }
+  const getData = async () => {
     const response = await getConversionList();
-    if (response?.length) {
-      const newConversaionItem = response.find(
-        (v) => v.conv_id === messages[0].message_conv_id
-      );
-      console.log(
-        newConversaionItem,
-        "对话item。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
-      );
-      if (!newConversaionItem.conv_recv_opt) {
-        return;
+    dispatch(replaceConversaionList(response))
+    if (response.length) {
+      // if (currentSelectedConversation === null || currentSelectedConversation === undefined) {
+      dispatch(updateCurrentSelectedConversation(response[0]))
+      // }
+    } else {
+      dispatch(updateCurrentSelectedConversation(null))
+    }
+  }
+  const removeConv = message => {
+    const { message_conv_id, message_conv_type } = message
+    TIMConvDelete(message_conv_id, message_conv_type).then(data => {
+      const { code } = data.data || {}
+      if (code === 0) {
+        getData()
+      }
+    }).catch(err => {
+
+    })
+  }
+  const _handeMessage = async (messages: State.message[]) => {
+    if (messages[0].message_elem_array[0].group_report_elem_report_type && messages[0].message_elem_array[0].group_report_elem_report_type === 4 || messages[0].message_elem_array[0].group_report_elem_report_type === 5) {
+      removeConv(messages[0])
+    } else {
+      handleNotify(messages);
+      // debugger
+      console.log(messages, "消息---------------");
+      // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
+      const obj = {};
+      for (let i = 0;i < messages.length;i++) {
+        if (!obj[messages[i].message_conv_id]) {
+          obj[messages[i].message_conv_id] = [];
+        }
+        obj[messages[i].message_conv_id].push(messages[i]);
+      }
+      for (const i in obj) {
+        dispatch(
+          reciMessage({
+            convId: i,
+            messages: obj[i],
+          })
+        );
+      }
+      const response = await getConversionList();
+      if (response?.length) {
+        const newConversaionItem = response.find(
+          (v) => v.conv_id === messages[0].message_conv_id
+        );
+        console.log(
+          newConversaionItem,
+          "对话item。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
+        );
+        if (!newConversaionItem.conv_recv_opt) {
+          return;
+        }
       }
     }
+
     // handleNotify(messages);
   };
   const handleNotify = (messages) => {
