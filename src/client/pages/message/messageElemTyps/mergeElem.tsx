@@ -3,11 +3,10 @@ import { Avatar } from '../../../components/avatar/avatar';
 import { Modal } from 'tea-component';
 import formateTime from '../../../utils/timeFormat';
 import { downloadMergedMsg } from '../api';
-
-
 import { displayDiffMessage } from "../MessageView";
+import withMemo from "../../../utils/componentWithMemo";
 
-export const MergeElem = (props: any): JSX.Element => {
+const MergeElem = (props: any): JSX.Element => {
     const [showModal, setShowModal ] = useState(false);
     const [ mergedMsg, setMergedMsg ] = useState([]); 
     const showMergeDitail = async () => {
@@ -94,3 +93,5 @@ export const MergeElem = (props: any): JSX.Element => {
     };
     return item(props);
 }
+
+export default withMemo(MergeElem);

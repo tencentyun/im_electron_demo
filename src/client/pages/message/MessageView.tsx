@@ -19,20 +19,20 @@ import {
     getMergeMessageAbstactArray
 } from '../../utils/messageUtils'
 import { Avatar } from '../../components/avatar/avatar';
-import { TextElemItem } from './messageElemTyps/textElemItem';
-import { PicElemItem } from './messageElemTyps/picElemItem';
-import { CustomElem } from './messageElemTyps/customElem';
-import { VoiceElem } from './messageElemTyps/voiceElem';
-import { FileElem } from './messageElemTyps/fileElem';
-import { GroupTipsElemItem } from './messageElemTyps/grouptipsElem';
-import { VideoElem } from './messageElemTyps/videoElem';
-import { MergeElem } from './messageElemTyps/mergeElem';
+import TextElemItem from './messageElemTyps/textElemItem';
+import PicElemItem  from './messageElemTyps/picElemItem';
+import CustomElem from './messageElemTyps/customElem';
+import VoiceElem from './messageElemTyps/voiceElem';
+import FileElem from './messageElemTyps/fileElem';
+import GroupTipsElemItem from './messageElemTyps/grouptipsElem';
+import  VideoElem from './messageElemTyps/videoElem';
+import MergeElem from './messageElemTyps/mergeElem';
 import { ForwardPopup } from './components/forwardPopup';
 import { Icon, message } from 'tea-component';
 import formateTime from '../../utils/timeFormat';
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
-import { GroupSysElm } from './messageElemTyps/groupSystemElem';
+import GroupSysElm from './messageElemTyps/groupSystemElem';
 import { setCurrentReplyUser } from '../../store/actions/message'
 import timRenderInstance from '../../utils/timRenderInstance';
 
@@ -79,9 +79,11 @@ export const displayDiffMessage = (message, element, index) => {
             resp = <VoiceElem { ...res }/>
             break;
         case 3:
+            // @ts-ignore
             resp = <CustomElem message={message}/>
             break;
         case 4:
+            // @ts-ignore
             resp = <FileElem message={message} element={element} index={index}/>
             break;
         case 5:
@@ -420,7 +422,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         { `${revokedPerson} 撤回了一条消息` }
                                     </div>
                                 ) :
-                                    <div  key={index} onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
+                                    <div key={index} onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
                                         { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ? 
                                             <Icon className="message-view__item--icon" type="success" /> : 
                                             <i className="message-view__item--icon-normal" ></i>)

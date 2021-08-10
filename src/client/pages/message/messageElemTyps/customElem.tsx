@@ -1,6 +1,7 @@
 import React from "react";
+import withMemo from "../../../utils/componentWithMemo";
 
-export const CustomElem = (props: any): JSX.Element => {
+const CustomElem = (props: any): JSX.Element => {
 
   const item = (props) => {
     const { message } = props;
@@ -58,3 +59,5 @@ export const CustomElem = (props: any): JSX.Element => {
     </div>
   );
 };
+
+export default withMemo(CustomElem);

@@ -1,6 +1,8 @@
 import React from "react";
 
-export const VideoElem =React.memo((props: any): JSX.Element => {
+import withMemo from "../../../utils/componentWithMemo";
+
+const VideoElem = (props: any): JSX.Element => {
     const autoRate =  200 / props.video_elem_image_width;
     
     const item = () => {
@@ -18,4 +20,6 @@ export const VideoElem =React.memo((props: any): JSX.Element => {
     
     // console.log('视频消息',props)
     return item()
-})
+};
+
+export default withMemo(VideoElem);

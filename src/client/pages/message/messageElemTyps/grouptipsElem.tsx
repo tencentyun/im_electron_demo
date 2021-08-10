@@ -1,6 +1,8 @@
 import React from "react";
 
-export const GroupTipsElemItem = (props: any): JSX.Element => {
+import withMemo from "../../../utils/componentWithMemo";
+
+const GroupTipsElemItem = (props: any): JSX.Element => {
 
     const groupInfoChange = (item) => {
 
@@ -88,4 +90,6 @@ export const GroupTipsElemItem = (props: any): JSX.Element => {
     </span>;
     // console.log('grouptips', props)
     return item();
-}
+};
+
+export default withMemo(GroupTipsElemItem);

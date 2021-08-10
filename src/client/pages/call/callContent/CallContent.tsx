@@ -10,7 +10,7 @@ import {
 
 import trtcInstance from '../../../utils/trtcInstance';
 import { CallVideo } from '../callVideo/CallVideo';
-import { CallFooter } from '../callFooter/CallFooter';
+import CallFooter from '../callFooter/CallFooter';
 import { CallTime } from './CallTime';
 import { eventListiner } from '../callIpc';
 
