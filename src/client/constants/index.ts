@@ -49,19 +49,30 @@ export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service
 // export const DEFAULT_USERID = 'LIXIAOJUN26';
 // export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
 
+//生产需要开启华润登录和更换代理地址   ************************
+export const TIM_BASE_URL = 'http://localhost:3000'  //                      开发           ---         接口地址
+// export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002' //            测试
+// export const TIM_BASE_URL = 'http://oaim.crbank.com.cn:30002' //             生产
 
-export const TIM_BASE_URL = 'http://localhost:3000'
-// export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002'
-export const TIM_BASE_URLB = 'http://oaim.uat.crbank.com.cn:30002'
-export const SDKAPPID = 1400529075
-export const SECRETKEY = '08349186ecd23fafaf7f98ca0116077e5b507fceac558e3dbd32f0dfeb9393a9' // 不可外传仅本次测试使用
-// export const HUA_RUN_LOGIN_TEST = 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin'
-export const HUA_RUN_LOGIN_TEST = 'http://10.241.24.31:39021/commonauthservice_crbk/ws/OIDAuthService/userLogin'
-export const HUA_RUN_LOGIN_PROD = 'https://ldapservice.crc.com.cn/commonauthservice_new/ws/OIDAuthService/userLogin'
+export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.uat.crbank.com.cn:30002'//     测试           ---         公众号后管地址
+// export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.crbank.com.cn:30002'//      生产
+
+// export const EMOJIURL = 'http://oaim.crbank.com.cn:30003/emoji/' //            生产         ---         表情
+export const EMOJIURL = 'http://oaim.uat.crbank.com.cn:30003/emoji/' //           测试
+
+export const SDKAPPID = 1400529075//                                            生产/测试       ---        IM账号
+export const SECRETKEY = '08349186ecd23fafaf7f98ca0116077e5b507fceac558e3dbd32f0dfeb9393a9' 
+
+// export const SERVERr_ADDRESS_IP = "oaim.crbank.com.cn"//                     生产            ---        IM长链接地址
+export const SERVERr_ADDRESS_IP = "oaim.uat.crbank.com.cn"//                    测试 
+export const SERVERr_ADDRESS_PORT = 30001                 //                    生产/测试        ---       IM长链接端口
+
+export const HUA_RUN_LOGIN_TEST = 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin' //生产华润登录
+//export const HUA_RUN_LOGIN_TEST = 'http://10.241.24.31:39021/commonauthservice_crbk/ws/OIDAuthService/userLogin'
+//export const HUA_RUN_LOGIN_PROD = 'https://ldapservice.crc.com.cn/commonauthservice_new/ws/OIDAuthService/userLogin'
 export const HUA_RUN_SYSTEMID = 'P001'
+
 export const HUA_RUN_PUBLIC_KEY = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCexy/ucx2Z6FmK14NsTmIvVpIXjXwlgTJLlNlNACdnbMOGVkz4wC7wd9QeY/Nf+RwElNfF4Xmk82zwgq0FPjoZPMOgrlnmSuBTd8o8mfGOG0A8UBdMoeV9ZXyI8UxE//Zus1zsQwaGc1RTo4v2s4f8QcZm+JOpcUtoyvjBXqD7TQIDAQAB'
-
-
+export const HISTORY_MESSAGE_COUNT = 100
 // export const DEFAULT_USERID = '940928';
 // export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
-export const HISTORY_MESSAGE_COUNT = 100

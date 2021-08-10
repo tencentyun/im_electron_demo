@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./index.scss";
 import { Card, H3, Button } from "tea-component";
 import loginBg from '../../assets/icon/login-bg.png';
-
+import { PUBBLIC_ACCOUNTS_URL } from '../../constants/index'
 export const OfficialComponent = (): JSX.Element => {
   const [isShowIframe, setIsShowIframe] = useState(false)
   return (
@@ -29,13 +29,13 @@ export const OfficialComponent = (): JSX.Element => {
       <div className="relationship-content">
         <div className="loading-container">
           {
-            isShowIframe?<iframe src="http://oaim.uat.crbank.com.cn:30002"></iframe>: ''
+            isShowIframe?<iframe src={PUBBLIC_ACCOUNTS_URL}></iframe>: ''
           }
         </div>
       </div>
     </div>: <div className="wrap_iframe">
             {
-              isShowIframe?<iframe src="http://oaim.uat.crbank.com.cn:30002"></iframe>: ''
+              isShowIframe?<iframe src={PUBBLIC_ACCOUNTS_URL}></iframe>: ''
             }
           </div>
     }

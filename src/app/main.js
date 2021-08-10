@@ -163,6 +163,7 @@ function createWindow () {
     // 打开调试工具
     mainWindow.webContents.openDevTools();
   } else {
+    mainWindow.webContents.openDevTools(); //正式生产不需要开启
     mainWindow.loadURL(
       url.format({
         pathname: path.join(__dirname, '../../bundle/index.html'),
@@ -255,7 +256,7 @@ function createWindow () {
     // "start C:\\Users\\admin\\Desktop\\demo\\cut.exe";
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec('start C:\\Users\\admin\\Desktop\\demo\\cut.exe', () => {
+    child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"), () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {

@@ -39,7 +39,7 @@ import {
   updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
-
+import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from './constants/index'
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
@@ -57,8 +57,9 @@ export const App = () => {
           request_set_custom_server_info_param: {
             longconnection_address_array: [
               {
-                server_address_ip: "oaim.uat.crbank.com.cn", // ip
-                server_address_port: 30001, // 端口
+                // server_address_ip: "oaim.crbank.com.cn", // ip 生产
+                server_address_ip: SERVERr_ADDRESS_IP, 
+                server_address_port: SERVERr_ADDRESS_PORT, // 端口
               },
             ],
             server_public_key:
