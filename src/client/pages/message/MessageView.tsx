@@ -20,14 +20,14 @@ import {
     matchUrl
 } from '../../utils/messageUtils'
 import { Avatar } from '../../components/avatar/avatar';
-import { TextElemItem } from './messageElemTyps/textElemItem';
-import { PicElemItem } from './messageElemTyps/picElemItem';
-import { CustomElem } from './messageElemTyps/customElem';
-import { VoiceElem } from './messageElemTyps/voiceElem';
-import { FileElem } from './messageElemTyps/fileElem';
-import { GroupTipsElemItem } from './messageElemTyps/grouptipsElem';
+import TextElemItem from './messageElemTyps/textElemItem';
+import PicElemItem from './messageElemTyps/picElemItem';
+import CustomElem from './messageElemTyps/customElem';
+import VoiceElem from './messageElemTyps/voiceElem';
+import FileElem from './messageElemTyps/fileElem';
+import GroupTipsElemItem from './messageElemTyps/grouptipsElem';
 import { VideoElem } from './messageElemTyps/videoElem';
-import { MergeElem } from './messageElemTyps/mergeElem';
+import  MergeElem from './messageElemTyps/mergeElem';
 import { Expression } from './messageElemTyps/expression';
 import { ForwardPopup } from './components/forwardPopup';
 import formateTime from '../../utils/timeFormat';
@@ -37,7 +37,7 @@ import { custEmojiUpsertParams } from '../../services/custEmoji'
 import { showDialog } from "../../utils/tools";
 import { addTimeDivider } from '../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../constants';
-import { GroupSysElm } from './messageElemTyps/groupSystemElem';
+import GroupSysElm from './messageElemTyps/groupSystemElem';
 import { setCurrentReplyUser } from '../../store/actions/message'
 import { setImgViewerAction } from '../../store/actions/imgViewer';
 import { ipcRenderer } from 'electron';
@@ -100,7 +100,8 @@ export const displayDiffMessage = (message, element, index) => {
             resp = <CustomElem message={message}/>
             break;
         case 4:
-            resp = <FileElem message={message} element={element} index={index}/>
+            // @ts-ignore
+            resp = <FileElem message={message} element={element} index={index} />
             break;
         case 5:
             resp = <GroupTipsElemItem { ...res }/> 
@@ -626,8 +627,8 @@ export const MessageView = (props: Props): JSX.Element => {
                                         {reeditShowText(item) ? <span className="message-view__item--withdraw" onClick={() => { reEdit(message_elem_array[0].text_elem_content) }}> 重新编辑</span> : <></>}
                                     </div>
                                 ) :
-                                    <div onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self && item ? 'is-self' : ''}`} key={message_msg_id}>
-                                        {isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted && !isMessageSendFailed ?
+                                    <div key={index} onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
+                                        {isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ?
                                             <Icon className="message-view__item--icon" type="success" /> :
                                             <i className="message-view__item--icon-normal" ></i>)
                                         }

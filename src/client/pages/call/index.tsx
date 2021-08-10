@@ -15,7 +15,22 @@ export const Call = () => {
     return (
         <div>
             {
-                isCallWindow ? <CallContent userId={userID} convInfo={convInfo} roomId={roomId}  inviteID={inviteID} inviteList={inviteList} userSig={userSig} sdkAppid={sdkAppid} callType={callType}/> : <Notification convInfo={convInfo} callType={callType} inviteID={inviteID} />
+                isCallWindow ? 
+                <CallContent 
+                    userId={userID} 
+                    convInfo={convInfo} 
+                    roomId={roomId}  
+                    inviteID={inviteID} 
+                    inviteList={inviteList} 
+                    userSig={userSig} 
+                    sdkAppid={sdkAppid} 
+                    callType={callType}
+                /> : 
+                <Notification 
+                    convInfo={convInfo} 
+                    callType={callType}
+                    inviteID={inviteID} 
+                />
             }
         </div>
     )

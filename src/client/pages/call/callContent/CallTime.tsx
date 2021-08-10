@@ -4,16 +4,19 @@ export const CallTime = ({isStart, prefix}) => {
     const [callTime, setCallTime] = useState(0);
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setCallTime(time => {
-                return time + 1;
-            });
-        }, 1000);
+        let timer;
+        if(isStart) {
+            timer = setInterval(() => {
+                setCallTime(time => {
+                    return time + 1;
+                });
+            }, 1000);
+        }
 
         return () => {
             clearInterval(timer);
         }
-    }, []);
+    }, [isStart]);
 
     const addZeroForTime = time => {
         const stringTime = '00' + time;

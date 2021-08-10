@@ -30,6 +30,7 @@ export const GroupNameCard = (props: {
   };
 
   useEffect(() => {
+    console.log("群昵称",nameCard)
     setInput(nameCard);
   }, [nameCard]);
 

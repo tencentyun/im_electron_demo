@@ -1,7 +1,8 @@
 import React from "react";
 
+import withMemo from "../../../utils/componentWithMemo";
 
-export const GroupSysElm = (props: any): JSX.Element => {
+const GroupSysElm = (props: any): JSX.Element => {
     // kTIMGroupReport_None,         // 未知类型
     // kTIMGroupReport_AddRequest,   // 申请加群(只有管理员会接收到)
     // kTIMGroupReport_AddAccept,    // 申请加群被同意(只有申请人自己接收到)
@@ -38,3 +39,5 @@ export const GroupSysElm = (props: any): JSX.Element => {
 
     return item(props);
 }
+
+export default withMemo(GroupSysElm)

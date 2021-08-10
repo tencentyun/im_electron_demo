@@ -52,6 +52,10 @@ const endCallWindow = ()=>{
     ipcRenderer.send(END_CALL_WINDOW);
 }
 
+const updateInviteList = (data) => {
+    ipcRenderer.send('update-invite-list', data);
+}
+
 export {
     openCallWindow,
     closeCallWindow,
@@ -61,5 +65,6 @@ export {
     remoteUserJoin,
     remoteUserExit,
     endCallWindow,
-    cancelCallInvite
+    cancelCallInvite,
+    updateInviteList
 }
