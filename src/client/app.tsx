@@ -241,24 +241,7 @@ export const App = () => {
         return arr;
     }
     const _onRejected = (data) => {
-        if (data) {
-            const message: State.message = JSON.parse(data)[0];
-            const { message_sender } = message;
-            const { callingId, callingType, inviteeList } = ref.current.catchCalling;
-            if (inviteeList.includes(message_sender)) {
-                const newInviteeList = _removeFromArr(inviteeList, message_sender)
-                if (newInviteeList.length === 0) {
-                    closeCallWindow();
-                } else {
-                    dispatch(updateCallingStatus({
-                        callingId,
-                        callingType,
-                        inviteeList: newInviteeList
-                    }));
-                    updateInviteList(newInviteeList); //向通话窗口通信
-                }
-            }
-        }
+        data && _handleRemoteUserReject(JSON.parse(data)[0]);
     }
     const _onAccepted = (data) => {
 
@@ -268,9 +251,46 @@ export const App = () => {
         closeCallWindow()
     }
     const _onTimeout = (data) => {
-        // 关闭通知窗口
-        closeCallWindow()
+        data && _handleRemoteUserTimeOut(JSON.parse(data));
     }
+
+    const _handleRemoteUserTimeOut = (message) => {
+        const timeOutList = JSON.parse(message.message_elem_array[0].custom_elem_data)?.inviteeList;
+        if(timeOutList) {
+            const { callingId, callingType, inviteeList } = ref.current.catchCalling;
+            const newList = inviteeList.filter(item => !timeOutList.includes(item));
+            if (newList.length === 0) {
+                closeCallWindow();
+            } else {
+                dispatch(updateCallingStatus({
+                    callingId,
+                    callingType,
+                    inviteeList: newList
+                }));
+                updateInviteList(newList); //向通话窗口通信
+            }
+        }
+
+    }
+
+    const _handleRemoteUserReject = (message) => {
+        const { message_sender } = message;
+        const { callingId, callingType, inviteeList } = ref.current.catchCalling;
+        if (inviteeList.includes(message_sender)) {
+            const newInviteeList = _removeFromArr(inviteeList, message_sender)
+            if (newInviteeList.length === 0) {
+                closeCallWindow();
+            } else {
+                dispatch(updateCallingStatus({
+                    callingId,
+                    callingType,
+                    inviteeList: newInviteeList
+                }));
+                updateInviteList(newInviteeList); //向通话窗口通信
+            }
+        }
+    }
+
     const _handleElemUploadProgres = ({ message, index, cur_size, total_size, user_data }) => {
         dispatch(updateMessageElemProgress({
             messageId: message.message_msg_id,
