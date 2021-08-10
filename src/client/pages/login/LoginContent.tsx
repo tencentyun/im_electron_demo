@@ -78,7 +78,7 @@ export const LoginContent = (): JSX.Element => {
             window.localStorage.setItem('uid', '')
             window.localStorage.setItem('usersig', '')
         }
-        if (val.length > 0 && !/^[A-Za-z0-9]+$/.test(val)) {
+        if (val.length > 0 && !/^[A-Za-z0-9-]+$/.test(val)) {
             message.warning({ content: '不能输入中文！' })
             return
         }

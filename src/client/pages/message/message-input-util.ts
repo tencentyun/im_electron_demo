@@ -147,7 +147,6 @@ export const fileImgToBase64Url = async (file: File) => {
 };
 
 export const bufferToBase64Url = (data: string, type: string) => {
-  console.log(data)
   const buffer = new Buffer(data, 'binary');
   return `data:image/${type};base64,` + buffer.toString('base64');
 } 

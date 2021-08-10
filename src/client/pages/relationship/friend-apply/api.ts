@@ -27,6 +27,8 @@ const getUserInfoList = async (
   return JSON.parse(json_param);
 };
 
+export const LIMITE_SIZE = 100; 
+
 export const getFriendShipPendencyList = async (params: {
   startSeq: number;
   startTime: number;
@@ -44,7 +46,7 @@ export const getFriendShipPendencyList = async (params: {
       friendship_get_pendency_list_param_type: 0,
       friendship_get_pendency_list_param_start_seq: params.startSeq,
       friendship_get_pendency_list_param_start_time: params.startTime,
-      friendship_get_pendency_list_param_limited_size: 100,
+      friendship_get_pendency_list_param_limited_size: LIMITE_SIZE,
     },
   });
 
