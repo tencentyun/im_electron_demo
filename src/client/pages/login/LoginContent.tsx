@@ -64,8 +64,8 @@ interface IEncrptPwdRes {
 export const LoginContent = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const [userID, setUserID] = useState(window.localStorage.getItem('uid') || '');
-    const [password, setPassword] = useState(window.localStorage.getItem('usersig') || '');
+    const [userID, setUserID] = useState('');
+    const [password, setPassword] = useState('');
     const isDisablelogin = userID && password;
 
     const customizeTabBarRender = (children: JSX.Element) => {
@@ -148,10 +148,10 @@ export const LoginContent = (): JSX.Element => {
         <div className="login--context">
             <h2 className="login--context__title">登陆IM</h2>
             <Tabs tabs={tabs} placement="top" tabBarRender={customizeTabBarRender}>
-                <TabPanel id="verifyCodeLogin">
+                {/* <TabPanel id="verifyCodeLogin">
                     <Input placeholder="请输入用户名" className="login--input" />
                     <Input placeholder="请输入密码" className="login--input" />
-                </TabPanel>
+                </TabPanel> */}
                 {/* <TabPanel id="passwordLogin">
                     <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val)}} />
                     <Input placeholder="请输入usersig"  value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />

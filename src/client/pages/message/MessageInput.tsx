@@ -55,14 +55,14 @@ const FEATURE_LIST_GROUP = [{
     id: 'file',
     content: '发文件'
 },
-// {
-//     id: 'video',
-//     content: '发视频'
-// },
 {
-    id: 'phone',
-    content: '语音'
+    id: 'video',
+    content: '发视频'
 },
+// {
+//     id: 'phone',
+//     content: '语音'
+// },
 {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
@@ -77,14 +77,14 @@ const FEATURE_LIST_C2C = [{
     id: 'file',
     content: '发文件'
 },
-// {
-//     id: 'video',
-//     content: '发视频'
-// },
 {
-    id: 'phone',
-    content: '语音'
+    id: 'video',
+    content: '发视频'
 },
+// {
+//     id: 'phone',
+//     content: '语音'
+// },
 {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
