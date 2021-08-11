@@ -15,7 +15,7 @@ export const AccountSetting = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [pathurl, setPathUrl] = useState('');
-  const [msgBother, setMsgBother] = useState(false)
+  const [msgBother, setMsgBother] = useState(true)
   const loadFileMsg = () => {
     ipcRenderer.on("storagePath", (e, { path }) => {
       console.log(path);
@@ -24,13 +24,13 @@ export const AccountSetting = (): JSX.Element => {
   };
 
   const setNewsMode = val => {
-    console.log(val,'val')
+    console.log(val, 'val')
     setMsgBother(val)
     window.localStorage.setItem('msgBother', val)
   }
 
   useEffect(() => {
-    const initVal = window.localStorage.getItem('msgBother') == 'true' ? true : false || false
+    const initVal = window.localStorage.getItem('msgBother') == 'true' ? true : false || true
     setMsgBother(initVal)
   }, [])
   loadFileMsg();
