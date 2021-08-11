@@ -1,7 +1,7 @@
 {
   "name": "im-electron-demo",
   "productName": "IM Electron Demo",
-  "version": "3.3.27",
+  "version": "3.3.30",
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {
@@ -21,7 +21,7 @@
       "src/app",
       "bundle"
     ],
-    "productName": "华润银行即时通讯（内测版）",
+    "productName": "华润银行即时通讯(试运行测试版本)",
     "appId": "electron-sdk",
     "mac": {
       "icon": "./icon/favicon.icns"
