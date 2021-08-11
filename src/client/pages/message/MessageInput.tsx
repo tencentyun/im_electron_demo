@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, message, Dropdown, List, Bubble } from 'tea-component';
-import { sendTextMsg, sendImageMsg, sendFileMsg, sendSoundMsg, sendVideoMsg, sendMsg } from './api'
-import { reciMessage, updateMessages } from '../../store/actions/message'
+import { Button, message,Dropdown, List, Bubble } from 'tea-component';
+import { sendTextMsg, sendImageMsg, sendFileMsg, sendVideoMsg, sendMsg } from './api'
+import { updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
@@ -116,115 +116,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
     const [sendType, setSendType] = useState(null); // 0->enter,1->ctrl+enter
     let editorInstance;
-
-    const userSig = window.localStorage.getItem('usersig')
-    const uid = window.localStorage.getItem('uid')
-    window.localStorage.setItem('convId', convId)
-    //我的
-    useEffect(() => {
-        reedite(isHandCal)
-    }, [isHandCal])
-    // 上传逻辑
-    const handleUpload = (base64Data) => {
-        return new Promise((resolve, reject) => {
-            axios
-                .post(`${TIM_BASE_URL}/huarun/im_cos_msg/pre_sig`, {
-                    sdkappid: SDKAPPID,
-                    uid: uid,
-                    userSig: userSig,
-                    file_type: 1,
-                    file_name: "headUrl/" + new Date().getTime() + 'screenShot.png',
-                    Duration: 900,
-                    upload_method: 0,
-                })
-                .then((res) => {
-                    // console.log(res);
-                    const { download_url } = res.data;
-                    // console.log(111111);
-                    // console.log(download_url);
-                    axios
-                        .put(download_url, convertBase64UrlToBlob(base64Data), {
-                            headers: {
-                                "Content-Type": "application/x-www-form-urlencoded",
-                            },
-                        })
-                        .then(() => {
-                            const { download_url } = res.data;
-                            resolve(download_url)
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        })
-                        .finally(() => {
-
-                        });
-                })
-                .catch((err) => {
-                    reject(err);
-
-                });
-        });
-    };
-
-
-    function startapi(requestlist, toTextContent) {
-        //定义counts，用来收集请求的次数，（也可以用reslist的length进行判断）
-        let counts = 0;
-        return function apirequest(data) {
-            let arg = data
-            let a = new Promise((res, rej) => {
-                //setTimeout模拟请求到接收的时间需要5秒钟
-                setTimeout(function () {
-                    res('成功返回数据');
-
-                }, 1000)
-                // handleSendMsg(data,toTextContent).then(res)
-            })
-            //无论成功或者失败都要进行下一次，以免阻塞，成功请求的末尾有s标志，失败的末尾有f标志
-            a.then(() => {
-                counts++;
-                if (counts > requestlist.length) {
-                    return;
-                }
-                console.log('counts', counts)
-
-                apirequest(requestlist[counts])
-            }).catch(err => {
-                //递归调用
-                apirequest(requestlist[counts])
-                console.log(err)
-            })
-        }
-
-    }
-
-    // const handleSendTextMsg = async () => {
-    //     try {
-    //         const text = editorState.toText()
-    //         const atList = getAtList(text)
-    //         setEditorState(ContentUtils.clear(editorState))
-    //         const { data: { code, json_params, desc } } = await sendTextMsg({
-    //             convId,
-    //             convType,
-    //             messageElementArray: [{
-    //                 elem_type: 0,
-    //                 text_elem_content: editorState.toText(),
-    //             }],
-    //             userId,
-    //             messageAtArray: atList
-    //         });
-
-    //         if (code === 0) {
-    //             dispatch(reciMessage({
-    //                 convId,
-    //                 messages: [JSON.parse(json_params)]
-    //             }))
-    //         }
-
-    //     } catch (e) {
-    //         message.error({ content: `出错了: ${e.message}` })
-    //     }
-    // }
 
     const handleSendMsg = async () => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
@@ -435,60 +326,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         } else {
             message.error({ content: `消息发送失败 ${desc}` })
         }
-    }
-
-    const sendVideoMessage = async ({
-        videoDuration,
-        videoPath,
-        videoSize,
-        videoType,
-        screenshotPath,
-        screenshotWidth,
-        screenshotHeight,
-        screenshotType,
-        screenshotSize
-    }) => {
-        const params = {
-            convId,
-            convType,
-            messageElementArray: [{
-                elem_type: 9,
-                video_elem_video_type: videoType,
-                video_elem_video_size: videoSize,
-                video_elem_video_duration: videoDuration,
-                video_elem_video_path: videoPath,
-                video_elem_image_type: screenshotType,
-                video_elem_image_size: screenshotSize,
-                video_elem_image_width: screenshotWidth,
-                video_elem_image_height: screenshotHeight,
-                video_elem_image_path: screenshotPath
-            }],
-            userId,
-        }
-        const { data: { code, json_params, desc } } = await sendVideoMsg(params);
-        if (code === 0) {
-            dispatch(updateMessages({
-                convId,
-                message: JSON.parse(json_params)
-            }))
-        } else {
-            message.error({ content: `消息发送失败 ${desc}` })
-        }
-    }
-
-    const sendSoundMessage = async (file) => {
-        if (!file) return false;
-        const { data: { code, json_params } } = await sendSoundMsg({
-            convId,
-            convType,
-            messageElementArray: [{
-                elem_type: 2,
-                sound_elem_file_path: file.value,
-                sound_elem_file_size: file.size,
-                sound_elem_file_time: 10,
-            }],
-            userId,
-        });
     }
 
     const handleSendAtMessage = () => {

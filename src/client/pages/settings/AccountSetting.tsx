@@ -15,7 +15,7 @@ export const AccountSetting = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [pathurl, setPathUrl] = useState('');
-  const [msgBother, setMsgBother] = useState(true)
+  const [msgBother, setMsgBother] = useState(null)
   const loadFileMsg = () => {
     ipcRenderer.on("storagePath", (e, { path }) => {
       console.log(path);
@@ -30,7 +30,8 @@ export const AccountSetting = (): JSX.Element => {
   }
 
   useEffect(() => {
-    const initVal = window.localStorage.getItem('msgBother') == 'true' ? true : false || true
+    const initVal = window.localStorage.getItem('msgBother') == 'true' ? true : false
+    console.log(111111111111111, initVal)
     setMsgBother(initVal)
   }, [])
   loadFileMsg();

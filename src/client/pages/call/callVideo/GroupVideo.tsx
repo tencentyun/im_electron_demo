@@ -18,7 +18,7 @@ const splitUserList = (array, count) => {
 
 
 export const GroupVideo = (props) => {
-    const { trtcInstance, inviteList, userId, isVideoCall } = props;
+    const { trtcInstance, inviteList, userId, isVideoCall, inviteListWithInfo } = props;
     const [userList, setUserList] = useState(inviteList);
     const [groupSplit, setGroupSplit] = useState(splitUserList(inviteList, 9));
     const [currentPage, setCurrentPage] = useState(0);
@@ -71,12 +71,20 @@ export const GroupVideo = (props) => {
         if (result > 0) {
             setUserList(prev => Array.from(new Set([userId, ...prev])));
             setEnteringUser(userId);
+            if(!isVideoCall) {
+                const ref = getRef(userId);
+                ref.current.getElementsByTagName('span')[0].style.display = 'none';
+            }
         };
     };
 
     const onRemoteUserEnterRoom = (userId) => {
         setUserList(prev => Array.from(new Set([...prev, userId])));
         setEnteringUser(userId);
+        if(!isVideoCall) {
+            const ref = getRef(userId);
+            ref.current.getElementsByTagName('span')[0].style.display = 'none';
+        }
     }
 
     const onRemoteUserLeaveRoom = (userId) => setUserList(prev => prev.filter(item => item !== userId));
@@ -86,18 +94,20 @@ export const GroupVideo = (props) => {
         if (available === 1) {
             trtcInstance.startRemoteView(uid, ref.current);
             trtcInstance.setRemoteViewFillMode(uid, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
+            ref.current.style.display = 'block';
         } else {
-            const canvasDom = ref.current.getElementsByTagName('canvas')[0];
-            canvasDom && (canvasDom.style.display = 'none');
+            ref.current.style.display = 'none';
         }
     }
 
     const cacluateStyle = () => {
         const count = groupSplit[currentPage]?.length;
-        const [width, height] = remote.getCurrentWindow().getSize();
+        // const [width, height] = remote.getCurrentWindow().getSize();
+        const width = 800;
+        const height = 600;
         const footerHeight = 76;
         const statusBarHeight = 36;
-        const callWindowInnerHeight = height - footerHeight - statusBarHeight
+        const callWindowInnerHeight = height - footerHeight - statusBarHeight;
         if (count === 1) {
             return {
                 width: width,
@@ -107,28 +117,28 @@ export const GroupVideo = (props) => {
 
         if (count <= 2) {
             return {
-                width: Math.floor(width / 2),
-                height: Math.floor(callWindowInnerHeight)
+                width: width / 2,
+                height: callWindowInnerHeight
             }
         }
 
         if (count <= 4) {
             return {
-                width: Math.floor(width / 2),
-                height: Math.floor(callWindowInnerHeight / 2) 
+                width: width / 2,
+                height: callWindowInnerHeight / 2
             }
         }
 
         if (count <= 6) {
             return {
-                width: Math.floor(width / 3),
-                height: Math.floor(callWindowInnerHeight / 2)
+                width: width / 3,
+                height: callWindowInnerHeight / 2
             }
         }
 
         return {
-            width: Math.floor(width / 3),
-            height: Math.floor(callWindowInnerHeight / 3)
+            width: width / 3,
+            height: callWindowInnerHeight / 3
         }
 
     };
@@ -137,7 +147,9 @@ export const GroupVideo = (props) => {
 
     const handlePageNext = () => setCurrentPage(next => next + 1);
 
-    const cacluatePageStyle = (index) => ({ display: index === currentPage ? 'block' : 'none' });
+    const cacluatePageStyle = (index) => ({ display: index === currentPage ? 'flex' : 'none' });
+
+    const getUserInfo = (userId) : State.userProfile => inviteListWithInfo.find(item => item.user_profile_identifier === userId) || {};
 
     return (
         <>
@@ -147,13 +159,15 @@ export const GroupVideo = (props) => {
                         return <div className="group-video-content__page" style={cacluatePageStyle(index)} key={index}>
                             {
                                 item.map(userId => {
-                                    return <div key={userId} className="group-video-content__page-item" style={cacluateStyle()}>
+                                    const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = getUserInfo(userId);
+                                    return <div key={userId} className="group-video-content__page-item" style={{...cacluateStyle(), backgroundImage: `url(${user_profile_face_url})`}}>
                                         <div ref={setRef(userId)} style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                            <span className="group-video-content__page-item--loading">正在等待对方接受邀请...</span>
                                             {
-                                            isVideoCall && <span className="group-video-content__page-item--loading">正在等待对方接受邀请...</span>
+                                                !user_profile_face_url && <span>{user_profile_nick_name || user_profile_identifier}</span>
                                             }
                                         </div>
-                                        <span className="group-video-content__page-item--user-id">{userId}</span>
+                                        <span className="group-video-content__page-item--user-id">{user_profile_nick_name || user_profile_identifier}</span>
                                     </div>
                                 })
                             }
