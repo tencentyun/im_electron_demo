@@ -36,16 +36,14 @@ interface ImgCropperProp {
   cropperFile?: (file?: File) => void;
   beforeUpload?: (file?: File) => void;
   isShowCropper?: boolean;
-  isShow?:(isShow : boolean) => void;
   cropperOption?: ReactCropperProps;
   value?: string;
-
   onChange?: (imgUrl?: string) => void;
 }
 
 const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   prop = Object.assign({}, defaultImgCropperProp, prop)
-  const { value, onChange, cropperOption, isShowCropper, isShow } = prop
+  const { value, onChange, cropperOption, isShowCropper } = prop
   const [uploading, setUploading] = useState(null);
   const [imgUrl, setImgUrl] = useState(null);
   const [cropperUrl, setropperUrl] = useState(null);
@@ -58,7 +56,6 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   const uid =localStorage.getItem('uid')
 
   const onSetImgUrl = async (file) => {
-     isShow?.(true)
     if (prop.isShowCropper) {
       const url = await dataURLtoBlob(file)
       if (file.type === 'image/gif') {
@@ -99,9 +96,6 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       prop.cropperFile?.(fileObj);
       handleUpload(base64Data).then((res: IRes) => {
         const { download_url } = res;
-        console.log(res)
-        onChange?.()
-        isShow?.(false)
         prop.afterUpload?.(download_url);
         setVal(download_url);
         if (!prop.isShowCropper) {
@@ -141,7 +135,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
         uid: uid,
         userSig: userSig,
         file_type: 1,
-        file_name: "headUrl/" + new Date().getTime() + fileObj.name,
+        file_name: 'headUrl/' + fileObj.name,
         Duration: 900,
         upload_method: 0,
       }).then(res => {
@@ -241,7 +235,6 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       {
         isShowCropper && imgUrl && <div>
           <Cropper
-          viewMode={1}
             {...cropperOption}
             src={imgUrl}
             onInitialized={(instance) => {

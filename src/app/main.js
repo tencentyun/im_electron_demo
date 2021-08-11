@@ -101,7 +101,7 @@ function createWindow () {
     },
   });
   global.WIN = mainWindow;
-  mainWindow.webContents.send("SENDSTORE", store.get("sendType") || "0");
+  // mainWindow.webContents.send("SENDSTORE", store.get("sendType") || "0");
 
   mainWindow.once("ready-to-show", () => {
     mainWindow.setTitle("华润银行即时通讯（内测版）");
@@ -140,7 +140,7 @@ function createWindow () {
   });
   mainWindow.on("focus", function () {
     //console.log("mainWindow focus");
-    mainWindow.webContents.send("SENDSTORE", store.get("sendType") || "0");
+    // mainWindow.webContents.send("SENDSTORE", store.get("sendType") || "0");
     clearInterval(timer);
     setTimeout(() => {
       appTray.setImage(trayIcon);
