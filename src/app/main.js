@@ -258,7 +258,7 @@ function createWindow () {
     //path.join(process.cwd(), "/resources/extraResources", "cut.exe")
     clipboard.clear();
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"), () => {
+    child_process.exec('start C:\\Users\\admin\\Desktop\\demo\\cut.exe', () => {
       let pngs = clipboard.readImage().toPNG();
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
