@@ -86,12 +86,9 @@ interface UserProfileItem {
 export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, onUpdateUserInfo }): JSX.Element => {
   const [isShow, setVisible] = useState(visible)
   const [imgUrl, setImgUrl] = useState('')
-  const [btnDisabled, setBtnDisabled] = useState(false)
 
   const close = () => {
     setVisible(false)
-    // 修改个人头像重复修改消失问题
-    setBtnDisabled(false)
     onClose(false)
   }
 
@@ -165,10 +162,7 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
                       <Form.Item
                         label="头像"
                       >
-                        <ImgCropper {...input} isShow={(ages) => {
-                          // 修改个人头像重复修改消失问题
-                          setBtnDisabled(ages)
-                        }} afterUpload={afterUpload}></ImgCropper>
+                        <ImgCropper {...input} afterUpload={afterUpload}></ImgCropper>
                       </Form.Item>
                     )}
                   </Field>
@@ -195,8 +189,7 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
                           {...input}
                           autoComplete="off"
                           placeholder="你是谁"
-                          readonly={true}
-                          maxLength={10}
+                          readOnly={true}
                         />
                       </Form.Item>
                     )}
@@ -230,8 +223,6 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
                   <Button
                     type="primary"
                     htmlType="submit"
-                    // 修改个人头像重复修改消失问题
-                    disabled={btnDisabled}
                     loading={submitting}
                   >
                     提交

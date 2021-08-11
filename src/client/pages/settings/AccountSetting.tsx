@@ -1,9 +1,9 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Button } from "tea-component";
+import { Button, Switch } from "tea-component";
 import { useHistory } from "react-router-dom";
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import timRenderInstance from "../../utils/timRenderInstance";
 import { setIsLogInAction, userLogout } from "../../store/actions/login";
 import "./AccountSetting.scss";
@@ -14,8 +14,8 @@ const { ipcRenderer } = require("electron");
 export const AccountSetting = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
-  const [pathurl,setPathUrl] = useState('');
-
+  const [pathurl, setPathUrl] = useState('');
+  const [msgBother, setMsgBother] = useState(false)
   const loadFileMsg = () => {
     ipcRenderer.on("storagePath", (e, { path }) => {
       console.log(path);
@@ -23,6 +23,16 @@ export const AccountSetting = (): JSX.Element => {
     });
   };
 
+  const setNewsMode = val => {
+    console.log(val,'val')
+    setMsgBother(val)
+    window.localStorage.setItem('msgBother', val)
+  }
+
+  useEffect(() => {
+    const initVal = window.localStorage.getItem('msgBother') == 'true' ? true : false || false
+    setMsgBother(initVal)
+  }, [])
   loadFileMsg();
 
   const logOutHandler = async () => {
@@ -33,7 +43,7 @@ export const AccountSetting = (): JSX.Element => {
     dispatch(setIsLogInAction(false));
     dispatch(clearConversation())
     dispatch(clearHistory())
-};
+  };
   return (
     <div className="connect">
       <header className="connect-header">
@@ -53,6 +63,10 @@ export const AccountSetting = (): JSX.Element => {
           <div className="setting-item">
             <span>文件存储</span>
             <span className="item-val">{pathurl}</span>
+          </div>
+          <div className="setting-item">
+            <span>消息提示</span>
+            <span className="item-val"> <Switch value={msgBother} onChange={(val) => setNewsMode(val)}></Switch></span>
           </div>
         </div>
         <Button

@@ -186,8 +186,33 @@ export const App = () => {
         }
       });
     }
-    const _onRejected = (data) => {
-      data && _handleRemoteUserReject(JSON.parse(data)[0]);
+  }
+  const _handleKickedout = async () => {
+    dispatch(userLogout());
+    history.replace("/login");
+    dispatch(setIsLogInAction(false));
+  };
+  const _onAccepted = (data) => {
+
+  }
+  const _onCanceled = (data) => {
+    // 关闭通知窗口
+    closeCallWindow()
+  }
+  const _onInvited = (data) => {
+    // actionType: 1
+    // businessID: 1
+    // data: "{\"version\":0,\"call_type\":1,\"room_id\":30714513}"
+    // groupID: ""
+    // inviteID: "19455b33-c8fc-4fef-ab60-9347ebea78cc"
+    // inviteeList: ["3708"]
+    // inviter: "109442"
+    // timeout: 30
+    const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
+    const { room_id, call_type, call_end } = JSON.parse(formatedData.data)
+    const { inviter, groupID, inviteID, inviteeList } = formatedData;
+    if (call_end > 0) {
+      return
     }
     timRenderInstance.TIMProfileGetUserProfileList({
       json_get_user_profile_list_param: {
@@ -219,11 +244,24 @@ export const App = () => {
           userSig: catchUserSig
         });
       }
-
     })
 
   }
-
+  const _onRejected = (data) => {
+    data && _handleRemoteUserReject(JSON.parse(data)[0]);
+  }
+  const _handleGroupInfoModify = async (data) => {
+    const response = await getConversionList();
+    dispatch(updateConversationList(response));
+    if (response?.length) {
+      const newConversaionItem = response.find(
+        (v) => v.conv_id === data.group_tips_elem_group_id
+      );
+      if (newConversaionItem) {
+        dispatch(updateCurrentSelectedConversation(newConversaionItem));
+      }
+    }
+  };
   const _removeFromArr = (arr: any[], target: any) => {
     for (let i = 0;i < arr.length;i++) {
       if (arr[i] = target) {
@@ -232,25 +270,6 @@ export const App = () => {
       }
     }
   }
-  const _onRejected = (data) => {
-    if (data) {
-      const message: State.message = JSON.parse(data)[0];
-      const { message_sender } = message;
-      const { callingId, callingType, inviteeList } = ref.current.catchCalling;
-      if (inviteeList.includes(message_sender)) {
-        const newInviteeList = _removeFromArr(inviteeList, message_sender)
-        if (newInviteeList.length === 0) {
-          closeCallWindow()
-        } else {
-          dispatch(updateCallingStatus({
-            callingId,
-            callingType,
-            inviteeList: newInviteeList
-          }));
-        }
-      }
-    }
-  };
   const _onTimeout = (data) => {
     data && _handleRemoteUserTimeOut(JSON.parse(data));
   }
@@ -389,11 +408,13 @@ export const App = () => {
     // handleNotify(messages);
   };
   const handleNotify = (messages) => {
-    console.log(showApp, '[[[[[[[[[[[[[[[')
-    if (showApp) {
+    const msgBother = window.localStorage.getItem('msgBother') || false
+    console.log(showApp, '[[[[[[[[[[[[[[[', msgBother)
+    // 客户端没有展示在最顶层或者设置了消息提示免打扰，就不接收消息通知
+    if (showApp || msgBother == 'false' || !navigator.onLine) {
       return;
     }
-    // console.log(messages[0].message_elem_array[0], '通知消息------------------------------------', messages)
+    console.log(messages[0].message_elem_array[0], '通知消息------------------------------------', messages)
     const notification = new window.Notification("收到新消息", {
       icon: "http://oaim.crbank.com.cn:30003/emoji/notification.png",
       // body: replaceAll(message.message_elem_array[0], '&nbsp;', ' ').substring(0, 15)
