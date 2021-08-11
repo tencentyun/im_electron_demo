@@ -320,11 +320,11 @@ export const App = () => {
     const handleMessageSendFailed = (convList) => {
         const failedList = convList.reduce((acc, cur) => {
             if (cur.conv_last_msg && cur?.conv_last_msg.message_status === 3) {
+                const key = cur.conv_id;
+                const value = acc[key] ? acc[key].push(cur.conv_last_msg) : [cur.conv_last_msg];
                 return {
                     ...acc,
-                    [cur.conv_id]: [...[acc[cur.conv_id]], cur.conv_last_msg].filter(
-                        (x) => x
-                    ),
+                    [key]: value,
                 };
             }
         }, {});
