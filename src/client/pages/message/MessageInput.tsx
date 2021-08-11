@@ -33,7 +33,7 @@ type Props = {
     convId: string,
     convType: number,
     isShutUpAll: boolean,
-    isHandCal?:Array<string|number>,
+    isHandCal?: Array<string | number>,
     handleOpenCallWindow: (callType: string, convType: number, windowType: string) => void;
 }
 
@@ -93,7 +93,7 @@ const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType, isShutUpAll, handleOpenCallWindow,isHandCal } = props;
+    const { convId, convType, isShutUpAll, handleOpenCallWindow, isHandCal } = props;
     const [isDraging, setDraging] = useState(false);
     const [activeFeature, setActiveFeature] = useState('');
     const [shouldShowCallMenu, setShowCallMenu] = useState(false);
@@ -114,16 +114,16 @@ export const MessageInput = (props: Props): JSX.Element => {
     const soundPicker = React.useRef(null);
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
-    const [sendType, setSendType] = useState(null);
+    const [sendType, setSendType] = useState(null); // 0->enter,1->ctrl+enter
     let editorInstance;
 
     const userSig = window.localStorage.getItem('usersig')
     const uid = window.localStorage.getItem('uid')
     window.localStorage.setItem('convId', convId)
     //我的
-    useEffect(()=>{
+    useEffect(() => {
         reedite(isHandCal)
-    },[isHandCal])
+    }, [isHandCal])
     // 上传逻辑
     const handleUpload = (base64Data) => {
         return new Promise((resolve, reject) => {
@@ -227,6 +227,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handleSendMsg = async () => {
+        // console.log(editorState.toText().trim() == '', typeof editorState.toText())
         try {
             const rawData = editorState.toRAW();
             const messageElementArray = getMessageElemArray(rawData, videoInfos);
@@ -585,7 +586,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 // console.log('换行', '----------------------', editorState)
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
-                handleSendTextMsg();
+                !canSendMsg() && handleSendTextMsg();
             } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
@@ -594,7 +595,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             // Ctrl+enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 e.preventDefault();
-                handleSendTextMsg();
+                !canSendMsg() && handleSendTextMsg();
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 // console.log('换行', '----------------------', editorState)
             } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
@@ -666,10 +667,10 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     const handlePastedText = (text: string, htmlString: string) => {
-        let  patseText = text
-        if(htmlString){
+        let patseText = text
+        if (htmlString) {
             patseText = getPasteText(htmlString);
-        } 
+        }
         setEditorState(ContentUtils.insertText(editorState, patseText))
     }
 
@@ -700,7 +701,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         const tip = index == '1' ? '按Ctrl+Enter键发送消息' : '按Enter键发送消息'
         setShotKeyTip(tip)
         setSendType(index)
-        ipcRenderer.send('CHANGESTORE', index)
+        window.localStorage.setItem('sendMsgKey',index)
     }
 
 
@@ -749,6 +750,9 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
 
+    const canSendMsg = () => {
+        return editorState.toText().trim() === ''
+    }
 
     useEffect(() => {
         const listener = (event, params) => {
@@ -783,9 +787,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     }, [convId, convType]);
 
     useEffect(() => {
-        ipcRenderer.on('SENDSTORE', function (e, data) {
-            setSendType(data)
-        })
+        const initVal = window.localStorage.getItem('sendMsgKey') || '0'
+        setSendType(initVal)
         setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
         ipcRenderer.on('screenShotUrl', (e, { data, url }) => {
             console.log(typeof data, data, url, '+++++++++++++++++++')
