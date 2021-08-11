@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendVideoMsg, sendMsg } from './api'
-import { reciMessage, updateMessages } from '../../store/actions/message'
+import { updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
@@ -76,34 +76,6 @@ export const MessageInput = (props: Props): JSX.Element => {
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
     let editorInstance;
-
-    const handleSendTextMsg = async () => {
-        try {
-            const text = editorState.toText()
-            const atList = getAtList(text)
-            setEditorState(ContentUtils.clear(editorState))
-            const { data: { code, json_params, desc } } = await sendTextMsg({
-                convId,
-                convType,
-                messageElementArray: [{
-                    elem_type: 0,
-                    text_elem_content: editorState.toText(),
-                }],
-                userId,
-                messageAtArray: atList
-            });
-
-            if (code === 0) {
-                dispatch(reciMessage({
-                    convId,
-                    messages: [JSON.parse(json_params)]
-                }))
-            }
-            
-        } catch (e) {
-            message.error({ content: `出错了: ${e.message}` })
-        }
-    }
 
     const handleSendMsg = async () => {
         try {
@@ -284,46 +256,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     }
 
-    const sendVideoMessage = async ({ 
-        videoDuration,
-        videoPath,
-        videoSize,
-        videoType,
-        screenshotPath,
-        screenshotWidth,
-        screenshotHeight,
-        screenshotType,
-        screenshotSize
-    }) => {
-        const params = {
-            convId,
-            convType,
-            messageElementArray: [{
-                elem_type: 9,
-                video_elem_video_type: videoType,
-                video_elem_video_size: videoSize,
-                video_elem_video_duration: videoDuration,
-                video_elem_video_path: videoPath,
-                video_elem_image_type: screenshotType,
-                video_elem_image_size: screenshotSize,
-                video_elem_image_width: screenshotWidth,
-                video_elem_image_height: screenshotHeight,
-                video_elem_image_path: screenshotPath
-            }],
-            userId,
-        }
-        const { data: { code, json_params, desc } } = await sendVideoMsg(params);
-        if (code === 0) {
-            dispatch(updateMessages({
-                convId,
-                message: JSON.parse(json_params)
-            }))
-        } else {
-            message.error({content: `消息发送失败 ${desc}`})
-        }
-    }
-
-    
     const handleSendAtMessage = () => {
         // resetState()
         convType === 2 && setAtPopup(true)
