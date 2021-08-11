@@ -133,7 +133,7 @@ class IPC {
                 this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
             } else if( convType === 1 && Number(callType) === 1) {
                 this.callWindow.setSize(450, 800);
-                this.callWindow.setPosition((screenSize.width - 450) / 2, (screenSize.height - 800) / 2);
+                this.callWindow.setPosition(Math.floor((screenSize.width - 450) / 2), Math.floor((screenSize.height - 800) / 2));
             }
             this.callWindow.show();
             this.callWindow.webContents.send('pass-call-data', params);
