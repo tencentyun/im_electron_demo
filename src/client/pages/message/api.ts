@@ -93,7 +93,7 @@ type CancelSendMsgParams = {
   user_data: string
 }
 
-const getUserInfoList = async (userIdList: Array<string>) => {
+export const getUserInfoList = async (userIdList: Array<string>) => {
   const {
     data: { code, json_param },
   } = await timRenderInstance.TIMProfileGetUserProfileList({

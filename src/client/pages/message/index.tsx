@@ -95,7 +95,7 @@ export const Message = (): JSX.Element => {
             // @ts-ignore
             ref?.current?.scrollIntoViewIfNeeded();
         }
-    }, [currentSelectedConversation] );
+    }, [currentSelectedConversation]);
 
     const handleConvListClick = convInfo => dispatch(updateCurrentSelectedConversation(convInfo));
 

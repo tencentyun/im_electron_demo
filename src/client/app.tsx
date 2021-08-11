@@ -192,9 +192,18 @@ export const App = () => {
         // inviteeList: ["3708"]
         // inviter: "109442"
         // timeout: 30
+        
         const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
         const { room_id, call_type,call_end } = JSON.parse(formatedData.data)
         const { inviter, groupID, inviteID, inviteeList } = formatedData;
+        const { callingId } = ref.current.catchCalling;
+        // 如果正在通话，拒绝对方通话。
+        if(callingId) {
+            timRenderInstance.TIMRejectInvite({
+                inviteID: inviteID
+            });
+            return;
+        }
         if(call_end > 0){
             return
         }
@@ -211,7 +220,7 @@ export const App = () => {
             const { data: { code, json_param } } = data;
             if (code === 0) {
                 const [userdata, ...inviteList] = JSON.parse(json_param);
-                console.log('============inviteeList==============', inviteList);
+                console.log('===========invite list==============', inviteList);
                 openCallWindow({
                     windowType: 'notificationWindow',
                     callType: call_type + '',
@@ -225,6 +234,7 @@ export const App = () => {
                     inviteID,
                     userID: catchUserId,
                     inviteList: inviteeList,
+                    inviteListWithInfo: [userdata, ...inviteList],
                     userSig: catchUserSig
                 });
             }

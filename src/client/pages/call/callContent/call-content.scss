@@ -7,8 +7,6 @@ body {
 .call-content {
     height: 100vh;
     width: 100vw;
-    display: flex;
-    flex-direction: column;
 
     &__header {
         display: flex;
@@ -24,6 +22,6 @@ body {
     }
 
     &__video {
-        flex: 1;
+        height: 488px;
     }
 }

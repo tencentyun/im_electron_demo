@@ -73,14 +73,17 @@ class IPC {
         const screenSize = getSrceenSize();
         // 当作为接收方，接受电话后，更改窗口尺寸。
         ipcMain.on('accept-call', (event, acceptParams) => {
+            // 向聊天窗口通信
             const { inviteID, isVoiceCall } = acceptParams;
+            this.imWindowEvent.reply('accept-call-reply',inviteID);
             const windowWidth = isVoiceCall ? 450 : 800;
             const windowHeight = 800;
-         
+
+            const positionX = Math.floor((screenSize.width - windowWidth) / 2);
+            const positionY = Math.floor((screenSize.height - windowHeight) / 2);
+
             this.callWindow.setSize(windowWidth, windowHeight);
-            this.callWindow.setPosition( (screenSize.width - windowWidth) / 2, (screenSize.height - windowHeight) / 2);
-            // 向聊天窗口通信
-            this.imWindowEvent.reply('accept-call-reply',inviteID);
+            this.callWindow.setPosition(positionX, positionY);
         });
 
         // 当作为接收方，挂断电话，关闭窗口
