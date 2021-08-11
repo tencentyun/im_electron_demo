@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef} from "react";
 import { message } from 'tea-component';
 
 import { Avatar } from "../../components/avatar/avatar";
-import { getMsgList, markMessageAsRead, inviteMemberGroup, getGroupMemberList} from "./api";
+import { getGroupMemberList, getMsgList, markMessageAsRead, getUserInfoList } from "./api";
 import { MessageInput } from "./MessageInput";
 import { MessageView } from "./MessageView";
 import { GroupMemberSelector } from "./groupMemberSelector";
@@ -215,13 +215,14 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       openLocalCallWindow(callType,roomId,userList, inviteId)
     }
   }
-  const openLocalCallWindow = (callType,roomId,userList, inviteId)=>{
+  const openLocalCallWindow = async (callType,roomId,userList, inviteId)=>{
     dispatch(updateCallingStatus({
       callingId: conv_id,
       callingType: conv_type,
       inviteeList: userList
     }));
     const { faceUrl, nickName } = getDisplayConvInfo();
+    const inviteListWithInfo = await getUserInfoList([userId, ...userList]);
     openCallWindow({
       windowType: 'callWindow',
       callType,
@@ -235,7 +236,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       inviteID: inviteId,
       userID: userId,
       userSig: userSig,
-      inviteList: userList
+      inviteList: userList,
+      inviteListWithInfo
     });
   }
 

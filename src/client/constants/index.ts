@@ -72,7 +72,6 @@ export const HUA_RUN_LOGIN_TEST = 'http://um.crbank.com.cn:30024/commonauthservi
 //export const HUA_RUN_LOGIN_PROD = 'https://ldapservice.crc.com.cn/commonauthservice_new/ws/OIDAuthService/userLogin'
 export const HUA_RUN_SYSTEMID = 'P001'
 
-export const HUA_RUN_PUBLIC_KEY = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCexy/ucx2Z6FmK14NsTmIvVpIXjXwlgTJLlNlNACdnbMOGVkz4wC7wd9QeY/Nf+RwElNfF4Xmk82zwgq0FPjoZPMOgrlnmSuBTd8o8mfGOG0A8UBdMoeV9ZXyI8UxE//Zus1zsQwaGc1RTo4v2s4f8QcZm+JOpcUtoyvjBXqD7TQIDAQAB'
+export const DEFAULT_USERID = '940928'; 
+export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
 export const HISTORY_MESSAGE_COUNT = 100
-// export const DEFAULT_USERID = '940928';
-// export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'

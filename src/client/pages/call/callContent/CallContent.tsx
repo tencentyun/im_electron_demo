@@ -18,8 +18,8 @@ import event from '../event';
 
 import './call-content.scss';
 
-export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, userSig, sdkAppid, callType }) => {
-    console.log('==============call window params=================', roomId, inviteID, inviteList, sdkAppid, userSig, callType);
+export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, userSig, sdkAppid, callType, inviteListWithInfo }) => {
+    console.log('==============call window params=================', roomId, inviteID, inviteList, sdkAppid, userSig, callType, inviteListWithInfo);
     const [ isStart, setStartStatus ] = useState(false);
     const convType = convInfo.convType;
     const isC2CCall = convType === 1; // 1: c2c, 2: 群聊
@@ -102,7 +102,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
            <CallTime isStart={isStart} prefix={"通话时间: "} />
        </header>
        <section className="call-content__video" >
-            <CallVideo trtcInstance={trtcInstance} isVideoCall={isVideoCall} convInfo={convInfo} userId={userId} inviteList={inviteList} />
+            <CallVideo trtcInstance={trtcInstance} isVideoCall={isVideoCall}  inviteListWithInfo={inviteListWithInfo} convInfo={convInfo} userId={userId} inviteList={inviteList} />
        </section>
        <footer className="call-content__footer">
             <CallFooter isVideoCall={isVideoCall} toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={handleExitRoom} />
