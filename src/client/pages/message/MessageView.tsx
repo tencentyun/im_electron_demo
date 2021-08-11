@@ -20,7 +20,7 @@ import {
     matchUrl
 } from '../../utils/messageUtils'
 import { Avatar } from '../../components/avatar/avatar';
-import TextElemItem from './messageElemTyps/textElemItem';
+import TextElemItem  from './messageElemTyps/textElemItem';
 import PicElemItem from './messageElemTyps/picElemItem';
 import CustomElem from './messageElemTyps/customElem';
 import VoiceElem from './messageElemTyps/voiceElem';
@@ -150,7 +150,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const [tips, setTips] = useState('')
     const { isShow, isCanOpenFileDir, index: imgPreViewUrlIndex, imgs } = useSelector((state: State.RootState) => state.imgViewer)
     const directToMsgPage = useMessageDirect();
-    // console.log('messageList---------------------------------------------------------------------', messageList);
+    console.log('messageList---------------------------------------------------------------------', messageList);
     useEffect(() => {
         if (!anchor) {
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
@@ -657,7 +657,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                                     </div>
                                                 }
                                             >
-                                                <span style={{ display: 'none' }}>占位</span><Avatar url={user_profile_face_url} isClick={false} isPreview={true} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                                <span style={{ display: 'none' }}>占位</span><Avatar url={user_profile_face_url} isClick={false}  size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                                             </Bubble>
                                         </div>
                                         {

@@ -138,7 +138,7 @@ export const GroupMemberListDrawer = (props: {
         className="member-list-drawer--table"
         bordered={false}
         columns={columns}
-        records={searchData || []}
+        records={JSON.parse(JSON.stringify((searchData || []))).reverse()}
         addons={[
           scrollable({
             virtualizedOptions: {

@@ -39,21 +39,21 @@ export const GroupMember = (props: {
     groupType,
     userIdentity,
     onRefresh,
+    userList
   } = props;
 
 
   // 获取群成员列表
-  const { value, loading, retry } = useAsyncRetryFunc(async () => {
-    return await getGroupMemberList({
-      groupId,
-      nextSeq: 0,
-    })
-}, []);
+//   const { value, loading, retry } = useAsyncRetryFunc(async () => {
+//     return await getGroupMemberList({
+//       groupId,
+//       nextSeq: 0,
+//     })
+// }, []);
   const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();  
-  const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
+  // const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
   const popupContainer = document.getElementById("messageInfo");
   const dialogRef = useDialogRef<GroupMemberListDrawerRecordsType>();
-
   const elem_type = useDialogRef<AddMemberRecordsType>();
 
   const deleteMemberDialogRef = useDialogRef<DeleteMemberRecordsType>();
@@ -63,6 +63,7 @@ export const GroupMember = (props: {
   );
 
   // 可拉人进群条件为 群类型不为直播群且当前群没有设置禁止加入
+  console.log("可拉人进群条件为 群类型不为直播群且当前群没有设置禁止加入", groupType)
   const canInviteMember = [0, 1, 2].includes(groupType);
 
   /**
@@ -145,7 +146,7 @@ export const GroupMember = (props: {
           )}
         </div>
         <div className="group-member--avatar">
-          {userList?.slice(0, 15)?.map((v, index) => (
+          {JSON.parse(JSON.stringify(userList))?.reverse().slice(0, 15)?.map((v, index) => (
             <div
               className="group-member--avatar-box"
               key={`${v.group_member_info_face_url}-${index}`}
@@ -167,6 +168,13 @@ export const GroupMember = (props: {
                   </>
                 }
               />
+              {
+                   <span className='group-member--avatar-identity'>
+                     {
+                        v.group_member_info_member_role == 3 ? "群主" : v.group_member_info_member_role == 2 ? "管理员" : ""
+                     }
+                   </span>
+              }
               <span
                 title={
                   isOnInternet(v.group_member_info_identifier) ? "在线" : "离线"
@@ -178,6 +186,11 @@ export const GroupMember = (props: {
                     : "",
                 ].join(" ")}
               ></span>
+              <div className ="group-member--avatar-name">
+                {
+                   v.group_member_info_name_card  || v.group_member_info_nick_name
+                }
+              </div> 
             </div>
           ))}
           {canInviteMember && (
