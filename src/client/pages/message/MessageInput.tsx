@@ -198,33 +198,33 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     }
 
-    const handleSendTextMsg = async () => {
-        try {
-            const text = editorState.toText()
-            const atList = getAtList(text)
-            setEditorState(ContentUtils.clear(editorState))
-            const { data: { code, json_params, desc } } = await sendTextMsg({
-                convId,
-                convType,
-                messageElementArray: [{
-                    elem_type: 0,
-                    text_elem_content: editorState.toText(),
-                }],
-                userId,
-                messageAtArray: atList
-            });
+    // const handleSendTextMsg = async () => {
+    //     try {
+    //         const text = editorState.toText()
+    //         const atList = getAtList(text)
+    //         setEditorState(ContentUtils.clear(editorState))
+    //         const { data: { code, json_params, desc } } = await sendTextMsg({
+    //             convId,
+    //             convType,
+    //             messageElementArray: [{
+    //                 elem_type: 0,
+    //                 text_elem_content: editorState.toText(),
+    //             }],
+    //             userId,
+    //             messageAtArray: atList
+    //         });
 
-            if (code === 0) {
-                dispatch(reciMessage({
-                    convId,
-                    messages: [JSON.parse(json_params)]
-                }))
-            }
+    //         if (code === 0) {
+    //             dispatch(reciMessage({
+    //                 convId,
+    //                 messages: [JSON.parse(json_params)]
+    //             }))
+    //         }
 
-        } catch (e) {
-            message.error({ content: `出错了: ${e.message}` })
-        }
-    }
+    //     } catch (e) {
+    //         message.error({ content: `出错了: ${e.message}` })
+    //     }
+    // }
 
     const handleSendMsg = async () => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
@@ -580,13 +580,19 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
+        const hasImage = editorState.toHTML().includes('image')
         if (sendType == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 // console.log('换行', '----------------------', editorState)
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
-                !canSendMsg() && handleSendTextMsg();
+                if (hasImage) {
+                    handleSendMsg();
+                } else {
+                    !canSendMsg() && handleSendMsg();
+                }
+
             } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
                 e.preventDefault();
                 setAtPopup(true)
@@ -595,7 +601,11 @@ export const MessageInput = (props: Props): JSX.Element => {
             // Ctrl+enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 e.preventDefault();
-                !canSendMsg() && handleSendTextMsg();
+                if (hasImage) {
+                    handleSendMsg();
+                } else {
+                    !canSendMsg() && handleSendMsg();
+                }
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 // console.log('换行', '----------------------', editorState)
             } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
@@ -701,7 +711,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         const tip = index == '1' ? '按Ctrl+Enter键发送消息' : '按Enter键发送消息'
         setShotKeyTip(tip)
         setSendType(index)
-        window.localStorage.setItem('sendMsgKey',index)
+        window.localStorage.setItem('sendMsgKey', index)
     }
 
 
