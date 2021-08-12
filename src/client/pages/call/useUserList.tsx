@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { uniqBy } from 'lodash';
+import { uniqBy, differenceBy } from 'lodash';
 
 type userList = {
     userId: string
     isEntering: boolean,
-    isMicOpen: boolean
+    isMicOpen: boolean,
+    isSpeaking: boolean
 }
 
 const splitUserListFunc = (array, count) => {
@@ -18,23 +19,25 @@ const splitUserListFunc = (array, count) => {
 const generateTmp = (userId) => ({
     userId,
     isEntering: false,
-    isMicOpen: true
+    isMicOpen: true,
+    isSpeaking: false
 });
 
-const useUserList = (originUserList) : [Array<Array<userList>> , (userId: string) => void, (userId: string) => void, (userId: string, available: boolean) => void] => {
+const useUserList = (originUserList) : [Array<Array<userList>> , (userId: string) => void, (userId: string) => void, (userId: string, available: boolean) => void, (userIds: Array<string>) => void] => {
     const [userList, setUserList] = useState([]);
     const [splitUserList, setSplitUserList] = useState([]);
 
-    console.log('originUserList', originUserList);
-
     useEffect(() => {
+        if(userList.length > 0) {
+            setUserList(prev => prev.filter(item => originUserList.includes(item.userId)));
+            return;
+        }
         const formatedUserList = originUserList.map(userId => generateTmp(userId));
         const uniqUserList = uniqBy(formatedUserList, 'userId');
         setUserList(uniqUserList);
     }, [originUserList.length]);
 
     useEffect(() => {
-        console.log('===========userList=========', userList);
         const splitUserList = splitUserListFunc(userList, 9);
         setSplitUserList(splitUserList);
     }, [userList])
@@ -61,7 +64,14 @@ const useUserList = (originUserList) : [Array<Array<userList>> , (userId: string
         return item;
     }));
 
-    return [splitUserList, deleteUser, setUserEntering, setUserAudioAvailable];
+    const setUserSpeaking = userIds => setUserList(prev => prev.map(item => {
+            return {
+                ...item,
+                isSpeaking: userIds.includes(item.userId)
+            }
+    }))
+
+    return [splitUserList, deleteUser, setUserEntering, setUserAudioAvailable, setUserSpeaking];
 };
 
 export default useUserList;

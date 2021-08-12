@@ -13,7 +13,7 @@ import { remote } from 'electron'
 
 export const GroupVideo = (props) => {
     const { trtcInstance, inviteList, userId, isVideoCall, inviteListWithInfo } = props;
-    const [groupSplit, deleteUser, setUserEntering, setUserAudioAvailable] = useUserList(inviteList);
+    const [groupSplit, deleteUser, setUserEntering, setUserAudioAvailable, setUserSpeaking] = useUserList(inviteList);
     const [currentPage, setCurrentPage] = useState(0);
     const [enteringUser, setEnteringUser] = useState('');
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
@@ -28,6 +28,7 @@ export const GroupVideo = (props) => {
         trtcInstance.on('onRemoteUserEnterRoom', onRemoteUserEnterRoom);
         isVideoCall && trtcInstance.on('onUserVideoAvailable', onUserVideoAvailable);
         trtcInstance.on('onUserAudioAvailable', onUserAudioAvailable);
+        trtcInstance.on('onUserVoiceVolume', onUserVoiceVolume);
     }, []);
 
     useEffect(() => {
@@ -35,6 +36,7 @@ export const GroupVideo = (props) => {
             const ref = getRef(enteringUser);
             if (enteringUser === userId) {
                 trtcInstance.startLocalAudio();
+                trtcInstance.enableAudioVolumeEvaluation(300);
                 isVideoCall && openLocalVideo(ref);
                 return;
             }
@@ -65,6 +67,17 @@ export const GroupVideo = (props) => {
     const onRemoteUserEnterRoom = (userId) => {
         setUserEntering(userId);
         setEnteringUser(userId);
+    }
+
+    const onUserVoiceVolume = (params) => {
+        const speakingList = params.map(item => {
+            const speakingUid = item.userId === "" ? userId : item.userId;
+            if(item.volume >= 5) {
+                return speakingUid
+            }
+        });
+
+        setUserSpeaking(speakingList);
     }
 
     const onRemoteUserLeaveRoom = (userId) => deleteUser(userId);
@@ -140,11 +153,11 @@ export const GroupVideo = (props) => {
                     groupSplit.length > 0 && groupSplit.map((item, index) => {
                         return <div className="group-video-content__page" style={cacluatePageStyle(index)} key={index}>
                             {
-                                item.map(({userId, isEntering, isMicOpen}) => {
+                                item.map(({userId, isEntering, isMicOpen, isSpeaking}) => {
                                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = getUserInfo(userId);
                                     const displayName = user_profile_nick_name || user_profile_identifier;
                                     const hasFaceUrl = !user_profile_face_url;
-                                    return <div key={userId} className="group-video-content__page-item" style={{...cacluateStyle(), backgroundImage: `url(${user_profile_face_url})`}}>
+                                    return <div key={userId} className={`group-video-content__page-item ${isSpeaking ? 'is-speaking' : ''}`} style={{...cacluateStyle(), backgroundImage: `url(${user_profile_face_url})`}}>
                                         <GroupVideoItem isMicAvailable={isMicOpen} isEntering={isEntering} setRef={setRef} userId={userId} userNickName={displayName} hasFaceUrl={hasFaceUrl} />
                                     </div>
                                 })
