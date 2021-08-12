@@ -220,7 +220,6 @@ export const App = () => {
             const { data: { code, json_param } } = data;
             if (code === 0) {
                 const [userdata, ...inviteList] = JSON.parse(json_param);
-                console.log('===========invite list==============', inviteList);
                 openCallWindow({
                     windowType: 'notificationWindow',
                     callType: call_type + '',
@@ -233,7 +232,7 @@ export const App = () => {
                     roomId: room_id,
                     inviteID,
                     userID: catchUserId,
-                    inviteList: inviteeList,
+                    inviteList: [inviter, ...inviteeList],
                     inviteListWithInfo: [userdata, ...inviteList],
                     userSig: catchUserSig
                 });

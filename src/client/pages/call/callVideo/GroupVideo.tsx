@@ -7,20 +7,12 @@ import {
 
 import useDynamicRef from '../../../utils/react-use/useDynamicRef';
 import event from '../event';
+import useUserList from '../useUserList';
 import { remote } from 'electron'
-const splitUserList = (array, count) => {
-    const catchArray = [];
-    for (let i = 0; i < array.length; i += count) {
-        catchArray.push(array.slice(i, i + count));
-    }
-    return catchArray;
-};
-
 
 export const GroupVideo = (props) => {
     const { trtcInstance, inviteList, userId, isVideoCall, inviteListWithInfo } = props;
-    const [userList, setUserList] = useState(inviteList);
-    const [groupSplit, setGroupSplit] = useState(splitUserList(inviteList, 9));
+    const [groupSplit, deleteUser, setUserEntering, setUserAudioAvailable] = useUserList(inviteList);
     const [currentPage, setCurrentPage] = useState(0);
     const [enteringUser, setEnteringUser] = useState('');
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
@@ -33,16 +25,8 @@ export const GroupVideo = (props) => {
         trtcInstance.on('onRemoteUserLeaveRoom', onRemoteUserLeaveRoom);
         trtcInstance.on('onRemoteUserEnterRoom', onRemoteUserEnterRoom);
         isVideoCall && trtcInstance.on('onUserVideoAvailable', onUserVideoAvailable);
+        trtcInstance.on('onUserAudioAvailable', onUserAudioAvailable);
     }, []);
-
-    useEffect(() => {
-        setUserList(Array.from(new Set([userId, ...inviteList])));
-    }, [inviteList])
-
-    useEffect(() => {
-        const resultArray = splitUserList(userList, 9);
-        setGroupSplit(resultArray);
-    }, [userList]);
 
     useEffect(() => {
         if (enteringUser) {
@@ -69,25 +53,17 @@ export const GroupVideo = (props) => {
 
     const onEnterRoom = (result) => {
         if (result > 0) {
-            setUserList(prev => Array.from(new Set([userId, ...prev])));
+            setUserEntering(userId);
             setEnteringUser(userId);
-            if(!isVideoCall) {
-                const ref = getRef(userId);
-                ref.current.getElementsByTagName('span')[0].style.display = 'none';
-            }
         };
     };
 
     const onRemoteUserEnterRoom = (userId) => {
-        setUserList(prev => Array.from(new Set([...prev, userId])));
+        setUserEntering(userId);
         setEnteringUser(userId);
-        if(!isVideoCall) {
-            const ref = getRef(userId);
-            ref.current.getElementsByTagName('span')[0].style.display = 'none';
-        }
     }
 
-    const onRemoteUserLeaveRoom = (userId) => setUserList(prev => prev.filter(item => item !== userId));
+    const onRemoteUserLeaveRoom = (userId) => deleteUser(userId);
 
     const onUserVideoAvailable = (uid, available) => {
         const ref = getRef(uid);
@@ -99,6 +75,8 @@ export const GroupVideo = (props) => {
             ref.current.style.display = 'none';
         }
     }
+
+    const onUserAudioAvailable = (uid, available) => setUserAudioAvailable(uid, available === 1);
 
     const cacluateStyle = () => {
         const count = groupSplit[currentPage]?.length;
@@ -158,11 +136,13 @@ export const GroupVideo = (props) => {
                     groupSplit.length > 0 && groupSplit.map((item, index) => {
                         return <div className="group-video-content__page" style={cacluatePageStyle(index)} key={index}>
                             {
-                                item.map(userId => {
+                                item.map(({userId, isEntering}) => {
                                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = getUserInfo(userId);
                                     return <div key={userId} className="group-video-content__page-item" style={{...cacluateStyle(), backgroundImage: `url(${user_profile_face_url})`}}>
                                         <div ref={setRef(userId)} style={{ position: 'relative', width: '100%', height: '100%' }}>
-                                            <span className="group-video-content__page-item--loading">正在等待对方接受邀请...</span>
+                                            {
+                                                !isEntering && <span className="group-video-content__page-item--loading">正在等待对方接受邀请...</span>
+                                            }
                                             {
                                                 !user_profile_face_url && <span>{user_profile_nick_name || user_profile_identifier}</span>
                                             }
