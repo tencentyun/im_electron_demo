@@ -35,7 +35,7 @@
       "extraFiles": [
         {
           "from": "./node_modules/im_electron_sdk/lib/",
-          "to": "./node_modules/im_electron_sdk/lib/",
+          "to": "./resources",
           "filter": [
             "**/*"
           ]
@@ -66,7 +66,7 @@
     "file-type": "^16.5.2",
     "fluent-ffmpeg": "^2.1.2",
     "get-video-duration": "^3.1.0",
-    "im_electron_sdk": "^1.0.62",
+    "im_electron_sdk": "^1.0.69",
     "image-size": "^1.0.0",
     "node-fetch": "^2.6.1",
     "npm": "^7.20.2",

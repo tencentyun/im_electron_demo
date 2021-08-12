@@ -20,7 +20,8 @@ declare namespace State {
         callingStatus: {
             callingType: number,
             callingId: string,
-            inviteeList: Array<string>
+            inviteeList: Array<string>,
+            callType: number
         }
     }
     export type historyMessage = {

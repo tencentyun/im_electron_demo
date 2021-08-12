@@ -142,9 +142,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     const data = await timRenderInstance.TIMInvite({
       userID: conv_id,
       senderID: userId,
-      data: "",
-      roomID: roomId,
-      callType: Number(callType)
+      data: JSON.stringify({"businessID":"av_call","call_type":Number(callType),"room_id":roomId,"version":4})
     })
     const { data: { code, json_params } } = data;
     if(code === 0){
@@ -162,9 +160,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       userIDs: userList,
       groupID: conv_id,
       senderID: userId,
-      data: "",
-      roomID: roomId,
-      callType: Number(callType)
+      data: JSON.stringify({"businessID":"av_call","call_type":Number(callType),"room_id":roomId,"version":4}),
     });
     const { data: { code, json_params } } = data;
     if(code === 0){
@@ -177,7 +173,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     dispatch(updateCallingStatus({
       callingId: conv_id,
       callingType: conv_type,
-      inviteeList: userList
+      inviteeList: userList,
+      callType: callType
     }));
     const { faceUrl, nickName } = getDisplayConvInfo();
     const inviteListWithInfo = await getUserInfoList([userId, ...userList]);

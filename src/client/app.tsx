@@ -54,7 +54,8 @@ export const App = () => {
         catchCalling: {
             callingType: 0,
             callingId: '',
-            inviteeList: []
+            inviteeList: [],
+            callType:0
         }
     });
 
@@ -69,7 +70,7 @@ export const App = () => {
     ref.current = {
         catchCalling: callingStatus,
         catchUserId: userId,
-        catchUserSig: userSig
+        catchUserSig: userSig,
     }
 
     const initIMSDK = async () => {
@@ -196,11 +197,12 @@ export const App = () => {
         const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
         const { room_id, call_type,call_end } = JSON.parse(formatedData.data)
         const { inviter, groupID, inviteID, inviteeList } = formatedData;
-        const { callingId } = ref.current.catchCalling;
+        const { callingId,callingType } = ref.current.catchCalling;
         // 如果正在通话，拒绝对方通话。
         if(callingId) {
             timRenderInstance.TIMRejectInvite({
-                inviteID: inviteID
+                inviteID: inviteID,
+                data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
             });
             return;
         }
@@ -220,6 +222,13 @@ export const App = () => {
             const { data: { code, json_param } } = data;
             if (code === 0) {
                 const [userdata, ...inviteList] = JSON.parse(json_param);
+                console.log('===========invite list==============', inviteList);
+                dispatch(updateCallingStatus({
+                    callingId:groupID?groupID: inviter, //
+                    callingType:groupID ? 2: 1,
+                    inviteeList,
+                    callType:call_type
+                }))
                 openCallWindow({
                     windowType: 'notificationWindow',
                     callType: call_type + '',
@@ -266,7 +275,7 @@ export const App = () => {
     const _handleRemoteUserTimeOut = (message) => {
         const timeOutList = JSON.parse(message.message_elem_array[0].custom_elem_data)?.inviteeList;
         if(timeOutList) {
-            const { callingId, callingType, inviteeList } = ref.current.catchCalling;
+            const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
             const newList = inviteeList.filter(item => !timeOutList.includes(item));
             if (newList.length === 0) {
                 closeCallWindow();
@@ -274,7 +283,8 @@ export const App = () => {
                 dispatch(updateCallingStatus({
                     callingId,
                     callingType,
-                    inviteeList: newList
+                    inviteeList: newList,
+                    callType
                 }));
                 updateInviteList(newList); //向通话窗口通信
             }
@@ -284,7 +294,7 @@ export const App = () => {
 
     const _handleRemoteUserReject = (message) => {
         const { message_sender } = message;
-        const { callingId, callingType, inviteeList } = ref.current.catchCalling;
+        const { callingId, callingType, inviteeList,callType } = ref.current.catchCalling;
         if (inviteeList.includes(message_sender)) {
             const newInviteeList = _removeFromArr(inviteeList, message_sender)
             if (newInviteeList.length === 0) {
@@ -293,7 +303,8 @@ export const App = () => {
                 dispatch(updateCallingStatus({
                     callingId,
                     callingType,
-                    inviteeList: newInviteeList
+                    inviteeList: newInviteeList,
+                    callType
                 }));
                 updateInviteList(newInviteeList); //向通话窗口通信
             }
@@ -458,15 +469,19 @@ export const App = () => {
     useEffect(() => {
         initIMSDK();
         acceptCallListiner((inviteID) => {
+            const { callingType } = ref.current.catchCalling;
             timRenderInstance.TIMAcceptInvite({
-                inviteID: inviteID
+                inviteID: inviteID,
+                data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
             }).then(data => {
                 console.log('接收返回', data)
             })
         });
         refuseCallListiner((inviteID) => {
+            const { callingType } = ref.current.catchCalling;
             timRenderInstance.TIMRejectInvite({
-                inviteID: inviteID
+                inviteID: inviteID,
+                data:JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
             }).then(data => {
                 console.log('接收返回', data)
             })
@@ -475,7 +490,8 @@ export const App = () => {
             dispatch(updateCallingStatus({
                 callingId: '',
                 callingType: 0,
-                inviteeList: []
+                inviteeList: [],
+                callType: 0
             }));
           });
         cancelCallInvite((inviteID) => {
