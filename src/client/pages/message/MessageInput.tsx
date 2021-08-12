@@ -3,7 +3,7 @@ import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message,Dropdown, List, Bubble } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendVideoMsg, sendMsg } from './api'
-import { updateMessages } from '../../store/actions/message'
+import { updateMessages,  reciMessage} from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
@@ -37,7 +37,7 @@ type Props = {
     handleOpenCallWindow: (callType: string, convType: number, windowType: string) => void;
 }
 
-const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF', 'jpeg'];
+const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
 const FEATURE_LIST_GROUP = [{
@@ -117,6 +117,10 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [sendType, setSendType] = useState(null); // 0->enter,1->ctrl+enter
     let editorInstance;
 
+        //我的
+     useEffect(() => {
+            reedite(isHandCal)
+     }, [isHandCal])
     const handleSendMsg = async () => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
         try {
@@ -183,7 +187,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 return
             }
             console.log(type, '========')
-            if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
+            if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v)) ||  type== "image/jpeg") {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path ? file.path : imageObj.path, size: file.size, base64URL: imgUrl }));
@@ -418,13 +422,14 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
     const handleOnkeyPress = (e) => {
         const hasImage = editorState.toHTML().includes('image')
+        const hasFile = editorState.toHTML().includes('block-file')
         if (sendType == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 // console.log('换行', '----------------------', editorState)
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
-                if (hasImage) {
+                if (hasImage || hasFile) {
                     handleSendMsg();
                 } else {
                     !canSendMsg() && handleSendMsg();
@@ -438,7 +443,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             // Ctrl+enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 e.preventDefault();
-                if (hasImage) {
+                if (hasImage || hasFile) {
                     handleSendMsg();
                 } else {
                     !canSendMsg() && handleSendMsg();

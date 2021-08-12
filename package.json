@@ -1,11 +1,11 @@
 {
   "name": "im-electron-demo",
   "productName": "IM Electron Demo",
-  "version": "3.3.30",
+  "version": "1.0.30",
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {
-    "start": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
+    "start": "concurrently  \"npm run dev:electron\"",
     "build": "electron-builder -w",
     "build:react": "cd ./src/client && npm run build:react",
     "dev:electron": "set NODE_ENV=development && electron .",
@@ -13,7 +13,7 @@
   },
   "keywords": [],
   "author": {
-    "name": "zhaiweichao",
+    "name": "Tencent",
     "email": "joyxian@tencent.com"
   },
   "build": {
@@ -21,7 +21,7 @@
       "src/app",
       "bundle"
     ],
-    "productName": "华润银行即时通讯(试运行测试版本)",
+    "productName": "华润银行即时通讯（内测版）",
     "appId": "electron-sdk",
     "mac": {
       "icon": "./icon/favicon.icns"
@@ -61,7 +61,8 @@
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^6.2.0",
-    "electron": "^13.1.8",
+    "electron": "^13.1.5",
+    "native-ext-loader": "^2.3.0",
     "electron-builder": "^22.11.7"
   },
   "dependencies": {
@@ -83,16 +84,18 @@
     "final-form": "^4.20.2",
     "fluent-ffmpeg": "^2.1.2",
     "get-video-duration": "^3.1.0",
-    "im_electron_sdk": "^1.0.63",
+    "im_electron_sdk": "^1.0.62",
     "image-size": "^1.0.0",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
-    "node-gyp": "^8.1.0",
+    "node-gyp": "^7.1.2",
     "node-gyp-build": "^4.2.3",
     "progress-stream": "^2.0.0",
     "qs": "^6.5.2",
     "sass": "^1.35.1",
-    "trtc-electron-sdk": "^8.9.107-beta.0"
+    "save": "^2.4.0",
+    "npm": "^7.20.2",
+    "trtc-electron-sdk": "^8.6.102-beta.0"
   }
 }

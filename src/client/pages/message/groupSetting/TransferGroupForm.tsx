@@ -9,10 +9,9 @@ export interface FormValue {
 
 interface Props {
   userList: {
-    user_profile_face_url: string;
-    user_profile_nick_name: string;
-    user_profile_identifier: string;
-    group_member_info_member_role: number;
+    group_member_info_face_url: string;
+    group_member_info_nick_name: string;
+    group_member_info_identifier: string;
   }[];
   onSubmit: (formValue: FormValue) => Promise<void>;
   onSuccess?: () => void;
@@ -41,7 +40,7 @@ export const TransferGroupForm = (props: Props): JSX.Element => {
     setSearchText(value)
     let dataList = userList
     if (value) {
-      dataList = dataList.filter(item => item.user_profile_nick_name.includes(value) || item.user_profile_identifier.includes(value))
+      dataList = dataList.filter(item => item.group_member_info_nick_name.includes(value) || item.group_member_info_identifier.includes(value))
     }
     setSearchData(dataList)
   }, 400)
@@ -61,15 +60,15 @@ export const TransferGroupForm = (props: Props): JSX.Element => {
         >
           {
              searchData.map((v, index) => (
-               <Radio name={v.user_profile_identifier}  key={v.user_profile_face_url + index} display="block">
+               <Radio name={v.group_member_info_identifier}  key={v.group_member_info_face_url + index} display="block">
                 <div className="group-member--avatar-box">
                   <Avatar
                     extralClass="transfer-group-avatar"
-                    url={v.user_profile_face_url}
+                    url={v.group_member_info_face_url}
                   />
                   <span className="group-member--name">
-                    <span dangerouslySetInnerHTML={{ __html: highlightText(searchText, v.user_profile_nick_name)}}></span>
-                    <span dangerouslySetInnerHTML={{ __html: highlightText(searchText, v.user_profile_identifier)}}></span>
+                    <span dangerouslySetInnerHTML={{ __html: highlightText(searchText, v.group_member_info_nick_name)}}></span>
+                    <span dangerouslySetInnerHTML={{ __html: highlightText(searchText, v.group_member_info_identifier)}}></span>
                   </span>
                 </div>
               </Radio>

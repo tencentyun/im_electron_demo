@@ -6,7 +6,7 @@ export const Expression = (props: any): JSX.Element => {
     const item = (props) => {
         return (
                 <div className="message-view__item--voice" >
-                    <img src={props.face_elem_buf} alt="" style={{ width:'100px',height:'100px' }}/>
+                    <img src={props.face_elem_buf} alt="" style={{ width:'100px'}}/>
                 </div>
         )
     };
