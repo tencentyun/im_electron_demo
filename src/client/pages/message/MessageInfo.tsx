@@ -222,6 +222,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       inviteeList: userList
     }));
     const { faceUrl, nickName } = getDisplayConvInfo();
+    console.log(faceUrl, nickName, 'getDisplayConvInfo@@@@@@@@@@@@@@@@@@@@@@')
     const inviteListWithInfo = await getUserInfoList([userId, ...userList]);
     console.log(inviteListWithInfo, 'getUserInfoList@@@@@@@@@@')
     openCallWindow({
