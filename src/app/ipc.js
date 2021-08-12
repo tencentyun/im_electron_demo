@@ -77,7 +77,7 @@ class IPC {
             const { inviteID, isVoiceCall } = acceptParams;
             this.imWindowEvent.reply('accept-call-reply',inviteID);
             const windowWidth = isVoiceCall ? 450 : 800;
-            const windowHeight = 800;
+            const windowHeight = isVoiceCall ? 800 : 600;
 
             const positionX = Math.floor((screenSize.width - windowWidth) / 2);
             const positionY = Math.floor((screenSize.height - windowHeight) / 2);
