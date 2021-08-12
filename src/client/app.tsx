@@ -226,7 +226,7 @@ export const App = () => {
                 dispatch(updateCallingStatus({
                     callingId:groupID?groupID: inviter, //
                     callingType:groupID ? 2: 1,
-                    inviteeList,
+                    inviteeList: [inviter, ...inviteeList],
                     callType:call_type
                 }))
                 openCallWindow({

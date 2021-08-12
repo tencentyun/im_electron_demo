@@ -8,6 +8,7 @@ import {
 import useDynamicRef from '../../../utils/react-use/useDynamicRef';
 import event from '../event';
 import useUserList from '../useUserList';
+import GroupVideoItem from './GroupVideoItem';
 import { remote } from 'electron'
 
 export const GroupVideo = (props) => {
@@ -21,6 +22,7 @@ export const GroupVideo = (props) => {
 
     useEffect(() => {
         event.on('toggleVideo', onVideoChanged);
+        event.on('toggleVoice', onVoiceChanged);
         trtcInstance.on('onEnterRoom', onEnterRoom);
         trtcInstance.on('onRemoteUserLeaveRoom', onRemoteUserLeaveRoom);
         trtcInstance.on('onRemoteUserEnterRoom', onRemoteUserEnterRoom);
@@ -43,6 +45,8 @@ export const GroupVideo = (props) => {
         const selfViewRef = getRef(userId);
         selfViewRef.current.getElementsByTagName('canvas')[0].style.display = shouldShow ? 'block' : 'none';
     }
+
+    const onVoiceChanged = (isAvailable) => setUserAudioAvailable(userId, isAvailable);
 
     const openLocalVideo = (selfViewRef) => {
         trtcInstance.startLocalPreview(selfViewRef.current);
@@ -136,18 +140,12 @@ export const GroupVideo = (props) => {
                     groupSplit.length > 0 && groupSplit.map((item, index) => {
                         return <div className="group-video-content__page" style={cacluatePageStyle(index)} key={index}>
                             {
-                                item.map(({userId, isEntering}) => {
+                                item.map(({userId, isEntering, isMicOpen}) => {
                                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = getUserInfo(userId);
+                                    const displayName = user_profile_nick_name || user_profile_identifier;
+                                    const hasFaceUrl = !user_profile_face_url;
                                     return <div key={userId} className="group-video-content__page-item" style={{...cacluateStyle(), backgroundImage: `url(${user_profile_face_url})`}}>
-                                        <div ref={setRef(userId)} style={{ position: 'relative', width: '100%', height: '100%' }}>
-                                            {
-                                                !isEntering && <span className="group-video-content__page-item--loading">正在等待对方接受邀请...</span>
-                                            }
-                                            {
-                                                !user_profile_face_url && <span>{user_profile_nick_name || user_profile_identifier}</span>
-                                            }
-                                        </div>
-                                        <span className="group-video-content__page-item--user-id">{user_profile_nick_name || user_profile_identifier}</span>
+                                        <GroupVideoItem isMicAvailable={isMicOpen} isEntering={isEntering} setRef={setRef} userId={userId} userNickName={displayName} hasFaceUrl={hasFaceUrl} />
                                     </div>
                                 })
                             }

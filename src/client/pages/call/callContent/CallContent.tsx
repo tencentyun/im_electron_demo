@@ -86,7 +86,10 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
         event.emit('toggleVideo', !isOpenCamera);
     };
 
-    const toggleVoice = isMute => trtcInstance.muteLocalAudio(isMute);
+    const toggleVoice = isMute => {
+        event.emit('toggleVoice', !isMute);
+        trtcInstance.muteLocalAudio(isMute);
+    }
 
     const exitRoom = () => {
         trtcInstance.exitRoom();

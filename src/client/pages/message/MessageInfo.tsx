@@ -173,7 +173,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     dispatch(updateCallingStatus({
       callingId: conv_id,
       callingType: conv_type,
-      inviteeList: userList,
+      inviteeList: [userId, ...userList],
       callType: callType
     }));
     const { faceUrl, nickName } = getDisplayConvInfo();
@@ -191,7 +191,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       inviteID: inviteId,
       userID: userId,
       userSig: userSig,
-      inviteList: [userId, userList],
+      inviteList: [userId, ...userList],
       inviteListWithInfo
     });
   }
