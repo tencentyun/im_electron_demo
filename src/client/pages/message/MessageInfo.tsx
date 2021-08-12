@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { message } from 'tea-component';
 
 import { Avatar } from "../../components/avatar/avatar";
@@ -41,17 +41,17 @@ type Info = {
 
 export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const { conv_id, conv_type, conv_profile } = props;
-  const [callType,setCallType] = useState(0)
-  const [callInfo,setCallInfo] = useState({
-    callType:0,
-    convType:0
+  const [callType, setCallType] = useState(0)
+  const [callInfo, setCallInfo] = useState({
+    callType: 0,
+    convType: 0
   })
   const {
     group_detial_info_group_type: groupType,
     group_detial_info_add_option: addOption
   } = conv_profile;
 
- 
+
   const groupMemberSelectorRef = useRef(null)
   const popupContainer = document.getElementById("messageInfo");
   // const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all && conv_profile.group_detial_info_owener_identifier != localStorage.getItem('uid');
@@ -65,8 +65,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const [editorState, setEditorState] = useState<EditorState>(BraftEditor.createEditorState(null))
   const [isPress, setIsPress] = useState(false)
   const [editorHeight, seteditorHeight] = useState(250)
-  const { userId,userSig } = useSelector((state: State.RootState) => state.userInfo)
-  const [isHandCal, setIsHandCal] = useState(["",0])
+  const { userId, userSig } = useSelector((state: State.RootState) => state.userInfo)
+  const [isHandCal, setIsHandCal] = useState(["", 0])
 
   const { toolsTab, toolsDrawerVisible } = useSelector(
     (state: State.RootState) => state.groupDrawer
@@ -167,13 +167,12 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       message.warning({ content: '找不到可用的摄像头和麦克风。请安装摄像头和麦克风后再试' });
       return;
     }
-
     setCallInfo({
       callType,
       convType
     })
-   
-    
+
+
   }
 
   const inviteC2C = async () => {
@@ -187,20 +186,21 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       callType: Number(callType)
     })
     const { data: { code, json_params } } = data;
-    if(code === 0){
+    if (code === 0) {
       const customerData = JSON.parse(json_params)?.message_elem_array[0].custom_elem_data;
       const inviteId = JSON.parse(customerData)?.inviteID;
-      openLocalCallWindow(callType,roomId,[conv_id], inviteId)
+      // console.log(callType, roomId, [conv_id], inviteId, '@@@@@@@@@@@@@@@@@@@@@@@@视频参数')
+      openLocalCallWindow(callType, roomId, [conv_id], inviteId)
     }
   }
 
 
-  const inviteInGourp =async (groupMember) => {
+  const inviteInGourp = async (groupMember) => {
     const { callType } = callInfo
     const roomId = generateRoomID();
-    console.log('roomId',roomId)
+    console.log('roomId', roomId)
     const userList = groupMember.map((v) => v.group_member_info_identifier)
-   const data = await timRenderInstance.TIMInviteInGroup({
+    const data = await timRenderInstance.TIMInviteInGroup({
       userIDs: userList,
       groupID: conv_id,
       senderID: userId,
@@ -209,20 +209,22 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       callType: Number(callType)
     });
     const { data: { code, json_params } } = data;
-    if(code === 0){
+    if (code === 0) {
       const customerData = JSON.parse(json_params)?.message_elem_array[0].custom_elem_data;
       const inviteId = JSON.parse(customerData)?.inviteID;
-      openLocalCallWindow(callType,roomId,userList, inviteId)
+      openLocalCallWindow(callType, roomId, userList, inviteId)
     }
   }
-  const openLocalCallWindow = async (callType,roomId,userList, inviteId)=>{
+  const openLocalCallWindow = async (callType, roomId, userList, inviteId) => {
     dispatch(updateCallingStatus({
       callingId: conv_id,
       callingType: conv_type,
       inviteeList: userList
     }));
     const { faceUrl, nickName } = getDisplayConvInfo();
+    console.log(faceUrl, nickName, 'getDisplayConvInfo@@@@@@@@@@@@@@@@@@@@@@')
     const inviteListWithInfo = await getUserInfoList([userId, ...userList]);
+    console.log(inviteListWithInfo, 'getUserInfoList@@@@@@@@@@')
     openCallWindow({
       windowType: 'callWindow',
       callType,
@@ -242,28 +244,28 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   }
 
 
-  useEffect(()=>{
-    const {callType,convType} = callInfo
-    if(callType!==0 && convType !== 0){
-      if(convType == 1){
+  useEffect(() => {
+    const { callType, convType } = callInfo
+    if (callType !== 0 && convType !== 0) {
+      if (convType == 1) {
         inviteC2C()
-      }else if(convType === 2){
+      } else if (convType === 2) {
         openGroupMemberSelector()
       }
     }
-  },[callInfo])
+  }, [callInfo])
 
 
-const openGroupMemberSelector = async ()=>{
-  const { group_get_memeber_info_list_result_info_array } = await getGroupMemberList({
-    groupId: conv_id,
-    nextSeq: 0,
-  })
-  groupMemberSelectorRef.current.open({
-    groupId: conv_id,
-    userList: group_get_memeber_info_list_result_info_array
-  })
-}
+  const openGroupMemberSelector = async () => {
+    const { group_get_memeber_info_list_result_info_array } = await getGroupMemberList({
+      groupId: conv_id,
+      nextSeq: 0,
+    })
+    groupMemberSelectorRef.current.open({
+      groupId: conv_id,
+      userList: group_get_memeber_info_list_result_info_array
+    })
+  }
 
 
 
@@ -370,7 +372,7 @@ const openGroupMemberSelector = async ()=>{
           </header>
           <section className="message-info-view__content">
             <div className="message-info-view__content--view">
-              <MessageView messageList={msgList || []} groupType={groupType} convId={conv_id} convType={conv_type} editorState={(data)=>{setIsHandCal(data)}} setEditorState={setEditorState} />
+              <MessageView messageList={msgList || []} groupType={groupType} convId={conv_id} convType={conv_type} editorState={(data) => { setIsHandCal(data) }} setEditorState={setEditorState} />
             </div>
             <div className="message-info-view__content--slider"
               onMouseDown={() => setIsPress(true)}

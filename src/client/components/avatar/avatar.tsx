@@ -71,7 +71,7 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
 
     useEffect(()=>{
         setNickName(nick)
-        avatar && (!isPreview && !avatar.match(/imageView/) ? setUrl(previewVvatar(avatar))  : setUrl(avatar))
+        avatar && (!isPreview && !avatar.match(/imageView/) && !avatar.match(/gif/) ? setUrl(previewVvatar(avatar))  : setUrl(avatar))
         setUserID(uid)
         setGroupID(gid)
     },[avatar,nick,uid,gid])
