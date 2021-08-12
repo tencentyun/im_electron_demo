@@ -51,7 +51,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     group_detial_info_add_option: addOption
   } = conv_profile;
 
-
+  console.log(conv_profile, '------------------')
   const groupMemberSelectorRef = useRef(null)
   const popupContainer = document.getElementById("messageInfo");
   // const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all && conv_profile.group_detial_info_owener_identifier != localStorage.getItem('uid');
@@ -222,7 +222,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       inviteeList: userList
     }));
     const { faceUrl, nickName } = getDisplayConvInfo();
-    console.log(faceUrl, nickName, 'getDisplayConvInfo@@@@@@@@@@@@@@@@@@@@@@')
     const inviteListWithInfo = await getUserInfoList([userId, ...userList]);
     console.log(inviteListWithInfo, 'getUserInfoList@@@@@@@@@@')
     openCallWindow({

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, message,Dropdown, List, Bubble } from 'tea-component';
+import { Button, message, Dropdown, List, Bubble } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendVideoMsg, sendMsg } from './api'
 import { updateMessages } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
@@ -417,7 +417,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        const hasImage = editorState.toHTML().includes('image')
+        const hasImage = editorState.toHTML().includes('block')
         if (sendType == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
