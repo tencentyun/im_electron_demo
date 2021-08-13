@@ -152,8 +152,8 @@ export const App = () => {
                 _handleKickedout();
                 break;
               /**
-                           * 收到音视频邀请
-                           */
+               * 收到音视频邀请
+               */
               case "TIMOnInvited":
                 _onInvited(data)
                 break;
@@ -199,6 +199,7 @@ export const App = () => {
     // 关闭通知窗口
     closeCallWindow()
   }
+
   const _onInvited = (data) => {
     // actionType: 1
     // businessID: 1
@@ -292,10 +293,11 @@ export const App = () => {
   }
 
   const _handleRemoteUserTimeOut = (message) => {
-    const timeOutList = JSON.parse(message.message_elem_array[0].custom_elem_data)?.inviteeList;
+    const timeOutList = JSON.parse(message[0].message_elem_array[0].custom_elem_data)?.inviteeList;
     if (timeOutList) {
       const { callingId, callingType, inviteeList } = ref.current.catchCalling;
       const newList = inviteeList.filter(item => !timeOutList.includes(item));
+      console.log(newList, 'newList--------------------------------------------------')
       if (newList.length === 0) {
         closeCallWindow();
       } else {
@@ -307,7 +309,6 @@ export const App = () => {
         updateInviteList(newList); //向通话窗口通信
       }
     }
-
   }
 
   const _handleRemoteUserReject = (message) => {
