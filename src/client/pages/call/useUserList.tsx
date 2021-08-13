@@ -40,6 +40,7 @@ const useUserList = (originUserList) : [Array<Array<userList>> , (userId: string
     useEffect(() => {
         const splitUserList = splitUserListFunc(userList, 9);
         setSplitUserList(splitUserList);
+        console.log('==========split user list=========', splitUserList);
     }, [userList])
 
     const deleteUser = userId => setUserList(prev => prev.filter(item => item.userId !== userId));
