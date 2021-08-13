@@ -124,7 +124,7 @@ class IPC {
             this.imWindowEvent = event;
             const addSdkAppid = {
                 ...data,
-                sdkAppid: SDK_APP_ID
+                sdkAppid: "1400529075"
             }
             const params = JSON.stringify(addSdkAppid);
             const { convInfo: { convType }, callType } = data;
