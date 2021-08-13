@@ -9,7 +9,6 @@ import useDynamicRef from '../../../utils/react-use/useDynamicRef';
 import event from '../event';
 import useUserList from '../useUserList';
 import GroupVideoItem from './GroupVideoItem';
-import { remote } from 'electron'
 
 export const GroupVideo = (props) => {
     const { trtcInstance, inviteList, userId, isVideoCall, inviteListWithInfo } = props;

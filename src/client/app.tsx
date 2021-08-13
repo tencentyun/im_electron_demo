@@ -269,13 +269,19 @@ export const App = () => {
         closeCallWindow()
     }
     const _onTimeout = (data) => {
-        data && _handleRemoteUserTimeOut(JSON.parse(data));
+        if(data) {
+            const parsedData = JSON.parse(data);
+            const params = Array.isArray(parsedData) ? parsedData[0] : parsedData;
+            _handleRemoteUserTimeOut(params);
+        }
     }
 
     const _handleRemoteUserTimeOut = (message) => {
         const timeOutList = JSON.parse(message.message_elem_array[0].custom_elem_data)?.inviteeList;
+        console.warn('====timeout params=====', timeOutList);
         if(timeOutList) {
             const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
+            console.warn('============store invite list ==========', inviteeList);
             const newList = inviteeList.filter(item => !timeOutList.includes(item));
             if (newList.length === 0) {
                 closeCallWindow();
@@ -289,7 +295,6 @@ export const App = () => {
                 updateInviteList(newList); //向通话窗口通信
             }
         }
-
     }
 
     const _handleRemoteUserReject = (message) => {
