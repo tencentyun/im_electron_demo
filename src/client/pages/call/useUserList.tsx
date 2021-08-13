@@ -5,7 +5,8 @@ type userList = {
     userId: string
     isEntering: boolean,
     isMicOpen: boolean,
-    isSpeaking: boolean
+    isSpeaking: boolean,
+    order: number
 }
 
 const splitUserListFunc = (array, count) => {
@@ -20,10 +21,11 @@ const generateTmp = (userId) => ({
     userId,
     isEntering: false,
     isMicOpen: true,
-    isSpeaking: false
+    isSpeaking: false,
+    order: 1,
 });
 
-const useUserList = (originUserList) : [Array<Array<userList>> , (userId: string) => void, (userId: string) => void, (userId: string, available: boolean) => void, (userIds: Array<string>) => void] => {
+const useUserList = (originUserList) : [Array<Array<userList>> , (userId: string) => void, (userId: string) => void, (userId: string, available: boolean) => void, (userIds: Array<string>) => void, (userId: string, available: boolean) => void,] => {
     const [userList, setUserList] = useState([]);
     const [splitUserList, setSplitUserList] = useState([]);
 
@@ -70,9 +72,20 @@ const useUserList = (originUserList) : [Array<Array<userList>> , (userId: string
                 ...item,
                 isSpeaking: userIds.includes(item.userId)
             }
+    }));
+
+    const setUserOrder = (userId, available) => setUserList(prev => prev.map(item => {
+        if(userId === item.userId) {
+            return {
+                ...item,
+                order: available ? 0 :  1
+            }
+        }
+
+        return item;
     }))
 
-    return [splitUserList, deleteUser, setUserEntering, setUserAudioAvailable, setUserSpeaking];
+    return [splitUserList, deleteUser, setUserEntering, setUserAudioAvailable, setUserSpeaking, setUserOrder];
 };
 
 export default useUserList;

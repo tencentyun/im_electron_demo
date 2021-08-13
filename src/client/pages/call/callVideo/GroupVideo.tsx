@@ -12,7 +12,7 @@ import GroupVideoItem from './GroupVideoItem';
 
 export const GroupVideo = (props) => {
     const { trtcInstance, inviteList, userId, isVideoCall, inviteListWithInfo } = props;
-    const [groupSplit, deleteUser, setUserEntering, setUserAudioAvailable, setUserSpeaking] = useUserList(inviteList);
+    const [groupSplit, deleteUser, setUserEntering, setUserAudioAvailable, setUserSpeaking, setUserOrder] = useUserList(inviteList);
     const [currentPage, setCurrentPage] = useState(0);
     const [enteringUser, setEnteringUser] = useState('');
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
@@ -58,6 +58,7 @@ export const GroupVideo = (props) => {
 
     const onEnterRoom = (result) => {
         if (result > 0) {
+            setUserOrder(userId, true); // 自己始终在第一位
             setUserEntering(userId);
             setEnteringUser(userId);
         };
@@ -83,18 +84,22 @@ export const GroupVideo = (props) => {
 
     const onUserVideoAvailable = (uid, available) => {
         const ref = getRef(uid);
-        if (available === 1) {
+        const isOpenCamera = available === 1;
+        if (isOpenCamera) {
             trtcInstance.startRemoteView(uid, ref.current);
             trtcInstance.setRemoteViewFillMode(uid, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
             ref.current.style.display = 'block';
         } else {
             ref.current.style.display = 'none';
         }
+
+        setUserOrder(uid, isOpenCamera);
     }
 
     const onUserAudioAvailable = (uid, available) => setUserAudioAvailable(uid, available === 1);
 
     const cacluateStyle = () => {
+        const haveMultiPage = groupSplit.length > 1;
         const count = groupSplit[currentPage]?.length;
         // const [width, height] = remote.getCurrentWindow().getSize();
         const width = 800;
@@ -102,6 +107,14 @@ export const GroupVideo = (props) => {
         const footerHeight = 76;
         const statusBarHeight = 36;
         const callWindowInnerHeight = height - footerHeight - statusBarHeight;
+
+        if(haveMultiPage) {
+            return {
+                width: width / 3,
+                height: callWindowInnerHeight / 3
+            }
+        } 
+
         if (count === 1) {
             return {
                 width: width,
@@ -152,11 +165,11 @@ export const GroupVideo = (props) => {
                     groupSplit.length > 0 && groupSplit.map((item, index) => {
                         return <div className="group-video-content__page" style={cacluatePageStyle(index)} key={index}>
                             {
-                                item.map(({userId, isEntering, isMicOpen, isSpeaking}) => {
+                                item.map(({userId, isEntering, isMicOpen, isSpeaking, order}) => {
                                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = getUserInfo(userId);
                                     const displayName = user_profile_nick_name || user_profile_identifier;
                                     const hasFaceUrl = !user_profile_face_url;
-                                    return <div key={userId} className={`group-video-content__page-item ${isSpeaking ? 'is-speaking' : ''}`} style={{...cacluateStyle(), backgroundImage: `url(${user_profile_face_url})`}}>
+                                    return <div key={userId} className={`group-video-content__page-item ${isSpeaking ? 'is-speaking' : ''}`} style={{...cacluateStyle(), backgroundImage: `url(${user_profile_face_url})`, order}}>
                                         <GroupVideoItem isMicAvailable={isMicOpen} isEntering={isEntering} setRef={setRef} userId={userId} userNickName={displayName} hasFaceUrl={hasFaceUrl} />
                                     </div>
                                 })
