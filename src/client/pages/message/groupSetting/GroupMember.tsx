@@ -26,11 +26,13 @@ export const GroupMember = (props: {
   groupId: string;
   groupType: number;
   groupAddOption: number;
+  memberCount: number
 }): JSX.Element => {
   const {
     groupId,
     groupType,
     userIdentity,
+    memberCount
   } = props;
 
 
@@ -130,7 +132,7 @@ export const GroupMember = (props: {
               className="group-member--title__right"
               onClick={() => dialogRef.current.open({ memberList: userList })}
             >
-              <span style={{ marginRight: "4px" }}>{userList.length}人</span>
+              <span style={{ marginRight: "4px" }}>{memberCount}人</span>
               <a>查看</a>
             </span>
           ) : (
