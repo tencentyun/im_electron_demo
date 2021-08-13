@@ -63,6 +63,7 @@ export const TransferGroupForm = (props: Props): JSX.Element => {
                <Radio name={v.group_member_info_identifier}  key={v.group_member_info_face_url + index} display="block">
                 <div className="group-member--avatar-box">
                   <Avatar
+                    key={ v.group_member_info_face_url }
                     extralClass="transfer-group-avatar"
                     url={v.group_member_info_face_url}
                   />

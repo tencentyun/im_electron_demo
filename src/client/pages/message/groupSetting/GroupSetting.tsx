@@ -72,7 +72,6 @@ export const GroupSetting = (props: {
       />
       <Divider />
       <GroupMember
-        userList={memberList}
         onRefresh={retry}
         userId={userId}
         groupId={groupDetail.group_detial_info_group_id}

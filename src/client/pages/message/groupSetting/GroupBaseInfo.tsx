@@ -40,7 +40,7 @@ export const GroupBaseInfo = (props: {
   return (
     <>
       <div className="group-base-info">
-        <Avatar url={groupAvatar} groupID={groupId} />
+        <Avatar url={groupAvatar} groupID={groupId}  key={ groupAvatar }/>
         <div className="group-base-info--text">
           <div>
             <span className="group-base-info--text__name">{groupName}</span>

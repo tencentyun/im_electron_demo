@@ -32,6 +32,7 @@ interface Props {
   onSuccess?: () => void;
   onError?: () => void;
   onClose?: () => void;
+  onScreenshot?: () => void;
   initialValues: {
     groupName: string;
     groupFaceUrl: string;
@@ -39,7 +40,7 @@ interface Props {
 }
 
 export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
-  const { onSubmit, onSuccess, onError, initialValues } = props;
+  const { onSubmit, onSuccess, onError, initialValues,onScreenshot } = props;
   const [btnDisabled, setBtnDisabled] = useState(false)
   // eslint-disable-next-line
   const _handlerSubmit = async (formValue: FormValue) => {
@@ -122,6 +123,7 @@ export const EditGroupBaseInfoForm = (props: Props): JSX.Element => {
       </Button> */}
       <ImgCropper {...input} isShowCropper={true}  isShow={(ages)=> {
                           // 修改个人头像重复修改消失问题
+                          onScreenshot()
                           setBtnDisabled(ages)
                         }}  afterUpload={afterUpload}></ImgCropper>
                       {/* <Input

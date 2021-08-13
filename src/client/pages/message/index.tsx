@@ -359,7 +359,7 @@ export const Message = (): JSX.Element => {
                                         {
                                             conv_unread_num > 0 ? <div className="conversion-list__item--profile___unread">{getDisplayUnread(conv_unread_num)}</div> : null
                                         }
-                                        <Avatar url={faceUrl}  isClick={false} nickName={nickName} userID={conv_id} groupID={conv_id} size='small' />
+                                        <Avatar url={faceUrl}  key={faceUrl} isClick={false} nickName={nickName} userID={conv_id} groupID={conv_id} size='small' />
                                     </div>
                                     <div className="conversion-list__item--info">
                                         <div className="conversion-list__item--time-wrapper">

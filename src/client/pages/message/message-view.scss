@@ -399,6 +399,11 @@
         margin-right: 84px;
         background: url('../../assets/icon/forward-divide.svg') no-repeat;
     }
+    &__delete {
+        width: 48px;
+        background: url('../../assets/icon/delete-message.svg') no-repeat;
+        background-size: 48px;
+    }
 }
 
 .preview-btn{

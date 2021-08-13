@@ -345,6 +345,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 url={faceUrl}
                 size="small"
                 nickName={nickName}
+                key={faceUrl}
                 userID={conv_id}
                 groupID={conv_id}
               />
