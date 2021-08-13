@@ -126,6 +126,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         try {
             const rawData = editorState.toRAW();
             const messageElementArray = getMessageElemArray(rawData, videoInfos);
+            console.log(messageElementArray,"调试内容")
             if (messageElementArray.length) {
                 const fetchList = messageElementArray.map((v => {
                     if (v.elem_type === 0) {
@@ -186,7 +187,11 @@ export const MessageInput = (props: Props): JSX.Element => {
                 message.error({ content: "文件大小异常" })
                 return
             }
-            console.log(type, '========')
+            if(file.path == "" && imageObj == null){
+                message.error({ content: "暂不支持此操作" })
+                return
+            }
+            console.log(type, '========',imageObj)
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v)) ||  type== "image/jpeg") {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);

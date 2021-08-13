@@ -494,6 +494,8 @@ export const searchFriends = async (params: {
 
 export const getGroupMemberList = async (params: {
   groupId: string;
+  nextSeq: number;
+  userIds?: string[];
 }): Promise<MemberInfo> => {
   const { groupId, userIds, nextSeq } = params;
   const queryParams: any = {
@@ -505,17 +507,15 @@ export const getGroupMemberList = async (params: {
     queryParams.group_get_members_info_list_param_identifier_array = userIds;
   }
   const { data } = await timRenderInstance.TIMGroupGetMemberInfoList({
-    params: {
-      group_get_members_info_list_param_group_id: groupId,
-    },
+    params: queryParams,
   });
-  console.log("data", data);
+  console.log('getGroupMemberList', data)
   const { code, json_param } = data;
   if (code === 0) {
     const result = JSON.parse(json_param);
-    return result; 
-  } 
-  return [] as any;
+    return result;
+  }
+  return {} as any;
 };
 
 export const getGroupMemberInfoList = async (params: {

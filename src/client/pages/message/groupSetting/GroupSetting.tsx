@@ -39,8 +39,7 @@ export const GroupSetting = (props: {
       ])
   }, []);
   const memberList = value ? value[0]?.group_get_memeber_info_list_result_info_array || [] : [];
-  let currentUserSetting: any = memberList?.filter(item => item.group_member_info_identifier == userId)[0];
-  console.log("核心信息", memberList,userId,currentUserSetting)
+  const currentUserSetting: any = memberList?.[0] || {};
   const groupDetail: Partial<State.conversationItem['conv_profile']> = value ? value[1][0] || conversationInfo.conv_profile || {} : {};
   if(!Object.keys(groupDetail).length){
     return null

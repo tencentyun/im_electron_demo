@@ -1,7 +1,7 @@
 {
   "name": "im-electron-demo",
   "productName": "IM Electron Demo",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {
@@ -96,6 +96,6 @@
     "sass": "^1.35.1",
     "save": "^2.4.0",
     "npm": "^7.20.2",
-    "trtc-electron-sdk": "^8.6.102-beta.0"
+    "trtc-electron-sdk": "^8.9.107-beta.0"
   }
 }

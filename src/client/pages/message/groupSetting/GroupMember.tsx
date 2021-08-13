@@ -20,13 +20,6 @@ import { getLoginUserID, getGroupMemberList} from '../api';
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
 
 export const GroupMember = (props: {
-  userList: {
-    user_profile_face_url: string;
-    user_profile_nick_name: string;
-    group_member_info_member_role: number;
-    user_profile_identifier: string;
-    user_profile_gender: string;
-  }[];
   onRefresh: () => Promise<any>;
   userIdentity: number;
   userId: string;
@@ -38,18 +31,17 @@ export const GroupMember = (props: {
     groupId,
     groupType,
     userIdentity,
-    onRefresh,
-    userList
   } = props;
 
 
   // 获取群成员列表
-//   const { value, loading, retry } = useAsyncRetryFunc(async () => {
-//     return await getGroupMemberList({
-//       groupId,
-//       nextSeq: 0,
-//     })
-// }, []);
+  const { value, loading, retry } = useAsyncRetryFunc(async () => {
+      return await getGroupMemberList({
+        groupId,
+        nextSeq: 0,
+      })
+  }, []);
+  const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
   const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();  
   // const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
   const popupContainer = document.getElementById("messageInfo");
@@ -222,11 +214,11 @@ export const GroupMember = (props: {
       />
       <DeleteGroupMemberDialog
         dialogRef={deleteMemberDialogRef}
-        onSuccess={() => onRefresh()}
+        onSuccess={() => retry()}
       />
       <AddGroupMemberDialog
         dialogRef={addMemberDialogRef}
-        onSuccess={() => onRefresh()}
+        onSuccess={() => retry()}
       />
     </>
   );
