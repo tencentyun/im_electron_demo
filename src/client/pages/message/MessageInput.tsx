@@ -117,7 +117,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [sendType, setSendType] = useState(null); // 0->enter,1->ctrl+enter
     let editorInstance;
 
-        //我的
+     //我的
      useEffect(() => {
             reedite(isHandCal)
      }, [isHandCal])

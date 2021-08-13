@@ -7,20 +7,13 @@ import {
 
 import useDynamicRef from '../../../utils/react-use/useDynamicRef';
 import event from '../event';
-import { remote } from 'electron'
-const splitUserList = (array, count) => {
-    const catchArray = [];
-    for (let i = 0; i < array.length; i += count) {
-        catchArray.push(array.slice(i, i + count));
-    }
-    return catchArray;
-};
-
+import useUserList from '../useUserList';
+import GroupVideoItem from './GroupVideoItem';
 
 export const GroupVideo = (props) => {
     const { trtcInstance, inviteList, userId, isVideoCall, inviteListWithInfo } = props;
     const [userList, setUserList] = useState(inviteList);
-    const [groupSplit, setGroupSplit] = useState(splitUserList(inviteList, 9));
+    const [groupSplit, deleteUser, setUserEntering, setUserAudioAvailable, setUserSpeaking ,setUserOrder] = useUserList(inviteList);
     const [currentPage, setCurrentPage] = useState(0);
     const [enteringUser, setEnteringUser] = useState('');
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
@@ -29,26 +22,21 @@ export const GroupVideo = (props) => {
 
     useEffect(() => {
         event.on('toggleVideo', onVideoChanged);
+        event.on('toggleVoice', onVoiceChanged);
         trtcInstance.on('onEnterRoom', onEnterRoom);
         trtcInstance.on('onRemoteUserLeaveRoom', onRemoteUserLeaveRoom);
         trtcInstance.on('onRemoteUserEnterRoom', onRemoteUserEnterRoom);
         isVideoCall && trtcInstance.on('onUserVideoAvailable', onUserVideoAvailable);
+        trtcInstance.on('onUserAudioAvailable', onUserAudioAvailable);
+        trtcInstance.on('onUserVoiceVolume', onUserVoiceVolume);
     }, []);
-
-    useEffect(() => {
-        setUserList(Array.from(new Set([userId, ...inviteList])));
-    }, [inviteList])
-
-    useEffect(() => {
-        const resultArray = splitUserList(userList, 9);
-        setGroupSplit(resultArray);
-    }, [userList]);
 
     useEffect(() => {
         if (enteringUser) {
             const ref = getRef(enteringUser);
             if (enteringUser === userId) {
                 trtcInstance.startLocalAudio();
+                trtcInstance.enableAudioVolumeEvaluation(300);
                 isVideoCall && openLocalVideo(ref);
                 return;
             }
@@ -60,6 +48,8 @@ export const GroupVideo = (props) => {
         selfViewRef.current.getElementsByTagName('canvas')[0].style.display = shouldShow ? 'block' : 'none';
     }
 
+    const onVoiceChanged = (isAvailable) => setUserAudioAvailable(userId, isAvailable);
+
     const openLocalVideo = (selfViewRef) => {
         trtcInstance.startLocalPreview(selfViewRef.current);
         const params = new TRTCRenderParams(TRTCVideoRotation.TRTCVideoRotation0, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
@@ -69,7 +59,8 @@ export const GroupVideo = (props) => {
 
     const onEnterRoom = (result) => {
         if (result > 0) {
-            setUserList(prev => Array.from(new Set([userId, ...prev])));
+            setUserOrder(userId, true); // 自己始终在第一位
+            setUserEntering(userId);
             setEnteringUser(userId);
             if(!isVideoCall) {
                 const ref = getRef(userId);
@@ -79,7 +70,7 @@ export const GroupVideo = (props) => {
     };
 
     const onRemoteUserEnterRoom = (userId) => {
-        setUserList(prev => Array.from(new Set([...prev, userId])));
+        setUserEntering(userId);
         setEnteringUser(userId);
         if(!isVideoCall) {
             const ref = getRef(userId);
@@ -87,20 +78,37 @@ export const GroupVideo = (props) => {
         }
     }
 
-    const onRemoteUserLeaveRoom = (userId) => setUserList(prev => prev.filter(item => item !== userId));
+    const onUserVoiceVolume = (params) => {
+        const speakingList = params.map(item => {
+            const speakingUid = item.userId === "" ? userId : item.userId;
+            if(item.volume >= 5) {
+                return speakingUid
+            }
+        });
+
+        setUserSpeaking(speakingList);
+    }
+
+    const onRemoteUserLeaveRoom = (userId) => deleteUser(userId);
 
     const onUserVideoAvailable = (uid, available) => {
         const ref = getRef(uid);
-        if (available === 1) {
+        const isOpenCamera = available === 1;
+        if (isOpenCamera) {
             trtcInstance.startRemoteView(uid, ref.current);
             trtcInstance.setRemoteViewFillMode(uid, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
             ref.current.style.display = 'block';
         } else {
             ref.current.style.display = 'none';
         }
+
+        setUserOrder(uid, isOpenCamera);
     }
 
+    const onUserAudioAvailable = (uid, available) => setUserAudioAvailable(uid, available === 1);
+
     const cacluateStyle = () => {
+        const haveMultiPage = groupSplit.length > 1;
         const count = groupSplit[currentPage]?.length;
         // const [width, height] = remote.getCurrentWindow().getSize();
         const width = 800;
@@ -108,6 +116,14 @@ export const GroupVideo = (props) => {
         const footerHeight = 76;
         const statusBarHeight = 36;
         const callWindowInnerHeight = height - footerHeight - statusBarHeight;
+
+        if(haveMultiPage) {
+            return {
+                width: width / 3,
+                height: callWindowInnerHeight / 3
+            }
+        } 
+
         if (count === 1) {
             return {
                 width: width,
@@ -158,16 +174,12 @@ export const GroupVideo = (props) => {
                     groupSplit.length > 0 && groupSplit.map((item, index) => {
                         return <div className="group-video-content__page" style={cacluatePageStyle(index)} key={index}>
                             {
-                                item.map(userId => {
+                                item.map(({userId, isEntering, isMicOpen, isSpeaking, order}) => {
                                     const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = getUserInfo(userId);
-                                    return <div key={userId} className="group-video-content__page-item" style={{...cacluateStyle(), backgroundImage: `url(${user_profile_face_url})`}}>
-                                        <div ref={setRef(userId)} style={{ position: 'relative', width: '100%', height: '100%' }}>
-                                            <span className="group-video-content__page-item--loading">正在等待对方接受邀请...</span>
-                                            {
-                                                !user_profile_face_url && <span>{user_profile_nick_name || user_profile_identifier}</span>
-                                            }
-                                        </div>
-                                        <span className="group-video-content__page-item--user-id">{user_profile_nick_name || user_profile_identifier}</span>
+                                    const displayName = user_profile_nick_name || user_profile_identifier;
+                                    const hasFaceUrl = !user_profile_face_url;
+                                    return <div key={userId} className={`group-video-content__page-item ${isSpeaking ? 'is-speaking' : ''}`} style={{...cacluateStyle(), backgroundImage: `url(${user_profile_face_url})`, order}}>
+                                        <GroupVideoItem isMicAvailable={isMicOpen} isEntering={isEntering} setRef={setRef} userId={userId} userNickName={displayName} hasFaceUrl={hasFaceUrl} />
                                     </div>
                                 })
                             }

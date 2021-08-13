@@ -97,11 +97,12 @@ export const displayDiffMessage = (message, element, index) => {
             resp = <VoiceElem { ...res }/>
             break;
         case 3:
+            // @ts-ignore
             resp = <CustomElem message={message}/>
             break;
         case 4:
             // @ts-ignore
-            resp = <FileElem message={message} element={element} index={index} />
+            resp = <FileElem message={message} element={element} index={index}/>
             break;
         case 5:
             resp = <GroupTipsElemItem { ...res }/> 
@@ -279,7 +280,7 @@ export const MessageView = (props: Props): JSX.Element => {
         const isDivideSending = forwardType === ForwardType.divide
         const isCombineSending = !isDivideSending;
         const forwardMessage = seletedMessage.map(item => ({...item, message_is_forward_message: true}));
-        console.log('forwardMessage', forwardMessage);
+        console.warn('forwardMessage', forwardMessage);
         convItemGroup.forEach(async (convItem, k) => {
             if(isDivideSending) {
                 forwardMessage.forEach(async message => {
@@ -298,7 +299,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 })
             }
             else if(isCombineSending) {
-                console.log("forwardMessage", forwardMessage)
+                console.warn("forwardMessage", forwardMessage)
                 const { data: { code, json_params } } = await sendMergeMsg({
                     convId: getConvId(convItem),
                     convType: getConvType(convItem),
@@ -357,8 +358,11 @@ export const MessageView = (props: Props): JSX.Element => {
         setMultiSelect(true)
     }
     const handleSelectMessage = (message: State.message): void => {
-        const isMessageSelected = seletedMessage.findIndex(v => getMessageId(v) === getMessageId(message)) > -1
-        if (isMessageSelected) {
+        if(!isMultiSelect) {
+            return;
+        }
+        const isMessageSelected = seletedMessage.findIndex(v => getMessageId(v) === getMessageId(message)) > -1 
+        if(isMessageSelected) {
             const list = seletedMessage.filter(v => getMessageId(v) !== getMessageId(message))
             setSeletedMessage(list)
         } else {
@@ -630,8 +634,8 @@ export const MessageView = (props: Props): JSX.Element => {
                                     </div>
                                 ) :
                                     <div key={index} onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
-                                        {isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ?
-                                            <Icon className="message-view__item--icon" type="success" /> :
+                                        { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ? 
+                                            <Icon className="message-view__item--icon" type="success" /> : 
                                             <i className="message-view__item--icon-normal" ></i>)
                                         }
                                         <div className="message-view__item--avatar face-url">

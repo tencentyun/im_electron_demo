@@ -5,8 +5,6 @@ import { C2Cvideo } from './C2CVideo';
 import { GroupVideo } from './GroupVideo';
 
 
-import './call-video.scss';
-
 type Props = {
     trtcInstance: TRTCCloud,
     userId: string,

@@ -6,7 +6,8 @@ const initState = {
     callingStatus: {
         callingType: '',
         callingId: '',
-        inviteeList: []
+        inviteeList: [],
+        callType: 0
     }
 }
 

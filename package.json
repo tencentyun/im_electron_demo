@@ -39,7 +39,7 @@
       "extraFiles": [
         {
           "from": "./node_modules/im_electron_sdk/lib/",
-          "to": "./node_modules/im_electron_sdk/lib/",
+          "to": "./resources",
           "filter": [
             "**/*"
           ]
@@ -83,7 +83,7 @@
     "final-form": "^4.20.2",
     "fluent-ffmpeg": "^2.1.2",
     "get-video-duration": "^3.1.0",
-    "im_electron_sdk": "^1.0.62",
+    "im_electron_sdk": "^1.2.3",
     "image-size": "^1.0.0",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",
