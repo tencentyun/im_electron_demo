@@ -342,7 +342,7 @@ export const Message = (): JSX.Element => {
     if (currentSelectedConversation === null ||  currentSelectedConversation === undefined) {
         return <EmptyResult contentText="暂无会话" />
     }
-    console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
+    // console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
     return (
         <div className="message-content">
             <div className="message-list" style={{userSelect: 'none'}}>

@@ -135,7 +135,7 @@ export const getGroupInfoList = async (groupIdList: Array<string>) => {
     return []
   }
   const groupInfoList = JSON.parse(json_param);
-  console.log('groupInfoList', groupInfoList)
+  // console.log('groupInfoList', groupInfoList)
 
   return groupInfoList.map((item) => item.get_groups_info_result_info);
 };

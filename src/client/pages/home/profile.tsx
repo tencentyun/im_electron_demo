@@ -52,7 +52,7 @@ export const Profile = (): JSX.Element => {
   useEffect(() => {
     getSelfInfo();
   }, []);
-  console.log('useSelector((state: State.RootState) => state.userInfo)', useSelector((state: State.RootState) => state.userInfo));
+  // console.log('useSelector((state: State.RootState) => state.userInfo)', useSelector((state: State.RootState) => state.userInfo));
   const directToMsgPage = useMessageDirect();
 
   const handleMsgReaded = async () => {
@@ -77,7 +77,7 @@ export const Profile = (): JSX.Element => {
     setUserVisible(val)
   }
   const genderMast = (data) => {
-    console.log(data);
+    // console.log(data);
     switch (data) {
       case 1:
         return "男";

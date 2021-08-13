@@ -111,7 +111,7 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
     }
     return meta.error ? "error" : "success";
   }
-  console.log('userinfo', userInfo);
+  // console.log('userinfo', userInfo);
   async function onSubmit(values: IUser) {
     console.log(11111)
     const formData: submitUserInfoData = {

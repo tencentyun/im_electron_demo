@@ -150,7 +150,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const [tips, setTips] = useState('')
     const { isShow, isCanOpenFileDir, index: imgPreViewUrlIndex, imgs } = useSelector((state: State.RootState) => state.imgViewer)
     const directToMsgPage = useMessageDirect();
-    console.log('messageList---------------------------------------------------------------------', messageList);
+    // console.log('messageList---------------------------------------------------------------------', messageList);
     useEffect(() => {
         if (!anchor) {
             messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
