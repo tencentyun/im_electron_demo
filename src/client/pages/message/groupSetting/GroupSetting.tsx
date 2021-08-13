@@ -40,6 +40,7 @@ export const GroupSetting = (props: {
 
   const currentUserSetting: any = memberList?.[0] || {};
   const groupDetail: Partial<State.conversationItem['conv_profile']> = value ? value[1][0] || conversationInfo.conv_profile || {} : {};
+  const memberCount = value?value[1][0].group_detial_info_member_num : 0
   if(!Object.keys(groupDetail).length){
     return null
   }
@@ -73,6 +74,7 @@ export const GroupSetting = (props: {
       <GroupMember
         onRefresh={retry}
         userId={userId}
+        memberCount={memberCount}
         groupId={groupDetail.group_detial_info_group_id}
         groupType={groupDetail.group_detial_info_group_type}
         groupAddOption={groupDetail.group_detial_info_add_option}

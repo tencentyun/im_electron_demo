@@ -24,11 +24,13 @@ export const GroupMember = (props: {
   groupId: string;
   groupType: number;
   groupAddOption: number;
+  memberCount: number
 }): JSX.Element => {
   const {
     groupId,
     groupType,
     userIdentity,
+    memberCount
   } = props;
 
   // 获取群成员列表
@@ -38,7 +40,6 @@ export const GroupMember = (props: {
         nextSeq: 0,
       })
   }, []);
-
   const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
 
   const popupContainer = document.getElementById("messageInfo");
@@ -77,7 +78,7 @@ export const GroupMember = (props: {
               className="group-member--title__right"
               onClick={() => dialogRef.current.open({ groupId })}
             >
-              <span style={{ marginRight: "4px" }}>{userList.length}人</span>
+              <span style={{ marginRight: "4px" }}>{memberCount}人</span>
               <a>查看</a>
             </span>
           ) : (
