@@ -125,9 +125,22 @@ export const MessageInput = (props: Props): JSX.Element => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
         try {
             const rawData = editorState.toRAW();
-            const messageElementArray = getMessageElemArray(rawData, videoInfos);
+            let messageElementArray = getMessageElemArray(rawData, videoInfos);
             console.log(messageElementArray,"调试内容")
             if (messageElementArray.length) {
+
+                //解决换行多次发送问题  -- zwc
+                let  textElement =  messageElementArray.filter(item => item.elem_type == 0)
+                if(textElement.length > 0)
+                {   
+                    let  outerlement =  messageElementArray.filter(item => item.elem_type != 0)
+                    let  obj:any = {
+                            elem_type : textElement[0].elem_type,
+                            text_elem_content : textElement.map(item => item.text_elem_content).join('\n')
+                    }
+                    messageElementArray = [obj,...outerlement]
+                }
+                
                 const fetchList = messageElementArray.map((v => {
                     if (v.elem_type === 0) {
                         const atList = getAtList(v.text_elem_content);
