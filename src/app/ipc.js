@@ -1,4 +1,4 @@
-const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW,END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
+const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
 const { ipcMain, BrowserWindow, dialog } = require('electron')
 const { screen } = require('electron')
 const fs = require('fs')
@@ -31,7 +31,7 @@ class IPC {
     win = null;
     callWindow = null; // 通话窗口
     imWindowEvent = null; // 聊天窗口
-    constructor(win){
+    constructor(win) {
         const env = process.env?.NODE_ENV?.trim();
         const isDev = env === 'development';
         setPath(isDev);
@@ -75,7 +75,7 @@ class IPC {
         ipcMain.on('accept-call', (event, acceptParams) => {
             // 向聊天窗口通信
             const { inviteID, isVoiceCall } = acceptParams;
-            this.imWindowEvent.reply('accept-call-reply',inviteID);
+            this.imWindowEvent.reply('accept-call-reply', inviteID);
             const windowWidth = isVoiceCall ? 450 : 800;
             const windowHeight = isVoiceCall ? 800 : 600;
 
@@ -87,17 +87,17 @@ class IPC {
         });
 
         // 当作为接收方，挂断电话，关闭窗口
-        ipcMain.on('refuse-call', (event,inviteID) => {
+        ipcMain.on('refuse-call', (event, inviteID) => {
             this.callWindow.close();
             // 向聊天窗口通信
-            this.imWindowEvent.reply('refuse-call-reply',inviteID);
+            this.imWindowEvent.reply('refuse-call-reply', inviteID);
         });
 
         // 当接受方拒绝通话后，调用该方法可关闭窗口，并退出房间
         ipcMain.on(CLOSE_CALL_WINDOW, () => {
             this.callWindow.webContents.send('exit-room');
         });
-        ipcMain.on(END_CALL_WINDOW,()=>{
+        ipcMain.on(END_CALL_WINDOW, () => {
             this.callWindow.close()
         })
         // 远端用户进入
@@ -128,10 +128,10 @@ class IPC {
             }
             const params = JSON.stringify(addSdkAppid);
             const { convInfo: { convType }, callType } = data;
-            if(data.windowType === 'notificationWindow') {
+            if (data.windowType === 'notificationWindow') {
                 this.callWindow.setSize(320, 150);
                 this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
-            } else if( convType === 1 && Number(callType) === 1) {
+            } else if (convType === 1 && Number(callType) === 1) {
                 this.callWindow.setSize(450, 800);
                 this.callWindow.setPosition(Math.floor((screenSize.width - 450) / 2), Math.floor((screenSize.height - 800) / 2));
             }
@@ -152,7 +152,7 @@ class IPC {
             width: 800,
             show: false,
             frame: false,
-            resizable:false,
+            resizable: false,
             webPreferences: {
                 parent: this.win,
                 webSecurity: true,
@@ -266,7 +266,6 @@ class IPC {
                             screenshotSize: size,
                         })
                     })
-
                     .on('error', (err, info) => {
                         event.reply('main-process-error', err);
                         reject(err)
@@ -322,8 +321,6 @@ class IPC {
             name,
             type
         };
-        console.log(data)
-        console.log(11223344)
         if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
             const fileContent = await fs.readFileSync(filePath);
             data.fileContent = fileContent;

@@ -34,7 +34,7 @@ const MergeElem = (props: any): JSX.Element => {
                 <div className="message-view__item--merge___title" >{props.merge_elem_title}</div>
                 {/* 消息摘要 */}
                 {
-                    props.merge_elem_abstract_array?.map((item, index) => {
+                    props.merge_elem_abstract_array && props.merge_elem_abstract_array.map((item, index) => {
                         return <div key={index} className="message-view__item--merge___abst">{item}</div>
                     })
                 }

@@ -1,34 +1,66 @@
 import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
-import { message, Modal } from "tea-component";
-import React from "react";
+import { Avatar } from "../../../components/avatar/avatar";
+import { Drawer, H3, Table, message, PopConfirm, Button} from "tea-component";
+import { isWin } from "../../../utils/tools";
+import _ from 'lodash';
 import { modifyGroupInfo } from "../api";
-import { TransferGroupForm, FormValue } from "./TransferGroupForm";
-import { useSelector } from 'react-redux';
+import { getGroupMemberList } from "../api";
+import React, { useEffect, useRef, useState } from "react";
 
-export interface TRansferGroupRecordsType {
+import "./member-list-drawer.scss";
+
+const { scrollable } = Table.addons;
+
+export interface GroupMemberListDrawerRecordsType {
   groupId: string;
 }
 
 export const TransferGroupDialog = (props: {
-  userList: {
-    user_profile_face_url: string;
-    user_profile_nick_name: string;
-    user_profile_identifier: string;
-    group_member_info_member_role: number;
-  }[];
   onSuccess?: () => void;
-  dialogRef: DialogRef<TRansferGroupRecordsType>;
+  popupContainer?: HTMLElement;
+  dialogRef: DialogRef<GroupMemberListDrawerRecordsType>;
 }): JSX.Element => {
-  const { onSuccess, dialogRef, userList } = props;
-  const { userId } = useSelector((state: State.RootState) => state.userInfo);
-  const [visible, setShowState, defaultForm] = useDialog<TRansferGroupRecordsType>(
-    dialogRef,
-    {}
-  );
-  const onClose = () => setShowState(false);
+  const height = window.innerHeight - 77 - (isWin() ? 30 : 0);
+  const { dialogRef, popupContainer } = props;
 
-  const onOk = async (formValue: FormValue) => {
-    const { UID } = formValue;
+  const [visible, setShowState, defaultForm] =
+    useDialog<GroupMemberListDrawerRecordsType>(dialogRef, {});
+  const ref = useRef({firstCall: true}); 
+  const [memberList, setMemberList] = useState([]);
+  const [nextSeq, setNextSeq] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [isEnd,setIsEnd] = useState(false)
+  const getMemberList = async (seq: number) => {
+    if(isEnd){
+      return
+    }
+    try {
+      setLoading(true);
+      const res = await getGroupMemberList({
+        groupId: defaultForm.groupId,
+        nextSeq: seq,
+      });
+      const {
+        group_get_memeber_info_list_result_info_array: userList,
+        group_get_memeber_info_list_result_next_seq: newNextSeq,
+      } = res;
+      if(newNextSeq === 0){
+        setIsEnd(true)
+      }
+      setMemberList((pre) => _.differenceBy([...pre, ...userList]));
+      setNextSeq(newNextSeq);
+    } catch (e) {
+      console.log(e);
+    }
+    setLoading(false);
+  };
+
+  const onClose = () => {
+    setShowState(false);
+  };
+
+
+    const onOk = async (UID) => {
     try {
       await modifyGroupInfo({
         groupId: defaultForm.groupId,
@@ -42,16 +74,102 @@ export const TransferGroupDialog = (props: {
     }
   };
 
-  const success = () => {
-    onClose();
-    onSuccess?.();
+  const columns = [
+    {
+      header: "",
+      key: "member",
+      render: (record: any) => {
+        const isOwner = record.group_member_info_member_role === 3;
+        return (
+          <PopConfirm
+          title="确定要转让群主？"
+          key={record.group_member_info_identifier}
+          message="解除后，群主将转到给当前选中？"
+          footer={close => (
+            <>
+              <Button
+                type="link"
+                onClick={() => {
+                  close();
+                  onOk(record.group_member_info_identifier)
+                }}
+              >
+                确定
+              </Button>
+              <Button
+                type="text"
+                onClick={() => {
+                  close();
+                  console.log("已取消");
+                }}
+              >
+                取消
+              </Button>
+            </>
+          )}
+          placement="top-start"
+        >
+          <div className="member-list-drawer--item">
+            <Avatar
+              url={record.group_member_info_face_url}
+              nickName={record.group_member_info_nick_name}
+              userID={record.group_member_info_identifier}
+            />
+            <span className="member-list-drawer--item__name">
+              {record.group_member_info_nick_name || record.group_member_info_identifier}
+            </span>
+            {isOwner && (
+              <span className="member-list-drawer--item__owner">群主</span>
+            )}
+          </div>
+          </PopConfirm>
+        );
+      },
+    },
+  ];
+
+  const onScrollBottom = () => {
+    if (loading || nextSeq === 0) {
+      return;
+    }
+    getMemberList(nextSeq);
   };
 
+  useEffect(() => {
+    if(ref.current.firstCall && visible) {
+      ref.current.firstCall = false;
+      getMemberList(0);
+    }
+  }, [visible]);
+
   return (
-    <Modal className="dialog" disableEscape size="s" caption="转让群主" visible={visible} onClose={onClose}>
-      <Modal.Body>
-        <TransferGroupForm userList={userList.filter(i=> i.user_profile_identifier!==userId)} onSubmit={onOk} onSuccess={success} />
-      </Modal.Body>
-    </Modal>
+    <Drawer
+      visible={visible}
+      title={
+        <div className="member-list-drawer--title">
+          <H3>转让群主</H3>
+        </div>
+      }
+      className="member-list-drawer"
+      popupContainer={popupContainer}
+      onClose={onClose}
+    >
+      <Table
+        hideHeader
+        className="member-list-drawer--table"
+        bordered={false}
+        columns={columns}
+        records={memberList}
+        addons={[
+          scrollable({
+            virtualizedOptions: {
+              height,
+              itemHeight: 60,
+              onScrollBottom,
+            },
+          }),
+        ]}
+      />
+    </Drawer>
   );
 };

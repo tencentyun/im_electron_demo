@@ -596,7 +596,11 @@ export const MessageView = (props: Props): JSX.Element => {
                 imgs: imgsUrl
             }))
         }
+    }
 
+    const handleCloseForwardModal = () => {
+        setMultiSelect(false);
+        setSeletedMessage([]);
     }
     return (
 
@@ -712,7 +716,7 @@ export const MessageView = (props: Props): JSX.Element => {
             {
                 isMultiSelect &&
                 <div className="forward-type-popup">
-                    <Icon type="close" className="forward-type-popup__close" onClick={() => setMultiSelect(false)} />
+                    <Icon type="close" className="forward-type-popup__close" onClick={handleCloseForwardModal} />
                     <div className="forward-type-popup__combine" onClick={() => handleForwardTypePopup(ForwardType.combine)}>
                         <p>合并转发</p>
                     </div>
