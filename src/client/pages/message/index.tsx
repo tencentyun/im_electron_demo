@@ -178,6 +178,11 @@ export const Message = (): JSX.Element => {
 
     const filterMenu = (data)=>{
         let filterMenu = convMenuItem
+        console.log('自己打扰',data.conv_id)
+        //过滤自己
+        if(data.conv_id === localStorage.getItem("uid")) {
+            filterMenu = filterMenu.filter(item => item.id != 'disable')
+        }
         for (const key in data) {
             if (data.hasOwnProperty(key)) {
                 const element = data[key];
@@ -344,6 +349,11 @@ export const Message = (): JSX.Element => {
         return <EmptyResult contentText="暂无会话" />
     }
     console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
+    for (var i=0;i< conversationList.length;i++){
+        if(conversationList[i].conv_id === localStorage.getItem("uid") && localStorage.getItem("myhead")){
+            conversationList[i].conv_profile.user_profile_face_url = localStorage.getItem("myhead")
+        }
+    }
     return (
         <div className="message-content">
             <div className="message-list" style={{userSelect: 'none'}}>

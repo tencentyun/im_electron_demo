@@ -54,8 +54,8 @@ export const TIM_BASE_URL = 'http://localhost:3000'  //                      开
 // export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002' //            测试
 // export const TIM_BASE_URL = 'http://oaim.crbank.com.cn:30002' //             生产
 
-export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.uat.crbank.com.cn:30002'//     测试           ---         公众号后管地址
-// export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.crbank.com.cn:30002'//      生产
+//export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.uat.crbank.com.cn:30002'//     测试           ---         公众号后管地址
+export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.crbank.com.cn:30002'//      生产
 
 // export const EMOJIURL = 'http://oaim.crbank.com.cn:30003/emoji/' //            生产         ---         表情
 export const EMOJIURL = 'http://oaim.uat.crbank.com.cn:30003/emoji/' //           测试
@@ -63,8 +63,8 @@ export const EMOJIURL = 'http://oaim.uat.crbank.com.cn:30003/emoji/' //         
 export const SDKAPPID = 1400529075//                                            生产/测试       ---        IM账号
 export const SECRETKEY = '08349186ecd23fafaf7f98ca0116077e5b507fceac558e3dbd32f0dfeb9393a9' 
 
-// export const SERVERr_ADDRESS_IP = "oaim.crbank.com.cn"//                     生产            ---        IM长链接地址
-export const SERVERr_ADDRESS_IP = "oaim.uat.crbank.com.cn"//                    测试 
+export const SERVERr_ADDRESS_IP = "oaim.crbank.com.cn"//                     生产            ---        IM长链接地址
+//export const SERVERr_ADDRESS_IP = "oaim.uat.crbank.com.cn"//                    测试 
 export const SERVERr_ADDRESS_PORT = 30001                 //                    生产/测试        ---       IM长链接端口
 
 export const HUA_RUN_LOGIN_TEST = 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin' //生产华润登录

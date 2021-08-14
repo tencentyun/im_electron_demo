@@ -96,7 +96,7 @@ export const LoginContent = (): JSX.Element => {
             //     userName: userID.toUpperCase(),
             //     userPass: Encypt,
             //     asyuserind: null,
-            //     password: "MTIzNDU2"
+            //     password: password
             // }).then(async res => {
             //     console.log(res)
             //     const { RET, USERLOGIN, ERRCODE } = res
@@ -105,6 +105,7 @@ export const LoginContent = (): JSX.Element => {
             //             content: "登录失败：" + errType(ERRCODE),
             //         })
             //     } else {
+                    //const USERLOGIN = USERLOGIN
                     const USERLOGIN = userID
                     const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
                     const params: loginParam = {

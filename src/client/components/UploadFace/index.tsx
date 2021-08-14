@@ -138,7 +138,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
         uid: uid,
         userSig: userSig,
         file_type: 1,
-        file_name: 'headUrl/' + fileObj.name,
+        file_name: 'headUrl/' + localStorage.getItem("uid")+new Date().getTime() +fileObj.name,
         Duration: 900,
         upload_method: 0,
       }).then(res => {
