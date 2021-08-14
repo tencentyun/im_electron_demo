@@ -1,12 +1,12 @@
 {
   "name": "im-electron-demo",
   "productName": "IM Electron Demo",
-  "version": "1.0.33",
+  "version": "1.0.32",
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {
     "start": "concurrently  \"npm run dev:electron\"",
-    "build": "electron-builder -w",
+    "build": "npm version patch && electron-builder -w",
     "build:react": "cd ./src/client && npm run build:react",
     "dev:electron": "set NODE_ENV=development && electron .",
     "dev:react": "cd ./src/client && npm run dev:react"
