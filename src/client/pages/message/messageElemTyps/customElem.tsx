@@ -6,13 +6,22 @@ const CustomElem = (props: any): JSX.Element => {
   const item = (props) => {
     const { message } = props;
     const { message_sender } = message;
-    const { custom_elem_data } = message.message_elem_array[0];
+    const { custom_elem_data,custom_elem_ext } = message.message_elem_array[0];
     let data = custom_elem_data;
+    console.log('111222',data)
     try {
      data =  JSON.parse(custom_elem_data)
+     console.log('111222',data)
     }catch(err){
     }
     try {
+      if(data === 'group_create'){
+        return (
+          <>
+            {custom_elem_ext}
+          </>
+        );
+      }
       switch (data.businessID) {
         case "group_create":
           return (
@@ -54,6 +63,7 @@ const CustomElem = (props: any): JSX.Element => {
   };
 
   return (
+
     <div className="message-view__item--text text right-menu-item">
       {item(props)}
     </div>
