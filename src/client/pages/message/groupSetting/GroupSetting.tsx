@@ -39,9 +39,9 @@ export const GroupSetting = (props: {
       ])
   }, []);
   const memberList = value ? value[0]?.group_get_memeber_info_list_result_info_array || [] : [];
-  console.log("群成员",memberList)
   const currentUserSetting: any = memberList?.[0] || {};
   const groupDetail: Partial<State.conversationItem['conv_profile']> = value ? value[1][0] || conversationInfo.conv_profile || {} : {};
+  const memberCount = value?value[1][0].group_detial_info_member_num : 0
   if(!Object.keys(groupDetail).length){
     return null
   }
@@ -73,9 +73,9 @@ export const GroupSetting = (props: {
       />
       <Divider />
       <GroupMember
-        userList={memberList}
         onRefresh={retry}
         userId={userId}
+        memberCount={memberCount}
         groupId={groupDetail.group_detial_info_group_id}
         groupType={groupDetail.group_detial_info_group_type}
         groupAddOption={groupDetail.group_detial_info_add_option}

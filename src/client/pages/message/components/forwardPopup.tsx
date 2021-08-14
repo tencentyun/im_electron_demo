@@ -191,6 +191,7 @@ export const UserItem: FC<UserItemProps> = ({ onItemClick, onRemove, seleted, it
             }
             <Avatar
                 size="mini"
+                key={ url }
                 url={ url }
                 nickName  = { name }
                 userID = { conv_id }

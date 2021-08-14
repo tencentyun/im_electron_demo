@@ -17,9 +17,7 @@ export const GroupAllMute = (props: {
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
   const { muteFlag, groupId, userIdentity, onRefresh } = props;
-
-  const dispatch = useDispatch();
-
+  const dispatch = useDispatch(); 
   const { currentSelectedConversation } = useSelector(
     (state: State.RootState) => state.conversation
   );

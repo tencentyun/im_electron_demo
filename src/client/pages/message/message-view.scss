@@ -191,7 +191,7 @@
             border-radius: 2px 8px 8px 8px;
             background: #ECEEF2;
             vertical-align: middle;
-            word-wrap: normal;
+            word-wrap: break-word;
             word-break: break-all;
             span {
                 vertical-align: middle;
@@ -398,6 +398,11 @@
     &__divide {
         margin-right: 84px;
         background: url('../../assets/icon/forward-divide.svg') no-repeat;
+    }
+    &__delete {
+        width: 48px;
+        background: url('../../assets/icon/delete-message.svg') no-repeat;
+        background-size: 48px;
     }
 }
 

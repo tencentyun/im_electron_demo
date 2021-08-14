@@ -15,10 +15,14 @@ export const EditGroupBaseInfoDialog = (props: {
   dialogRef: DialogRef<EditGroupBaseInfoRecordsType>;
 }): JSX.Element => {
   const { onSuccess, dialogRef } = props;
+  const [closeMould, setCloseMould] = useState(false)
 
   const [visible, setShowState, defaultForm] =
     useDialog<EditGroupBaseInfoRecordsType>(dialogRef, {});
-  const onClose = () => setShowState(false);
+  const onClose = () =>{
+    setShowState(false)
+    setCloseMould(false)
+  };
 
   const onOk = async (formValue: FormValue) => {
     const { groupName, groupFaceUrl } = formValue;
@@ -41,11 +45,12 @@ export const EditGroupBaseInfoDialog = (props: {
   };
 
   return (
-    <Modal className="dialog" disableEscape visible={visible} onClose={onClose}>
+    <Modal className="dialog" disableCloseIcon={closeMould}  disableEscape={closeMould} visible={visible} onClose={onClose}>
       <Modal.Body>
         <EditGroupBaseInfoForm
           initialValues={defaultForm}
           onSubmit={onOk}
+          onScreenshot={()=>{setCloseMould(true)}}
           onSuccess={success}
         />
       </Modal.Body>
