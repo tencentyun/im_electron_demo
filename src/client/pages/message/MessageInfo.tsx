@@ -279,7 +279,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       };
       dispatch(addMessage(payload));
     };
-    if (conv_id && !msgList) {
+    if (conv_id) {
       getMessageList();
     }
   }, [conv_id]);
