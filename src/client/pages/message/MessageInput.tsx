@@ -59,10 +59,10 @@ const FEATURE_LIST_GROUP = [{
     id: 'video',
     content: '发视频'
 },
-// {
-//     id: 'phone',
-//     content: '语音'
-// },
+{
+    id: 'phone',
+    content: '语音'
+},
 {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
@@ -81,10 +81,10 @@ const FEATURE_LIST_C2C = [{
     id: 'video',
     content: '发视频'
 },
-// {
-//     id: 'phone',
-//     content: '语音'
-// },
+{
+    id: 'phone',
+    content: '语音'
+},
 {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'

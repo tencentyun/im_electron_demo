@@ -663,11 +663,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                                     </div>
                                                 }
                                             >
-<<<<<<< HEAD
                                                 <span style={{ display: 'none' }}>占位</span><Avatar url={user_profile_face_url} isClick={false}  key={user_profile_face_url}  size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
-=======
-                                                <span style={{ display: 'none' }}>占位{user_profile_face_url}</span><Avatar url={user_profile_face_url} isClick={false} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
->>>>>>> ee0ff833d384940b6f8ef0550c3ca20b6c28e65c
                                             </Bubble>
                                         </div>
                                         {
