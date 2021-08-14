@@ -8,12 +8,12 @@ const TextElemItem = (props: any): JSX.Element => {
     const item = (item) => (
         <div className="message-view__item--text text right-menu-item">
             {
-                item.map(text => {
+                item.map((text, index) => {
                     const formatedText = decodeText(text);
-                    return <div>
+                    return <div key={index}>
                         {
-                            formatedText.map(item => {
-                                return <span>
+                            formatedText.map((item, textIndex) => {
+                                return <span key={textIndex}>
                                     {
                                         item.name === 'text' ? <span>{item.text}</span>: <img src={item.src} style={{
                                             width: 30,
