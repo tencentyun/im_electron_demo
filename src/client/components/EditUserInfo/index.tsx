@@ -86,14 +86,19 @@ interface UserProfileItem {
 export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, onUpdateUserInfo }): JSX.Element => {
   const [isShow, setVisible] = useState(visible)
   const [imgUrl, setImgUrl] = useState('')
-
+  const [btnDisabled, setBtnDisabled] = useState(false)
+  const [closeMould, setCloseMould] = useState(false)
   const close = () => {
     setVisible(false)
+    setCloseMould(false)
     onClose(false)
   }
+  
 
   function afterUpload(imgUrl) {
     setImgUrl(imgUrl)
+    setBtnDisabled(false)
+    setCloseMould(true)
     console.log('imgUrl', imgUrl)
   }
 
@@ -139,7 +144,7 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
   }
   const { nickName, faceUrl, gender } = userInfo
   return (
-    <Modal visible={isShow} caption="编辑个人资料" onClose={close}>
+    <Modal visible={isShow} disableCloseIcon={closeMould}  disableEscape={closeMould} caption="编辑个人资料" onClose={close}>
       <Modal.Body>
         <FinalForm
           onSubmit={onSubmit}
@@ -163,7 +168,11 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
                       <Form.Item
                         label="头像"
                       >
-                        <ImgCropper {...input} afterUpload={afterUpload}></ImgCropper>
+                        <ImgCropper {...input} isShow={(ages)=> {
+                          // 修改个人头像重复修改消失问题
+                          setCloseMould(true)
+                          setBtnDisabled(ages)
+                        }} afterUpload={afterUpload}></ImgCropper>
                       </Form.Item>
                     )}
                   </Field>
@@ -224,6 +233,7 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
                   <Button
                     type="primary"
                     htmlType="submit"
+                    disabled={btnDisabled}
                     loading={submitting}
                   >
                     提交

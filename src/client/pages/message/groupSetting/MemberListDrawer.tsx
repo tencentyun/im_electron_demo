@@ -87,6 +87,7 @@ export const GroupMemberListDrawer = (props: {
               children={
                 <>
                   <Avatar
+                    key={ record.group_member_info_face_url }
                     url={record.group_member_info_face_url}
                     nickName={record.group_member_info_nick_name}
                     userID={record.group_member_info_identifier}

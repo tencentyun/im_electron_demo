@@ -53,6 +53,7 @@ const endCallWindow = () => {
 }
 
 const updateInviteList = (data) => {
+    console.warn('===========update invite list============', data);
     ipcRenderer.send('update-invite-list', data);
 }
 

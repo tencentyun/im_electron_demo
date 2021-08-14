@@ -77,7 +77,7 @@ class IPC {
             const { inviteID, isVoiceCall } = acceptParams;
             this.imWindowEvent.reply('accept-call-reply',inviteID);
             const windowWidth = isVoiceCall ? 450 : 800;
-            const windowHeight = 800;
+            const windowHeight = isVoiceCall ? 800 : 600;
 
             const positionX = Math.floor((screenSize.width - windowWidth) / 2);
             const positionY = Math.floor((screenSize.height - windowHeight) / 2);
@@ -124,7 +124,7 @@ class IPC {
             this.imWindowEvent = event;
             const addSdkAppid = {
                 ...data,
-                sdkAppid: SDK_APP_ID
+                sdkAppid: "1400529075"
             }
             const params = JSON.stringify(addSdkAppid);
             const { convInfo: { convType }, callType } = data;

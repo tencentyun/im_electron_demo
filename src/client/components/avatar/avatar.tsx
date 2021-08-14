@@ -26,9 +26,8 @@ export const Avatar: FC<AvatarProps> = ({ size = 'default', url: avatar, extralC
     const [userID, setUserID] = useState(uid)
     const [groupID, setGroupID] = useState(gid)
     const dispatch = useDispatch();
-
-    const displayInfo = (info: string) => {
-        if (!info) {
+    const displayInfo = (info:string)=>{
+        if(!info){
             return "未知S"
         }
         return info.slice(-2).toUpperCase()

@@ -112,6 +112,23 @@
                 bottom: 10px;
                 z-index: 5;
             }
+
+            &--mic-status {
+                width: 24px;
+                height: 24px;
+                position: absolute;
+                bottom: 10px;
+                left: 10px;
+                z-index: 5;
+                background-position: center;
+                background-image: url('../../../assets/icon/mic-icon.svg');
+
+                &.not-active {
+                    background-size: 150%;
+                    border-radius: 50%;
+                    background-image:  url('../../../assets/icon/mic-forbiden.svg');
+                }
+            }
         }
 
         .prev-button {

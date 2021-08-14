@@ -40,6 +40,7 @@ type Info = {
 };
 
 export const MessageInfo = (props: State.conversationItem): JSX.Element => {
+  console.log("人员",props)
   const { conv_id, conv_type, conv_profile } = props;
   const [callType, setCallType] = useState(0)
   const [callInfo, setCallInfo] = useState({
@@ -140,9 +141,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       }
     };
 
-    // if (props.conv_unread_num > 0) {
-    handleMsgReaded();
-    // }
+    if (props.conv_unread_num > 0) {
+      handleMsgReaded();
+    }
   };
 
   const { faceUrl, nickName } = getDisplayConvInfo();
@@ -181,9 +182,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     const data = await timRenderInstance.TIMInvite({
       userID: conv_id,
       senderID: userId,
-      data: "",
-      roomID: roomId,
-      callType: Number(callType)
+      data: JSON.stringify({"businessID":"av_call","call_type":Number(callType),"room_id":roomId,"version":4})
     })
     const { data: { code, json_params } } = data;
     if (code === 0) {
@@ -204,9 +203,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       userIDs: userList,
       groupID: conv_id,
       senderID: userId,
-      data: "",
-      roomID: roomId,
-      callType: Number(callType)
+      data: JSON.stringify({"businessID":"av_call","call_type":Number(callType),"room_id":roomId,"version":4}),
     });
     const { data: { code, json_params } } = data;
     if (code === 0) {
@@ -215,16 +212,15 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       openLocalCallWindow(callType, roomId, userList, inviteId)
     }
   }
-  const openLocalCallWindow = async (callType, roomId, userList, inviteId) => {
+  const openLocalCallWindow = async (callType,roomId,userList, inviteId)=>{
     dispatch(updateCallingStatus({
       callingId: conv_id,
       callingType: conv_type,
-      inviteeList: userList
+      inviteeList: [userId, ...userList],
+      callType: callType
     }));
     const { faceUrl, nickName } = getDisplayConvInfo();
-    console.log(faceUrl, nickName, 'getDisplayConvInfo@@@@@@@@@@@@@@@@@@@@@@')
     const inviteListWithInfo = await getUserInfoList([userId, ...userList]);
-    console.log(inviteListWithInfo, 'getUserInfoList@@@@@@@@@@')
     openCallWindow({
       windowType: 'callWindow',
       callType,
@@ -238,7 +234,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       inviteID: inviteId,
       userID: userId,
       userSig: userSig,
-      inviteList: userList,
+      inviteList: [userId, ...userList],
       inviteListWithInfo
     });
   }
@@ -344,6 +340,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 url={faceUrl}
                 size="small"
                 nickName={nickName}
+                key={faceUrl}
                 userID={conv_id}
                 groupID={conv_id}
               />

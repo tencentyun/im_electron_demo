@@ -50,7 +50,7 @@ export const UserItem: FC<UserItemProps> = ({
         ) : (
           <i className="user-item__icon-normal"></i>
         ))}
-      <Avatar size="small" url={faceUrl} nickName={name} userID={id} />
+      <Avatar size="small" url={faceUrl} key={faceUrl} nickName={name} userID={id} />
       <span className='user-item-sapn'>{name}</span>
       {hasCloseIcon && (
         <Icon type="dismiss" onClick={(e) => onRemove(e, id, item)} />
