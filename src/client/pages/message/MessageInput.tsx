@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, message,Dropdown, List, Bubble } from 'tea-component';
+import { Button, message, Dropdown, List, Bubble } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendVideoMsg, sendMsg } from './api'
 import { updateMessages,  reciMessage} from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'

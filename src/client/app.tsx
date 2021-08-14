@@ -208,45 +208,62 @@ export const App = () => {
     // inviteeList: ["3708"]
     // inviter: "109442"
     // timeout: 30
+    
     const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
-    const { room_id, call_type, call_end } = JSON.parse(formatedData.data)
+    const { room_id, call_type,call_end } = JSON.parse(formatedData.data)
     const { inviter, groupID, inviteID, inviteeList } = formatedData;
-    if (call_end > 0) {
-      return
+    const { callingId,callingType } = ref.current.catchCalling;
+    // 如果正在通话，拒绝对方通话。
+    if(callingId) {
+        timRenderInstance.TIMRejectInvite({
+            inviteID: inviteID,
+            data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
+        });
+        return;
+    }
+    if(call_end > 0){
+        return
     }
     timRenderInstance.TIMProfileGetUserProfileList({
-      json_get_user_profile_list_param: {
-        friendship_getprofilelist_param_identifier_array: [inviter, ...inviteeList],
-        friendship_getprofilelist_param_force_update: false
-      }
+        json_get_user_profile_list_param: {
+            friendship_getprofilelist_param_identifier_array: [inviter, ...inviteeList],
+            friendship_getprofilelist_param_force_update: false
+        }
     }).then(async (data) => {
-      const { catchUserId, catchUserSig } = ref.current;
-      if (!catchUserId) {
-        return
-      }
-      const { data: { code, json_param } } = data;
-      if (code === 0) {
-        const [userdata, ...inviteList] = JSON.parse(json_param);
-        console.log('============inviteeList==============', inviteList);
-        openCallWindow({
-          windowType: 'notificationWindow',
-          callType: call_type + '',
-          convId: groupID ? groupID : inviter,
-          convInfo: {
-            faceUrl: userdata.user_profile_face_url,
-            nickName: userdata.user_profile_nick_name,
-            convType: groupID ? 2 : 1,
-          },
-          roomId: room_id,
-          inviteID,
-          userID: catchUserId,
-          inviteList: inviteeList,
-          userSig: catchUserSig
-        });
-      }
+        const { catchUserId, catchUserSig  } = ref.current;
+        if(!catchUserId){
+            return
+        }
+        const { data: { code, json_param } } = data;
+        if (code === 0) {
+            const [userdata, ...inviteList] = JSON.parse(json_param);
+            console.log('===========invite list==============', inviteList);
+            dispatch(updateCallingStatus({
+                callingId:groupID?groupID: inviter, //
+                callingType:groupID ? 2: 1,
+                inviteeList: [inviter, ...inviteeList],
+                callType:call_type
+            }))
+            openCallWindow({
+                windowType: 'notificationWindow',
+                callType: call_type + '',
+                convId: groupID ? groupID : inviter,
+                convInfo: {
+                    faceUrl: userdata.user_profile_face_url,
+                    nickName: userdata.user_profile_nick_name,
+                    convType: groupID ? 2 : 1,
+                },
+                roomId: room_id,
+                inviteID,
+                userID: catchUserId,
+                inviteList: [inviter, ...inviteeList],
+                inviteListWithInfo: [userdata, ...inviteList],
+                userSig: catchUserSig
+            });
+        }
     })
 
-  }
+}
   const _onRejected = (data) => {
     data && _handleRemoteUserReject(JSON.parse(data)[0]);
   }
