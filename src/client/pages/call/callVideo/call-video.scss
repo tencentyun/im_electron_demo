@@ -89,6 +89,18 @@
             transition: height 0.3s;
             background-color: #000;
 
+            &.is-speaking {
+                &::after {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    border: 1.5px solid rgba(255, 0, 0, 0.658);
+                  }
+            }
+
             &--loading {
                 position: absolute;
                 top: 0;

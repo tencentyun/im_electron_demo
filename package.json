@@ -39,7 +39,7 @@
       "extraFiles": [
         {
           "from": "./node_modules/im_electron_sdk/lib/",
-          "to": "./node_modules/im_electron_sdk/lib/",
+          "to": "./resources",
           "filter": [
             "**/*"
           ]

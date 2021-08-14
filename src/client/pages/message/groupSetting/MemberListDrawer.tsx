@@ -2,15 +2,17 @@ import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
 import { Avatar } from "../../../components/avatar/avatar";
 import { Drawer, H3, Table, SearchBox } from "tea-component";
 import { isWin, throttle, highlightText } from "../../../utils/tools";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useMessageDirect } from '../../../utils/react-use/useDirectMsgPage';
 import { GroupMemberBubble } from "./GroupMemberBubble";
 import "./member-list-drawer.scss";
-
+import { getGroupMemberList } from "../api";
+import _ from 'lodash';
 const { scrollable } = Table.addons;
 
 export interface GroupMemberListDrawerRecordsType {
   memberList: any[];
+  groupId: string;
 }
 
 export type userTypeData = {
@@ -37,6 +39,35 @@ export const GroupMemberListDrawer = (props: {
   useEffect(() => {
     setSearchData(defaultForm.memberList)
   }, [defaultForm])
+  const ref = useRef({firstCall: true}); 
+  const [memberList, setMemberList] = useState([]);
+  const [nextSeq, setNextSeq] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [isEnd,setIsEnd] = useState(false)
+  const getMemberList = async (seq: number) => {
+    if(isEnd){
+      return
+    }
+    try {
+      setLoading(true);
+      const res = await getGroupMemberList({
+        groupId: defaultForm.groupId,
+        nextSeq: seq,
+      });
+      const {
+        group_get_memeber_info_list_result_info_array: userList,
+        group_get_memeber_info_list_result_next_seq: newNextSeq,
+      } = res;
+      if(newNextSeq === 0){
+        setIsEnd(true)
+      }
+      setMemberList((pre) => _.differenceBy([...pre, ...userList]));
+      setNextSeq(newNextSeq);
+    } catch (e) {
+      console.log(e);
+    }
+    setLoading(false);
+  };
 
   const onClose = () => {
     setShowState(false);

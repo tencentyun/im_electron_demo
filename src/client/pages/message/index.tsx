@@ -141,6 +141,7 @@ export const Message = (): JSX.Element => {
         const firstMsg = message_elem_array[0];
         const imgImg = message_status === 1 ? firstMsg?.image_elem_thumb_url : "[图片消息]";
         const displayTextMsg = message_status === 6 ? `${revokedPerson} 撤回了一条消息` : firstMsg?.text_elem_content;
+        const revokeMsg =  `${revokedPerson} 撤回了一条消息`;
         const displayLastMsg = {
             '0': displayTextMsg,
             '1': imgImg,
@@ -167,7 +168,7 @@ export const Message = (): JSX.Element => {
             {
                 conv_type && hasAtMessage ? <span className="at-msg">{atDisPlayMessage}</span> : null
             }
-            <span className="text">{displayLastMsg}</span>
+            <span className="text">{ message_status === 6 ? revokeMsg : displayLastMsg}</span>
         </React.Fragment>;
     }
 
