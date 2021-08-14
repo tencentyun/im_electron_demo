@@ -91,22 +91,22 @@ export const LoginContent = (): JSX.Element => {
         }).then(async getEncrptPwdRes => {
             const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
             console.log(Encypt)
-            // getUserLoginInfo({
-            //     systemid: HUA_RUN_SYSTEMID,
-            //     userName: userID.toUpperCase(),
-            //     userPass: Encypt,
-            //     asyuserind: null,
-            //     password: password
-            // }).then(async res => {
-            //     console.log(res)
-            //     const { RET, USERLOGIN, ERRCODE } = res
-            //     if (RET === 'FALSE') {
-            //         message.error({
-            //             content: "登录失败：" + errType(ERRCODE),
-            //         })
-            //     } else {
+            getUserLoginInfo({
+                systemid: HUA_RUN_SYSTEMID,
+                userName: userID.toUpperCase(),
+                userPass: Encypt,
+                asyuserind: null,
+                password: password
+            }).then(async res => {
+                console.log(res)
+                const { RET, USERLOGIN, ERRCODE } = res
+                if (RET === 'FALSE') {
+                    message.error({
+                        content: "登录失败：" + errType(ERRCODE),
+                    })
+                } else {
                     //const USERLOGIN = USERLOGIN
-                    const USERLOGIN = userID
+                    // const USERLOGIN = userID
                     const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
                     const params: loginParam = {
                         userID: USERLOGIN.toUpperCase(),
@@ -130,13 +130,13 @@ export const LoginContent = (): JSX.Element => {
                         dispatch(changeFunctionTab('message'));
                         history.replace('/home/message');
                     }, USERLOGIN)
-            //     }
-            // }).catch(err => {
-            //     const { ERRCODE } = err.data
-            //     message.error({
-            //         content: "登录失败：" + err.message || errType(ERRCODE),
-            //     })
-            // })
+                }
+            }).catch(err => {
+                const { ERRCODE } = err.data
+                message.error({
+                    content: "登录失败：" + err.message || errType(ERRCODE),
+                })
+            })
         }).catch(err => {
             message.error({
                 content: "登录失败：" + err.message || err.ErrorInfo,
@@ -165,7 +165,7 @@ export const LoginContent = (): JSX.Element => {
             {/* <Checkbox display="block" value={false} className="login--auto">
                 下次自动登录
             </Checkbox> */}
-            <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}> 登陆</Button>
+            <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}>登录</Button>
         </div>
     )
 }

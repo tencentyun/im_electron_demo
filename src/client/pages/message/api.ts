@@ -449,6 +449,8 @@ export const inviteMemberGroup = async (params: {
 
 export const searchTextMessage = async (params: {
   keyWords: string;
+  convId?: string;
+  convType?: number;
 }): Promise<any> => {
   const {
     data: { json_params },
@@ -456,6 +458,8 @@ export const searchTextMessage = async (params: {
     params: {
       msg_search_param_keyword_array: [params.keyWords],
       msg_search_param_message_type_array: [0],
+      msg_search_param_conv_id: params.convId,
+      msg_search_param_conv_type: params.convType
     },
     user_data: "123",
   });
@@ -495,7 +499,7 @@ export const searchFriends = async (params: {
 
 export const getGroupMemberList = async (params: {
   groupId: string;
-  nextSeq: number;
+  nextSeq?: number;
   userIds?: string[];
 }): Promise<MemberInfo> => {
   const { groupId, userIds, nextSeq } = params;
@@ -521,6 +525,8 @@ export const getGroupMemberList = async (params: {
 
 export const getGroupMemberInfoList = async (params: {
   groupId: string;
+  nextSeq: number;
+  userIds?: string[];
 }): Promise<any> => {
   try {
     const { groupId, nextSeq, userIds } = params;
@@ -539,7 +545,7 @@ export const getGroupMemberInfoList = async (params: {
       });
       return { userList, nextSeq: seq };
     }
-  } catch (e) {
+  } catch (e) {   
     console.log(e);
   }
 };

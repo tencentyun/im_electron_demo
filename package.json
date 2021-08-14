@@ -1,7 +1,7 @@
 {
   "name": "im-electron-demo",
   "productName": "IM Electron",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "IM Electron",
   "main": "src/app/main.js",
   "scripts": {
@@ -21,7 +21,7 @@
       "src/app",
       "bundle"
     ],
-    "productName": "华润银行即时通讯（内测版本）",
+    "productName": "华润银行即时通讯（试运行版本）",
     "appId": "electron-sdk",
     "mac": {
       "icon": "./icon/favicon.icns"
@@ -32,6 +32,7 @@
         {
           "target": "nsis",
           "arch": [
+            "ia32",
             "x64"
           ]
         }
@@ -65,26 +66,26 @@
     "electron-builder": "^22.11.7"
   },
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "ffmpeg-extract-frame": "^1.0.2",
     "ffprobe": "^1.1.2",
     "ffprobe-static": "^3.0.0",
     "file-type": "^16.5.2",
     "fluent-ffmpeg": "^2.1.2",
     "get-video-duration": "^3.1.0",
-    "im_electron_sdk": "^1.2.6",
+    "im_electron_sdk": "^1.2.7",
     "image-size": "^1.0.0",
     "node-fetch": "^2.6.1",
     "node-gyp": "^7.1.2",
     "node-gyp-build": "^4.2.3",
+    "npm": "^7.20.2",
     "progress-stream": "^2.0.0",
     "qs": "^6.5.2",
     "sass": "^1.35.1",
     "save": "^2.4.0",
-    "npm": "^7.20.2",
     "trtc-electron-sdk": "^8.9.107-beta.0"
   }
 }
