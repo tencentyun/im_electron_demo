@@ -109,6 +109,7 @@ export const Home = (): JSX.Element => {
             </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column',flex: 1 }}>
+            <ToolsBar></ToolsBar>
             {
                             userId  ?  <div className="content">
                             <Switch>
