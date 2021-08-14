@@ -501,11 +501,15 @@ export const getGroupMemberList = async (params: {
   groupId: string;
   nextSeq?: number;
   userIds?: string[];
+  role?: number
 }): Promise<MemberInfo> => {
-  const { groupId, userIds, nextSeq } = params;
+  const { groupId, userIds, nextSeq,role=0x00 } = params;
   const queryParams: any = {
     group_get_members_info_list_param_group_id: groupId,
-    group_get_members_info_list_param_next_seq: nextSeq
+    group_get_members_info_list_param_next_seq: nextSeq,
+    group_get_members_info_list_param_option:{
+      group_member_get_info_option_role_flag: role
+    }
   };
 
   if (userIds && userIds?.length) {
@@ -545,7 +549,7 @@ export const getGroupMemberInfoList = async (params: {
       });
       return { userList, nextSeq: seq };
     }
-  } catch (e) {
+  } catch (e) {   
     console.log(e);
   }
 };

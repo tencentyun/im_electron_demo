@@ -16,7 +16,6 @@ const FileElem = (props: any): JSX.Element => {
     const { uploadProgressList } = useSelector((state: State.RootState) => state.historyMessage);
     const progressKey = `${message_msg_id}_${index}`
     const uploadProgress = uploadProgressList.get(progressKey);
-    const dispatch = useDispatch()
     let   backgroundStyle = ""
     let   percentage = 0
    
@@ -31,7 +30,7 @@ const FileElem = (props: any): JSX.Element => {
         if(message_is_from_self) 
             return path.resolve(file_elem_file_path)
         else 
-            return path.resolve(process.cwd() + '/download/' + (match ? match[1] : ""))
+            return path.resolve(process.resourcesPath + '/download/' + (match ? match[1] : ""))
     }
     
     const calcuSize = () => {
