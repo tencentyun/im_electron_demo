@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import "tea-component/dist/tea.css";
+import "antd/dist/antd.css";
 import {
     HashRouter as Router,
     Switch,
