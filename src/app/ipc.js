@@ -1,4 +1,4 @@
-const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW,END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
+const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
 const { ipcMain, BrowserWindow, dialog } = require('electron')
 const { screen } = require('electron')
 const fs = require('fs')
@@ -31,7 +31,7 @@ class IPC {
     win = null;
     callWindow = null; // 通话窗口
     imWindowEvent = null; // 聊天窗口
-    constructor(win){
+    constructor(win) {
         const env = process.env?.NODE_ENV?.trim();
         const isDev = env === 'development';
         setPath(isDev);
@@ -75,7 +75,7 @@ class IPC {
         ipcMain.on('accept-call', (event, acceptParams) => {
             // 向聊天窗口通信
             const { inviteID, isVoiceCall } = acceptParams;
-            this.imWindowEvent.reply('accept-call-reply',inviteID);
+            this.imWindowEvent.reply('accept-call-reply', inviteID);
             const windowWidth = isVoiceCall ? 450 : 800;
             const windowHeight = isVoiceCall ? 800 : 600;
 
@@ -87,17 +87,17 @@ class IPC {
         });
 
         // 当作为接收方，挂断电话，关闭窗口
-        ipcMain.on('refuse-call', (event,inviteID) => {
+        ipcMain.on('refuse-call', (event, inviteID) => {
             this.callWindow.close();
             // 向聊天窗口通信
-            this.imWindowEvent.reply('refuse-call-reply',inviteID);
+            this.imWindowEvent.reply('refuse-call-reply', inviteID);
         });
 
         // 当接受方拒绝通话后，调用该方法可关闭窗口，并退出房间
         ipcMain.on(CLOSE_CALL_WINDOW, () => {
             this.callWindow.webContents.send('exit-room');
         });
-        ipcMain.on(END_CALL_WINDOW,()=>{
+        ipcMain.on(END_CALL_WINDOW, () => {
             this.callWindow.close()
         })
         // 远端用户进入
@@ -128,10 +128,10 @@ class IPC {
             }
             const params = JSON.stringify(addSdkAppid);
             const { convInfo: { convType }, callType } = data;
-            if(data.windowType === 'notificationWindow') {
+            if (data.windowType === 'notificationWindow') {
                 this.callWindow.setSize(320, 150);
                 this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
-            } else if( convType === 1 && Number(callType) === 1) {
+            } else if (convType === 1 && Number(callType) === 1) {
                 this.callWindow.setSize(450, 800);
                 this.callWindow.setPosition(Math.floor((screenSize.width - 450) / 2), Math.floor((screenSize.height - 800) / 2));
             }
@@ -152,7 +152,7 @@ class IPC {
             width: 800,
             show: false,
             frame: false,
-            resizable:false,
+            resizable: false,
             webPreferences: {
                 parent: this.win,
                 webSecurity: true,
@@ -163,7 +163,7 @@ class IPC {
             },
         });
         callWindow.removeMenu();
-        if(isDev) {
+        if (isDev) {
             callWindow.loadURL(`http://localhost:3000/call.html`);
         } else {
             callWindow.loadURL(
@@ -190,97 +190,101 @@ class IPC {
         child_process.exec(`start "" ${path.resolve(process.cwd(), './download/')}`);
     }
     downloadFilesByUrl(file_url) {
-        const cwd = process.cwd();
-        const downloadDicPath = path.resolve(cwd, './download/')
-        if (!fs.existsSync(downloadDicPath)) {
-            fs.mkdirSync(downloadDicPath)
-        }
-        
-        const file_name = url.parse(file_url).pathname.split('/').pop()
-        const file_path = path.resolve(downloadDicPath, file_name)
-        const file_path_temp =  `${file_path}.tmp`
-        if (!fs.existsSync(file_path)) {
-            
-            //创建写入流
-            const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
-                console.error('error==>', e)
-            }).on('ready', function () {
-                console.log("开始下载:", file_url);
-            }).on('finish', function () {
-                //下载完成后重命名文件
-                fs.renameSync(file_path_temp, file_path);
-                console.log('文件下载完成:', file_path);
-            });
-            //请求文件
-            fetch(file_url, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/octet-stream' },
-            }).then(res => {
-                //获取请求头中的文件大小数据
-                let fsize = res.headers.get("content-length");
-                //创建进度
-                let str = progressStream({
-                    length: fsize,
-                    time: 100 /* ms */
+        try {
+            const cwd = process.cwd();
+            const downloadDicPath = path.resolve(cwd, './download/')
+            if (!fs.existsSync(downloadDicPath)) {
+                fs.mkdirSync(downloadDicPath)
+            }
+
+            const file_name = url.parse(file_url).pathname.split('/').pop()
+            const file_path = path.resolve(downloadDicPath, file_name)
+            const file_path_temp = `${file_path}.tmp`
+            if (!fs.existsSync(file_path)) {
+
+                //创建写入流
+                const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
+                    console.error('error==>', e)
+                }).on('ready', function () {
+                    console.log("开始下载:", file_url);
+                }).on('finish', function () {
+                    //下载完成后重命名文件
+                    fs.renameSync(file_path_temp, file_path);
+                    console.log('文件下载完成:', file_path);
                 });
-                // 下载进度 
-                str.on('progress', function (progressData) {
-                    //不换行输出
-                    let percentage = Math.round(progressData.percentage) + '%';
-                    console.log(percentage);
-                });
-                res.body.pipe(str).pipe(fileStream);
+                //请求文件
+                fetch(file_url, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/octet-stream' },
+                }).then(res => {
+                    //获取请求头中的文件大小数据
+                    let fsize = res.headers.get("content-length");
+                    //创建进度
+                    let str = progressStream({
+                        length: fsize,
+                        time: 100 /* ms */
+                    });
+                    // 下载进度 
+                    str.on('progress', function (progressData) {
+                        //不换行输出
+                        let percentage = Math.round(progressData.percentage) + '%';
+                        console.log(percentage);
+                    });
+                    res.body.pipe(str).pipe(fileStream);
                 }).catch(e => {
-                //自定义异常处理
-                console.log(e);
-            });
-        } else {
-            // 已存在
-            console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+                    //自定义异常处理
+                    console.log(e);
+                });
+            } else {
+                // 已存在
+                console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+            }
+        } catch (err) {
+            console.log('下载文件失败，请稍后重试。',err)
         }
     }
     async _getVideoInfo(event, filePath) {
         let videoDuration, videoSize
-        const screenshotName = path.basename(filePath).split('.').shift()+'.png'
+        const screenshotName = path.basename(filePath).split('.').shift() + '.png'
         const screenshotPath = path.resolve(DOWNLOAD_PATH, screenshotName)
 
         const { ext } = await FileType.fromFile(filePath)
-        
+
         return new Promise((resolve, reject) => {
-            try{
+            try {
                 FFmpeg(filePath)
-                .on('end', async (err, info) => {
-                    const { width, height, type, size } = await this._getImageInfo(screenshotPath)
-                    resolve({
-                        videoDuration,
-                        videoPath: filePath,
-                        videoSize,
-                        videoType: ext,
-                        screenshotPath,
-                        screenshotWidth: width,
-                        screenshotHeight: height,
-                        screenshotType: type,
-                        screenshotSize: size,
+                    .on('end', async (err, info) => {
+                        const { width, height, type, size } = await this._getImageInfo(screenshotPath)
+                        resolve({
+                            videoDuration,
+                            videoPath: filePath,
+                            videoSize,
+                            videoType: ext,
+                            screenshotPath,
+                            screenshotWidth: width,
+                            screenshotHeight: height,
+                            screenshotType: type,
+                            screenshotSize: size,
+                        })
                     })
-                })
-                .on('error', (err, info) => {
-                    event.reply('main-process-error', err);
-                    reject(err)
-                })
-                .screenshots({
-                    timestamps: [0],
-                    filename: screenshotName,
-                    folder: DOWNLOAD_PATH
-                }).ffprobe((err, metadata) => {
-                   if(!err){
-                    videoDuration = metadata.format.duration
-                    videoSize = metadata.format.size
-                   }else{
+                    .on('error', (err, info) => {
                         event.reply('main-process-error', err);
-                       console.log(err)
-                   }
-                })
-            }catch(err){
+                        reject(err)
+                    })
+                    .screenshots({
+                        timestamps: [0],
+                        filename: screenshotName,
+                        folder: DOWNLOAD_PATH
+                    }).ffprobe((err, metadata) => {
+                        if (!err) {
+                            videoDuration = metadata.format.duration
+                            videoSize = metadata.format.size
+                        } else {
+                            event.reply('main-process-error', err);
+                            console.log(err)
+                        }
+                    })
+            } catch (err) {
                 event.reply('main-process-error', err);
                 console.log(err)
             }
@@ -297,7 +301,7 @@ class IPC {
     async getVideoInfo(event, params) {
         const { path } = params;
         const data = await this._getVideoInfo(event, path)
-        event.reply(GET_FILE_INFO_CALLBACK, {triggerType: GET_VIDEO_INFO, data}) 
+        event.reply(GET_FILE_INFO_CALLBACK, { triggerType: GET_VIDEO_INFO, data })
     }
 
     async selectFiles(event, params) {
@@ -308,8 +312,8 @@ class IPC {
                 name: "Images", extensions: extensions
             }]
         })
-        const size =  fs.statSync(filePath).size;
-        const name =  path.parse(filePath).base;
+        const size = fs.statSync(filePath).size;
+        const name = path.parse(filePath).base;
         const type = name.split('.')[1];
 
         const data = {
@@ -319,17 +323,17 @@ class IPC {
             type
         };
 
-        if(SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
+        if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
             const fileContent = await fs.readFileSync(filePath);
             data.fileContent = fileContent;
         }
 
 
-      
+
         event.reply(GET_FILE_INFO_CALLBACK, {
             triggerType: SELECT_FILES,
             data
-        })   
+        })
     }
 }
 

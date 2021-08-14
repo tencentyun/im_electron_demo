@@ -28,8 +28,11 @@ export const GroupMemberListDrawer = (props: {
   const [memberList, setMemberList] = useState([]);
   const [nextSeq, setNextSeq] = useState(0);
   const [loading, setLoading] = useState(false);
-
+  const [isEnd,setIsEnd] = useState(false)
   const getMemberList = async (seq: number) => {
+    if(isEnd){
+      return
+    }
     try {
       setLoading(true);
       const res = await getGroupMemberList({
@@ -40,6 +43,9 @@ export const GroupMemberListDrawer = (props: {
         group_get_memeber_info_list_result_info_array: userList,
         group_get_memeber_info_list_result_next_seq: newNextSeq,
       } = res;
+      if(newNextSeq === 0){
+        setIsEnd(true)
+      }
       setMemberList((pre) => _.differenceBy([...pre, ...userList]));
       setNextSeq(newNextSeq);
     } catch (e) {
