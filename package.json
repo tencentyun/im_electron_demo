@@ -68,7 +68,6 @@
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "ant-design": "^1.0.0",
     "axios": "^0.21.1",
-    "braft-editor": "^2.3.9",
     "concurrently": "^6.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.0",

@@ -50,12 +50,12 @@ export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service
 // export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
 
 //生产需要开启华润登录和更换代理地址   ************************
-// export const TIM_BASE_URL = 'http://localhost:3000'  //                      开发           ---         接口地址
-export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002' //            测试
+export const TIM_BASE_URL = 'http://localhost:3000'  //                      开发           ---         接口地址
+//export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002' //            测试
 // export const TIM_BASE_URL = 'http://oaim.crbank.com.cn:30002' //             生产
 
-export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.uat.crbank.com.cn:30002'//     测试           ---         公众号后管地址
-// export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.crbank.com.cn:30002'//      生产
+//export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.uat.crbank.com.cn:30002'//     测试           ---         公众号后管地址
+export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.crbank.com.cn:30002'//      生产
 
 // export const EMOJIURL = 'http://oaim.crbank.com.cn:30003/emoji/' //            生产         ---         表情
 export const EMOJIURL = 'http://oaim.uat.crbank.com.cn:30003/emoji/' //           测试
