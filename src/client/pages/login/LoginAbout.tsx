@@ -27,7 +27,7 @@ export const LoginAbout = (): JSX.Element => {
                     企业数字化转型的通信助手
                 </p>
                 <p>
-                    简单接入，稳定必答、覆盖全球的即时通信云服务
+                    简单接入，稳定必达、覆盖全球的即时通信云服务
                 </p>
             </section>
             <section className="login-about__logo" >

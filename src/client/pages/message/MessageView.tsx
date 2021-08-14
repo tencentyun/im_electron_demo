@@ -176,6 +176,11 @@ export const MessageView = (props: Props): JSX.Element => {
             setPercent('0%')
         }
     }, [percent])
+
+    useEffect(() => {
+        setSeletedMessage([]);
+        setMultiSelect(false);
+    }, [convId]);
     const getNewGroupInfo = () => {
         let newGroupInfo: any = localStorage.getItem('newGroupInfo')
         newGroupInfo = newGroupInfo ? JSON.parse(newGroupInfo) : []

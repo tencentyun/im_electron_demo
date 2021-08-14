@@ -11,6 +11,7 @@ export const SearchBox = () => {
             type="search"
             className="search-input"
             placeholder="搜索"
+            disabled={true}
           />
         </div>
     )

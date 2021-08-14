@@ -42,12 +42,12 @@ export const GroupResult = (props) => {
                 <div className="group-result__content customize-scroll-style">
                     {
                          result.map((item, index) => {
-                            const { group_detial_info_face_url,  group_detial_info_group_name } = item;
+                            const { group_detial_info_face_url,  group_detial_info_group_name, group_base_info_group_id } = item;
                             return (
                                 <ResultItem 
                                     key={index}
                                     faceUrl={group_detial_info_face_url}
-                                    nickName={group_detial_info_group_name}
+                                    nickName={group_detial_info_group_name || group_base_info_group_id}
                                     onClick={() => handleItemClick(item)}
                                 />
                             )
