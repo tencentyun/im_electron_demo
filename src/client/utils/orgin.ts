@@ -170,6 +170,13 @@ const assemblyData = (data, childrenNode, itemChildren, labelNode, restLabel) =>
     }
     return result
 }
+const reportError = (data)=>{
+    return axios({
+        url: `${TIM_BASE_URL}/huarun/report`,
+        method: 'POST',
+        data: data
+    })
+}
 export {
     getAlldepartment,
     filterGetDepartment,
@@ -181,5 +188,6 @@ export {
     getAccountsList,
     getAccountsAdd,
     getDepAllStaff,
-    isLead
+    isLead,
+    reportError
 }

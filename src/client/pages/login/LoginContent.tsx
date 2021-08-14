@@ -64,8 +64,8 @@ interface IEncrptPwdRes {
 export const LoginContent = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const [userID, setUserID] = useState('');
-    const [password, setPassword] = useState('');
+    const [userID, setUserID] = useState(window.localStorage.getItem('uid') || '');
+    const [password, setPassword] = useState(window.localStorage.getItem('usersig') || '');
     const isDisablelogin = userID && password;
 
     const customizeTabBarRender = (children: JSX.Element) => {

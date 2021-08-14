@@ -42,6 +42,7 @@ import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner
 import { updateCallingStatus } from "./store/actions/ui";
 import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from "./constants";
 import { ipcRenderer } from "electron";
+import { reportError } from "./utils/orgin";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
@@ -484,7 +485,7 @@ export const App = () => {
             } catch (err) {
                 console.error(err)
             }
-            if (conversationList[0]?.conv_last_msg?.message_status === 1) {
+            // if (conversationList[0]?.conv_last_msg?.message_status === 1) {
                 const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
                 if (elemType === 4 || elemType === 9) {
                     dispatch(updateMessages({
@@ -492,8 +493,7 @@ export const App = () => {
                         message: conversationList[0].conv_last_msg
                     }))
                 }
-            }
-
+            // }
         }
     };
 
@@ -520,6 +520,19 @@ export const App = () => {
             dispatch(markMessageAsReaded({ convIds }));
         }
     };
+    const onError = (err)=>{
+        const { catchUserId  } = ref.current;
+        reportError({
+            errorText: err.message,
+            userID: catchUserId
+        })
+    }
+    const addErrorReport = ()=>{
+        window.addEventListener('error',onError)
+    }
+    const removeReport = ()=>{
+        window.removeEventListener('error',onError)
+    }
     const ipcRendererLister = (event, data) => {
       if (event) {
         // console.log('changedata:', data)
@@ -530,6 +543,7 @@ export const App = () => {
     useEffect(() => {
         initIMSDK();
         ipcRenderer.on("mainProcessMessage", ipcRendererLister);
+        addErrorReport()
         acceptCallListiner((inviteID) => {
             const { callingType } = ref.current.catchCalling;
             timRenderInstance.TIMAcceptInvite({
@@ -567,6 +581,7 @@ export const App = () => {
     useEffect(() => {
       return () => {
         ipcRenderer.removeListener("mainProcessMessage", ipcRendererLister);
+        removeReport()
       };
     }, []);
     return (

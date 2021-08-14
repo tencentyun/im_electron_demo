@@ -174,7 +174,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                     }
                     // setEditorState(ContentUtils.clear(editorState));
                 }
-                setEditorState(ContentUtils.clear(editorState));
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
