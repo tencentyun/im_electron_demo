@@ -140,8 +140,8 @@ export const Message = (): JSX.Element => {
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
         const firstMsg = message_elem_array[0] || {};
         const imgImg = message_status === 1 ? firstMsg?.image_elem_thumb_url : "[图片消息]";
+        const displayTextMsg = message_status === 6 ? `${revokedPerson} 撤回了一条消息` : firstMsg?.text_elem_content;
         const revokeMsg =  `${revokedPerson} 撤回了一条消息`;
-        const displayTextMsg  = firstMsg && firstMsg.text_elem_content;
         const displayLastMsg = {
             '0': displayTextMsg,
             '1': imgImg,

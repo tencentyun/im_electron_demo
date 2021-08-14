@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import Dplayer from 'dplayer'
 
+import withMemo from "../../../utils/componentWithMemo";
+
 const ininVideoPlayer = (props) => {
     const videoDom = useRef()
     const videoDomId = new Date().getTime().toString() + Math.floor(Math.random() * 1000).toString()
@@ -23,7 +25,7 @@ const ininVideoPlayer = (props) => {
     )
 }
 
-export const VideoElem = (props: any): JSX.Element => {
+const VideoElem = (props: any): JSX.Element => {
     const item = () => {
         return (
             props.video_elem_video_duration ?
@@ -40,3 +42,5 @@ export const VideoElem = (props: any): JSX.Element => {
     };
     return item()
 }
+
+export default withMemo(VideoElem);

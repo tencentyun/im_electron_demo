@@ -190,8 +190,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
 
-    const setFile = async (file: File | { size: number; type: string; path: string; name: string; fileContent: string }) => {
-        console.log(file, '文件对象', typeof (file.fileContent))
+    const setFile = async (file: File | {size: number; type: string; path: string; name: string; fileContent: string}) => {
         const imageObj = JSON.parse(window.localStorage.getItem('imageObj'))
         if (file) {
             const fileSize = file.size;
@@ -417,6 +416,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 convType,
                 messageElementArray: [{
                     elem_type: 6,
+                    // @ts-ignore
                     face_elem_buf: url
                 }],
                 userId
@@ -668,16 +668,19 @@ export const MessageInput = (props: Props): JSX.Element => {
                 const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' })
                 const fileObj = {
                     lastModified: file.lastModified,
+                    // @ts-ignore
                     lastModifiedDate: file.lastModifiedDate,
                     name: file.name,
                     path: url,
                     size: file.size,
                     type: 'png',
                     fileContent: data,
+                    //@ts-ignore 
                     webkitRelativePath: file.webkitRelativePath
                 }
                 const imageObj = {
                     lastModified: file.lastModified,
+                    //@ts-ignore 
                     lastModifiedDate: file.lastModifiedDate,
                     name: file.name,
                     path: url,

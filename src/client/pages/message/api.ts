@@ -83,6 +83,7 @@ type MemberInfo = {
   group_get_memeber_info_list_result_info_array: {
     group_member_info_identifier: string;
   }[];
+  group_get_memeber_info_list_result_next_seq: number;
 };
 
 

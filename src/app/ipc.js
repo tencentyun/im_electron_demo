@@ -186,42 +186,36 @@ class IPC {
     close () {
         this.win.close()
     }
-    showDialog () {
-        child_process.exec(`start "" ${path.resolve(process.cwd(), './download/')}`);
+    showDialog() {
+        child_process.exec(`start "" ${path.resolve(process.resourcesPath, 'download/')}`);
     }
-    downloadFilesByUrl (file_url) {
-        const cwd = process.cwd();
-        const downloadDicPath = path.resolve(cwd, './download/')
-        if (!fs.existsSync(downloadDicPath)) {
-            fs.mkdirSync(downloadDicPath)
-        }
-        console.log(22333)
-        console.log(file_url)
-        let file_name
-        let file_path
-        let file_path_temp
-        try { 
-            file_name = url.parse(file_url).pathname.split('/').pop()
-            file_path = path.resolve(downloadDicPath, file_name)
-            file_path_temp =  `${file_path}.tmp`
-        } catch(err) {
-            console.log(err)
-        }
-        if(!file_name||!file_path||!file_path_temp){
-            return
-        }
-        if (!fs.existsSync(file_path)) {
+    downloadFilesByUrl(file_url) {
+        try {
+            const cwd = process.resourcesPath;
+            const downloadDicPath = path.resolve(cwd, 'download/')
+            if (!fs.existsSync(downloadDicPath)) {
+                fs.mkdirSync(downloadDicPath)
+            }
 
-            //创建写入流
-            const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
-                console.error('error==>', e)
-            }).on('ready', function () {
-                console.log("开始下载:", file_url);
-            }).on('finish', function () {
-                //下载完成后重命名文件
-                fs.renameSync(file_path_temp, file_path);
-                console.log('文件下载完成:', file_path);
+            const file_name = url.parse(file_url).pathname.split('/').pop()
+            const file_path = path.resolve(downloadDicPath, file_name)
+            const file_path_temp = `${file_path}.tmp`
+            if (!fs.existsSync(file_path)) {
 
+                //创建写入流
+                const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
+                    console.error('error==>', e)
+                }).on('ready', function () {
+                    console.log("开始下载:", file_url);
+                }).on('finish', function () {
+                    try {
+                        //下载完成后重命名文件
+                        fs.renameSync(file_path_temp, file_path);
+                        console.log('文件下载完成:', file_path);
+                    } catch (err) {
+
+                    }
+                });
                 //请求文件
                 fetch(file_url, {
                     method: 'GET',
@@ -245,11 +239,12 @@ class IPC {
                     //自定义异常处理
                     console.log(e);
                 });
-            });
-
-        } else {
-            // 已存在
-            console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+            } else {
+                // 已存在
+                console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+            }
+        } catch (err) {
+            console.log('下载文件失败，请稍后重试。', err)
         }
     }
     async _getVideoInfo (event, filePath) {

@@ -21,12 +21,12 @@ import {
 } from '../../utils/messageUtils'
 import { Avatar } from '../../components/avatar/avatar';
 import TextElemItem from './messageElemTyps/textElemItem';
-import PicElemItem from './messageElemTyps/picElemItem';
+import PicElemItem  from './messageElemTyps/picElemItem';
 import CustomElem from './messageElemTyps/customElem';
 import VoiceElem from './messageElemTyps/voiceElem';
 import FileElem from './messageElemTyps/fileElem';
 import GroupTipsElemItem from './messageElemTyps/grouptipsElem';
-import { VideoElem } from './messageElemTyps/videoElem';
+import VideoElem from './messageElemTyps/videoElem';
 import MergeElem from './messageElemTyps/mergeElem';
 import { Expression } from './messageElemTyps/expression';
 import { ForwardPopup } from './components/forwardPopup';
@@ -349,6 +349,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 messageIdArray: messageList
             }));
             setMultiSelect(false);
+            setSeletedMessage([]);
         } else {
             message.warning({content: '删除消息失败'})
         }
@@ -677,7 +678,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                                         {
                                                             //群里会话列表添加名称  zwc
                                                             item.message_conv_type === 2 && <div className="message-view__nick_name">
-                                                                {item?.message_sender_group_member_info.group_member_info_name_card || item.message_sender_profile.user_profile_nick_name}
+                                                                {item.message_sender_profile.user_profile_nick_name}
                                                             </div>
                                                         }
                                                         <div onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
@@ -731,4 +732,4 @@ export const MessageView = (props: Props): JSX.Element => {
             <div className={`showMore ${noMore ? 'no-more' : ''}`} onClick={getMoreMsg}>{noMore ? '没有更多了' : '查看更多'}</div>
         </div>
     )
-};
+}

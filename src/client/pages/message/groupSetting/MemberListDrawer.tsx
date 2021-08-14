@@ -1,17 +1,24 @@
 import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
 import { Avatar } from "../../../components/avatar/avatar";
-import { Drawer, H3, Table } from "tea-component";
-import { isWin } from "../../../utils/tools";
-import _ from 'lodash';
-import { getGroupMemberList } from "../api";
-import React, { useEffect, useRef, useState } from "react";
-
+import { Drawer, H3, Table, SearchBox } from "tea-component";
+import { isWin, throttle, highlightText } from "../../../utils/tools";
+import React, { useState, useEffect, useRef } from "react";
+import { useMessageDirect } from '../../../utils/react-use/useDirectMsgPage';
+import { GroupMemberBubble } from "./GroupMemberBubble";
 import "./member-list-drawer.scss";
-
+import { getGroupMemberList } from "../api";
+import _ from 'lodash';
 const { scrollable } = Table.addons;
 
 export interface GroupMemberListDrawerRecordsType {
+  memberList: any[];
   groupId: string;
+  To_Account: string
+}
+
+export type userTypeData = {
+  Status: string,
+  To_Account: string
 }
 
 export const GroupMemberListDrawer = (props: {
@@ -24,6 +31,13 @@ export const GroupMemberListDrawer = (props: {
 
   const [visible, setShowState, defaultForm] =
     useDialog<GroupMemberListDrawerRecordsType>(dialogRef, {});
+
+  const [searchData, setSearchData] = useState(defaultForm.memberList)
+  const [searchText, setSearchText] = useState('') // 搜索文本
+
+  useEffect(() => {
+    setSearchData(defaultForm.memberList)
+  }, [defaultForm])
   const ref = useRef({firstCall: true}); 
   const [memberList, setMemberList] = useState([]);
   const [nextSeq, setNextSeq] = useState(0);
