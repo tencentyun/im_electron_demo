@@ -165,7 +165,7 @@ export const LoginContent = (): JSX.Element => {
             {/* <Checkbox display="block" value={false} className="login--auto">
                 下次自动登录
             </Checkbox> */}
-            <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}> 登陆</Button>
+            <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}>登录</Button>
         </div>
     )
 }

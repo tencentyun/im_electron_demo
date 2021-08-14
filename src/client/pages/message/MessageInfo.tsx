@@ -279,7 +279,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       };
       dispatch(addMessage(payload));
     };
-    getMessageList();
+    if (conv_id) {
+      getMessageList();
+    }
   }, [conv_id]);
 
   const isOnInternet = () => {
