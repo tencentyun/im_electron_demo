@@ -251,9 +251,7 @@ const openGroupMemberSelector = async ()=>{
       };
       dispatch(addMessage(payload));
     };
-    if (conv_id && !msgList) {
-      getMessageList();
-    }
+    getMessageList();
   }, [conv_id]);
 
   return (
