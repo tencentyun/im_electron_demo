@@ -51,7 +51,7 @@ export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service
 
 //生产需要开启华润登录和更换代理地址   ************************
 export const TIM_BASE_URL = 'http://localhost:3000'  //                      开发           ---         接口地址
-//export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002' //            测试
+// export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002' //            测试
 // export const TIM_BASE_URL = 'http://oaim.crbank.com.cn:30002' //             生产
 
 //export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.uat.crbank.com.cn:30002'//     测试           ---         公众号后管地址

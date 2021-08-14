@@ -284,7 +284,7 @@ function createWindow () {
     //接收到消息后的执行程序
     // path.join(process.cwd(), "/resources/extraResources", "cut.exe")
     const url = downloadUrl + "\\screenShot.png";
-    child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"),
+    child_process.exec("start C:\\Users\\MiMyMine\\Desktop\\demo\\cut.exe",
       () => {
         let pngs = clipboard.readImage().toPNG();
         console.log(clipboard.readImage(), pngs, '-----------')
