@@ -7,7 +7,6 @@ import { Windows } from '../../components/toolsBar/windows';
 
 export const Login = (): JSX.Element => (
     <div>
-        <Windows />
         <div className="login">
             <LoginAbout></LoginAbout>
             <LoginContent></LoginContent>
