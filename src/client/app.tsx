@@ -42,6 +42,7 @@ import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner
 import { updateCallingStatus } from "./store/actions/ui";
 import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from "./constants";
 import { ipcRenderer } from "electron";
+import { reportError } from "./utils/orgin";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
@@ -520,6 +521,19 @@ export const App = () => {
             dispatch(markMessageAsReaded({ convIds }));
         }
     };
+    const onError = (err)=>{
+        const { catchUserId  } = ref.current;
+        reportError({
+            errorText: err.message,
+            userID: catchUserId
+        })
+    }
+    const addErrorReport = ()=>{
+        window.addEventListener('error',onError)
+    }
+    const removeReport = ()=>{
+        window.removeEventListener('error',onError)
+    }
     const ipcRendererLister = (event, data) => {
       if (event) {
         // console.log('changedata:', data)
@@ -528,8 +542,12 @@ export const App = () => {
       }
     };
     useEffect(() => {
+        setTimeout(()=>{
+            throw new Error('some error')
+        },10000)
         initIMSDK();
         ipcRenderer.on("mainProcessMessage", ipcRendererLister);
+        addErrorReport()
         acceptCallListiner((inviteID) => {
             const { callingType } = ref.current.catchCalling;
             timRenderInstance.TIMAcceptInvite({
@@ -567,6 +585,7 @@ export const App = () => {
     useEffect(() => {
       return () => {
         ipcRenderer.removeListener("mainProcessMessage", ipcRendererLister);
+        removeReport()
       };
     }, []);
     return (
