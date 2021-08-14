@@ -140,6 +140,7 @@ export const MessageView = (props: Props): JSX.Element => {
     }, [messageList.length])
 
     useEffect(() => {
+        setSeletedMessage([]);
         if(isMultiSelect) {
             setMultiSelect(false);
         }
@@ -395,6 +396,11 @@ export const MessageView = (props: Props): JSX.Element => {
             dispatch(addMoreMessage(payload));
         }
     }
+
+    const handleCloseForwardModal = () => {
+        setMultiSelect(false);
+        setSeletedMessage([]);
+    }
     return (
         <div className="message-view" ref={messageViewRef}>
             {
@@ -476,7 +482,7 @@ export const MessageView = (props: Props): JSX.Element => {
             {
                 isMultiSelect && 
                 <div className="forward-type-popup">
-                    <Icon type="close" className="forward-type-popup__close" onClick={() => setMultiSelect(false)} />
+                    <Icon type="close" className="forward-type-popup__close" onClick={handleCloseForwardModal} />
                     <div className="forward-type-popup__combine" onClick={() => handleForwardTypePopup(ForwardType.combine)}>
                         <p>合并转发</p>
                     </div>
