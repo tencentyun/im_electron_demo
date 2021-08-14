@@ -1,7 +1,7 @@
 {
   "name": "im-electron-demo",
   "productName": "IM Electron Demo",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {
@@ -21,7 +21,7 @@
       "src/app",
       "bundle"
     ],
-    "productName": "华润银行即时通讯（内测版）",
+    "productName": "华润银行即时通讯（试运行版本）",
     "appId": "electron-sdk",
     "mac": {
       "icon": "./icon/favicon.icns"
@@ -32,7 +32,6 @@
         {
           "target": "nsis",
           "arch": [
-            "ia32",
             "x64"
           ]
         }
@@ -40,7 +39,7 @@
       "extraFiles": [
         {
           "from": "./node_modules/im_electron_sdk/lib/",
-          "to": "./resources",
+          "to": "./node_modules/im_electron_sdk/lib/",
           "filter": [
             "**/*"
           ]
@@ -84,7 +83,7 @@
     "final-form": "^4.20.2",
     "fluent-ffmpeg": "^2.1.2",
     "get-video-duration": "^3.1.0",
-    "im_electron_sdk": "^1.2.3",
+    "im_electron_sdk": "^1.0.62",
     "image-size": "^1.0.0",
     "js-audio-recorder": "^1.0.7",
     "lodash": "^4.17.21",

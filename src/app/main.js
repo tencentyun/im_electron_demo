@@ -7,6 +7,7 @@ const {
   Tray,
   nativeImage,
   globalShortcut,
+  crashReporter,
   ipcRenderer,
   clipboard,
   shell,
@@ -38,6 +39,10 @@ new TimMain({
   sdkappid: 1400529075
   // sdkappid: SDK_APP_ID
 });
+
+crashReporter.start({
+                    uploadToServer:false 
+                  })
 
 // 设置系统托盘
 const setAppTray = () => {
