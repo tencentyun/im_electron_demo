@@ -187,12 +187,12 @@ class IPC {
         this.win.close()
     }
     showDialog() {
-        child_process.exec(`start "" ${path.resolve(process.cwd(), './download/')}`);
+        child_process.exec(`start "" ${path.resolve(process.resourcesPath, 'download/')}`);
     }
     downloadFilesByUrl(file_url) {
         try {
-            const cwd = process.cwd();
-            const downloadDicPath = path.resolve(cwd, './download/')
+            const cwd = process.resourcesPath;
+            const downloadDicPath = path.resolve(cwd, 'download/')
             if (!fs.existsSync(downloadDicPath)) {
                 fs.mkdirSync(downloadDicPath)
             }
@@ -208,9 +208,13 @@ class IPC {
                 }).on('ready', function () {
                     console.log("开始下载:", file_url);
                 }).on('finish', function () {
-                    //下载完成后重命名文件
-                    fs.renameSync(file_path_temp, file_path);
-                    console.log('文件下载完成:', file_path);
+                    try {
+                        //下载完成后重命名文件
+                        fs.renameSync(file_path_temp, file_path);
+                        console.log('文件下载完成:', file_path);
+                    } catch (err) {
+
+                    }
                 });
                 //请求文件
                 fetch(file_url, {
@@ -240,7 +244,7 @@ class IPC {
                 console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
             }
         } catch (err) {
-            console.log('下载文件失败，请稍后重试。',err)
+            console.log('下载文件失败，请稍后重试。', err)
         }
     }
     async _getVideoInfo(event, filePath) {
