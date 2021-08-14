@@ -36,7 +36,7 @@ export const GroupMember = (props: {
   } = props;
 
   const sortId = (a, b) => {
-    return b.group_member_info_member_role-a.group_member_info_member_role
+    return a.group_member_info_member_role-b.group_member_info_member_role
   };
 
   // 获取群成员列表
@@ -46,6 +46,7 @@ export const GroupMember = (props: {
         nextSeq: 0,
       })
   }, []);
+  console.log('3344',value?.group_get_memeber_info_list_result_info_array)
   const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
   console.log('3344',userList)
   userList.sort(sortId)
