@@ -84,7 +84,7 @@ export const TransferGroupDialog = (props: {
           <PopConfirm
           title="确定要转让群主？"
           key={record.group_member_info_identifier}
-          message="解除后，群主将转到给当前选中？"
+          message="转移后，群主会将转到给当前选中？"
           footer={close => (
             <>
               <Button
