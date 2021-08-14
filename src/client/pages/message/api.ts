@@ -521,6 +521,8 @@ export const getGroupMemberList = async (params: {
 
 export const getGroupMemberInfoList = async (params: {
   groupId: string;
+  nextSeq: number;
+  userIds?: string[];
 }): Promise<any> => {
   try {
     const { groupId, nextSeq, userIds } = params;
@@ -539,7 +541,7 @@ export const getGroupMemberInfoList = async (params: {
       });
       return { userList, nextSeq: seq };
     }
-  } catch (e) {
+  } catch (e) {   
     console.log(e);
   }
 };
