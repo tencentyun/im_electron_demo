@@ -35,6 +35,9 @@ export const GroupMember = (props: {
     memberCount
   } = props;
 
+  const sortId = (a, b) => {
+    return b.group_member_info_member_role-a.group_member_info_member_role
+  };
 
   // 获取群成员列表
   const { value, loading, retry } = useAsyncRetryFunc(async () => {
@@ -44,6 +47,8 @@ export const GroupMember = (props: {
       })
   }, []);
   const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
+  console.log('3344',userList)
+  userList.sort(sortId)
   const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();  
   // const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
   const popupContainer = document.getElementById("messageInfo");

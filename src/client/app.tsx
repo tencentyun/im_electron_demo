@@ -485,7 +485,7 @@ export const App = () => {
             } catch (err) {
                 console.error(err)
             }
-            if (conversationList[0]?.conv_last_msg?.message_status === 1) {
+            // if (conversationList[0]?.conv_last_msg?.message_status === 1) {
                 const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
                 if (elemType === 4 || elemType === 9) {
                     dispatch(updateMessages({
@@ -493,8 +493,7 @@ export const App = () => {
                         message: conversationList[0].conv_last_msg
                     }))
                 }
-            }
-
+            // }
         }
     };
 
