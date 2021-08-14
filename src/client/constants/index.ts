@@ -8,8 +8,8 @@ export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service
 // export const DEFAULT_USER_SIG = 'eJwsjU*rgkAUR7-L3b6HjvO8ow68Rf*xJJRaRLtqbnoJTWwSIfrukfpbngO-84J9snOoq7kh0H9KfPfbQzZUWb4yNaCh4yq-FFQVBIN9mNuprtmA9nwhUEYiwNFwDhrOuLFKJWbuFivfttM4u6NbBpM0Xx6f2-iwRkwX0eynDbP-8dJySaA9JVWgMJRyoG3fl46A9ycAAP--nd4x3w__';
 
 // xingchenhe公有云 测试
-export const DEFAULT_USERID = '3708';
-export const DEFAULT_USER_SIG = 'eJwtzNsKgkAUheF3meuQ7eichC60SCwJonqA0Em2WowH0ozePVMv17fg-5BLfLZeuiYeoRaQ1bQx1c8W7zixI0Au3qTFzRhMiWe7ALYUDqPzo3uDtR6dMUYBYNYWH3-jlAvOlVJLBbMxexiOfnTFvuIqKfM3y*xwu4uKfRA2snDcsovzQW9OXVAla-L9AYNdMIc_';
+// export const DEFAULT_USERID = '3708';
+// export const DEFAULT_USER_SIG = 'eJwtzNsKgkAUheF3meuQ7eichC60SCwJonqA0Em2WowH0ozePVMv17fg-5BLfLZeuiYeoRaQ1bQx1c8W7zixI0Au3qTFzRhMiWe7ALYUDqPzo3uDtR6dMUYBYNYWH3-jlAvOlVJLBbMxexiOfnTFvuIqKfM3y*xwu4uKfRA2snDcsovzQW9OXVAla-L9AYNdMIc_';
 
 // xingchenhe公有云 测试
 // export const DEFAULT_USERID = 'xhc_test';
@@ -50,8 +50,8 @@ export const DEFAULT_USER_SIG = 'eJwtzNsKgkAUheF3meuQ7eichC60SCwJonqA0Em2WowH0oz
 // export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
 
 //生产需要开启华润登录和更换代理地址   ************************
-// export const TIM_BASE_URL = 'http://localhost:3000'  //                      开发           ---         接口地址
-export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002' //            测试
+export const TIM_BASE_URL = 'http://localhost:3000'  //                      开发           ---         接口地址
+// export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002' //            测试
 // export const TIM_BASE_URL = 'http://oaim.crbank.com.cn:30002' //             生产
 
 export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.uat.crbank.com.cn:30002'//     测试           ---         公众号后管地址

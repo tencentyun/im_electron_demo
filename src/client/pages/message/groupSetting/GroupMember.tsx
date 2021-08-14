@@ -48,7 +48,6 @@ export const GroupMember = (props: {
   // const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
   const popupContainer = document.getElementById("messageInfo");
   const dialogRef = useDialogRef<GroupMemberListDrawerRecordsType>();
-  const elem_type = useDialogRef<AddMemberRecordsType>();
 
   const deleteMemberDialogRef = useDialogRef<DeleteMemberRecordsType>();
 
@@ -130,7 +129,7 @@ export const GroupMember = (props: {
           {userList.length ? (
             <span
               className="group-member--title__right"
-              onClick={() => dialogRef.current.open({ memberList: userList })}
+              onClick={() => dialogRef.current.open({ groupId })}
             >
               <span style={{ marginRight: "4px" }}>{memberCount}人</span>
               <a>查看</a>
@@ -213,7 +212,6 @@ export const GroupMember = (props: {
       <GroupMemberListDrawer
         popupContainer={popupContainer}
         dialogRef={dialogRef}
-        userGroupType={userGroupType}
       />
       <DeleteGroupMemberDialog
         dialogRef={deleteMemberDialogRef}
