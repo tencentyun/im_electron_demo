@@ -196,7 +196,6 @@ export const MessageView = (props: Props): JSX.Element => {
         const isDivideSending = forwardType === ForwardType.divide
         const isCombineSending = !isDivideSending;
         const forwardMessage = seletedMessage.map(item => ({...item, message_is_forward_message: true}));
-        console.warn('forwardMessage', forwardMessage);
         convItemGroup.forEach(async (convItem, k) => {
             if(isDivideSending) {
                 forwardMessage.forEach(async message => {
@@ -264,6 +263,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 messageIdArray: messageList
             }));
             setMultiSelect(false);
+            setSeletedMessage([]);
         } else {
             message.warning({content: '删除消息失败'})
         }
