@@ -22,7 +22,7 @@ export const Profile = (): JSX.Element => {
   const [initData, setInitData] = useState({});
 
   const getSelfInfo = async () => {
-// 处理后端返回的文件路径，目前的所存储的文件路径不是直接返回一个可访问的资源，是一个base64字符 // todo 待优化
+    // 处理后端返回的文件路径，目前的所存储的文件路径不是直接返回一个可访问的资源，是一个base64字符 // todo 待优化
 
     const { data: { code, json_param } } = await timRenderInstance.TIMProfileGetUserProfileList({
       json_get_user_profile_list_param: {
@@ -30,7 +30,7 @@ export const Profile = (): JSX.Element => {
       },
     });
 
-  
+
     if (code === 0) {
       const {
         user_profile_role: role,
@@ -50,8 +50,12 @@ export const Profile = (): JSX.Element => {
     }
   }
   useEffect(() => {
-    getSelfInfo();
-  }, []);
+    if (userId) {
+        getSelfInfo()
+    } else {
+        history.replace('/')
+    }
+}, [])
   console.log('useSelector((state: State.RootState) => state.userInfo)', useSelector((state: State.RootState) => state.userInfo));
   const directToMsgPage = useMessageDirect();
 

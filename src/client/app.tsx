@@ -42,6 +42,7 @@ import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner
 import { updateCallingStatus } from "./store/actions/ui";
 import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from "./constants";
 import { ipcRenderer } from "electron";
+import { version } from '../../package.json'
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
@@ -571,10 +572,15 @@ export const App = () => {
     }, []);
     return (
         <div id="app-container">
+            <ToolsBar></ToolsBar>
             <Switch>
                 <Route path="/home" component={Home}></Route>
                 <Route path="/" component={Login} />
             </Switch>
+            {/* 最终打包去掉 */}
+            <div className="version">
+                v {version}
+            </div>
         </div>
     );
 };
