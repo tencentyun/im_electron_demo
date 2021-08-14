@@ -541,9 +541,6 @@ export const App = () => {
       }
     };
     useEffect(() => {
-        setTimeout(()=>{
-            throw new Error('some error')
-        },10000)
         initIMSDK();
         ipcRenderer.on("mainProcessMessage", ipcRendererLister);
         addErrorReport()
