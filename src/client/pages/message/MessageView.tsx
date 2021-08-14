@@ -668,7 +668,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                                     </div>
                                                 }
                                             >
-                                                <span style={{ display: 'none' }}>占位{user_profile_face_url}</span><Avatar url={user_profile_face_url} isClick={false} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                                <span style={{ display: 'none' }}>占位</span><Avatar url={user_profile_face_url} isClick={false}  key={user_profile_face_url}  size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                                             </Bubble>
                                         </div>
                                         {

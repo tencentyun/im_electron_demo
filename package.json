@@ -1,12 +1,12 @@
 {
   "name": "im-electron-demo",
-  "productName": "IM Electron Demo",
+  "productName": "IM Electron",
   "version": "1.0.32",
-  "description": "IM Electron Demo",
+  "description": "IM Electron",
   "main": "src/app/main.js",
   "scripts": {
     "start": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
-    "build": "npm version patch && electron-builder -w",
+    "build": "electron-builder -w",
     "build:react": "cd ./src/client && npm run build:react",
     "dev:electron": "set NODE_ENV=development && electron .",
     "dev:react": "cd ./src/client && npm run dev:react"
@@ -21,7 +21,7 @@
       "src/app",
       "bundle"
     ],
-    "productName": "华润银行即时通讯（试运行版本）",
+    "productName": "华润银行即时通讯（测试视音频版本）",
     "appId": "electron-sdk",
     "mac": {
       "icon": "./icon/favicon.icns"
@@ -61,9 +61,8 @@
   "devDependencies": {
     "concurrently": "^6.2.0",
     "electron": "^13.1.5",
-    "electron-builder": "^22.11.7",
     "native-ext-loader": "^2.3.0",
-    "node-gyp": "^7.1.2"
+    "electron-builder": "^22.11.7"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
@@ -79,9 +78,13 @@
     "im_electron_sdk": "^1.2.6",
     "image-size": "^1.0.0",
     "node-fetch": "^2.6.1",
-    "npm": "^7.20.2",
+    "node-gyp": "^7.1.2",
+    "node-gyp-build": "^4.2.3",
     "progress-stream": "^2.0.0",
+    "qs": "^6.5.2",
+    "sass": "^1.35.1",
     "save": "^2.4.0",
-    "trtc-electron-sdk": "^8.6.102-beta.0"
+    "npm": "^7.20.2",
+    "trtc-electron-sdk": "^8.9.107-beta.0"
   }
 }
