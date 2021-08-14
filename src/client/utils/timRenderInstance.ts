@@ -13,7 +13,7 @@ const getInstance = ():TimRender => {
                     const res = await obj[prop](...args);
                     if (res && res.data && res.data.code != undefined && res.data.code !== 0 )  {
                         const {data: {code, desc} } = res;
-                        console.error("接口出错:", prop, code, desc,res, args[0]);
+                        console.error("接口出错:", prop, code, desc,res, JSON.stringify(args[0]));
                         
                         if(!params.hide_tips){
                             message.error({content: ` ${String(prop)} 接口出错：${desc}`});
