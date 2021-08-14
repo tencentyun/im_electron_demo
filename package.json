@@ -5,7 +5,7 @@
   "description": "IM Electron Demo",
   "main": "src/app/main.js",
   "scripts": {
-    "start": "concurrently  \"npm run dev:electron\"",
+    "start": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
     "build": "npm version patch && electron-builder -w",
     "build:react": "cd ./src/client && npm run build:react",
     "dev:electron": "set NODE_ENV=development && electron .",
@@ -61,39 +61,27 @@
   "devDependencies": {
     "concurrently": "^6.2.0",
     "electron": "^13.1.5",
+    "electron-builder": "^22.11.7",
     "native-ext-loader": "^2.3.0",
-    "electron-builder": "^22.11.7"
+    "node-gyp": "^7.1.2"
   },
   "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "ant-design": "^1.0.0",
-    "axios": "^0.21.1",
-    "concurrently": "^6.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
-    "element-react": "^1.4.34",
-    "element-theme-default": "^1.4.13",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "ffmpeg-extract-frame": "^1.0.2",
     "ffprobe": "^1.1.2",
     "ffprobe-static": "^3.0.0",
-    "file-loader": "^6.2.0",
-    "file-type": "^16.5.3",
-    "final-form": "^4.20.2",
+    "file-type": "^16.5.2",
     "fluent-ffmpeg": "^2.1.2",
     "get-video-duration": "^3.1.0",
-    "im_electron_sdk": "^1.0.62",
+    "im_electron_sdk": "^1.2.6",
     "image-size": "^1.0.0",
-    "js-audio-recorder": "^1.0.7",
-    "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
-    "node-gyp": "^7.1.2",
-    "node-gyp-build": "^4.2.3",
-    "progress-stream": "^2.0.0",
-    "qs": "^6.5.2",
-    "sass": "^1.35.1",
-    "save": "^2.4.0",
     "npm": "^7.20.2",
-    "trtc-electron-sdk": "^8.9.107-beta.0"
+    "progress-stream": "^2.0.0",
+    "save": "^2.4.0",
+    "trtc-electron-sdk": "^8.6.102-beta.0"
   }
 }

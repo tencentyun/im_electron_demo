@@ -197,9 +197,19 @@ class IPC {
         }
         console.log(22333)
         console.log(file_url)
-        const file_name = url.parse(file_url).pathname.split('/').pop()
-        const file_path = path.resolve(downloadDicPath, file_name)
-        const file_path_temp =  `${file_path}.tmp`
+        let file_name
+        let file_path
+        let file_path_temp
+        try { 
+            file_name = url.parse(file_url).pathname.split('/').pop()
+            file_path = path.resolve(downloadDicPath, file_name)
+            file_path_temp =  `${file_path}.tmp`
+        } catch(err) {
+            console.log(err)
+        }
+        if(!file_name||!file_path||!file_path_temp){
+            return
+        }
         if (!fs.existsSync(file_path)) {
 
             //创建写入流
