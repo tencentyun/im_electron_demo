@@ -18,10 +18,7 @@ export const MessageResult = (props) => {
 
     const hilightKeyWords = messageText => messageText.replace(regex, `<span class="highlight">${keyWords}</span>`);
 
-    const handleItemClick = (item) => {
-        setActivedItem(item)
-        console.log(activedItem.messageArray, 'www')
-    };
+    const handleItemClick = (item) => setActivedItem(item);
 
     const handleOpenConv = () => {
         directToConv({
@@ -38,10 +35,10 @@ export const MessageResult = (props) => {
 
     useEffect(() => {
         const getMessageList = async () => {
-            if (activedItem && !activedItem.messageArray) {
+            if(activedItem && !activedItem.messageArray) {
                 const { conv_id, conv_type } = activedItem;
                 const catchedElementArray = catchMessageList.get(conv_id);
-                if (catchedElementArray) {
+                if(catchedElementArray) {
                     setActivedItem({
                         ...activedItem,
                         messageArray: catchedElementArray
@@ -72,49 +69,49 @@ export const MessageResult = (props) => {
     return (
         <div className="message-result ">
             {
-                result.length > 0 ?
-                    <div className="message-result__content">
-                        <div className="message-result__content--item-content customize-scroll-style">
+                result.length > 0 ? 
+                <div className="message-result__content">
+                    <div className="message-result__content--item-content customize-scroll-style">
+                        {
+                            result.map((item, index) => {
+                                const { conv_profile, conv_id, messageCount } = item;
+                                const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
+                                const nickName = (conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name)|| conv_id;
+        
+                                return (
+                                    <div  key={index} className={`message-result__content-item ${activedItem?.conv_id === conv_id ? 'is-active' : ''}`} onClick={() => handleItemClick(item)}>
+                                        <Avatar url={faceUrl}></Avatar>
+                                        <div className="message-result__content-item--text">
+                                            <span className="message-result__content-item--nick-name">{nickName}</span>
+                                            <span className="message-result__content-item--msg-text" >{`共${messageCount}条结果`}</span>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                    <div className="message-result__content--message-list ">
+                        <div className="message-result__content--message-list-content customize-scroll-style">
                             {
-                                result.map((item, index) => {
-                                    const { conv_profile, conv_id, messageCount } = item;
-                                    const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
-                                    const nickName = (conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name) || conv_id;
-
-                                    return (
-                                        <div key={index} className={`message-result__content-item ${activedItem?.conv_id === conv_id ? 'is-active' : ''}`} onClick={() => handleItemClick(item)}>
-                                            <Avatar  key={ faceUrl } url={faceUrl}></Avatar>
+                            activedItem?.messageArray?.map((item, index) => {
+                                const { message_elem_array, message_sender_profile: { user_profile_face_url, user_profile_nick_name} } = item as State.message;
+                                return (
+                                    <div key={index} className="message-result__content-item" >
+                                            <Avatar url={user_profile_face_url}></Avatar>
                                             <div className="message-result__content-item--text">
-                                                <span className="message-result__content-item--nick-name">{nickName}</span>
-                                                <span className="message-result__content-item--msg-text" >{`共${messageCount}条结果`}</span>
+                                                <span className="message-result__content-item--nick-name">{user_profile_nick_name}</span>
+                                                <span className="message-result__content-item--msg-text" dangerouslySetInnerHTML={{__html: hilightKeyWords( message_elem_array[0].text_elem_content)}} ></span>
                                             </div>
                                         </div>
-                                    )
+                                )
+                                
                                 })
                             }
                         </div>
-                        <div className="message-result__content--message-list ">
-                            <div className="message-result__content--message-list-content customize-scroll-style">
-                                {
-                                    activedItem?.messageArray?.map((item, index) => {
-                                        const { message_elem_array, message_sender_profile: { user_profile_face_url, user_profile_nick_name } } = item as State.message;
-                                        return (
-                                            <div key={index} className="message-result__content-item" >
-                                                <Avatar url={user_profile_face_url}   key={ user_profile_face_url }></Avatar>
-                                                <div className="message-result__content-item--text">
-                                                    <span className="message-result__content-item--nick-name">{user_profile_nick_name}</span>
-                                                    <span className="message-result__content-item--msg-text" dangerouslySetInnerHTML={{ __html: hilightKeyWords(message_elem_array[0].text_elem_content) }} ></span>
-                                                </div>
-                                            </div>
-                                        )
-
-                                    })
-                                }
-                            </div>
-                            <Button className="message-result__content--button" type="primary" onClick={handleOpenConv}>打开会话</Button>
-                        </div>
-                    </div> :
-                    <EmptyResult />
+                        <Button className="message-result__content--button" type="primary" onClick={handleOpenConv}>打开会话</Button>
+                    </div>
+                </div> :
+                <EmptyResult />
             }
         </div>
     )
