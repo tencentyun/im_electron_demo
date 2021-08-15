@@ -86,7 +86,6 @@ export const LoginContent = (): JSX.Element => {
         setUserID(val.toLocaleUpperCase())
     }
     const handleLoginClick = async () => {
-        console.log(111222333)
         getEncrptPwd({
             Pwd: password
         }).then(async getEncrptPwdRes => {

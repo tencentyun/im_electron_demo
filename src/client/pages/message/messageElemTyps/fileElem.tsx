@@ -6,7 +6,6 @@ import { shell } from 'electron'
 import { Icon, message as teaMessage } from "tea-component";
 import path from 'path';
 import os from 'os'
-import withMemo from "../../../utils/componentWithMemo";
 
 const FileElem = (props: any): JSX.Element => {
     const { message, element, index } = props
@@ -27,10 +26,7 @@ const FileElem = (props: any): JSX.Element => {
 
     const getFilePath = () => {
         const match = file_elem_url.match(/\/([\w|\.]+$)/)
-        if (message_is_from_self)
-            return path.resolve(file_elem_file_path)
-        else
-            return path.resolve(os.homedir(), '下载/', 'HuaRunIM/' + (match ? match[1] : ""))
+        return path.resolve(os.homedir(), 'Download/', 'HuaRunIM/' + (match ? match[1] : ""))
     }
 
     const calcuSize = () => {
@@ -143,4 +139,4 @@ const FileElem = (props: any): JSX.Element => {
     return item();
 }
 
-export default withMemo(FileElem);
+export default FileElem;

@@ -206,7 +206,7 @@ class IPC {
         this.win.close()
     }
     showDialog() {
-        child_process.exec(`start "" ${path.resolve(os.homedir(), '下载/', 'HuaRunIM/')}`);
+        child_process.exec(`start "" ${path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')}`);
     }
     mkdirsSync(dirname) {
         if (fs.existsSync(dirname)) {
@@ -220,7 +220,7 @@ class IPC {
     }
     downloadFilesByUrl(file_url) {
         try {
-            const downloadDicPath = path.resolve(os.homedir(), '下载/', 'HuaRunIM/')
+            const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
             this.mkdirsSync(downloadDicPath)
             let file_name
             let file_path
