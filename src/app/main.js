@@ -34,7 +34,7 @@ let trayIcon = nativeImage.createFromPath(
 let forceQuit = false;
 const downloadUrl = app.getPath("downloads");
 const progressStream = require("progress-stream");
-const env = 'prod'
+const env = 'development'
 let ipc;
 new TimMain({
   sdkappid: 1400529075
@@ -42,8 +42,8 @@ new TimMain({
 });
 
 crashReporter.start({
-                    uploadToServer:false 
-                  })
+  submitURL: 'http://oaim.uat.crbank.com.cn:30002/huarun/report',
+})
 
 // 设置系统托盘
 const setAppTray = () => {
@@ -88,7 +88,7 @@ const setAppTray = () => {
 let appTray;
 let appWindow;
 let toggle = false;
-function createWindow () {
+function createWindow() {
   // Create the browser window.
   Menu.setApplicationMenu(null);
   let mainWindow = new BrowserWindow({
@@ -166,7 +166,8 @@ function createWindow () {
       mainWindow.webContents.send("mainProcessMessage", false);
     }
   })
-  if (env === 'development') {
+
+  if (process.env?.NODE_ENV?.trim() === 'development') {
     mainWindow.loadURL(`http://localhost:3000`);
     // 打开调试工具
     mainWindow.webContents.openDevTools();
@@ -320,10 +321,10 @@ function createWindow () {
   // })
 
   //文件另存成
-  ipcMain.on("fileSave",function(event, fileUrl){
-    console.log("文件另存成原地址",fileUrl)
-    mainWindow.webContents.downloadURL(fileUrl)  
-  })  
+  ipcMain.on("fileSave", function (event, fileUrl) {
+    console.log("文件另存成原地址", fileUrl)
+    mainWindow.webContents.downloadURL(fileUrl)
+  })
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {
     //console.log("123", file);
@@ -391,7 +392,7 @@ function createWindow () {
     }
   });
 
-  ipcMain.on("OPENFILE", function (event, filename) {  
+  ipcMain.on("OPENFILE", function (event, filename) {
     const name = filename.filename;
     //console.log(name);
     const localUrl = path.join(process.cwd(), "/download/", name);
@@ -401,7 +402,7 @@ function createWindow () {
 }
 
 let timer;
-function changeWindow () {
+function changeWindow() {
   if (appWindow) {
     // 设置大小
     appWindow.setSize(1000, 650);
@@ -411,7 +412,7 @@ function changeWindow () {
     appWindow.setResizable(true);
   }
 }
-function reSizeWindow () {
+function reSizeWindow() {
   if (appWindow) {
     // 设置大小
     appWindow.setSize(460, 358);
@@ -421,7 +422,7 @@ function reSizeWindow () {
     appWindow.setResizable(false);
   }
 }
-function trayFlash () {
+function trayFlash() {
   if (appTray) {
     hasFlash = true;
 
@@ -436,14 +437,14 @@ function trayFlash () {
   }
 }
 
-function openWindow () {
+function openWindow() {
   if (appWindow) {
     appWindow.show();
   }
 }
 let num = 0;
 let hasFlash = false;
-function setTaryTitle () {
+function setTaryTitle() {
   num++;
   appTray.setTitle(num === 0 ? "" : `${num}`);
   appWindow.flashFrame(true);

@@ -1,7 +1,12 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack  = require('webpack');
 
-const APADDRESS =  process.env.huarun_config === 'prod' ?  'http://oaim.crbank.com.cn:30002/' : "http://oaim.uat.crbank.com.cn:30002/" //测试
+console.log('=============process env=======', process.env.NODE_ENV);
+
+console.log('=============process env huarun_config==========', process.env.HUARUN_ENV);
+
+const APADDRESS =  process.env.HUARUN_ENV === 'prod' ?  'http://oaim.crbank.com.cn:30002/' : "http://oaim.uat.crbank.com.cn:30002/" //测试
 
 module.exports = {
   resolve: {
@@ -16,6 +21,10 @@ module.exports = {
   devtool: 'source-map',
   module: {
     rules: [
+      {
+        test: /\.node$/,
+        loader: 'native-ext-loader'
+      },
       {
         test: /\.(js|ts)$/,
         exclude: /node_modules/,
@@ -46,10 +55,6 @@ module.exports = {
         use: [
           'file-loader',
         ],
-      },
-      {
-        test: /\.node$/,
-        loader: 'native-ext-loader'
       }
     ]
   },

@@ -32,7 +32,7 @@ class IPC {
     callWindow = null; // 通话窗口
     imWindowEvent = null; // 聊天窗口
     constructor(win) {
-        const env = 'prod';
+        const env =  process.env?.NODE_ENV?.trim();;
         const isDev = env === 'development';
         setPath(isDev);
         this.win = win;

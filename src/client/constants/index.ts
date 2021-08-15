@@ -74,7 +74,7 @@ export const SECRETKEY = '08349186ecd23fafaf7f98ca0116077e5b507fceac558e3dbd32f0
 
 // export const DEFAULT_USERID = '940928'; 
 // export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
-export const HISTORY_MESSAGE_COUNT = 100
+export const HISTORY_MESSAGE_COUNT = 20
 
 export const TIM_MASTER_URL_PORT = '30003';
 export const TIM_BREVIARY_URL_PORT = '30004/oaim';
@@ -121,8 +121,8 @@ type HuaRunConfig = {
     HUA_RUN_SYSTEMID: string
 }
 const getHuaRunConfig = (): HuaRunConfig => {
-    console.log('环境变量', process.env.huarun_env, process.env.NODE_ENV)
-    const env = 'prod'
+    console.log('环境变量', process.env.HUARUN_ENV, process.env.NODE_ENV)
+    const env = process.env.HUARUN_ENV.trim();
     return HUARUN_CONFIG[env]
 }
 export default getHuaRunConfig();
