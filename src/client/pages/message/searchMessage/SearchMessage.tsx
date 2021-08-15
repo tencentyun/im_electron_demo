@@ -70,8 +70,10 @@ export const SearchMessage = (props) => {
 
             const formatedContact = async ()=>{
                 const contactRes = await searchContactResult
+                console.log(contactRes,'contactRes')
                 const formatedData = contactRes.length > 0 ? contactRes.map(item => {
                     return {
+                        dep_name: item.Extra?.department_name || '',
                         conv_id: item.Uid,
                         conv_type: 1, // 默认都是c2c
                     }

@@ -144,15 +144,15 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       }).then(res => {
         if (res.data.error_code === 0) {
           console.log(res)
-          const { download_url } = res.data
+          const { upload_url } = res.data
           let fr = new FileReader();
           fr.readAsDataURL(fileObj);
           fr.addEventListener(
             "load",
             () => {
-              axios.put(download_url, convertBase64UrlToBlob(base64Data)).then((response) => {
-                const { download_url } = res.data
-                setVal(download_url)
+              axios.put(upload_url, convertBase64UrlToBlob(base64Data)).then((response) => {
+                const { upload_url } = res.data
+                setVal(upload_url)
                 setImgUrl('')
                 resolve(res.data)
                 message.success({

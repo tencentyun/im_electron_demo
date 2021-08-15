@@ -3,12 +3,12 @@ import React, { useEffect } from "react";
 import { downloadFilesByUrl } from "../../../utils/tools";
 import withMemo from "../../../utils/componentWithMemo";
 import path from 'path'
-
+import os from 'os'
 const PicElemItem = (props: any): JSX.Element => {
     const showPic = () => {
         try {
             const imageName = props.image_elem_orig_id.split('_').pop()
-            const p = path.resolve(process.resourcesPath + '/download/' + imageName)
+            const p = path.resolve(os.homedir(), '下载/','HuaRunIM/' + imageName)
             console.log(p)
             shell.openPath(p)
         } catch(e) {}
