@@ -13,7 +13,7 @@ import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
 import './message-input.scss';
 import { convertBase64UrlToBlob } from "../../utils/tools";
-import { SDKAPPID, TIM_BASE_URL } from '../../constants/index'
+import { SDKAPPID } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
 import { sendCustomMsg } from '../message/api'
 import { ipcRenderer, clipboard, nativeImage } from 'electron';

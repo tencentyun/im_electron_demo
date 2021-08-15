@@ -25,8 +25,7 @@ const FileElem = (props: any): JSX.Element => {
     }
 
     const getFilePath = () => {
-        const match = file_elem_url.match(/\/([\w|\.]+$)/)
-        return path.resolve(os.homedir(), 'Download/', 'HuaRunIM/' + (match ? match[1] : ""))
+        return path.resolve(os.homedir(), 'Download/', 'HuaRunIM/' + file_elem_file_name)
     }
 
     const calcuSize = () => {
@@ -103,9 +102,9 @@ const FileElem = (props: any): JSX.Element => {
         if (message_status === 1) return <div className="message-view__item--file___content____size">{calcuSize()} 加速上传中 {percentage}%</div>
         if (message_status === 2) return <div className="message-view__item--file___content____size">{calcuSize()}</div>
     }
-    const downloadPic = (url) => {
+    const downloadPic = (url,file_elem_file_name) => {
         try {
-            downloadFilesByUrl(url)
+            downloadFilesByUrl(url,file_elem_file_name)
         } catch (e) {
             teaMessage.error({
                 content: e
@@ -113,7 +112,7 @@ const FileElem = (props: any): JSX.Element => {
         }
     }
     const savePic = () => {
-        file_elem_url && downloadPic(file_elem_url)
+        file_elem_url && downloadPic(file_elem_url,file_elem_file_name)
     }
     const setHtml = async () => {
         const html = await getHandleElement()

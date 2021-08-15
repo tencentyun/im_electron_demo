@@ -282,7 +282,10 @@ export const MessageView = (props: Props): JSX.Element => {
         if(params.message &&  params.message.message_elem_array){
             const  fileUrl =  params.message.message_elem_array[0]
             if(fileUrl.image_elem_large_url || fileUrl.file_elem_url){
-                ipcRenderer.send('fileSave', fileUrl.image_elem_large_url || fileUrl.file_elem_url)
+                ipcRenderer.send('fileSave', {
+                    url: fileUrl.image_elem_large_url || fileUrl.file_elem_url,
+                    name: fileUrl.image_elem_orig_id || fileUrl.file_elem_file_name
+                })
             }
         }
     }

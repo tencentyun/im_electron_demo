@@ -218,7 +218,7 @@ class IPC {
             }
         }
     }
-    downloadFilesByUrl(file_url) {
+    downloadFilesByUrl({ url:file_url,name }) {
         try {
             const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
             this.mkdirsSync(downloadDicPath)
@@ -226,7 +226,7 @@ class IPC {
             let file_path
             let file_path_temp
             try {
-                file_name = url.parse(file_url).pathname.split('/').pop()
+                file_name = name
                 file_path = path.resolve(downloadDicPath, file_name)
                 file_path_temp = `${file_path}.tmp`
             } catch (err) {
