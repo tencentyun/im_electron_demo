@@ -32,41 +32,7 @@ export const GroupMemberListDrawer = (props: {
   const [visible, setShowState, defaultForm] =
     useDialog<GroupMemberListDrawerRecordsType>(dialogRef, {});
 
-  const [searchData, setSearchData] = useState(defaultForm.memberList)
-  const [searchText, setSearchText] = useState('') // 搜索文本
-
-  useEffect(() => {
-    setSearchData(defaultForm.memberList)
-  }, [defaultForm])
-  const ref = useRef({firstCall: true}); 
-  const [memberList, setMemberList] = useState([]);
-  const [nextSeq, setNextSeq] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [isEnd,setIsEnd] = useState(false)
-  const getMemberList = async (seq: number) => {
-    if(isEnd){
-      return
-    }
-    try {
-      setLoading(true);
-      const res = await getGroupMemberList({
-        groupId: defaultForm.groupId,
-        nextSeq: seq,
-      });
-      const {
-        group_get_memeber_info_list_result_info_array: userList,
-        group_get_memeber_info_list_result_next_seq: newNextSeq,
-      } = res;
-      if(newNextSeq === 0){
-        setIsEnd(true)
-      }
-      setMemberList((pre) => _.differenceBy([...pre, ...userList]));
-      setNextSeq(newNextSeq);
-    } catch (e) {
-      console.log(e);
-    }
-    setLoading(false);
-  };
+  const memberList = defaultForm.memberList;
 
   const onClose = () => {
     setShowState(false);
@@ -77,7 +43,9 @@ export const GroupMemberListDrawer = (props: {
       header: "",
       key: "member",
       render: (record: any) => {
+        const isAdmin = record.group_member_info_member_role === 2;
         const isOwner = record.group_member_info_member_role === 3;
+        const shouldShowTitle = isAdmin || isOwner;
         return (
           <div className="member-list-drawer--item">
             <Avatar
@@ -88,28 +56,14 @@ export const GroupMemberListDrawer = (props: {
             <span className="member-list-drawer--item__name">
               {record.group_member_info_nick_name || record.group_member_info_identifier}
             </span>
-            {isOwner && (
-              <span className="member-list-drawer--item__owner">群主</span>
+            {shouldShowTitle && (
+              <span className="member-list-drawer--item__owner">{ isOwner ? '群主' : '管理员'}</span>
             )}
           </div>
         );
       },
     },
   ];
-
-  const onScrollBottom = () => {
-    if (loading || nextSeq === 0) {
-      return;
-    }
-    getMemberList(nextSeq);
-  };
-
-  useEffect(() => {
-    if(ref.current.firstCall && visible) {
-      ref.current.firstCall = false;
-      getMemberList(0);
-    }
-  }, [visible]);
 
   return (
     <Drawer
@@ -135,7 +89,6 @@ export const GroupMemberListDrawer = (props: {
             virtualizedOptions: {
               height,
               itemHeight: 60,
-              onScrollBottom,
             },
           }),
         ]}

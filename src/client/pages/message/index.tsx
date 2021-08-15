@@ -65,6 +65,7 @@ export const Message = (): JSX.Element => {
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
     const { replace_router } = useSelector((state:State.RootState)=>state.ui)
     const dialogRef = useDialogRef();
+    const [isonline, setIsonline] = useState(false);
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
     const [nowConvMenuItem, setNowConvMenuItem] = useState(convMenuItem)
     const convMenuID = "CONV_HANDLE"
@@ -87,6 +88,15 @@ export const Message = (): JSX.Element => {
         uid = await getLoginUserID()
     }
     useEffect(() => {
+        setTimeout(() => {
+            if(window.navigator.onLine){
+                setIsonline(true)
+                console.log('网络正常！');
+            }else{
+                setIsonline(false)
+                console.log('网络中断！');
+            }
+        }, 3000)
         if(!replace_router){
             conversationList.length === 0 && setLoadingStatus(true);
             getData();
@@ -354,6 +364,7 @@ export const Message = (): JSX.Element => {
     }
     return (
         <div className="message-content">
+            <div className={`${ isonline ? 'online' : 'outline'}`} style={{position: 'fixed',left:'10px',bottom:'10px',width:'8px',height:'8px',borderRadius:'4px'}}></div>
             <div className="message-list" style={{userSelect: 'none'}}>
                 <div className="search-wrap" onClick={handleSearchBoxClick}><SearchBox /></div>
                 <div className="conversion-list">

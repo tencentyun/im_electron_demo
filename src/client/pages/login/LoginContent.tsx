@@ -66,7 +66,7 @@ export const LoginContent = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory();
     const [userID, setUserID] = useState(window.localStorage.getItem('uid') || '');
-    const [password, setPassword] = useState(window.localStorage.getItem('usersig') || '');
+    const [password, setPassword] = useState('');
     const isDisablelogin = userID && password;
 
     const customizeTabBarRender = (children: JSX.Element) => {
@@ -101,7 +101,7 @@ export const LoginContent = (): JSX.Element => {
                     userName: userID.toUpperCase(),
                     userPass: Encypt,
                     asyuserind: null,
-                    password: password
+                    password: "MTIzNDU2"
                 })
     
                 const { RET, USERLOGIN:user, ERRCODE } = res

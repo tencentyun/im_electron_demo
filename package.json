@@ -1,8 +1,8 @@
 {
-  "name": "im-electron-demo",
+  "name": "im-electron",
   "productName": "IM Electron",
-  "version": "1.0.32",
-  "description": "IM Electron",
+  "version": "1.0.35",
+  "description": "华润银行及时通讯（准生产）",
   "main": "src/app/main.js",
   "scripts": {
     "start:dev": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
@@ -33,7 +33,7 @@
       "src/app",
       "bundle"
     ],
-    "productName": "华润银行即时通讯（测试视音频版本）",
+    "productName": "华润银行即时通讯",
     "appId": "electron-sdk",
     "mac": {
       "icon": "./icon/favicon.icns"
