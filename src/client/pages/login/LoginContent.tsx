@@ -65,7 +65,7 @@ export const LoginContent = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory();
     const [userID, setUserID] = useState(window.localStorage.getItem('uid') || '');
-    const [password, setPassword] = useState(window.localStorage.getItem('usersig') || '');
+    const [password, setPassword] = useState('');
     const isDisablelogin = userID && password;
 
     const customizeTabBarRender = (children: JSX.Element) => {
@@ -91,22 +91,22 @@ export const LoginContent = (): JSX.Element => {
         }).then(async getEncrptPwdRes => {
             const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
             console.log(Encypt)
-            getUserLoginInfo({
-                systemid: HUA_RUN_SYSTEMID,
-                userName: userID.toUpperCase(),
-                userPass: Encypt,
-                asyuserind: null,
-                password: password
-            }).then(async res => {
-                console.log(res)
-                const { RET, USERLOGIN, ERRCODE } = res
-                if (RET === 'FALSE') {
-                    message.error({
-                        content: "登录失败：" + errType(ERRCODE),
-                    })
-                } else {
+            // getUserLoginInfo({
+            //     systemid: HUA_RUN_SYSTEMID,
+            //     userName: userID.toUpperCase(),
+            //     userPass: Encypt,
+            //     asyuserind: null,
+            //     password: "MTIzNDU2"
+            // }).then(async res => {
+            //     console.log(res)
+            //     const { RET, USERLOGIN, ERRCODE } = res
+            //     if (RET === 'FALSE') {
+            //         message.error({
+            //             content: "登录失败：" + errType(ERRCODE),
+            //         })
+            //     } else {
                     //const USERLOGIN = USERLOGIN
-                    // const USERLOGIN = userID
+                    const USERLOGIN = userID
                     const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
                     const params: loginParam = {
                         userID: USERLOGIN.toUpperCase(),
@@ -130,13 +130,13 @@ export const LoginContent = (): JSX.Element => {
                         dispatch(changeFunctionTab('message'));
                         history.replace('/home/message');
                     }, USERLOGIN)
-                }
-            }).catch(err => {
-                const { ERRCODE } = err.data
-                message.error({
-                    content: "登录失败：" + err.message || errType(ERRCODE),
-                })
-            })
+            //     }
+            // }).catch(err => {
+            //     const { ERRCODE } = err.data
+            //     message.error({
+            //         content: "登录失败：" + err.message || errType(ERRCODE),
+            //     })
+            // })
         }).catch(err => {
             message.error({
                 content: "登录失败：" + err.message || err.ErrorInfo,

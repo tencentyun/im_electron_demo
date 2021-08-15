@@ -40,7 +40,6 @@ type Info = {
 };
 
 export const MessageInfo = (props: State.conversationItem): JSX.Element => {
-  console.log("人员",props)
   const { conv_id, conv_type, conv_profile } = props;
   const [callType, setCallType] = useState(0)
   const [callInfo, setCallInfo] = useState({
