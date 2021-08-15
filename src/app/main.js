@@ -304,6 +304,12 @@ function createWindow () {
   //   console.log(data, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
   //   mainWindow.webContents.send('UPLOADPROGRESS', data)
   // })
+
+  //文件另存成
+  ipcMain.on("fileSave",function(event, fileUrl){
+    console.log("文件另存成原地址",fileUrl)
+    mainWindow.webContents.downloadURL(fileUrl)  
+  })  
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {
     //console.log("123", file);

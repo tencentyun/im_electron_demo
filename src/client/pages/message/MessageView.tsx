@@ -54,7 +54,8 @@ type Props = {
     convId: string;
 }
 
-const RIGHT_CLICK_MENU_LIST = [{
+const RIGHT_CLICK_MENU_LIST = [
+{
     id: 'revoke',
     text: '撤回'
 },
@@ -69,6 +70,10 @@ const RIGHT_CLICK_MENU_LIST = [{
 {
     id: 'transimit',
     text: '转发'
+},
+{
+    id: 'fileSave',
+    text: '另存为'
 },
 // {
 //     id: 'reply',
@@ -272,6 +277,12 @@ export const MessageView = (props: Props): JSX.Element => {
         setSeletedMessage([message])
     }
 
+    const handleFileSave = (params) => {
+        console.log("文件另存为",params.message.message_elem_array)
+        const  fileUrl =  params.message.message_elem_array[0]
+        ipcRenderer.send('fileSave', fileUrl.image_elem_large_url || fileUrl.file_elem_url)
+    }
+
     const handleReplyMsg = (params) => {
         const { message } = params;
         const { message_sender, message_sender_profile } = message
@@ -390,6 +401,9 @@ export const MessageView = (props: Props): JSX.Element => {
                 break;
             case 'transimit':
                 handleTransimitMsg(data);
+                break;
+            case 'fileSave':
+                handleFileSave(data);
                 break;
             case 'reply':
                 handleReplyMsg(data);
@@ -514,9 +528,10 @@ export const MessageView = (props: Props): JSX.Element => {
         const isEmoji = elem_type === 1 || onIsCustEmoji(elem_type, custom_elem_data) || onIsIncludeImg(elem_type, text_elem_content)
         const message_is_from_self = currMenuMessage.message_is_from_self
         let menuData = RIGHT_CLICK_MENU_LIST
-        if (elem_type !== 4) {
+        if (elem_type !== 4 && !isEmoji) {
             // 非文件过滤打开文件夹按钮
-            menuData = menuData.filter(item => item.id !== 'openFile')
+            menuData = menuData.filter(item =>  item.id !== 'fileSave')
+            menuData = menuData.filter(item =>  item.id !== 'openFile')
         }
         if (!isEmoji) {
             // 过滤添加到表情MenuItem
