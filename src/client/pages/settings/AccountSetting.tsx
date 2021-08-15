@@ -12,7 +12,7 @@ import { clearHistory } from '../../store/actions/message';
 
 const { ipcRenderer } = require("electron");
 
-import { version} from '../../../../package.json'
+import { version, description} from '../../../../package.json'
 export const AccountSetting = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -54,6 +54,10 @@ export const AccountSetting = (): JSX.Element => {
       </header>
       <section className="connet-section">
         <div className="setting-content">
+        <div className="setting-item">
+            <span>版本名称</span>
+            <span>{description}</span>
+          </div>
           <div className="setting-item">
             <span>版本信息</span>
             <span>{version}</span>

@@ -138,7 +138,6 @@ class IPC {
             this.callWindow.show();
             this.callWindow.webContents.send('pass-call-data', params);
             isDev && this.callWindow.webContents.openDevTools();
-
             this.callWindow.on('close', () => {
                 event.reply(CALL_WINDOW_CLOSE_REPLY);
                 this.createNewWindow(isDev);
