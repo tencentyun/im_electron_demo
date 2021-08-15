@@ -166,7 +166,8 @@ function createWindow() {
       mainWindow.webContents.send("mainProcessMessage", false);
     }
   })
-  if (env === 'development') {
+
+  if (process.env?.NODE_ENV?.trim() === 'development') {
     mainWindow.loadURL(`http://localhost:3000`);
     // 打开调试工具
     mainWindow.webContents.openDevTools();
