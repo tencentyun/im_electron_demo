@@ -1,7 +1,8 @@
 import axios from 'axios'
-import { TIM_BASE_URL, SDKAPPID } from '../constants/index'
 // const { userId,userSig } = useSelector((state: State.RootState) => state.loginUser);
-
+import getHuaRunConfig from '../constants/index'
+import { SDKAPPID } from '../constants/index'
+const { TIM_BASE_URL }  = getHuaRunConfig
 const Lead = ['ZONGSHAOJUN', 'MALIMIN', 'TIANYU', 'XUYUHUA9', 'CHENFANGYUN', 'LUOLING41', 'CHENGSHAOKAI']
 // 获取全部部门
 const getAlldepartment = (data) => {

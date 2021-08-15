@@ -1,5 +1,5 @@
 import { emojiMap } from "../pages/message/emoji-map"
-import { EMOJIURL } from '../constants/index'
+import getHuaRunConfig from '../constants/index'
 /** 传入messageBody（群系统消息SystemMessage，群提示消息GroupTip除外）
  * payload = {
  *  msgType: 'TIMTextElem',
@@ -31,7 +31,7 @@ export function decodeText (text) {
           if (emojiMap[_emoji]) {
             renderDom.push({
               name: 'img',
-              src: EMOJIURL + emojiMap[_emoji]
+              src: getHuaRunConfig.EMOJIURL + emojiMap[_emoji]
             })
             temp = temp.substring(right + 1)
           } else {

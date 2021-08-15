@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./index.scss";
 import { Card, H3, Button } from "tea-component";
 import loginBg from '../../assets/icon/login-bg.png';
-import { PUBBLIC_ACCOUNTS_URL } from '../../constants/index'
+import getHuaRunConfig from '../../constants/index'
 export const OfficialComponent = (): JSX.Element => {
   const [isShowIframe, setIsShowIframe] = useState(false)
   return (
@@ -29,13 +29,13 @@ export const OfficialComponent = (): JSX.Element => {
       <div className="relationship-content">
         <div className="loading-container">
           {
-            isShowIframe?<iframe src={PUBBLIC_ACCOUNTS_URL}></iframe>: ''
+            isShowIframe?<iframe src={getHuaRunConfig.PUBBLIC_ACCOUNTS_URL}></iframe>: ''
           }
         </div>
       </div>
     </div>: <div className="wrap_iframe">
             {
-              isShowIframe?<iframe src={PUBBLIC_ACCOUNTS_URL}></iframe>: ''
+              isShowIframe?<iframe src={getHuaRunConfig.PUBBLIC_ACCOUNTS_URL}></iframe>: ''
             }
           </div>
     }
