@@ -7,7 +7,7 @@ import './index.scss'
 import "cropperjs/dist/cropper.css"
 import { dataURLtoBlob, convertBase64UrlToBlob } from '../../utils/tools'
 import { SDKAPPID } from '../../constants/index'
-import { TIM_BASE_URL } from '../../constants/index'
+import getHuaRunConfig from '../../constants/index'
 
 const imgStyle = { width: '60px', height: '60px', cursor: 'pointer' }
 
@@ -133,7 +133,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   const handleUpload = (base64Data) => {
     return new Promise((resolve, reject) => {
       setUploading(true)
-      axios.post(`${TIM_BASE_URL}/huarun/im_cos_msg/pre_sig`, {
+      axios.post(`${getHuaRunConfig.TIM_BASE_URL}/huarun/im_cos_msg/pre_sig`, {
         sdkappid: SDKAPPID,
         uid: uid,
         userSig: userSig,
