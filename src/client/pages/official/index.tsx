@@ -1,32 +1,69 @@
-import React, { useState } from "react";
+import React, { useState, FC, useEffect} from "react";
 import "./index.scss";
 import getHuaRunConfig from '../../constants/index'
 import emil from '../../assets/icon/emil.png';
 import { Tabs, Card } from 'antd';
 const { TabPane } = Tabs;
+interface UserItemProps{
+  addTabs?:Function;
+}
+
+
+export const MokeDemo: FC<UserItemProps> = ({addTabs}): JSX.Element => {
+  return(
+          <div className="tabs-index-class-main">
+          <Card  style={{ width: 300,cursor: "pointer" }}>
+              <div className='class-mian' onClick={()=> addTabs()}>
+                  <div>
+                      <img className='class-img' src={emil}></img>
+                  </div>
+                  <div className='class-text'>
+                        <div>邮箱</div>
+                        <div className="class-emil">COREMAIL邮箱</div>
+                  </div>
+              </div>
+          </Card>
+      </div>
+  )
+}
+
+
+export const Ifroms : FC<UserItemProps> = ({}) :JSX.Element => {
+  return(
+    <iframe  style={{width:'100%',height:'calc(100vh - 100px)'}} src="https://crmail.crc.com.cn/coremail/index.jsp"></iframe>
+  )
+}
+let defaultActiveKey = "1"
 export const OfficialComponent = (): JSX.Element => {
-  const [isShowIframe, setIsShowIframe] = useState(false)
-  const  addTabs = () => {}
+  const [panes, setPanes] = useState([])
+  const [defaultActiveKey, setDefaultActiveKeys] = useState("1")
+  const  addTabs = () => {
+    setDefaultActiveKeys('2')
+    setPanes([{title:"工作台",key:"1",closable:false,content:<MokeDemo addTabs={addTabs}></MokeDemo>},{title:"邮箱",key:"2",closable:true,content:<Ifroms></Ifroms>}] )
+  }
+
+  const  deletTabs = ()=> {
+    setDefaultActiveKeys('1')
+    setPanes([{title:"工作台",key:"1",closable:false,content:<MokeDemo addTabs={addTabs}></MokeDemo>}])
+  }
+
+  useEffect (()=>{
+      setPanes([{title:"工作台",key:"1",closable:false,content:<MokeDemo addTabs={addTabs}></MokeDemo>}])
+  },[])
+
+
   return (
     <>
     {
-      <Tabs type="card">
-      <TabPane tab="工作台" key="1" >
-        <div className="tabs-index-class-main">
-            <Card  style={{ width: 300,cursor: "pointer" }}>
-                <div className='class-mian' onClick={addTabs}>
-                    <div>
-                        <img className='class-img' src={emil}></img>
-                    </div>
-                    <div className='class-text'>
-                          <div>邮箱</div>
-                          <div className="class-emil">COREMAIL邮箱</div>
-                    </div>
-                </div>
-            </Card>
-        </div>
-      </TabPane>
-      </Tabs>
+      <div  style={{padding:'10px'}}>
+              <Tabs type="editable-card" activeKey={defaultActiveKey} hideAdd onEdit={deletTabs} onChange={(data)=>{setDefaultActiveKeys(data)}}>
+                      {panes.map(pane => (
+                        <TabPane tab={pane.title} key={pane.key}  closable={pane.closable}>
+                            {pane.content}
+                        </TabPane>
+                      ))}
+                  </Tabs>
+      </div>
     //   !isShowIframe?<div className="relationship">
     //   {/* 左边导航 */}
     //   <div className="relationship-nav">

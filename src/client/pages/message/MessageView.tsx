@@ -281,8 +281,8 @@ export const MessageView = (props: Props): JSX.Element => {
         console.log("文件另存为", params)
         if(params.message &&  params.message.message_elem_array){
             const  fileUrl =  params.message.message_elem_array[0]
-            if(fileUrl.image_elem_large_url || fileUrl.file_elem_url){
-                ipcRenderer.send('fileSave', fileUrl.image_elem_large_url || fileUrl.file_elem_url)
+            if(fileUrl.image_elem_large_url || fileUrl.file_elem_url || fileUrl.video_elem_video_url){
+                ipcRenderer.send('fileSave', fileUrl.image_elem_large_url || fileUrl.file_elem_url || fileUrl.video_elem_video_url)
             }
         }
     }
@@ -528,11 +528,12 @@ export const MessageView = (props: Props): JSX.Element => {
     // console.warn('查看当前会话所有消息',messageList)
     const getMenuItemData = () => {
         const { elem_type, custom_elem_data = '', text_elem_content } = currMenuMessage.message_elem_array[0];
+        
         // elemtype:1图片, 3 自定义消息为CUST_EMOJI类型
         const isEmoji = elem_type === 1 || onIsCustEmoji(elem_type, custom_elem_data) || onIsIncludeImg(elem_type, text_elem_content)
         const message_is_from_self = currMenuMessage.message_is_from_self
         let menuData = RIGHT_CLICK_MENU_LIST
-        if (elem_type !== 4 && !isEmoji) {
+        if ((elem_type !== 4 && elem_type !== 9) && !isEmoji) {
             // 非文件过滤打开文件夹按钮
             menuData = menuData.filter(item =>  item.id !== 'fileSave')
             menuData = menuData.filter(item =>  item.id !== 'openFile')

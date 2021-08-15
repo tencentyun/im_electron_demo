@@ -18,7 +18,7 @@
 .conversion-list {
     overflow-y: overlay;
     overflow-x: hidden;
-    flex: 1;   
+    height: calc(100vh - 92px);
     &:hover {
         &::-webkit-scrollbar {
             width:8px;
