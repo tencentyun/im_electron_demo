@@ -5,7 +5,7 @@ import { ResultItem } from './ResultItem';
 
 import './contacter-result.scss';
 
-export const ContacterResult = (props) => {
+export const ContactResult = (props) => {
     const { result, onClose } = props;
     const directToMsgPage = useMessageDirect();
 
@@ -24,14 +24,14 @@ export const ContacterResult = (props) => {
                     <div className="customize-scroll-style">
                         {
                             result.map((item, index) => {
-                                const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = item.friend_profile_user_profile;
+                                const { user_profile_face_url, user_profile_nick_name,user_profile_identifier } = item.conv_profile;
                                 return (
                                     <ResultItem
                                         key={index}
                                         faceUrl={user_profile_face_url}
                                         nickName={user_profile_nick_name}
-                                        userID={user_profile_identifier}
-                                        onClick={() => handleDirect(item.friend_profile_user_profile)}
+                                        userID = { user_profile_identifier }
+                                        onClick={() => handleDirect(item.conv_profile)}
                                     />
                                 )
                             }
