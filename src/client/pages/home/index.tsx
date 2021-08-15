@@ -53,8 +53,6 @@ const navList = [
 export const Home = (): JSX.Element => {
     const { function_tab } = useSelector((state: State.RootState) => state.ui);
     let { isShow, imgs, index: imgPreViewUrlIndex, isCanOpenFileDir } = useSelector((state: State.RootState) => state.imgViewer);
-
-
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const location = useLocation();
     const path = location?.pathname;

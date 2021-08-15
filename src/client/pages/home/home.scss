@@ -2,6 +2,14 @@
 //     @return `../../assets/icon/${$name}.png`
 // }
 
+.online {
+    background: green;
+}
+
+.outline {
+    background: red;
+}
+
 .home {
     flex: 1;
     overflow:hidden;
