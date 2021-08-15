@@ -40,9 +40,10 @@ import {
 import { setIsLogInAction, userLogout } from "./store/actions/login";
 import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite, updateInviteList } from "./utils/callWindowTools";
 import { updateCallingStatus } from "./store/actions/ui";
-import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from "./constants";
+// import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from "./constants";
 import { ipcRenderer } from "electron";
 import { reportError } from "./utils/orgin";
+import getHuaRunConfig from "./constants";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 
@@ -87,8 +88,8 @@ export const App = () => {
                 longconnection_address_array: [
                   {
                     // server_address_ip: "oaim.crbank.com.cn", // ip 生产
-                    server_address_ip: SERVERr_ADDRESS_IP,
-                    server_address_port: SERVERr_ADDRESS_PORT, // 端口
+                    server_address_ip: getHuaRunConfig.SERVERr_ADDRESS_IP,
+                    server_address_port: getHuaRunConfig.SERVERr_ADDRESS_PORT, // 端口
                   },
                 ],
                 server_public_key:

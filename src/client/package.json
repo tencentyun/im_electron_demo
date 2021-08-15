@@ -4,8 +4,14 @@
   "description": "IM client",
   "main": "app.tsx",
   "scripts": {
-    "build:react": "cross-env NODE_ENV=production webpack --config webpack.prod.config.js --mode production",
-    "dev:react": "cross-env NODE_ENV=development webpack server --config webpack.react.config.js --mode development"
+    "build:react:prod": "cross-env NODE_ENV=production huarun_env=prod npm run build",
+    "build:react:test": "cross-env NODE_ENV=production huarun_env=test npm run build",
+    "build:react:dev": "cross-env NODE_ENV=production huarun_env=dev npm run build",
+    "dev:react": "cross-env NODE_ENV=development huarun_env=dev npm run dev",
+    "prod:react": "cross-env NODE_ENV=production huarun_env=prod npm run dev",
+    "test:react": "cross-env NODE_ENV=production huarun_env=test npm run dev",
+    "dev": " webpack server --config webpack.react.config.js --mode development",
+    "build": "webpack --config webpack.prod.config.js --mode production"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
