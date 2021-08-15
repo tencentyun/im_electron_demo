@@ -278,9 +278,13 @@ export const MessageView = (props: Props): JSX.Element => {
     }
 
     const handleFileSave = (params) => {
-        console.log("文件另存为",params.message.message_elem_array)
-        const  fileUrl =  params.message.message_elem_array[0]
-        ipcRenderer.send('fileSave', fileUrl.image_elem_large_url || fileUrl.file_elem_url)
+        console.log("文件另存为", params)
+        if(params.message &&  params.message.message_elem_array){
+            const  fileUrl =  params.message.message_elem_array[0]
+            if(fileUrl.image_elem_large_url || fileUrl.file_elem_url){
+                ipcRenderer.send('fileSave', fileUrl.image_elem_large_url || fileUrl.file_elem_url)
+            }
+        }
     }
 
     const handleReplyMsg = (params) => {
