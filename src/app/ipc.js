@@ -1,4 +1,4 @@
-const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
+const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN,CHECK_FILE_EXIST, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
 const { ipcMain, BrowserWindow, dialog } = require('electron')
 const { screen } = require('electron')
 const fs = require('fs')
@@ -36,6 +36,15 @@ class IPC {
         const isDev = env === 'development';
         setPath(isDev);
         this.win = win;
+        ipcMain.handle(RENDERPROCESSCALL, async (event, data) => {
+            const { type, params } = data;
+            console.log("get message from render process", event.processId, data)
+            switch (type) {
+                case CHECK_FILE_EXIST:
+                    return await this.checkFileExist(params);
+            }
+            
+        })
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             console.log("get message from render process", event.processId, data)
             const { type, params } = data;
@@ -61,6 +70,7 @@ class IPC {
                 case SELECT_FILES:
                     this.selectFiles(event, params);
                     break;
+                
             }
         });
 
@@ -68,7 +78,17 @@ class IPC {
         this.createNewWindow(isDev);
         this.eventListiner(isDev);
     }
-
+    async checkFileExist(path){
+        return new Promise((resolve)=>{
+            fs.access(path,(err=>{
+                if(err){
+                    resolve(false)
+                }else{
+                    resolve(true)
+                }
+            }))
+        })
+    }
     eventListiner(isDev) {
         const screenSize = getSrceenSize();
         // 当作为接收方，接受电话后，更改窗口尺寸。

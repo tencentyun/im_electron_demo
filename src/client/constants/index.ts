@@ -76,7 +76,8 @@ export const SECRETKEY = '08349186ecd23fafaf7f98ca0116077e5b507fceac558e3dbd32f0
 // export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
 export const HISTORY_MESSAGE_COUNT = 100
 
-
+export const TIM_MASTER_URL_PORT = '30003';
+export const TIM_BREVIARY_URL_PORT = '30004/oaim';
 
 const HUARUN_CONFIG = {
     // 开发环境
@@ -87,7 +88,7 @@ const HUARUN_CONFIG = {
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
-        HUA_RUN_SYSTEMID:'P001'
+        HUA_RUN_SYSTEMID: 'P001'
     },
     // 测试环境
     'test': {
@@ -97,7 +98,7 @@ const HUARUN_CONFIG = {
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
-        HUA_RUN_SYSTEMID:'P001'
+        HUA_RUN_SYSTEMID: 'P001'
     },
     // 正是环境
     'prod': {
@@ -107,7 +108,7 @@ const HUARUN_CONFIG = {
         SERVERr_ADDRESS_IP: 'oaim.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
-        HUA_RUN_SYSTEMID:'P001'
+        HUA_RUN_SYSTEMID: 'P001'
     }
 }
 type HuaRunConfig = {
@@ -119,8 +120,8 @@ type HuaRunConfig = {
     HUA_RUN_LOGIN_TEST: string,
     HUA_RUN_SYSTEMID: string
 }
-const getHuaRunConfig = ():HuaRunConfig=> {
-    console.log(process.env.huarun_env,212312312312321,process.env.NODE_ENV)
+const getHuaRunConfig = (): HuaRunConfig => {
+    console.log('环境变量', process.env.huarun_env, process.env.NODE_ENV)
     const env = process.env.huarun_env
     return HUARUN_CONFIG[env]
 }
