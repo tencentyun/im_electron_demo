@@ -1,5 +1,6 @@
 import { HISTORY_MESSAGE_COUNT } from "../../constants";
 import timRenderInstance from "../../utils/timRenderInstance";
+import { sortBy } from 'lodash';
 
 type SendMsgParams<T> = {
   convId: string;
@@ -526,6 +527,19 @@ export const getGroupMemberList = async (params: {
   }
   return {} as any;
 };
+
+export const getAllGroupMemberList = async ({groupId, seq, resultArray}) : Promise<{
+  group_member_info_identifier: string;
+}[]> => {
+  const res = await getGroupMemberList({groupId, nextSeq: seq});
+  const {
+    group_get_memeber_info_list_result_info_array: userList,
+    group_get_memeber_info_list_result_next_seq: newNextSeq,
+  } = res;
+  if(newNextSeq !== 0) return getAllGroupMemberList({groupId, seq: newNextSeq, resultArray: [...resultArray, ...userList]});
+  const allMemberList = [...resultArray, ...userList];
+  return sortBy(allMemberList, (item) => -item.group_member_info_member_role);
+}
 
 export const getGroupMemberInfoList = async (params: {
   groupId: string;

@@ -16,7 +16,7 @@ import { AddMemberRecordsType,
   AddGroupMemberDialog } from '../../../components/pull/pull'
 
 import { GroupMemberBubble } from "./GroupMemberBubble";
-import { getLoginUserID, getGroupMemberList} from '../api';
+import { getLoginUserID, getGroupMemberList, getAllGroupMemberList} from '../api';
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
 
 export const GroupMember = (props: {
@@ -35,21 +35,22 @@ export const GroupMember = (props: {
     memberCount
   } = props;
 
-  const sortId = (a, b) => {
-    return a.group_member_info_member_role-b.group_member_info_member_role
-  };
+  const [userList, setUserList] = useState([]);
 
-  // 获取群成员列表
-  const { value, loading, retry } = useAsyncRetryFunc(async () => {
-      return await getGroupMemberList({
-        groupId,
-        nextSeq: 0,
-      })
+  const getAllMemberList = async () => {
+    const res = await getAllGroupMemberList({
+      groupId,
+      seq: 0,
+      resultArray: []
+    });
+
+    setUserList(res);
+  }
+
+  useEffect(() => {
+    getAllMemberList();
   }, []);
-  console.log('3344',value?.group_get_memeber_info_list_result_info_array)
-  const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
-  console.log('3344',userList)
-  userList.sort(sortId)
+
   const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();  
   // const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
   const popupContainer = document.getElementById("messageInfo");
@@ -135,9 +136,9 @@ export const GroupMember = (props: {
           {userList.length ? (
             <span
               className="group-member--title__right"
-              onClick={() => dialogRef.current.open({ groupId })}
+              onClick={() => dialogRef.current.open({ memberList: userList })}
             >
-              <span style={{ marginRight: "4px" }}>{memberCount}人</span>
+              <span style={{ marginRight: "4px" }}>{userList.length}人</span>
               <a>查看</a>
             </span>
           ) : (
@@ -145,7 +146,7 @@ export const GroupMember = (props: {
           )}
         </div>
         <div className="group-member--avatar">
-          {JSON.parse(JSON.stringify(userList))?.reverse().slice(0, 15)?.map((v, index) => (
+          {JSON.parse(JSON.stringify(userList))?.slice(0, 15)?.map((v, index) => (
             <div
               className="group-member--avatar-box"
               key={`${v.group_member_info_face_url}-${index}`}
@@ -221,11 +222,11 @@ export const GroupMember = (props: {
       />
       <DeleteGroupMemberDialog
         dialogRef={deleteMemberDialogRef}
-        onSuccess={() => retry()}
+        onSuccess={() => getAllMemberList()}
       />
       <AddGroupMemberDialog
         dialogRef={addMemberDialogRef}
-        onSuccess={() => retry()}
+        onSuccess={() => getAllMemberList()}
       />
     </>
   );

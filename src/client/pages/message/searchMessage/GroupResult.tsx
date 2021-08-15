@@ -49,6 +49,7 @@ export const GroupResult = (props) => {
                                     faceUrl={group_detial_info_face_url}
                                     nickName={group_detial_info_group_name || group_base_info_group_id}
                                     onClick={() => handleItemClick(item)}
+                                    groupID = { group_base_info_group_id }
                                 />
                             )
                         })
