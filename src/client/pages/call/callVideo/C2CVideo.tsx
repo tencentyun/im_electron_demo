@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Avatar } from '../../../components/avatar/avatar';
+import { CallAvatar } from '../../../components/callAvatar';
 import {
     TRTCVideoFillMode,
     TRTCVideoRotation,
@@ -59,7 +59,7 @@ export const C2Cvideo = (props) => {
                         <div className="c2c-content--remote" ref={remoteViewRef} />
                     </React.Fragment>
                 ) : <div className="c2c-content--voice-call">
-                    <Avatar url={faceUrl} nickName={nickName} size={"large"}/>
+                    <CallAvatar url={faceUrl} nickName={nickName} key={faceUrl} size={"large"}/>
                     <span className="c2c-content--voice-call__nick-name">{nickName}</span>
                     <span className="c2c-content--voice-call__text"> {isUserEntering ? '正在通话中...' : '等待对方加入...'}</span>
                 </div>

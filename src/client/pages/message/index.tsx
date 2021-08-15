@@ -345,9 +345,7 @@ export const Message = (): JSX.Element => {
         return <Myloader />
     }
 
-    if (currentSelectedConversation === null ||  currentSelectedConversation === undefined) {
-        return <EmptyResult contentText="暂无会话" />
-    }
+    
     console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
     for (var i=0;i< conversationList.length;i++){
         if(conversationList[i].conv_id === localStorage.getItem("uid") && localStorage.getItem("myhead")){

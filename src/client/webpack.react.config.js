@@ -1,7 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const APADDRESS = "http://oaim.crbank.com.cn:30002/" //生产
-// const APADDRESS = "http://oaim.uat.crbank.com.cn:30002/" //测试
+// const APADDRESS = "http://oaim.crbank.com.cn:30002/" //生产
+const APADDRESS = "http://oaim.uat.crbank.com.cn:30002/" //测试
 module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],

@@ -52,9 +52,9 @@ const navList = [
 
 export const Home = (): JSX.Element => {
     const { function_tab } = useSelector((state: State.RootState) => state.ui);
-  let { isShow,imgs,index:imgPreViewUrlIndex,isCanOpenFileDir } = useSelector((state: State.RootState) => state.imgViewer);
+    let { isShow, imgs, index: imgPreViewUrlIndex, isCanOpenFileDir } = useSelector((state: State.RootState) => state.imgViewer);
 
-    
+
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const location = useLocation();
     const path = location?.pathname;
@@ -83,9 +83,9 @@ export const Home = (): JSX.Element => {
     useEffect(() => {
         dispatch(changeFunctionTab(currentId))
     }, [])
-    console.log("userId:",userId)
+    console.log("userId:", userId)
     return <div className="home">
-                   <ImgViewer show={isShow} isCanOpenFileDir={isCanOpenFileDir} onClose={handleClose} url={imgs} index={imgPreViewUrlIndex}></ImgViewer>
+        <ImgViewer show={isShow} isCanOpenFileDir={isCanOpenFileDir} onClose={handleClose} url={imgs} index={imgPreViewUrlIndex}></ImgViewer>
         <div className="nav">
             {/* 头像以及个人信心 */}
             <Profile />
@@ -108,19 +108,18 @@ export const Home = (): JSX.Element => {
                 <Link to="/home/setting" className={`nav--link settings ${addActiveClass('settings')}`} onClick={() => handleLinkClick('settings')} />
             </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column',flex: 1 }}>
-            {/* <ToolsBar></ToolsBar> */}
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             {
-                            userId  ?  <div className="content">
-                            <Switch>
-                                <Route path="/home/message" component={Message}></Route>
-                                <Route path="/home/connection" component={RelationShip}></Route>
-                                <Route path="/home/calendar" component={CalendarComponent}></Route>
-                                <Route path="/home/official" component={OfficialComponent}></Route>
-                                <Route path="/home/setting" component={Setting}></Route>
-                                <Route path="/home/organization" component={Organization}></Route>
-                            </Switch>
-                        </div> : <Myloader/>
+                userId ? <div className="content">
+                    <Switch>
+                        <Route path="/home/message" component={Message}></Route>
+                        <Route path="/home/connection" component={RelationShip}></Route>
+                        <Route path="/home/calendar" component={CalendarComponent}></Route>
+                        <Route path="/home/official" component={OfficialComponent}></Route>
+                        <Route path="/home/setting" component={Setting}></Route>
+                        <Route path="/home/organization" component={Organization}></Route>
+                    </Switch>
+                </div> : <Myloader />
             }
         </div>
     </div>

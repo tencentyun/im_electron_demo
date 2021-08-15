@@ -147,7 +147,7 @@ export const LoginContent = (): JSX.Element => {
 
     return (
         <div className="login--context">
-            <h2 className="login--context__title">登陆IM</h2>
+            <h2 className="login--context__title">登录IM</h2>
             <Tabs tabs={tabs} placement="top" tabBarRender={customizeTabBarRender}>
                 {/* <TabPanel id="verifyCodeLogin">
                     <Input placeholder="请输入用户名" className="login--input" />
