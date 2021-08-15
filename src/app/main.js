@@ -34,6 +34,7 @@ let trayIcon = nativeImage.createFromPath(
 let forceQuit = false;
 const downloadUrl = app.getPath("downloads");
 const progressStream = require("progress-stream");
+const env = 'prod'
 let ipc;
 new TimMain({
   sdkappid: 1400529075
@@ -165,7 +166,7 @@ function createWindow () {
       mainWindow.webContents.send("mainProcessMessage", false);
     }
   })
-  if (process.env?.NODE_ENV?.trim() === 'development') {
+  if (env === 'development') {
     mainWindow.loadURL(`http://localhost:3000`);
     // 打开调试工具
     mainWindow.webContents.openDevTools();
