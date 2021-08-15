@@ -32,7 +32,7 @@ class IPC {
     callWindow = null; // 通话窗口
     imWindowEvent = null; // 聊天窗口
     constructor(win) {
-        const env = process.env?.NODE_ENV?.trim();
+        const env = 'prod';
         const isDev = env === 'development';
         setPath(isDev);
         this.win = win;
@@ -206,7 +206,7 @@ class IPC {
         this.win.close()
     }
     showDialog() {
-        child_process.exec(`start "" ${path.resolve(os.homedir(), '下载/', 'HuaRunIM/')}`);
+        child_process.exec(`start "" ${path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')}`);
     }
     mkdirsSync(dirname) {
         if (fs.existsSync(dirname)) {
@@ -220,7 +220,7 @@ class IPC {
     }
     downloadFilesByUrl(file_url) {
         try {
-            const downloadDicPath = path.resolve(os.homedir(), '下载/', 'HuaRunIM/')
+            const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
             this.mkdirsSync(downloadDicPath)
             let file_name
             let file_path

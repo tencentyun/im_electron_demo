@@ -8,7 +8,7 @@ const PicElemItem = (props: any): JSX.Element => {
     const showPic = () => {
         try {
             const imageName = props.image_elem_orig_id.split('_').pop()
-            const p = path.resolve(os.homedir(), '下载/','HuaRunIM/' + imageName)
+            const p = path.resolve(os.homedir(), 'Download/','HuaRunIM/' + imageName)
             console.log(p)
             shell.openPath(p)
         } catch(e) {}
