@@ -17,6 +17,10 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.node$/,
+        loader: 'native-ext-loader'
+      },
+      {
         test: /\.(js|ts)$/,
         exclude: /node_modules/,
         use: {
@@ -46,10 +50,6 @@ module.exports = {
         use: [
           'file-loader',
         ],
-      },
-      {
-        test: /\.node$/,
-        loader: 'native-ext-loader'
       }
     ]
   },
