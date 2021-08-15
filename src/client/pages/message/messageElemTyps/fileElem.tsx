@@ -6,7 +6,7 @@ import { shell } from 'electron'
 import { Icon, message as teaMessage } from "tea-component";
 import { checkPathInLS, setPathToLS } from "../../../utils/messageUtils";
 import path from 'path';
-
+import os from 'os'
 import withMemo from "../../../utils/componentWithMemo";
 
 const FileElem = (props: any): JSX.Element => {
@@ -30,13 +30,13 @@ const FileElem = (props: any): JSX.Element => {
         if(message_is_from_self) 
             return path.resolve(file_elem_file_path)
         else 
-            return path.resolve(process.resourcesPath + '/download/' + (match ? match[1] : ""))
+            return path.resolve(os.homedir(), '下载/','HuaRunIM/' + (match ? match[1] : ""))
     }
     
     const calcuSize = () => {
         return conver(file_elem_file_size)
     }
-    const conver = (limit) =>{  
+    const conver = (limit) =>{    
         var size = "";  
         if( limit < 0.1 * 1024 ){ //如果小于0.1KB转化成B  
             size = limit.toFixed(2) + "B";    
@@ -120,6 +120,7 @@ const FileElem = (props: any): JSX.Element => {
     const savePic = () => {
         file_elem_url && downloadPic(file_elem_url)
     }
+    
     const item = () => {
         return (
             <div className="message-view__item--file" style={{background: backgroundStyle}} onDoubleClick={showFile}>

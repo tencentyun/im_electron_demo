@@ -24,12 +24,13 @@ export const ContactResult = (props) => {
                     <div className="customize-scroll-style">
                         {
                             result.map((item, index) => {
-                                const { user_profile_face_url, user_profile_nick_name } = item.conv_profile;
+                                const { user_profile_face_url, user_profile_nick_name,user_profile_identifier } = item.conv_profile;
                                 return (
                                     <ResultItem
                                         key={index}
                                         faceUrl={user_profile_face_url}
                                         nickName={user_profile_nick_name}
+                                        userID = { user_profile_identifier }
                                         onClick={() => handleDirect(item.conv_profile)}
                                     />
                                 )
