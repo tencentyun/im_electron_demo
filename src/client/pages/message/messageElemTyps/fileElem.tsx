@@ -108,7 +108,6 @@ const FileElem = (props: any): JSX.Element => {
         if (message_status === 2) return <div className="message-view__item--file___content____size">{calcuSize()}</div>
     }
     const downloadPic = (url) => {
-        const basePath = process.cwd() + '/download/'
         try {
             downloadFilesByUrl(url)
         } catch (e) {
