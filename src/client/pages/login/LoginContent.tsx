@@ -94,7 +94,7 @@ export const LoginContent = (): JSX.Element => {
             
             const env = process.env.huarun_env
             let USERLOGIN;
-            if(env!=='dev'){
+            if(env=='prod'){
                 const res = await getUserLoginInfo({
                     systemid: getHuaRunConfig.HUA_RUN_SYSTEMID,
                     userName: userID.toUpperCase(),
@@ -147,21 +147,16 @@ export const LoginContent = (): JSX.Element => {
 
     return (
         <div className="login--context">
-            <h2 className="login--context__title">登录IM</h2>
-            <Tabs tabs={tabs} placement="top" tabBarRender={customizeTabBarRender}>
-                {/* <TabPanel id="verifyCodeLogin">
-                    <Input placeholder="请输入用户名" className="login--input" />
-                    <Input placeholder="请输入密码" className="login--input" />
-                </TabPanel> */}
-                {/* <TabPanel id="passwordLogin">
-                    <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val)}} />
-                    <Input placeholder="请输入usersig"  value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />
-                </TabPanel> */}
+            <h2 className="login--context__title">员工登录</h2>
+            <Input placeholder="请输入UM用户名" value={userID} className="login--input" onChange={chkIt} />
+            <Input placeholder="请输入UM密码" type="password" value={password} className="login--input" onChange={(val) => setPassword(val)} />
+            
+            {/* <Tabs tabs={tabs} placement="top" tabBarRender={customizeTabBarRender}>
                 <TabPanel id="passwordLogin">
                     <Input placeholder="请输入userid" value={userID} className="login--input" onChange={chkIt} />
                     <Input placeholder="请输入密码" type="password" value={password} className="login--input" onChange={(val) => setPassword(val)} />
                 </TabPanel>
-            </Tabs>
+            </Tabs> */}
             {/* <Checkbox display="block" value={false} className="login--auto">
                 下次自动登录
             </Checkbox> */}

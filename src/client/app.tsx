@@ -587,7 +587,7 @@ export const App = () => {
     }, []);
     return (
         <div id="app-container">
-            <ToolsBar></ToolsBar>
+            {/* <ToolsBar></ToolsBar> */}
             <Switch>
                 <Route path="/home" component={Home}></Route>
                 <Route path="/" component={Login} />
