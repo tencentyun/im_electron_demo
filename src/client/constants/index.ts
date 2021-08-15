@@ -123,6 +123,7 @@ type HuaRunConfig = {
 const getHuaRunConfig = (): HuaRunConfig => {
     console.log('环境变量', process.env.HUARUN_ENV, process.env.NODE_ENV)
     const env = process.env.HUARUN_ENV.trim();
+    // const env = "prod"
     return HUARUN_CONFIG[env]
 }
 export default getHuaRunConfig();
