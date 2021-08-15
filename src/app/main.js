@@ -110,10 +110,10 @@ function createWindow() {
   // mainWindow.webContents.send("SENDSTORE", store.get("sendType") || "0");
 
   mainWindow.once("ready-to-show", () => {
-    mainWindow.setTitle("华润银行即时通讯（内测版）");
+    mainWindow.setTitle("员工工作平台");
     mainWindow.show();
     if (!ipc) ipc = new IPC(mainWindow);
-    app.setAppUserModelId("华润银行即时通讯（内测版）");
+    app.setAppUserModelId("员工工作平台");
   });
   mainWindow.on("close", function (e) {
     if (!forceQuit && appWindow && app) {
@@ -328,6 +328,7 @@ function createWindow() {
     console.log("文件另存成原地址", url)
     mainWindow.webContents.downloadURL(url)
   })
+
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {
     //console.log("123", file);

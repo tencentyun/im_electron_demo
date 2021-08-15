@@ -196,40 +196,36 @@ export const App = () => {
     };
     let showApp = true;
     const handleNotify = (messages) => {
-      const msgBother = window.localStorage.getItem('msgBother') || false
-      console.log(showApp, '[[[[[[[[[[[[[[[', msgBother)
-      // 客户端没有展示在最顶层或者设置了消息提示免打扰，就不接收消息通知
-      if (showApp || msgBother == 'false') {
-        return;
-      }
-      console.log(messages[0].message_elem_array[0], '通知消息------------------------------------', messages)
-      const notification = new window.Notification("收到新消息", {
-        icon: "http://oaim.crbank.com.cn:30003/emoji/notification.png",
-        // body: replaceAll(message.message_elem_array[0], '&nbsp;', ' ').substring(0, 15)
-        body: messages[0].message_elem_array[0].text_elem_content.substring(
-          0,
-          15
-        ),
-      });
-      
-      ipcRenderer.send("asynchronous-message", "setTaryTitle");
-      notification.onclick = async () => {
-        ipcRenderer.send("asynchronous-message", "openWindow");
-        dispatch(updateCurrentSelectedConversation(messages));
-        const response = await getConversionList();
-        dispatch(updateConversationList(response));
-        // console.log(response, '对话列表。。。。。。。。。。。。。。。。。。。')
-        if (response?.length) {
-          const newConversaionItem = response.find(
-            (v) => v.conv_id === messages[0].message_conv_id
-          );
-          if (newConversaionItem) {
-            dispatch(updateCurrentSelectedConversation(newConversaionItem));
-          }
+        const msgBother = window.localStorage.getItem('msgBother') || false
+        console.log(showApp, '[[[[[[[[[[[[[[[', msgBother)
+        // 客户端没有展示在最顶层或者设置了消息提示免打扰，就不接收消息通知
+        if (showApp || msgBother == 'false') {
+          return;
         }
-        notification.close();
+        console.log(messages[0].message_elem_array[0], '通知消息------------------------------------', messages)
+        const notification = new window.Notification("收到新消息", {
+          icon: "http://oaim.crbank.com.cn:30003/emoji/notification.png",
+          // body: replaceAll(message.message_elem_array[0], '&nbsp;', ' ').substring(0, 15)
+          body: messages[0].message_elem_array[0].text_elem_content
+        });
+        ipcRenderer.send("asynchronous-message", "setTaryTitle");
+        notification.onclick = async () => {
+          ipcRenderer.send("asynchronous-message", "openWindow");
+          dispatch(updateCurrentSelectedConversation(messages));
+          const response = await getConversionList();
+          dispatch(updateConversationList(response));
+          // console.log(response, '对话列表。。。。。。。。。。。。。。。。。。。')
+          if (response?.length) {
+            const newConversaionItem = response.find(
+              (v) => v.conv_id === messages[0].message_conv_id
+            );
+            if (newConversaionItem) {
+              dispatch(updateCurrentSelectedConversation(newConversaionItem));
+            }
+          }
+          notification.close();
+        };
       };
-    };
     const escapeRegExp = (string) => {
       return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     };
@@ -421,6 +417,7 @@ export const App = () => {
     };
     const _handeMessage = (messages: State.message[]) => {
         // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
+        handleNotify(messages)
         const obj = {};
         for (let i = 0; i < messages.length; i++) {
             if (!obj[messages[i].message_conv_id]) {
