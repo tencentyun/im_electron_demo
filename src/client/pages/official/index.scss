@@ -32,3 +32,22 @@
 .example-stage {
   margin: 15px;
 }
+.tabs-index-class-main{
+  padding: 20px;
+  .class-mian{
+    display: flex;
+    align-items: center;
+    
+    .class-text{
+      margin-left: 20px;
+      .class-emil{
+        color: #666;
+      }
+    }
+    .class-img{
+      width: 50px;
+      height: 50px;
+    }
+  }
+ 
+}

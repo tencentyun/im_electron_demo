@@ -2,7 +2,7 @@
   "name": "oaim",
   "productName": "oaim",
   "version": "1.0.35",
-  "description": "华润银行及时通讯（准生产）",
+  "description": "员工工作平台",
   "main": "src/app/main.js",
   "scripts": {
     "start:dev": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
