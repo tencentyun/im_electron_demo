@@ -109,6 +109,7 @@ export const Home = (): JSX.Element => {
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             {
                 userId ? <div className="content">
+                    <ToolsBar></ToolsBar>
                     <Switch>
                         <Route path="/home/message" component={Message}></Route>
                         <Route path="/home/connection" component={RelationShip}></Route>
