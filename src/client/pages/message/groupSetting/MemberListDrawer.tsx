@@ -43,7 +43,9 @@ export const GroupMemberListDrawer = (props: {
       header: "",
       key: "member",
       render: (record: any) => {
+        const isAdmin = record.group_member_info_member_role === 2;
         const isOwner = record.group_member_info_member_role === 3;
+        const shouldShowTitle = isAdmin || isOwner;
         return (
           <div className="member-list-drawer--item">
             <Avatar
@@ -54,8 +56,8 @@ export const GroupMemberListDrawer = (props: {
             <span className="member-list-drawer--item__name">
               {record.group_member_info_nick_name || record.group_member_info_identifier}
             </span>
-            {isOwner && (
-              <span className="member-list-drawer--item__owner">群主</span>
+            {shouldShowTitle && (
+              <span className="member-list-drawer--item__owner">{ isOwner ? '群主' : '管理员'}</span>
             )}
           </div>
         );
