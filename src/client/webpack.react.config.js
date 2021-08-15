@@ -1,6 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-// const APADDRESS = "http://oaim.crbank.com.cn:30002/" //生产
+//const APADDRESS = "http://oaim.crbank.com.cn:30002/" //生产
 const APADDRESS = "http://oaim.uat.crbank.com.cn:30002/" //测试
 module.exports = {
   resolve: {
@@ -75,7 +75,7 @@ module.exports = {
         changeOrigin: true
       },
       '/huarun': {
-        //target: 'http://106.52.161.51:30006/',
+        //target: 'http://oaim.crbank.com.cn:30002/',
         target: APADDRESS,
         secure: false, // http请求https，这里需设置成false,
         changeOrigin: true // 一些服务器防止爬虫会设置origin,
