@@ -41,9 +41,9 @@ new TimMain({
   // sdkappid: SDK_APP_ID
 });
 
-crashReporter.start({
-  submitURL: 'http://oaim.uat.crbank.com.cn:30002/huarun/report',
-})
+// crashReporter.start({
+//   submitURL: 'http://oaim.uat.crbank.com.cn:30002/huarun/report',
+// })
 
 // 设置系统托盘
 const setAppTray = () => {
@@ -321,9 +321,12 @@ function createWindow() {
   // })
 
   //文件另存成
-  ipcMain.on("fileSave", function (event, fileUrl) {
-    console.log("文件另存成原地址", fileUrl)
-    mainWindow.webContents.downloadURL(fileUrl)
+  ipcMain.on("fileSave", function (event, {
+    url,
+    name
+  }) {
+    console.log("文件另存成原地址", url)
+    mainWindow.webContents.downloadURL(url)
   })
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {

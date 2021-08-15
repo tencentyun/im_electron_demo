@@ -36,10 +36,12 @@ const showDialog = () => {
         type: SHOWDIALOG
     })
 }
-const downloadFilesByUrl = (url)=>{
+const downloadFilesByUrl = (url,name)=>{
     ipcRenderer.send(RENDERPROCESSCALL,{
         type:DOWNLOADFILE,
-        params:url
+        params: {
+            url,name
+        }
     })
 }
 const checkFileExist = (path) => {

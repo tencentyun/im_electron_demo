@@ -282,7 +282,10 @@ export const MessageView = (props: Props): JSX.Element => {
         if(params.message &&  params.message.message_elem_array){
             const  fileUrl =  params.message.message_elem_array[0]
             if(fileUrl.image_elem_large_url || fileUrl.file_elem_url || fileUrl.video_elem_video_url){
-                ipcRenderer.send('fileSave', fileUrl.image_elem_large_url || fileUrl.file_elem_url || fileUrl.video_elem_video_url)
+                ipcRenderer.send('fileSave', {
+                    url: fileUrl.image_elem_large_url || fileUrl.file_elem_url || fileUrl.video_elem_video_url,
+                    name: fileUrl.image_elem_orig_id || fileUrl.file_elem_file_name || fileUrl.video_elem_video_id
+                })
             }
         }
     }
