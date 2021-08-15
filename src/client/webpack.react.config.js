@@ -2,18 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const APADDRESS =  process.env.huarun_config === 'prod' ?  'http://oaim.crbank.com.cn:30002/' : "http://oaim.uat.crbank.com.cn:30002/" //测试
-const os = require('os');
-const targetPlatform = (function () {
-  let target = os.platform();
-  for (let i = 0; i < process.argv.length; i++) {
-    if (process.argv[i].includes('--target_platform=')) {
-      target = process.argv[i].replace('--target_platform=', '');
-      break;
-    }
-  }
-  if (!['win32', 'darwin'].includes) target = os.platform();
-  return target;
-})();
+
 module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
@@ -60,10 +49,7 @@ module.exports = {
       },
       {
         test: /\.node$/,
-        loader: 'native-ext-loader',
-        options: {
-          rewritePath: targetPlatform === 'win32' ? './resources' : '../Resources'
-        }
+        loader: 'native-ext-loader'
       }
     ]
   },
