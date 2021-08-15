@@ -278,6 +278,19 @@ function createWindow () {
     );
   });
 
+  ipcMain.on("STORE_SCREENSHOT_TO_LOCAL", (event, file) => {
+    const url = downloadUrl + "\\screenShot.png";
+    let pngs = clipboard.readImage().toPNG();
+    fs.writeFile(url, pngs, (err) => {
+      fs.readFile(url, (err, data) => {
+        event.reply("STORE_SCREENSHOT_TO_LOCAL_REPLY", {
+          data,
+          url,
+        });
+      });
+    });
+  });
+
   // 接受截图事件
   ipcMain.on("SCREENSHOT", function () {
     //news 是自定义的命令 ，只要与页面发过来的命令名字统一就可以
