@@ -7,12 +7,8 @@ const {
   Tray,
   nativeImage,
   globalShortcut,
-  crashReporter,
-  ipcRenderer,
   clipboard,
   shell,
-  dialog,
-  Notification
 } = require("electron");
 //const { autoUpdater } = require('electron-updater')
 const feedUrl = `http://localhost/`;//http://oaim.crbank.com.cn:30003/_download/
@@ -34,7 +30,6 @@ let trayIcon = nativeImage.createFromPath(
 let forceQuit = false;
 const downloadUrl = app.getPath("downloads");
 const progressStream = require("progress-stream");
-const env = 'development'
 let ipc;
 new TimMain({
   sdkappid: 1400529075
