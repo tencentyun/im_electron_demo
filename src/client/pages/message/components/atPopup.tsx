@@ -125,6 +125,7 @@ export const AtPopup: FC<AtPopupProps> = ({ callback, group_id, atUserNameInput 
                         <List.Item  id={`custom-${i}`}  className={addActiveClass(v.group_member_info_identifier)} key={i} onClick={() => callback(v.group_member_info_identifier, v.group_member_info_nick_name)}>    
                             {v.group_member_info_identifier !== 'kMesssageAtALL' && <Avatar
                                 size="mini"
+                                key={ v.group_member_info_face_url }
                                 url={ v.group_member_info_face_url }
                                 userID = { v.group_member_info_identifier }
                             />}

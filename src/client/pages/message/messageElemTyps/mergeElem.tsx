@@ -62,7 +62,7 @@ const MergeElem = (props: any): JSX.Element => {
                                             <div key={index} className="merge-message-item">
                                                 <div className="message-view__item--avatar face-url">
                                                     {
-                                                        shouldShowAvatar && <Avatar url={user_profile_face_url} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                                        shouldShowAvatar && <Avatar url={user_profile_face_url} size="small" key={ user_profile_face_url } nickName={user_profile_nick_name} userID={user_profile_identifier} />
                                                     }
                                                 </div>
                                                 <div className="merge-message-item__message">

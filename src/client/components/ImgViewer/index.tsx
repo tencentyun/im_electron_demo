@@ -124,7 +124,7 @@ const inintViewer = (prop: ImagePreviewI) => {
                             <img
                                 className="image-preview"
                                 style={{ transform: `scale(${zoom}) rotate(${rotate}deg)` }}
-                                src={(previewUrl.substring(0,previewUrl.indexOf('?imageView')).replace('30004/oaim','30003'))}
+                                src={  previewUrl && previewUrl.match(/imageView/) ? previewUrl.replace('30004/oaim','30003') : previewUrl}
                                 onClick={close}
                             />
                         </div>

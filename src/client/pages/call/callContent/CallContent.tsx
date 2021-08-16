@@ -86,7 +86,10 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
         event.emit('toggleVideo', !isOpenCamera);
     };
 
-    const toggleVoice = isMute => trtcInstance.muteLocalAudio(isMute);
+    const toggleVoice = isMute => {
+        event.emit('toggleVoice', !isMute);
+        trtcInstance.muteLocalAudio(isMute);
+    }
 
     const exitRoom = () => {
         trtcInstance.exitRoom();
@@ -99,13 +102,13 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     }
 
     return <div className="call-content">
-        <header className="call-content__header">
-            <CallTime isStart={isStart} prefix={"通话时间: "} />
-        </header>
-        <section className="call-content__video" >
-            <CallVideo trtcInstance={trtcInstance} isVideoCall={isVideoCall} inviteListWithInfo={inviteListWithInfo} convInfo={convInfo} userId={userId} inviteList={inviteList} />
-        </section>
-        <footer className="call-content__footer">
+       <header className="call-content__header">
+           <CallTime isStart={isStart} prefix={"通话时间: "} />
+       </header>
+       <section className="call-content__video" >
+            <CallVideo trtcInstance={trtcInstance} isVideoCall={isVideoCall}  inviteListWithInfo={inviteListWithInfo} convInfo={convInfo} userId={userId} inviteList={inviteList} />
+       </section>
+       <footer className="call-content__footer">
             <CallFooter isVideoCall={isVideoCall} toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={handleExitRoom} />
         </footer>
     </div>

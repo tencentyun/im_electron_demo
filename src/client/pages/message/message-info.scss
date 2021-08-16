@@ -62,7 +62,8 @@
         margin-left: 12px;
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
+        word-wrap: break-word;
+        word-break: break-all;
         max-width: 200px;
         cursor: pointer;
       }

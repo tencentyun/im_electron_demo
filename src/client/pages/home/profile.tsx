@@ -127,7 +127,7 @@ export const Profile = (): JSX.Element => {
           </>
         }
       >
-        <Avatar url={faceUrl} nickName={nickName} isClick={false} userID={userId} />
+        <Avatar url={faceUrl} nickName={nickName} key={faceUrl} isClick={false} userID={userId} />
         {/* bubble组件必须包含一个有click之类事件的方法的元素 */}
         <span></span>
       </Bubble>

@@ -57,7 +57,7 @@ export const EditProfile = (props: Props): JSX.Element => {
         <div className="card-content">
             <div className="main-info">
                 <div className="info-item">
-                    <Avatar nickName={nickName} userID={userId} url={faceUrl} />
+                    <Avatar nickName={nickName} key={faceUrl} userID={userId} url={faceUrl} />
                     <div className="nickname">{nickName || userId}</div>
                 </div>
                 {/* <div className="info-btn" onClick={handleAvatarClick}><Icon type="setting" /></div> */}

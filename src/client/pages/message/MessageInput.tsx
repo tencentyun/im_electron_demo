@@ -3,7 +3,7 @@ import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message, Dropdown, List, Bubble } from 'tea-component';
 import { sendTextMsg, sendImageMsg, sendFileMsg, sendVideoMsg, sendMsg } from './api'
-import { updateMessages } from '../../store/actions/message'
+import { updateMessages,  reciMessage} from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
@@ -37,7 +37,7 @@ type Props = {
     handleOpenCallWindow: (callType: string, convType: number, windowType: string) => void;
 }
 
-const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF', 'jpeg'];
+const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
 const FEATURE_LIST_GROUP = [{
@@ -117,12 +117,30 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [sendType, setSendType] = useState(null); // 0->enter,1->ctrl+enter
     let editorInstance;
 
+     //我的
+     useEffect(() => {
+            reedite(isHandCal)
+     }, [isHandCal])
     const handleSendMsg = async () => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
         try {
             const rawData = editorState.toRAW();
-            const messageElementArray = getMessageElemArray(rawData, videoInfos);
+            let messageElementArray = getMessageElemArray(rawData, videoInfos);
+            console.log(messageElementArray,"调试内容")
             if (messageElementArray.length) {
+
+                //解决换行多次发送问题  -- zwc
+                let  textElement =  messageElementArray.filter(item => item.elem_type == 0)
+                if(textElement.length > 0)
+                {   
+                    let  outerlement =  messageElementArray.filter(item => item.elem_type != 0)
+                    let  obj:any = {
+                            elem_type : textElement[0].elem_type,
+                            text_elem_content : textElement.map(item => item.text_elem_content).join('\n')
+                    }
+                    messageElementArray = [obj,...outerlement]
+                }
+                
                 const fetchList = messageElementArray.map((v => {
                     if (v.elem_type === 0) {
                         const atList = getAtList(v.text_elem_content);
@@ -182,8 +200,12 @@ export const MessageInput = (props: Props): JSX.Element => {
                 message.error({ content: "文件大小异常" })
                 return
             }
-            console.log(type, '========')
-            if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
+            if(file.path == "" && imageObj == null){
+                message.error({ content: "暂不支持此操作" })
+                return
+            }
+            console.log(type, '========',imageObj)
+            if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v)) ||  type== "image/jpeg") {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path ? file.path : imageObj.path, size: file.size, base64URL: imgUrl }));
@@ -417,14 +439,15 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        const hasImage = editorState.toHTML().includes('block')
+        const hasImage = editorState.toHTML().includes('image')
+        const hasFile = editorState.toHTML().includes('block-file')
         if (sendType == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 // console.log('换行', '----------------------', editorState)
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
-                if (hasImage) {
+                if (hasImage || hasFile) {
                     handleSendMsg();
                 } else {
                     !canSendMsg() && handleSendMsg();
@@ -438,7 +461,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             // Ctrl+enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 e.preventDefault();
-                if (hasImage) {
+                if (hasImage || hasFile) {
                     handleSendMsg();
                 } else {
                     !canSendMsg() && handleSendMsg();

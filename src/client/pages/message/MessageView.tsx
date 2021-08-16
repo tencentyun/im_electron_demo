@@ -97,11 +97,12 @@ export const displayDiffMessage = (message, element, index) => {
             resp = <VoiceElem {...res} />
             break;
         case 3:
-            resp = <CustomElem message={message} />
+            // @ts-ignore
+            resp = <CustomElem message={message}/>
             break;
         case 4:
             // @ts-ignore
-            resp = <FileElem message={message} element={element} index={index} />
+            resp = <FileElem message={message} element={element} index={index}/>
             break;
         case 5:
             resp = <GroupTipsElemItem {...res} />
@@ -275,13 +276,13 @@ export const MessageView = (props: Props): JSX.Element => {
     }
 
     const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
-        const userId = localStorage.getItem('uid')
+        const userId = await getLoginUserID()
         const isDivideSending = forwardType === ForwardType.divide
         const isCombineSending = !isDivideSending;
-        const forwardMessage = seletedMessage.map(item => ({ ...item, message_is_forward_message: true }));
-        console.log('forwardMessage', forwardMessage);
+        const forwardMessage = seletedMessage.map(item => ({...item, message_is_forward_message: true}));
+        console.warn('forwardMessage', forwardMessage);
         convItemGroup.forEach(async (convItem, k) => {
-            if (isDivideSending) {
+            if(isDivideSending) {
                 forwardMessage.forEach(async message => {
                     const { data: { code, json_params } } = await sendForwardMessage({
                         convId: getConvId(convItem),
@@ -289,7 +290,7 @@ export const MessageView = (props: Props): JSX.Element => {
                         message: message,
                         userId
                     });
-                    if (code === 0) {
+                    if(code === 0) {
                         dispatch(reciMessage({
                             convId: getConvId(convItem),
                             messages: [JSON.parse(json_params)]
@@ -297,7 +298,8 @@ export const MessageView = (props: Props): JSX.Element => {
                     }
                 })
             }
-            else if (isCombineSending) {
+            else if(isCombineSending) {
+                console.warn("forwardMessage", forwardMessage)
                 const { data: { code, json_params } } = await sendMergeMsg({
                     convId: getConvId(convItem),
                     convType: getConvType(convItem),
@@ -310,7 +312,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     }],
                     userId
                 });
-                if (code === 0) {
+                if(code === 0) {
                     dispatch(reciMessage({
                         convId: getConvId(convItem),
                         messages: [JSON.parse(json_params)]
@@ -323,6 +325,7 @@ export const MessageView = (props: Props): JSX.Element => {
         setSeletedMessage([])
         setMultiSelect(false)
     }
+
     const handleForwardTypePopup = (type: ForwardType) => {
         if (!seletedMessage.length) return false;
         setTransimitPopup(true)
@@ -330,24 +333,24 @@ export const MessageView = (props: Props): JSX.Element => {
     }
 
     const deleteSelectedMessage = async () => {
-        if (!seletedMessage.length) return;
-        const { message_conv_id, message_conv_type } = seletedMessage[0];
+        if(!seletedMessage.length) return;
+        const { message_conv_id, message_conv_type} = seletedMessage[0];
         const messageList = seletedMessage.map(item => item.message_msg_id);
         const params = {
             convId: message_conv_id,
             convType: message_conv_type,
             messageList
         }
-        const { data: { code } } = await deleteMsgList(params);
+        const { data: {code} } = await deleteMsgList(params);
 
-        if (code === 0) {
+        if(code === 0) {
             dispatch(deleteMessage({
                 convId: message_conv_id,
                 messageIdArray: messageList
             }));
             setMultiSelect(false);
         } else {
-            message.warning({ content: '删除消息失败' })
+            message.warning({content: '删除消息失败'})
         }
     };
 
@@ -355,8 +358,11 @@ export const MessageView = (props: Props): JSX.Element => {
         setMultiSelect(true)
     }
     const handleSelectMessage = (message: State.message): void => {
-        const isMessageSelected = seletedMessage.findIndex(v => getMessageId(v) === getMessageId(message)) > -1
-        if (isMessageSelected) {
+        if(!isMultiSelect) {
+            return;
+        }
+        const isMessageSelected = seletedMessage.findIndex(v => getMessageId(v) === getMessageId(message)) > -1 
+        if(isMessageSelected) {
             const list = seletedMessage.filter(v => getMessageId(v) !== getMessageId(message))
             setSeletedMessage(list)
         } else {
@@ -628,8 +634,8 @@ export const MessageView = (props: Props): JSX.Element => {
                                     </div>
                                 ) :
                                     <div key={index} onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
-                                        {isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ?
-                                            <Icon className="message-view__item--icon" type="success" /> :
+                                        { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ? 
+                                            <Icon className="message-view__item--icon" type="success" /> : 
                                             <i className="message-view__item--icon-normal" ></i>)
                                         }
                                         <div className="message-view__item--avatar face-url">
@@ -712,6 +718,9 @@ export const MessageView = (props: Props): JSX.Element => {
                     </div>
                     <div className="forward-type-popup__divide" onClick={() => handleForwardTypePopup(ForwardType.divide)}>
                         <p>逐条转发</p>
+                    </div>
+                    <div className="forward-type-popup__delete" onClick={deleteSelectedMessage}>
+                        <p>删除</p>
                     </div>
                 </div>
             }

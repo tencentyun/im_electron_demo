@@ -5,7 +5,8 @@ export const UPDATE_CALLING_STATUS = "UPDATE_CALLING_STATUS";
 type CallingPayload = {
     callingId: string,
     callingType: number,
-    inviteeList: Array<string>
+    inviteeList: Array<string>,
+    callType: number
 }
 
 export const changeFunctionTab = (payload: string) : State.actcionType<string> => ({

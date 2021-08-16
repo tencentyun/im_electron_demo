@@ -15,7 +15,7 @@ export const ResultItem = (props: Props): JSX.Element => {
 
     return (
         <div className="result-item" onClick={onClick} >
-            <Avatar url={faceUrl} />
+            <Avatar url={faceUrl}  key={ faceUrl }/>
             <span className="result-item__nick-name">{nickName}</span>
         </div>
     )

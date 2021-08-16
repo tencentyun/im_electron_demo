@@ -27,7 +27,7 @@ export const ListItem = (props: {
     <div className="friend-apply--content__item">
       <div className="item-left">
         <div className="item-left__avatar">
-          <Avatar url={faceUrl} userID={userId} nickName={userName} />
+          <Avatar url={faceUrl} userID={userId} nickName={userName} key={ faceUrl }/>
         </div>
         <div className="item-left__info">
           <span className="item-left__info--name">{userName || userId}</span>
