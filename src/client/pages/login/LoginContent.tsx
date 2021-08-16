@@ -149,7 +149,16 @@ export const LoginContent = (): JSX.Element => {
         <div className="login--context">
             <h2 className="login--context__title">员工登录</h2>
             <Input placeholder="请输入UM用户名" value={userID} className="login--input" onChange={chkIt} />
-            <Input placeholder="请输入UM密码" type="password" value={password} className="login--input" onChange={(val) => setPassword(val)} />
+            <Input placeholder="请输入UM密码"
+             onKeyDown={(e) => {
+                if (e.which === 13) {
+                    handleLoginClick()
+                }
+              }} 
+              type="password"  
+              value={password} 
+              className="login--input" 
+              onChange={(val) => setPassword(val)} />
             
             {/* <Tabs tabs={tabs} placement="top" tabBarRender={customizeTabBarRender}>
                 <TabPanel id="passwordLogin">
@@ -160,7 +169,10 @@ export const LoginContent = (): JSX.Element => {
             {/* <Checkbox display="block" value={false} className="login--auto">
                 下次自动登录
             </Checkbox> */}
-            <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}>登录</Button>
+            <Button type="primary" 
+            className="login--button" 
+            onClick={handleLoginClick} 
+            disabled={!isDisablelogin}>登录</Button>
         </div>
     )
 }

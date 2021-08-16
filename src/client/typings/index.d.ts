@@ -204,5 +204,9 @@ declare namespace State {
         friend_profile_custom_string_info_value: string
     }
 
-   
+    export type GroupMemberInfor  = {
+        group_member_info_face_url: string
+        group_member_info_nick_name: string
+        group_member_info_identifier: string
+    }
 }
