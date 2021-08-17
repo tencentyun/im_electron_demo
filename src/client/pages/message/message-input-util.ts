@@ -1,5 +1,8 @@
 import BraftEditor from "braft-editor";
 import { emojiMap } from "./emoji-map";
+import fs from 'fs';
+import path from 'path';
+import os from 'os'
 
 export const getFileTypeName = (fileName: string) => {
   const match = fileName.match(/\.(\w+)$/);
@@ -149,4 +152,35 @@ export const fileImgToBase64Url = async (file: File) => {
 export const bufferToBase64Url = (data: string, type: string) => {
   const buffer = new Buffer(data, 'binary');
   return `data:image/${type};base64,` + buffer.toString('base64');
-} 
+}
+
+const getFilePath = () => {
+  return path.resolve(os.homedir(), 'Download/', `HuaRunIM/ScreenShot/${new Date().getTime()}-screent-shot.png`)
+}
+
+export const fileReaderAsBuffer = async (file: File) => {
+  const filePath = getFilePath();
+  return new Promise((res) => {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const arrayBuffer = e.target.result as ArrayBuffer;
+      const unit8Array = new Uint8Array(arrayBuffer);
+      const buffer = new Buffer(arrayBuffer);
+      fs.writeFileSync(filePath, buffer);
+      const imageObj = {
+        lastModified: file.lastModified,
+        //@ts-ignore 
+        lastModifiedDate: file.lastModifiedDate,
+        name: file.name,
+        path: filePath,
+        size: file.size,
+        type: file.type,
+        //@ts-ignore 
+        webkitRelativePath: file.webkitRelativePath,
+        fileContent: unit8Array,
+      };
+      res(imageObj);
+    };
+    reader.readAsArrayBuffer(file);
+  })
+}
