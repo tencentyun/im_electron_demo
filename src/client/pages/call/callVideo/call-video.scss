@@ -8,27 +8,24 @@
     .c2c-content {
         width: 100%;
         height: 100%;
-        background-image: url('../../../assets/icon/forbiden_video.svg');
-        background-repeat: no-repeat;
-        background-position: center;
 
-        &--self {
-            display: none;
-            height: 100%;
-        }
-
-        &--remote {
-            position: absolute;
-            width: 160px;
-            height: 120px;
-            top: 20px;
-            right: 40px;
+        &--self, &--remote {
+            height: 488px;
             background-image: url('../../../assets/icon/forbiden_video.svg');
             background-repeat: no-repeat;
             background-position: center;
-            background-size: 30px;
-            background-color: #000;
+
+            &.active {
+                position: absolute;
+                width: 160px;
+                height: 120px;
+                top: 20px;
+                right: 40px;
+                background-color: #000;
+                background-size: 30px;
+            }
         }
+
 
         &--voice-call {
             flex-direction: column;
