@@ -17,6 +17,8 @@ export interface createGroupParams {
   groupName: string;
   groupIntroduction?: string;
   groupAnnouncement?: string;
+  groupInvitation?:string;
+  groupPression?:string | number; 
   joinGroupMode?: string;
   groupMember?: Array<createGroupMemberParams>;
   groupType: string;
@@ -56,6 +58,8 @@ export const createGroup = async (params: createGroupParams): Promise<any> => {
     groupIntroduction,
     groupAnnouncement,
     groupType,
+    groupPression,
+    groupInvitation,
     joinGroupMode,
     groupAvatarUrl
   } = params;
@@ -63,6 +67,13 @@ export const createGroup = async (params: createGroupParams): Promise<any> => {
     create_group_param_add_option: Number(joinGroupMode),
     create_group_param_group_name: groupName,
     create_group_param_group_type: Number(groupType),
+    create_group_param_custom_info:[{
+      group_info_custom_string_info_key:"group_permission",
+      group_info_custom_string_info_value:groupPression
+    },{
+      group_info_custom_string_info_key:"group_invitation",
+      group_info_custom_string_info_value:groupPression
+    }],
     create_group_param_face_url: groupAvatarUrl,
     ...(groupMember && groupMember.length && { create_group_param_group_member_array: groupMember}),
     ...(groupIntroduction && {create_group_param_introduction: groupIntroduction}),

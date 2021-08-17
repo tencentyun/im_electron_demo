@@ -23,11 +23,12 @@ export const GroupToolsDrawer = (props: {
 }): JSX.Element => {
   const { onClose, popupContainer, visible, conversationInfo, toolId } = props;
   // console.log("visible", visible);
-
+  const { mygroupInfor } = useSelector(
+      (state: State.RootState) => state.section
+  );
   const { currentSelectedConversation } = useSelector(
     (state: State.RootState) => state.conversation
   );
-
   const DisplayComponent = {
     setting: GroupSetting,
     announcement: GroupAccountecmentSetting,
@@ -68,7 +69,7 @@ export const GroupToolsDrawer = (props: {
   const profileDialogRef = useDialogRef<GroupProfileRecordsType>();
   const groupDetail: Partial<State.conversationItem['conv_profile']> = conversationInfo?.conv_profile || {};
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
-  const isOwener = groupDetail.group_detial_info_owener_identifier === userId
+  const isOwener = groupDetail.group_detial_info_owener_identifier === userId  || [2,3].includes(mygroupInfor.group_member_info_member_role)
   
   return (
     <Drawer

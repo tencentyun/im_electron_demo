@@ -11,7 +11,7 @@ import groupDrawer from './reucers/groupDrawer';
 import imgViewer from './reucers/imgViewer';
 
 
-const appReducer = combineReducers({ login, userInfo, conversation, historyMessage, ui, userTypeList, groupDrawer, section, loginUser, imgViewer });
+const appReducer = combineReducers({ login, userInfo, conversation, historyMessage, ui, userTypeList, groupDrawer, section , loginUser, imgViewer });
 
 const rootReducer = (state, action) => {
   if (action.type === 'USER_LOGOUT') {

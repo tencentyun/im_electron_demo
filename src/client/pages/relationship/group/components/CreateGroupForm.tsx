@@ -27,6 +27,8 @@ export interface FormValue {
   groupAnnouncement: string;
   groupIntroduction: string;
   joinGroupMode: string;
+  groupPression:string;
+  groupInvited:string;
   groupMember?: any;
   groupType: string;
   groupAvatarUrl: string;
@@ -58,7 +60,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
     try {
       // 如有添加管理员
       const groupMangeMember = getGroupMember(groupMember)
-      await onSubmit({ ...params, groupMember: groupMangeMember , groupAvatarUrl });
+      await onSubmit({ ...params, groupMember: groupMangeMember, groupAvatarUrl });
       onSuccess?.();
     } catch (error) {
       onError?.();
@@ -78,6 +80,8 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
       initialValues={{
         groupType: "0",
         joinGroupMode: "2",
+        groupPression:"0",
+        groupInvitation:"0"
       }}
     >
       {({ handleSubmit, submitting, validating, values }) => {
@@ -195,6 +199,53 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                   )}
                 </Field>
               )}
+                <Field
+                  name="groupPression"
+                  disabled={submitting}
+                  validateOnBlur
+                  validateFields={[]}
+                  validate={(value) => validateOldValue(value, "群组资料")}
+                >
+                  {({ input, meta }) => (
+                    <Form.Item
+                      required
+                      label="群组资料"
+                      status={getStatus(meta, validating)}
+                      message={
+                        getStatus(meta, validating) === "error" && meta.error
+                      }
+                    >
+                      <RadioGroup {...input}>
+                        <Radio name="0">仅管理员可修改</Radio>
+                        <Radio name="1">所有人可修改</Radio>
+                      </RadioGroup>
+                    </Form.Item>
+                  )}
+                </Field>
+                <Field
+                  name="groupInvitation"
+                  disabled={submitting}
+                  validateOnBlur
+                  validateFields={[]}
+                  validate={(value) => validateOldValue(value, "邀请入群")}
+                >
+                  {({ input, meta }) => (
+                    <Form.Item
+                      required
+                      label="邀请入群"
+                      status={getStatus(meta, validating)}
+                      message={
+                        getStatus(meta, validating) === "error" && meta.error
+                      }
+                    >
+                      <RadioGroup {...input}>
+                        <Radio name="0">仅管理员可邀请</Radio>
+                        <Radio name="1">所有人可邀请</Radio>
+                        <Radio name="2">不可邀请</Radio>
+                      </RadioGroup>
+                    </Form.Item>
+                  )}
+                </Field>
               <Field
                 name="groupAnnouncement"
                 disabled={submitting}

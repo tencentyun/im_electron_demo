@@ -6,7 +6,7 @@ declare namespace State {
         userInfo: userInfo,
         conversation: conversation,
         historyMessage: historyMessage,
-        section:section
+        section:section,
         userTypeList: Array<userTypeData>
         ui: ui
         loginUser:loginUser
@@ -43,6 +43,20 @@ declare namespace State {
     
     export type section = {
         section: Array<object>
+        mygroupInfor:mygroupInfor
+    }
+
+    export type mygroupInfor = {
+        group_member_info_custom_info: Array<object>,
+        group_member_info_face_url: string,
+        group_member_info_group_id: string,
+        group_member_info_identifier:string,
+        group_member_info_member_role:number,
+        group_member_info_msg_seq:number,
+        group_member_info_msg_flag:number,
+        group_member_info_name_card:"",
+        group_member_info_nick_name:string,
+        group_member_info_remark:number
     }
 
     export type loginUser = {
@@ -152,6 +166,7 @@ declare namespace State {
          group_self_info_role?: null, 
          group_self_info_unread_num?: number
     }
+    
     export type conversationItem =  {
         conv_active_time: number
         conv_id: string

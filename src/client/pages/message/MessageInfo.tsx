@@ -31,6 +31,9 @@ import {
   changeDrawersVisible,
   changeToolsTab,
 } from "../../store/actions/groupDrawer";
+import{
+  setMyGroupInformation
+} from '../../store/actions/section'
 import { GroupToolsDrawer } from "./GroupToolsDeawer";
 import { GroupToolBar } from "./GroupToolBar";
 
@@ -150,7 +153,15 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const canInviteMember = conv_type === 2 && [0, 1, 2].includes(groupType);
   const canCreateDiscussion = conv_type === 1
   // 设置群信息相关
-  const handleClick = (id: string) => dispatch(changeToolsTab(id));
+  const handleClick = async (id: string) => {
+   let  { group_get_memeber_info_list_result_info_array } = await   getGroupMemberList({
+      groupId:conv_id,
+      userIds: userId.length ?  [userId] : [],
+      nextSeq: 0,
+    })
+    dispatch(changeToolsTab(id))
+    dispatch(setMyGroupInformation(group_get_memeber_info_list_result_info_array[0]))
+  };
 
   const handleShow = () => dispatch(changeDrawersVisible(true));
   const handleClose = () => dispatch(changeDrawersVisible(false));

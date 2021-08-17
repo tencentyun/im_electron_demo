@@ -45,6 +45,8 @@ export const GroupSetting = (props: {
   if(!Object.keys(groupDetail).length){
     return null
   }
+  console.log("--------+++++++++++",  value)
+  console.log("groupDetail", value)
   return (
     <LoadingContainer loading={loading}>
       <GroupBaseInfo

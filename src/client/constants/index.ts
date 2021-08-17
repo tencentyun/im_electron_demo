@@ -83,8 +83,8 @@ const HUARUN_CONFIG = {
     // 开发环境
     'dev': {
         TIM_BASE_URL: 'http://localhost:3000',
-        PUBBLIC_ACCOUNTS_URL: 'http://oaim.uat.crbank.com.cn:30002',
-        EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
+        PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
+        EMOJIURL: 'https://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
@@ -92,9 +92,9 @@ const HUARUN_CONFIG = {
     },
     // 测试环境
     'test': {
-        TIM_BASE_URL: 'http://oaim.uat.crbank.com.cn:30002',
-        PUBBLIC_ACCOUNTS_URL: 'http://oaim.uat.crbank.com.cn:30002',
-        EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
+        TIM_BASE_URL: 'https://oaim.uat.crbank.com.cn:30002',
+        PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
+        EMOJIURL: 'https://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
@@ -104,7 +104,7 @@ const HUARUN_CONFIG = {
     'prod': {
         TIM_BASE_URL: 'http://oaim.crbank.com.cn:30002',
         PUBBLIC_ACCOUNTS_URL: 'http://oaim.crbank.com.cn:30002',
-        EMOJIURL: 'http://oaim.uat.crbank.com.cn:30003/emoji/',
+        EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
