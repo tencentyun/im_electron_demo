@@ -9,6 +9,7 @@ const {
   globalShortcut,
   clipboard,
   shell,
+  dialog,
 } = require("electron");
 //const { autoUpdater } = require('electron-updater')
 const feedUrl = `https://oaim.uat.crbank.com.cn:30003/_download/`;//http://oaim.crbank.com.cn:30003/_download/
@@ -86,7 +87,7 @@ let toggle = false;
 function createWindow() {
   // Create the browser window.
   Menu.setApplicationMenu(null);
-  let mainWindow = new BrowserWindow({
+  appWindow = new BrowserWindow({
     height: 640,
     width: 960,
     minWidth: 830,
@@ -101,28 +102,27 @@ function createWindow() {
       contextIsolation: false,
     },
   });
-  global.WIN = mainWindow;
-  // mainWindow.webContents.send("SENDSTORE", store.get("sendType") || "0");
+  global.WIN = appWindow;
 
-  mainWindow.once("ready-to-show", () => {
-    mainWindow.setTitle("员工工作平台");
-    mainWindow.show();
-    if (!ipc) ipc = new IPC(mainWindow);
+  appWindow.once("ready-to-show", () => {
+    appWindow.setTitle("员工工作平台");
+    appWindow.show();
+    if (!ipc) ipc = new IPC(appWindow);
     app.setAppUserModelId("员工工作平台");
   });
-  mainWindow.on("close", function (e) {
+  appWindow.on("close", function (e) {
     if (!forceQuit && appWindow && app) {
       e.preventDefault();
       try {
         if (process.platform === "darwin") {
           app.hide();
         } else {
-          mainWindow.hide();
+          appWindow.hide();
         }
       } catch { }
     }
   });
-  mainWindow.on("show", function () {
+  appWindow.on("show", function () {
     num = 0;
     if (appTray) {
       appTray.setTitle("");
@@ -135,40 +135,37 @@ function createWindow() {
     appWindow.flashFrame(false);
   });
 
-  mainWindow.on("blur", function () {
-    //console.log("mainWindow blur");
-    mainWindow.webContents.send("mainProcessMessage", false);
+  appWindow.on("blur", function () {
+    appWindow.webContents.send("mainProcessMessage", false);
   });
-  mainWindow.on("focus", function () {
-    //console.log("mainWindow focus");
-    // mainWindow.webContents.send("SENDSTORE", store.get("sendType") || "0");
+  appWindow.on("focus", function () {
     clearInterval(timer);
     setTimeout(() => {
       appTray.setImage(trayIcon);
     }, 600);
-    mainWindow.webContents.send("mainProcessMessage", true);
+    appWindow.webContents.send("mainProcessMessage", true);
   });
 
-  mainWindow.on("minimize", function () {
+  appWindow.on("minimize", function () {
     if (process.platform !== "darwin") {
       // windows
-      mainWindow.webContents.send("mainProcessMessage", false);
+      appWindow.webContents.send("mainProcessMessage", false);
     }
   });
-  mainWindow.on("maximize", function () {
+  appWindow.on("maximize", function () {
     if (process.platform !== "darwin") {
       // windows
-      mainWindow.webContents.send("mainProcessMessage", false);
+      appWindow.webContents.send("mainProcessMessage", false);
     }
   })
 
   if (process.env?.NODE_ENV?.trim() === 'development') {
-    mainWindow.loadURL(`http://localhost:3000`);
+    appWindow.loadURL(`http://localhost:3000`);
     // 打开调试工具
-    mainWindow.webContents.openDevTools();
+    appWindow.webContents.openDevTools();
   } else {
-    mainWindow.webContents.openDevTools(); //正式生产不需要开启
-    mainWindow.loadURL(
+    appWindow.webContents.openDevTools(); //正式生产不需要开启
+    appWindow.loadURL(
       url.format({
         pathname: path.join(__dirname, '../../bundle/index.html'),
         protocol: 'file:',
@@ -178,7 +175,7 @@ function createWindow() {
   }
 
   let sendUpdateMessage = (message, data) => {
-    mainWindow.webContents.send("message", {
+    appWindow.webContents.send("message", {
       message,
       data,
     });
@@ -232,28 +229,12 @@ function createWindow() {
     //执行自动更新检查
     autoUpdater.checkForUpdates();
   };
-  setTimeout(checkForUpdates, 1000)
+  // setTimeout(checkForUpdates, 1000)
   ipcMain.on("CHANGESTORE", function (event, data) {
     //console.log(data);
     store.set("sendType", data);
   });
-  // 防止同时打开多个客户端
-  // const gotTheLock = app.requestSingleInstanceLock();
-  // if (!gotTheLock) {
-  //   app.quit();
-  // } else {
-  //   app.on("second-instance", (event) => {
-  //     if (mainWindow) {
-  //       if (mainWindow.isMinimized()) mainWindow.restore();
-  //       mainWindow.focus();
-  //     }
-  //   });
-  //   app.on("ready", () => {
-  //     createWindow();
-  //     const { Menu } = require("electron");
-  //     Menu.setApplicationMenu(null); // 隐藏菜单栏
-  //   });
-  // }
+
   // 注册截图快捷键
   globalShortcut.register("CommandOrControl+Shift+X", () => {
     // "start C:\\Users\\MiMyMine\\Desktop\\demo\\cut.exe";
@@ -265,7 +246,7 @@ function createWindow() {
       fs.writeFile(url, pngs, (err) => {
         fs.readFile(url, (err, data) => {
           console.log(data, 'data............')
-          mainWindow.webContents.send("screenShotUrl", {
+          appWindow.webContents.send("screenShotUrl", {
             data,
             url,
           });
@@ -301,7 +282,7 @@ function createWindow() {
         fs.writeFile(url, pngs, (err) => {
           fs.readFile(url, (err, data) => {
             console.log(url, 'path================')
-            mainWindow.webContents.send("screenShotUrl", {
+            appWindow.webContents.send("screenShotUrl", {
               data,
               url,
             });
@@ -310,10 +291,7 @@ function createWindow() {
       }
     );
   });
-  // ipcMain.on('UPLOAD', (event, data) => {
-  //   console.log(data, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-  //   mainWindow.webContents.send('UPLOADPROGRESS', data)
-  // })
+
 
   //文件另存成
   ipcMain.on("fileSave", function (event, {
@@ -321,7 +299,7 @@ function createWindow() {
     name
   }) {
     console.log("文件另存成原地址", url)
-    mainWindow.webContents.downloadURL(url)
+    appWindow.webContents.downloadURL(url)
   })
 
   // 打开文件
@@ -371,7 +349,7 @@ function createWindow() {
             //不换行输出
             let percentage = Math.round(progressData.percentage) + "%";
             //console.log(percentage, '下载进度');
-            mainWindow.webContents.send("PERCENTAGE", percentage);
+            appWindow.webContents.send("PERCENTAGE", percentage);
             if (Number(progressData.percentage) === 100) {
               const localUrl = path.join(process.cwd(), "/download/", file_name);
               shell.openPath(localUrl);
@@ -397,7 +375,7 @@ function createWindow() {
     const localUrl = path.join(process.cwd(), "/download/", name);
     shell.openPath(localUrl);
   });
-  return mainWindow;
+  return appWindow;
 }
 
 let timer;
@@ -495,9 +473,21 @@ app.whenReady().then(() => {
   Menu.setApplicationMenu(menu);
 
   appTray = setAppTray();
-
-  if (BrowserWindow.getAllWindows().length === 0) {
-    appWindow = createWindow();
+  // 防止同时打开多个客户端
+  const gotTheLock = app.requestSingleInstanceLock();
+  if (!gotTheLock) {
+    dialog.showErrorBox('错误','存在已经运行的应用程序，请关闭后在启动')
+    app.quit()
+  } else {
+    app.on("second-instance", (event) => {
+      if (appWindow) {
+        if (appWindow.isMinimized()) appWindow.restore();
+        appWindow.focus();
+      }
+    });
+    if (BrowserWindow.getAllWindows().length === 0) {
+      appWindow = createWindow();
+    }
   }
 });
 
