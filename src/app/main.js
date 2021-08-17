@@ -238,22 +238,22 @@ function createWindow() {
     store.set("sendType", data);
   });
   // 防止同时打开多个客户端
-  const gotTheLock = app.requestSingleInstanceLock();
-  if (!gotTheLock) {
-    app.quit();
-  } else {
-    app.on("second-instance", (event) => {
-      if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore();
-        mainWindow.focus();
-      }
-    });
-    app.on("ready", () => {
-      createWindow();
-      const { Menu } = require("electron");
-      Menu.setApplicationMenu(null); // 隐藏菜单栏
-    });
-  }
+  // const gotTheLock = app.requestSingleInstanceLock();
+  // if (!gotTheLock) {
+  //   app.quit();
+  // } else {
+  //   app.on("second-instance", (event) => {
+  //     if (mainWindow) {
+  //       if (mainWindow.isMinimized()) mainWindow.restore();
+  //       mainWindow.focus();
+  //     }
+  //   });
+  //   app.on("ready", () => {
+  //     createWindow();
+  //     const { Menu } = require("electron");
+  //     Menu.setApplicationMenu(null); // 隐藏菜单栏
+  //   });
+  // }
   // 注册截图快捷键
   globalShortcut.register("CommandOrControl+Shift+X", () => {
     // "start C:\\Users\\MiMyMine\\Desktop\\demo\\cut.exe";
