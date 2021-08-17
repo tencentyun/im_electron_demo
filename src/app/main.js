@@ -10,7 +10,7 @@ const {
   clipboard,
   shell,
 } = require("electron");
-//const { autoUpdater } = require('electron-updater')
+const { autoUpdater } = require('electron-updater')
 const feedUrl = `https://oaim.uat.crbank.com.cn:30003/_download/`;//http://oaim.crbank.com.cn:30003/_download/
 const TimMain = require("im_electron_sdk/dist/main");
 const url = require("url");
