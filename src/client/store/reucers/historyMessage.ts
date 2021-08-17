@@ -106,7 +106,11 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
             return oldMessage
           }
       });
-      if(!matched) newMessageList.unshift(payload.message)
+      if(!matched) {
+          const baseTime = newMessageList && newMessageList.length > 0 ? newMessageList[0].message_client_time : 0;
+          const timeDividerResult = addTimeDivider([payload.message], baseTime).reverse();
+          newMessageList.unshift(...timeDividerResult);
+      }
       
       return {
         ...state,
