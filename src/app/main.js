@@ -11,7 +11,7 @@ const {
   shell,
 } = require("electron");
 //const { autoUpdater } = require('electron-updater')
-const feedUrl = `http://localhost/`;//http://oaim.crbank.com.cn:30003/_download/
+const feedUrl = `https://oaim.uat.crbank.com.cn:30003/_download/`;//http://oaim.crbank.com.cn:30003/_download/
 const TimMain = require("im_electron_sdk/dist/main");
 const url = require("url");
 const path = require("path");
@@ -232,7 +232,7 @@ function createWindow() {
     //执行自动更新检查
     autoUpdater.checkForUpdates();
   };
-  //setTimeout(checkForUpdates, 1000)
+  setTimeout(checkForUpdates, 1000)
   ipcMain.on("CHANGESTORE", function (event, data) {
     //console.log(data);
     store.set("sendType", data);
