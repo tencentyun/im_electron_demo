@@ -607,7 +607,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 currentUrl = currentNode.currentSrc
             }
         } else if (elem_type === 4) {
-            ipcRenderer.send('openfilenow', currentMsgItem)
+            // ipcRenderer.send('openfilenow', currentMsgItem)
         } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
             currentUrl = custom_elem_desc
         }

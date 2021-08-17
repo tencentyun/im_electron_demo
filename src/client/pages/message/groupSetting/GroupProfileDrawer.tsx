@@ -2,7 +2,7 @@
  * 群主修改群资料， 消息提示方式与群名片 群成员可修改，不在此展示
  */
 import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
-import { Form, Input, Button, Checkbox, Select, Drawer, H3, message } from "tea-component";
+import { Form, Input, Button, Checkbox, Select, Drawer, H3, message, RadioGroup, Radio} from "tea-component";
 import React, { useState } from "react";
 import { Form as FinalForm, Field } from "react-final-form";
 import "./member-list-drawer.scss";
@@ -49,9 +49,9 @@ export const GroupProfileDrawer = (props: {
     group_detial_info_add_option,
     group_detial_info_notification,
     group_detial_info_introduction,
-    group_detial_info_is_shutup_all
+    group_detial_info_is_shutup_all,
+    group_detial_info_custom_info
   } = groupDetail
-
   const dispatch = useDispatch();
   const { currentSelectedConversation } = useSelector(
     (state: State.RootState) => state.conversation
@@ -69,6 +69,15 @@ export const GroupProfileDrawer = (props: {
     }
   };
 
+  const _groupInforCustom = (type_key) => {
+    return group_detial_info_custom_info?.filter(item => item.group_info_custom_string_info_key == type_key)[0] 
+    }
+    
+    const _retrunCustomField = (type_key) => {
+    return _groupInforCustom(type_key)?.group_info_custom_string_info_value
+    }
+    
+    
    // eslint-disable-next-line
    const _handlerSubmit = async (formValue) => {
     const {
@@ -77,6 +86,8 @@ export const GroupProfileDrawer = (props: {
       groupIntroduction,
       group_detial_info_face_url,
       joinGroupMode,
+      groupPression,
+      groupInvitation,
       muteFlag
     } = formValue
     try {
@@ -87,6 +98,20 @@ export const GroupProfileDrawer = (props: {
         ...(group_detial_info_introduction != groupIntroduction && {group_modify_info_param_introduction: groupIntroduction} ),
         ...(group_detial_info_face_url != avatarUrl && {group_modify_info_param_face_url: avatarUrl || group_detial_info_face_url} ),
         ...(group_detial_info_add_option != joinGroupMode && {group_modify_info_param_add_option: Number(formValue.joinGroupMode)} ),
+        ...(_retrunCustomField("group_permission") != groupPression && {group_modify_info_param_custom_info: [{
+          group_info_custom_string_info_key:"group_permission",
+          group_info_custom_string_info_value:groupPression
+        },{
+          group_info_custom_string_info_key:"group_invitation",
+          group_info_custom_string_info_value:groupInvitation
+        }]} ),
+        ...(_retrunCustomField("group_invitation") != groupInvitation && {group_modify_info_param_custom_info: [{
+          group_info_custom_string_info_key:"group_permission",
+          group_info_custom_string_info_value:groupPression
+        },{
+          group_info_custom_string_info_key:"group_invitation",
+          group_info_custom_string_info_value:groupInvitation
+        }]} ),
         ...(group_detial_info_is_shutup_all != muteFlag && {group_modify_info_param_is_shutup_all: muteFlag} )
       }
       const length = Object.keys(modifyParams).length
@@ -138,6 +163,8 @@ export const GroupProfileDrawer = (props: {
             groupName: group_detial_info_group_name,
             groupType: group_detial_info_group_type,
             joinGroupMode: String(group_detial_info_add_option),
+            groupPression:_retrunCustomField("group_permission"),
+            groupInvitation:_retrunCustomField("group_invitation"),
             groupAnnouncement: group_detial_info_notification,
             groupIntroduction: group_detial_info_introduction,
             muteFlag: group_detial_info_is_shutup_all
@@ -215,6 +242,53 @@ export const GroupProfileDrawer = (props: {
                       )}
                     </Field>
                   )}
+                                  <Field
+                  name="groupPression"
+                  disabled={submitting}
+                  validateOnBlur
+                  validateFields={[]}
+                  validate={(value) => validateOldValue(value, "群组资料")}
+                >
+                  {({ input, meta }) => (
+                    <Form.Item
+                      required
+                      label="群组资料"
+                      status={getStatus(meta, validating)}
+                      message={
+                        getStatus(meta, validating) === "error" && meta.error
+                      }
+                    >
+                      <RadioGroup {...input}>
+                        <Radio name="0">仅管理员可修改</Radio>
+                        <Radio name="1">所有人可修改</Radio>
+                      </RadioGroup>
+                    </Form.Item>
+                  )}
+                </Field>
+                <Field
+                  name="groupInvitation"
+                  disabled={submitting}
+                  validateOnBlur
+                  validateFields={[]}
+                  validate={(value) => validateOldValue(value, "邀请入群")}
+                >
+                  {({ input, meta }) => (
+                    <Form.Item
+                      required
+                      label="邀请入群"
+                      status={getStatus(meta, validating)}
+                      message={
+                        getStatus(meta, validating) === "error" && meta.error
+                      }
+                    >
+                      <RadioGroup {...input}>
+                        <Radio name="0">仅管理员可邀请</Radio>
+                        <Radio name="1">所有人可邀请</Radio>
+                        <Radio name="2">不可邀请</Radio>
+                      </RadioGroup>
+                    </Form.Item>
+                  )}
+                </Field>
                   <Field
                     name="groupAnnouncement"
                     disabled={submitting}

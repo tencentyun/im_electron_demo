@@ -1,4 +1,4 @@
-const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN,CHECK_FILE_EXIST, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
+const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, CHECK_FILE_EXIST, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
 const { ipcMain, BrowserWindow, dialog } = require('electron')
 const { screen } = require('electron')
 const fs = require('fs')
@@ -32,7 +32,7 @@ class IPC {
     callWindow = null; // 通话窗口
     imWindowEvent = null; // 聊天窗口
     constructor(win) {
-        const env =  process.env?.NODE_ENV?.trim();;
+        const env = process.env?.NODE_ENV?.trim();;
         const isDev = env === 'development';
         setPath(isDev);
         this.win = win;
@@ -43,7 +43,7 @@ class IPC {
                 case CHECK_FILE_EXIST:
                     return await this.checkFileExist(params);
             }
-            
+
         })
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             console.log("get message from render process", event.processId, data)
@@ -70,7 +70,7 @@ class IPC {
                 case SELECT_FILES:
                     this.selectFiles(event, params);
                     break;
-                
+
             }
         });
 
@@ -78,12 +78,12 @@ class IPC {
         this.createNewWindow(isDev);
         this.eventListiner(isDev);
     }
-    async checkFileExist(path){
-        return new Promise((resolve)=>{
-            fs.access(path,(err=>{
-                if(err){
+    async checkFileExist(path) {
+        return new Promise((resolve) => {
+            fs.access(path, (err => {
+                if (err) {
                     resolve(false)
-                }else{
+                } else {
                     resolve(true)
                 }
             }))
@@ -218,7 +218,7 @@ class IPC {
             }
         }
     }
-    downloadFilesByUrl({ url:file_url,name }) {
+    downloadFilesByUrl({ url: file_url, name, fileid }) {
         try {
             const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
             this.mkdirsSync(downloadDicPath)
@@ -264,9 +264,16 @@ class IPC {
                         time: 100 /* ms */
                     });
                     // 下载进度 
-                    str.on('progress', function (progressData) {
+                    str.on('progress', (progressData) => {
                         //不换行输出
                         let percentage = Math.round(progressData.percentage) + '%';
+                        if (fileid) {
+                            try {
+                                this.win.webContents.send(fileid, progressData.percentage)
+                            } catch (err) {
+
+                            }
+                        }
                         console.log(percentage);
                     });
                     res.body.pipe(str).pipe(fileStream);

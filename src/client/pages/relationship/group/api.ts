@@ -72,7 +72,7 @@ export const createGroup = async (params: createGroupParams): Promise<any> => {
       group_info_custom_string_info_value:groupPression
     },{
       group_info_custom_string_info_key:"group_invitation",
-      group_info_custom_string_info_value:groupPression
+      group_info_custom_string_info_value:groupInvitation
     }],
     create_group_param_face_url: groupAvatarUrl,
     ...(groupMember && groupMember.length && { create_group_param_group_member_array: groupMember}),

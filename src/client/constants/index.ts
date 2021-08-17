@@ -84,7 +84,7 @@ const HUARUN_CONFIG = {
     'dev': {
         TIM_BASE_URL: 'http://localhost:3000',
         PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
-        EMOJIURL: 'https://oaim.crbank.com.cn:30003/emoji/',
+        EMOJIURL: 'https://oaim.uat.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
@@ -94,7 +94,7 @@ const HUARUN_CONFIG = {
     'test': {
         TIM_BASE_URL: 'https://oaim.uat.crbank.com.cn:30002',
         PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
-        EMOJIURL: 'https://oaim.crbank.com.cn:30003/emoji/',
+        EMOJIURL: 'https://oaim.uat.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
