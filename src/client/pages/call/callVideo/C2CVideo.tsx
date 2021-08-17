@@ -13,6 +13,7 @@ export const C2Cvideo = (props) => {
     const [ isUserEntering, setIsUserEntering ] = useState(false);
     const selfViewRef = useRef(null);
     const remoteViewRef = useRef(null);
+    const [rightTopVideo, setRightTopVideo] = useState('remote');
 
     useEffect(() => {
         event.on('toggleVideo', onVideoChanged);
@@ -22,7 +23,7 @@ export const C2Cvideo = (props) => {
     }, []);
 
     
-    const onVideoChanged = (shouldShow) => selfViewRef.current.style.display = shouldShow ? 'block' : 'none';
+    const onVideoChanged = (shouldShow) => selfViewRef.current.getElementsByTagName('canvas')[0].style.display = shouldShow ? 'block' : 'none';
 
     const onRemoteUserEnterRoom = () => setIsUserEntering(true);
 
@@ -46,17 +47,19 @@ export const C2Cvideo = (props) => {
             trtcInstance.startRemoteView(uid, remoteViewRef.current);
             trtcInstance.setRemoteViewFillMode(uid, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
         } else {
-            isVideoCall && (remoteViewRef.current.getElementsByTagName('div')[0].style.display = 'none');
+            isVideoCall && (remoteViewRef.current.getElementsByTagName('canvas')[0].style.display = 'none');
         }
     };
+
+    const handleDoubleClickVideo = (type) => setRightTopVideo(type);
 
     return (
         <div className="c2c-content">
             {
                 isVideoCall ? (
                     <React.Fragment>
-                        <div className="c2c-content--self" ref={selfViewRef} />
-                        <div className="c2c-content--remote" ref={remoteViewRef} />
+                        <div className={`c2c-content--self ${rightTopVideo === 'self' ? 'active' : ''}`} onDoubleClick={() => handleDoubleClickVideo('remote')} ref={selfViewRef} />
+                        <div className={`c2c-content--remote ${rightTopVideo === 'remote' ? 'active' : ''}`} onDoubleClick={() => handleDoubleClickVideo('self')} ref={remoteViewRef} />
                     </React.Fragment>
                 ) : <div className="c2c-content--voice-call">
                     <Avatar url={faceUrl} nickName={nickName} size={"large"}/>
