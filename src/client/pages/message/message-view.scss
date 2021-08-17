@@ -200,6 +200,15 @@
         .dplayer-controller .dplayer-icons .dplayer-icon .dplayer-icon-content{
             display: initial;
         }
+        @keyframes changewidth {
+            
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+          }
         &--file {
             width: 236px;
             height: 70px;
@@ -228,6 +237,11 @@
             }
             &___download.downloading {
                 background-image: url('../../assets/icon/loading.png');
+                animation-duration: 1s;
+                animation-name: changewidth;
+                animation-iteration-count: infinite;
+                animation-direction: alternate;
+                animation-fill-mode: forwards
             }
             &___ext{
                 width: 50px;

@@ -36,11 +36,11 @@ const showDialog = () => {
         type: SHOWDIALOG
     })
 }
-const downloadFilesByUrl = (url,name)=>{
+const downloadFilesByUrl = (url,name,fileid)=>{
     ipcRenderer.send(RENDERPROCESSCALL,{
         type:DOWNLOADFILE,
         params: {
-            url,name
+            url,name,fileid
         }
     })
 }

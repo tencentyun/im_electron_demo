@@ -6,6 +6,7 @@ import { shell } from 'electron'
 import { Icon, message as teaMessage } from "tea-component";
 import path from 'path';
 import os from 'os'
+import { ipcRenderer } from "electron";
 
 const FileElem = (props: any): JSX.Element => {
     const { message, element, index } = props
@@ -16,6 +17,7 @@ const FileElem = (props: any): JSX.Element => {
     const uploadProgress = uploadProgressList.get(progressKey);
     const [FileHTML, setFileHTML] = useState(null);
     const [isDownloading,setiSDownloading] = useState(false)
+    const [fileid,setFileID] = useState(message_msg_id)
     let backgroundStyle = ""
     let percentage = 0
 
@@ -91,22 +93,30 @@ const FileElem = (props: any): JSX.Element => {
         const exits: boolean = await checkFileExist(getFilePath())
         if (message_status === 1) return <Icon type="dismiss" className="message-view__item--file___close" onClick={handleCancel} />
         if (message_status === 2) {
-            if (message_is_from_self) {
-                return <div className="message-view__item--file___open" onClick={handleOpen}></div>
-            } else {
-                if (!exits) return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} onClick={savePic}></div>
+            if (!exits) return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} onClick={savePic}></div>
                 else return <div className="message-view__item--file___open" onClick={handleOpen}></div>
-            }
         }
     }
     const getDetailText = () => {
         if (message_status === 1) return <div className="message-view__item--file___content____size">{calcuSize()} 加速上传中 {percentage}%</div>
         if (message_status === 2) return <div className="message-view__item--file___content____size">{calcuSize()}</div>
     }
+    const handleProgress = (event,data)=>{
+        if(data === 100){
+            setiSDownloading(false)
+        }
+    }
+    const addProgessDownLoadListener = ()=>{
+        ipcRenderer.on(fileid,handleProgress)
+    }
+    const removeProgressListener = ()=>{
+        ipcRenderer.off(fileid,handleProgress)
+    }
     const downloadPic = (url,file_elem_file_name) => {
         try {
             setiSDownloading(true)
-            downloadFilesByUrl(url,file_elem_file_name)
+            
+            downloadFilesByUrl(url,file_elem_file_name,fileid)
         } catch (e) {
             teaMessage.error({
                 content: e
@@ -122,7 +132,15 @@ const FileElem = (props: any): JSX.Element => {
     }
     useEffect(() => {
         setHtml()
-    }, [])
+    }, [isDownloading])
+    useEffect(()=>{
+        if(fileid){
+            addProgessDownLoadListener();
+        }
+        return ()=>{    
+            removeProgressListener()
+        }
+    },[fileid])
     const item = () => {
         return (
             <div className="message-view__item--file" style={{ background: backgroundStyle }} onDoubleClick={showFile}>

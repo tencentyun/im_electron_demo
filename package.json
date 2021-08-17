@@ -28,17 +28,15 @@
     ],
     "productName": "员工工作平台",
     "appId": "huarunim",
-    "nsis": {	
-      "oneClick": false, 							
-      "allowElevation": false, 							
-      "allowToChangeInstallationDirectory": true, 	
-      "installerIcon": "./src/client/assets/icon/windows.png",		
-      "uninstallerIcon": "./src/client/assets/icon/windows.png",		
-      "installerHeaderIcon":"./src/client/assets/icon/windows.png", 
-      "createDesktopShortcut": true, 				
-      "createStartMenuShortcut": true,					
-      "shortcutName": "员工工作平台", 		
-      "guid":"huarunim"
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "shortcutName": "员工工作平台"
     },
     "mac": {
       "icon": "./icon/favicon.icns"
@@ -85,7 +83,6 @@
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
     "ffmpeg-extract-frame": "^1.0.2",
