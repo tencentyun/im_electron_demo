@@ -15,6 +15,7 @@ const FileElem = (props: any): JSX.Element => {
     const progressKey = `${message_msg_id}_${index}`
     const uploadProgress = uploadProgressList.get(progressKey);
     const [FileHTML, setFileHTML] = useState(null);
+    const [isDownloading,setiSDownloading] = useState(false)
     let backgroundStyle = ""
     let percentage = 0
 
@@ -93,7 +94,7 @@ const FileElem = (props: any): JSX.Element => {
             if (message_is_from_self) {
                 return <div className="message-view__item--file___open" onClick={handleOpen}></div>
             } else {
-                if (!exits) return <div className="message-view__item--file___download" onClick={savePic}></div>
+                if (!exits) return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} onClick={savePic}></div>
                 else return <div className="message-view__item--file___open" onClick={handleOpen}></div>
             }
         }
@@ -104,6 +105,7 @@ const FileElem = (props: any): JSX.Element => {
     }
     const downloadPic = (url,file_elem_file_name) => {
         try {
+            setiSDownloading(true)
             downloadFilesByUrl(url,file_elem_file_name)
         } catch (e) {
             teaMessage.error({
