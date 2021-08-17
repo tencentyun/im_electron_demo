@@ -27,7 +27,19 @@
       "bundle"
     ],
     "productName": "员工工作平台",
-    "appId": "electron-sdk",
+    "appId": "huarunim",
+    "nsis": {	
+      "oneClick": false, 							
+      "allowElevation": false, 							
+      "allowToChangeInstallationDirectory": true, 	
+      "installerIcon": "./src/client/assets/icon/windows.png",		
+      "uninstallerIcon": "./src/client/assets/icon/windows.png",		
+      "installerHeaderIcon":"./src/client/assets/icon/windows.png", 
+      "createDesktopShortcut": true, 				
+      "createStartMenuShortcut": true,					
+      "shortcutName": "员工工作平台", 		
+      "guid":"huarunim"
+    },
     "mac": {
       "icon": "./icon/favicon.icns"
     },
