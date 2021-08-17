@@ -21,13 +21,13 @@ const PicElemItem = (props: any): JSX.Element => {
             </div>
         )
     };
-    const downloadPic = (url,name) => {
-        downloadFilesByUrl(url,name)
+    const downloadPic = (url,name,fileid) => {
+        downloadFilesByUrl(url,name,fileid)
     }
     const savePic = () => {
         // 大图、原图、缩略图
-        const { image_elem_orig_url ,image_elem_orig_id} = props;
-        image_elem_orig_url && downloadPic(image_elem_orig_url,image_elem_orig_id)
+        const { image_elem_orig_url ,image_elem_orig_id,} = props;
+        image_elem_orig_url && downloadPic(image_elem_orig_url,image_elem_orig_id,image_elem_orig_id)
     }
     useEffect(() => {
         savePic()

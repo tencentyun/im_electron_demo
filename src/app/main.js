@@ -11,7 +11,7 @@ const {
   shell,
 } = require("electron");
 //const { autoUpdater } = require('electron-updater')
-const feedUrl = `http://localhost/`;//http://oaim.crbank.com.cn:30003/_download/
+const feedUrl = `https://oaim.uat.crbank.com.cn:30003/_download/`;//http://oaim.crbank.com.cn:30003/_download/
 const TimMain = require("im_electron_sdk/dist/main");
 const url = require("url");
 const path = require("path");
@@ -232,28 +232,28 @@ function createWindow() {
     //执行自动更新检查
     autoUpdater.checkForUpdates();
   };
-  //setTimeout(checkForUpdates, 1000)
+  setTimeout(checkForUpdates, 1000)
   ipcMain.on("CHANGESTORE", function (event, data) {
     //console.log(data);
     store.set("sendType", data);
   });
   // 防止同时打开多个客户端
-  const gotTheLock = app.requestSingleInstanceLock();
-  if (!gotTheLock) {
-    app.quit();
-  } else {
-    app.on("second-instance", (event) => {
-      if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore();
-        mainWindow.focus();
-      }
-    });
-    app.on("ready", () => {
-      createWindow();
-      const { Menu } = require("electron");
-      Menu.setApplicationMenu(null); // 隐藏菜单栏
-    });
-  }
+  // const gotTheLock = app.requestSingleInstanceLock();
+  // if (!gotTheLock) {
+  //   app.quit();
+  // } else {
+  //   app.on("second-instance", (event) => {
+  //     if (mainWindow) {
+  //       if (mainWindow.isMinimized()) mainWindow.restore();
+  //       mainWindow.focus();
+  //     }
+  //   });
+  //   app.on("ready", () => {
+  //     createWindow();
+  //     const { Menu } = require("electron");
+  //     Menu.setApplicationMenu(null); // 隐藏菜单栏
+  //   });
+  // }
   // 注册截图快捷键
   globalShortcut.register("CommandOrControl+Shift+X", () => {
     // "start C:\\Users\\MiMyMine\\Desktop\\demo\\cut.exe";

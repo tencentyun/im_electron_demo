@@ -83,7 +83,7 @@ const HUARUN_CONFIG = {
     // 开发环境
     'dev': {
         TIM_BASE_URL: 'http://localhost:3000',
-        PUBBLIC_ACCOUNTS_URL: 'http://oaim.uat.crbank.com.cn:30002',
+        PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
         EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,

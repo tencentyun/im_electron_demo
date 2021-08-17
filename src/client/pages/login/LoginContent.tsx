@@ -69,6 +69,25 @@ export const LoginContent = (): JSX.Element => {
     const [password, setPassword] = useState('');
     const isDisablelogin = userID && password;
 
+        document.addEventListener('DOMContentLoaded', () => {
+        console.log("自动更新2")
+        const { ipcRenderer } = require('electron');
+        ipcRenderer.on('message', (event, { message, data }) => {
+            console.log("自动更新进入")
+            console.log(message, data);
+            switch (message) {
+                case 'isUpdateNow':
+                    if (confirm('发现有新版本，是否现在更新？')) {
+                        ipcRenderer.send('updateNow');
+                    }
+                    break;
+                default:
+                    //document.querySelector('h1').innerHTML = message;
+                    break;
+            }
+        })
+    })
+
     const customizeTabBarRender = (children: JSX.Element) => {
         return <a className="customize-tab-bar">{children}</a>
     }
@@ -93,6 +112,7 @@ export const LoginContent = (): JSX.Element => {
             console.log(Encypt)
             
             const env = process.env.huarun_env
+            // const env = 'prod'
             let USERLOGIN;
             if(env=='prod'){
                 const res = await getUserLoginInfo({

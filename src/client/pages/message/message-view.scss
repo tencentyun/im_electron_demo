@@ -200,6 +200,15 @@
         .dplayer-controller .dplayer-icons .dplayer-icon .dplayer-icon-content{
             display: initial;
         }
+        @keyframes changewidth {
+            
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+          }
         &--file {
             width: 236px;
             height: 70px;
@@ -219,12 +228,21 @@
                 height: 18px;
                 margin-left: 10px;
                 margin-top: 35px;
-                background-image: url('../../assets/icon/file-message.svg');;
+                background-image: url('../../assets/icon/file-message.svg');
+                background-size: 18px 18px;
+                background-repeat: no-repeat;
             }
             &___download {
                 background-image: url('../../assets/icon/download.svg');
             }
-            
+            &___download.downloading {
+                background-image: url('../../assets/icon/loading.png');
+                animation-duration: 1s;
+                animation-name: changewidth;
+                animation-iteration-count: infinite;
+                animation-direction: alternate;
+                animation-fill-mode: forwards
+            }
             &___ext{
                 width: 50px;
                 height: 70px;
