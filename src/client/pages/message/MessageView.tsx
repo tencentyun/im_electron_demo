@@ -33,7 +33,7 @@ import TextElemItem from "./messageElemTyps/textElemItem";
 import PicElemItem from "./messageElemTyps/picElemItem";
 import CustomElem from "./messageElemTyps/customElem";
 import VoiceElem from "./messageElemTyps/voiceElem";
-import FileElem from "./messageElemTyps/fileElem";
+import FileElem, { getFilePath } from "./messageElemTyps/fileElem";
 import GroupTipsElemItem from "./messageElemTyps/grouptipsElem";
 import VideoElem from "./messageElemTyps/videoElem";
 import MergeElem from "./messageElemTyps/mergeElem";
@@ -50,7 +50,7 @@ import {
 } from "tea-component";
 import { custEmojiUpsert } from "../../services/custEmoji";
 import { custEmojiUpsertParams } from "../../services/custEmoji";
-import { showDialog } from "../../utils/tools";
+import { showDialog, checkFileExist } from "../../utils/tools";
 import { addTimeDivider } from "../../utils/addTimeDivider";
 import { HISTORY_MESSAGE_COUNT } from "../../constants";
 import GroupSysElm from "./messageElemTyps/groupSystemElem";
@@ -330,121 +330,23 @@ export const MessageView = (props: Props): JSX.Element => {
     setSeletedMessage([message]);
   };
 
-  const handleFileSave = (params) => {
-    console.log("文件另存为", params);
-    if (params.message && params.message.message_elem_array) {
-      const fileUrl = params.message.message_elem_array[0];
-      //     if(fileUrl.image_elem_large_url || fileUrl.file_elem_url || fileUrl.video_elem_video_url){
-      //         ipcRenderer.send('fileSave', {
-      //             url: fileUrl.image_elem_large_url || fileUrl.file_elem_url || fileUrl.video_elem_video_url,
-      //             name: fileUrl.file_elem_file_name
-      //         })
-      //     }
-      // }
-      var pdfurl =
-        fileUrl.image_elem_large_url ||
-        fileUrl.file_elem_url ||
-        fileUrl.video_elem_video_url;
-
-      var fileName = fileUrl.file_elem_file_name;
-
-      // 创建对象
-
-      var xhr = (xhr = new XMLHttpRequest());
-
-      // 创建一个 GET 请求，异步
-
-      xhr.open("GET", pdfurl, true);
-
-      // 设置返回数据的类型为arraybuffer
-
-      //xhr.responseType = 'arraybuffer';
-
-      xhr.responseType = "blob";
-
-      // 设置请求头值
-
-      //xhr.setRequestHeader(KEYS.JWTToken, getStorageItem(KEYS.JWTToken));
-
-      // 接收到完整的响应数据时触发回调处理函数
-
-      xhr.onload = function () {
-        if (this.status === 200) {
-          // 获取请求头Content-Type的值，用来判断是否是文件流下载
-
-          var type = xhr.getResponseHeader("Content-Type");
-
-          // application/json;charset=UTF-8：就是指“无类型”，一般的字节流用于数据传输，非文件下载
-
-          if (type === "application/json;charset=UTF-8") {
-            // this.response为arraybuffer对象，转为uint8数组
-            // var uint8 = new Uint8Array(this.response)
-            // 解决使用fromCharCode后中文乱码的问题
-            // var resToString = decodeURIComponent(escape((String.fromCharCode(...uint8))))
-            // var message = JSON.parse(resToString).message
-            // console.log(message)
-            // return
-          }
-
-          // Blob()的第一个参数必须为数组，即使只有一个字符串也必须用数组装起来
-
-          let blob = new Blob([this.response], { type: type });
-
-          // window.navigator.msSaveBlob：以本地方式保存文件
-
-          if (typeof window.navigator.msSaveBlob !== "undefined") {
-            window.navigator.msSaveBlob(blob, fileName);
-          } else {
-            let URL = window.URL || window.webkitURL;
-
-            // 创建新的URL表示指定的File对象或者Blob对象
-
-            let objectUrl = URL.createObjectURL(blob);
-
-            if (fileName) {
-              // 创建a标签用于跳转至下载链接
-
-              let a = document.createElement("a");
-
-              // download：指示浏览器下载URL而不是导航到它，也可设置下载文件的名称
-
-              if (typeof a.download === "undefined") {
-                // window.location：获得当前页面的地址 (URL)，并把浏览器重定向到新的页面
-
-                window.location = objectUrl;
-              } else {
-                // href属性指定下载链接
-
-                a.href = objectUrl;
-
-                // dowload属性指定文件名
-
-                a.download = fileName;
-
-                // 将a标签插入body中
-
-                document.body.appendChild(a);
-
-                // click()事件触发下载
-
-                a.click();
-
-                // 去除a标签，以免影响其他操作
-
-                a.remove();
-              }
-            } else {
-              window.location = objectUrl;
-            }
-
-            // 将URL释放
-
-            URL.revokeObjectURL(objectUrl);
-          }
+  const handleFileSave = async (params) => {
+    console.log("文件另存为", params)
+    if(params.message &&  params.message.message_elem_array){
+        const fileElement =  params.message.message_elem_array[0];
+        const fileName = fileElement.file_elem_file_name || fileElement.image_elem_orig_id;
+        const filePath = getFilePath(fileName);
+        const isExist = await checkFileExist(filePath);
+        const index= filePath.lastIndexOf(".");
+        const ext = filePath.substr(index+1);
+        if(!isExist) {
+            message.warning({content: '文件未下载，请先下载'});
+            return;
         }
-      };
-
-      xhr.send();
+        ipcRenderer.send('fileSave', {
+            url: filePath,
+            type: ext
+        });
     }
   };
 

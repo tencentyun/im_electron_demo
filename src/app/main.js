@@ -295,12 +295,19 @@ function createWindow() {
 
 
   //文件另存成
-  ipcMain.on("fileSave", function (event, {
-    url,
-    name
-  }) {
-    console.log("文件另存成原地址", url)
-    appWindow.webContents.downloadURL(url)
+  ipcMain.on("fileSave", function (event, data) {
+    const { url, type } = data;
+    dialog.showSaveDialog({
+      title: '另存为',
+      defaultPath: url,
+      filters: [
+        {name: type , extensions: [type]}
+      ]
+    }).then(saveTo => {
+      if(saveTo.filePath) {
+        fs.createReadStream(url).pipe(fs.createWriteStream(saveTo.filePath));
+      }
+    });
   })
 
   ipcMain.send("storagePath", path.resolve(cwd, "./download/"))
