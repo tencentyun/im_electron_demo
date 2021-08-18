@@ -69,7 +69,15 @@ export const GroupToolsDrawer = (props: {
   const profileDialogRef = useDialogRef<GroupProfileRecordsType>();
   const groupDetail: Partial<State.conversationItem['conv_profile']> = conversationInfo?.conv_profile || {};
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
-  const isOwener = groupDetail.group_detial_info_owener_identifier === userId  || [2,3].includes(mygroupInfor.group_member_info_member_role)
+    //2021年8月18日09:13:11  返回群资料自定义字段值  zwc
+  const returnsCustomValue = (type_key:string):string=> {
+      if(groupDetail.group_detial_info_custom_info && groupDetail.group_detial_info_custom_info.length){
+          return groupDetail.group_detial_info_custom_info.filter(item => item.group_info_custom_string_info_key == type_key)[0].group_info_custom_string_info_value
+      }else{
+          return ""
+      }
+  }
+  const isOwener = returnsCustomValue('group_permission') == '0' && (groupDetail.group_detial_info_owener_identifier === userId  || [2,3].includes(mygroupInfor.group_member_info_member_role)) ||  returnsCustomValue('group_permission') == '1'
   
   return (
     <Drawer

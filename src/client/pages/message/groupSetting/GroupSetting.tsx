@@ -54,6 +54,7 @@ export const GroupSetting = (props: {
         groupId={groupDetail.group_detial_info_group_id}
         groupName={groupDetail.group_detial_info_group_name}
         groupType={groupDetail.group_detial_info_group_type}
+        groupCustom={groupDetail.group_detial_info_custom_info}
         userIdentity={currentUserSetting.group_member_info_member_role}
         onRefresh={retry}
       />

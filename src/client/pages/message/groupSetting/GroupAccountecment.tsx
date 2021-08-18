@@ -9,11 +9,12 @@ import { useDialogRef } from "../../../utils/react-use/useDialog";
 export const GroupAccountecment = (props: {
   accountecment: string;
   groupId: string;
+  canEdit:boolean;
   userIdentity: number;
   groupType: number;
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
-  const { accountecment, groupId, userIdentity, groupType, onRefresh } = props;
+  const { accountecment, groupId, userIdentity, groupType, onRefresh, canEdit} = props;
 
   const [input, setInput] = useState(accountecment);
   const [isEdit, setIsEdit] = useState(false);
@@ -40,7 +41,7 @@ export const GroupAccountecment = (props: {
    * 用户身份类型 memberRoleMap
    * 群类型  groupTypeMap
    */
-  const canEdit = !isEdit && (groupType === 1 || [2, 3].includes(userIdentity));
+  // const canEdit = !isEdit && (groupType === 1 || [2, 3].includes(userIdentity));
 
   return (
     <>

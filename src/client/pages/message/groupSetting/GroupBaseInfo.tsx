@@ -7,6 +7,7 @@ import {
 } from "./EditGroupBaseInfoDialog";
 import { EditIcon } from "./EditIcon";
 import "./group-base-info.scss";
+import { GroupInfoCustemString } from '../../../typings/interface'
 
 const GROUP_TYPE_MAP = {
   0: "陌生人社交群(Public)",
@@ -20,7 +21,9 @@ export const GroupBaseInfo = (props: {
   groupAvatar: string;
   groupName: string;
   groupId: string;
+  groupCustom:Array<GroupInfoCustemString>;
   groupType: number;
+  canEdit:boolean;
   userIdentity: number;
   onRefresh: () => Promise<any>;
 }): JSX.Element => {
@@ -29,14 +32,13 @@ export const GroupBaseInfo = (props: {
     groupId,
     groupName,
     userIdentity,
+    canEdit,
     groupType,
     onRefresh,
+    groupCustom
   } = props;
 
   const editDialog = useDialogRef<EditGroupBaseInfoRecordsType>();
-
-  const canEdit =groupType === 1 || [2, 3].includes(userIdentity);
-
   return (
     <>
       <div className="group-base-info">
