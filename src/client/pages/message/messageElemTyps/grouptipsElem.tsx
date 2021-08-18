@@ -25,7 +25,7 @@ const GroupTipsElemItem = (props: any): JSX.Element => {
         const { group_tips_elem_op_user_info, group_tips_elem_group_change_info_array } = props;
         const { user_profile_nick_name, user_profile_identifier } = group_tips_elem_op_user_info;
         const res = []
-        for (let i = 0;i < group_tips_elem_group_change_info_array.length;i++) {
+        for (let i = 0;i < group_tips_elem_group_change_info_array?.length;i++) {
             res.push(`${user_profile_nick_name || user_profile_identifier}${groupInfoChange(group_tips_elem_group_change_info_array[i])}`)
         }
         return res

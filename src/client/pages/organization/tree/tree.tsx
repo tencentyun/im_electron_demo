@@ -43,7 +43,7 @@ const assemblyData = (data, childrenNode, itemChildren, labelNode, restLabel) =>
                     child[itemChildren][i].isLeaf = true
                     child[itemChildren][i].key = child[itemChildren][i].Uid
                     child[itemChildren][i].title = child[itemChildren][i][restLabel]
-                    child[itemChildren][i].icon = <UserOutlined style={{ color: '#2A86FF' }} />
+                    child[itemChildren][i].icon = <UserOutlined style={{ color: child[itemChildren][i].Title == "外部职员" ? 'red'  : '#2A86FF' }} />
                     child.children.push(child[itemChildren][i])
                 }
             }
