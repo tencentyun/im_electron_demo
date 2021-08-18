@@ -105,7 +105,7 @@ const HUARUN_CONFIG = {
     // 正是环境
     'prod': {
         TIM_BASE_URL: 'http://oaim.crbank.com.cn:30002',
-        TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
+        TRTC_BASE_URL: 'http://oaim.crbank.com.cn',
         PUBBLIC_ACCOUNTS_URL: 'http://oaim.crbank.com.cn:30002',
         EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.crbank.com.cn',
