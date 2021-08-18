@@ -8,6 +8,10 @@ import path from 'path';
 import os from 'os'
 import { ipcRenderer } from "electron";
 
+export const getFilePath = (fileName) => {
+    return path.resolve(os.homedir(), 'Download/', 'HuaRunIM/' + fileName)
+}
+
 const FileElem = (props: any): JSX.Element => {
     const { message, element, index } = props
     const { message_conv_id, message_conv_type, message_status, message_msg_id, message_is_from_self } = message
@@ -25,10 +29,6 @@ const FileElem = (props: any): JSX.Element => {
         const { cur_size, total_size } = uploadProgress
         percentage = Math.floor((cur_size / total_size) * 100)
         backgroundStyle = message_status === 1 ? `linear-gradient(to right, #D4FFEB ${percentage}%, white 0%, white 100%)` : ""
-    }
-
-    const getFilePath = () => {
-        return path.resolve(os.homedir(), 'Download/', 'HuaRunIM/' + file_elem_file_name)
     }
 
     const calcuSize = () => {
@@ -65,7 +65,7 @@ const FileElem = (props: any): JSX.Element => {
         return match ? match[1] : "unknow"
     }
     const handleOpen = () => {
-        const p = getFilePath()
+        const p = getFilePath(file_elem_file_name)
         try {
             shell.openPath(p).catch(err => {
                 shell.showItemInFolder(p)
@@ -90,7 +90,7 @@ const FileElem = (props: any): JSX.Element => {
         }
     }
     const getHandleElement = async () => {
-        const exits: boolean = await checkFileExist(getFilePath())
+        const exits: boolean = await checkFileExist(getFilePath(file_elem_file_name))
         if (message_status === 1) return <Icon type="dismiss" className="message-view__item--file___close" onClick={handleCancel} />
         if (message_status === 2) {
             if (!exits) return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} onClick={savePic}></div>
