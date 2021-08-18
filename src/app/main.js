@@ -310,7 +310,7 @@ function createWindow() {
     });
   })
 
-  ipcMain.send("storagePath", path.resolve(cwd, "./download/"))
+  // ipcMain.send("storagePath", path.resolve(process.cwd(), "./download/"))
 
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {

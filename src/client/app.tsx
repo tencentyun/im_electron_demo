@@ -198,8 +198,9 @@ export const App = () => {
     const handleNotify = (messages) => {
         const msgBother = window.localStorage.getItem('msgBother') || false
         console.log(showApp, '[[[[[[[[[[[[[[[', msgBother)
+        console.log(messages)
         // 客户端没有展示在最顶层或者设置了消息提示免打扰，就不接收消息通知
-        if (showApp || msgBother == 'false') {
+        if (showApp || msgBother == 'false' || messages[0].message_conv_type == 1) {
           return;
         }
         console.log(messages[0].message_elem_array[0], '通知消息------------------------------------', messages)
