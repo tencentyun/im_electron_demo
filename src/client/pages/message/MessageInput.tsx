@@ -114,6 +114,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const soundPicker = React.useRef(null);
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
+    console.log(editorState)
     const [sendType, setSendType] = useState(null); // 0->enter,1->ctrl+enter
     let editorInstance;
 
