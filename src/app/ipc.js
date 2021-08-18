@@ -1,4 +1,4 @@
-const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, CHECK_FILE_EXIST, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
+const { CLOSE, SDK_APP_ID,HIDE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, CHECK_FILE_EXIST, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
 const { ipcMain, BrowserWindow, dialog } = require('electron')
 const { screen } = require('electron')
 const fs = require('fs')
@@ -35,6 +35,7 @@ class IPC {
         const env = process.env?.NODE_ENV?.trim();;
         const isDev = env === 'development';
         setPath(isDev);
+        this.mkDownloadDic(); //创建download 文件目录
         this.win = win;
         ipcMain.handle(RENDERPROCESSCALL, async (event, data) => {
             const { type, params } = data;
@@ -57,6 +58,9 @@ class IPC {
                     break;
                 case CLOSE:
                     this.close();
+                    break;
+                case HIDE:
+                    this.hide();
                     break;
                 case SHOWDIALOG:
                     this.showDialog();
@@ -199,6 +203,9 @@ class IPC {
     minsizewin() {
         this.win.minimize()
     }
+    hide(){
+        this.win.hide()
+    }
     maxsizewin() {
         this.win.isMaximized() ? this.win.unmaximize() : this.win.maximize()
     }
@@ -218,10 +225,13 @@ class IPC {
             }
         }
     }
+    mkDownloadDic() {
+        const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
+        this.mkdirsSync(downloadDicPath)
+    }
     downloadFilesByUrl({ url: file_url, name, fileid }) {
         try {
             const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
-            this.mkdirsSync(downloadDicPath)
             let file_name
             let file_path
             let file_path_temp

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, } from "react";
+import { useSelector } from "react-redux";
 import { useDialogRef } from "../../../utils/react-use/useDialog";
 import { Avatar } from "../../../components/avatar/avatar";
 import { useMessageDirect } from "../../../utils/react-use/useDirectMsgPage";
@@ -12,19 +13,22 @@ import {
   DeleteMemberRecordsType,
 } from "./DeleteGroupMember";
 import { getUserTypeQuery } from "../../../services/userType";
-import { AddMemberRecordsType, 
-  AddGroupMemberDialog } from '../../../components/pull/pull'
+import {
+  AddMemberRecordsType,
+  AddGroupMemberDialog
+} from '../../../components/pull/pull'
 
 import { GroupMemberBubble } from "./GroupMemberBubble";
-import { getLoginUserID, getGroupMemberList, getAllGroupMemberList} from '../api';
+import { getLoginUserID, getGroupMemberList, getAllGroupMemberList } from '../api';
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
-
+import { GroupInfoCustemString } from '../../../typings/interface'
 export const GroupMember = (props: {
   onRefresh: () => Promise<any>;
   userIdentity: number;
   userId: string;
   groupId: string;
   groupType: number;
+  groupCustom:Array<GroupInfoCustemString>,
   groupAddOption: number;
   memberCount: number
 }): JSX.Element => {
@@ -32,11 +36,14 @@ export const GroupMember = (props: {
     groupId,
     groupType,
     userIdentity,
+    groupCustom,
     memberCount
   } = props;
 
   const [userList, setUserList] = useState([]);
-
+  const { mygroupInfor } = useSelector(
+    (state: State.RootState) => state.section
+  );
   const getAllMemberList = async () => {
     const res = await getAllGroupMemberList({
       groupId,
@@ -51,20 +58,36 @@ export const GroupMember = (props: {
     getAllMemberList();
   }, []);
 
-  const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();  
+  const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();
   // const userList: any = value?.group_get_memeber_info_list_result_info_array || [];
   const popupContainer = document.getElementById("messageInfo");
   const dialogRef = useDialogRef<GroupMemberListDrawerRecordsType>();
 
   const deleteMemberDialogRef = useDialogRef<DeleteMemberRecordsType>();
-
-  const memberList = userList?.filter(
+  const { currentSelectedConversation } = useSelector(
+    (state: State.RootState) => state.conversation
+  );
+  const memberList = userList ?.filter(
     (item) => ![2, 3].includes(item.group_member_info_member_role)
   );
 
-  // 可拉人进群条件为 群类型不为直播群且当前群没有设置禁止加入
+  //2021年8月18日09:13:11  返回群资料自定义字段值  zwc
+  const returnsCustomValue = (type_key: string, groupCustomMayn: Array<GroupInfoCustemString>): string => {
+    if (groupCustomMayn && groupCustomMayn.length) {
+      return groupCustomMayn.filter(item => item.group_info_custom_string_info_key == type_key)[0].group_info_custom_string_info_value
+    } else {
+      return ""
+    }
+  }
+   const [canInviteMember, setCanInviteMember] = useState(groupType == 1 || ([0, 1, 2].includes(groupType) && (returnsCustomValue('group_invitation', groupCustom) == '1' || (returnsCustomValue('group_invitation', groupCustom) == '0' && [2, 3].includes(mygroupInfor.group_member_info_member_role)))))
+   //自定义字段更新 刷新页面
+   useEffect(() => {
+      setCanInviteMember(groupType == 1 || ([0, 1, 2].includes(groupType) && (returnsCustomValue('group_invitation', currentSelectedConversation?.conv_profile?.group_detial_info_custom_info) == '1' || (returnsCustomValue('group_invitation', currentSelectedConversation?.conv_profile?.group_detial_info_custom_info) == '0' && [2, 3].includes(mygroupInfor.group_member_info_member_role)))))
+  }, [currentSelectedConversation?.conv_profile?.group_detial_info_custom_info]);
+
+  // 可拉人进群条件为 群类型不为直播群且当前群没有设置禁止加入   讨论组忽略随便邀请
   console.log("可拉人进群条件为 群类型不为直播群且当前群没有设置禁止加入", groupType)
-  const canInviteMember = [0, 1, 2].includes(groupType);
+
 
   /**
    * 对于私有群：只有创建者可删除群组成员。
@@ -142,11 +165,11 @@ export const GroupMember = (props: {
               <a>查看</a>
             </span>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
         </div>
         <div className="group-member--avatar">
-          {JSON.parse(JSON.stringify(userList))?.slice(0, 15)?.map((v, index) => (
+          {JSON.parse(JSON.stringify(userList)) ?.slice(0, 15) ?.map((v, index) => (
             <div
               className="group-member--avatar-box"
               key={`${v.group_member_info_face_url}-${index}`}
@@ -160,8 +183,8 @@ export const GroupMember = (props: {
                   <>
                     <Avatar
                       url={v.group_member_info_face_url}
-                      isClick = {false}
-                      key={ v.group_member_info_face_url }
+                      isClick={false}
+                      key={v.group_member_info_face_url}
                       isPreview={true}
                       nickName={v.group_member_info_nick_name}
                       userID={v.group_member_info_identifier}
@@ -170,11 +193,11 @@ export const GroupMember = (props: {
                 }
               />
               {
-                   <span className='group-member--avatar-identity'>
-                     {
-                        v.group_member_info_member_role == 3 ? "群主" : v.group_member_info_member_role == 2 ? "管理员" : ""
-                     }
-                   </span>
+                <span className='group-member--avatar-identity'>
+                  {
+                    v.group_member_info_member_role == 3 ? "群主" : v.group_member_info_member_role == 2 ? "管理员" : ""
+                  }
+                </span>
               }
               <span
                 title={
@@ -187,11 +210,11 @@ export const GroupMember = (props: {
                     : "",
                 ].join(" ")}
               ></span>
-              <div className ="group-member--avatar-name">
+              <div className="group-member--avatar-name">
                 {
-                   v.group_member_info_name_card  || v.group_member_info_nick_name
+                  v.group_member_info_name_card || v.group_member_info_nick_name
                 }
-              </div> 
+              </div>
             </div>
           ))}
           {canInviteMember && (
@@ -211,8 +234,8 @@ export const GroupMember = (props: {
               }
             ></span>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
         </div>
       </div>
 

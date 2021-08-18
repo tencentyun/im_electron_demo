@@ -1,4 +1,4 @@
-import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW } from "../../app/const/const";
+import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW, HIDE } from "../../app/const/const";
 
 import { ipcRenderer, remote } from 'electron';
 
@@ -23,6 +23,12 @@ const maxSizeWin = () => {
 const closeWin = () => {
     ipcRenderer.send(RENDERPROCESSCALL, {
         type: CLOSE
+    })
+}
+
+const hideWin = () => {
+    ipcRenderer.send(RENDERPROCESSCALL, {
+        type: HIDE
     })
 }
 
@@ -141,5 +147,6 @@ export {
     highlightText,
     openCallWindow,
     callWindowCloseListiner,
-    previewVvatar
+    previewVvatar,
+    hideWin
 }

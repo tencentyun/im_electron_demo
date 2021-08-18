@@ -69,6 +69,11 @@ export const GroupProfileDrawer = (props: {
     }
   };
 
+  //如果不管理员或群主不显示权限按钮
+  const { mygroupInfor } = useSelector(
+    (state: State.RootState) => state.section
+  );
+  const isOwen = [2, 3].includes(mygroupInfor.group_member_info_member_role)
   const _groupInforCustom = (type_key) => {
     return group_detial_info_custom_info ?.filter(item => item.group_info_custom_string_info_key == type_key)[0] 
     }
@@ -217,7 +222,7 @@ export const GroupProfileDrawer = (props: {
                       </Form.Item>
                     )}
                   </Field>
-                  {groupType == "0" && (
+                  {groupType == "0" && isOwen && (
                     <>
                       <Field
                         name="joinGroupMode"
@@ -336,22 +341,26 @@ export const GroupProfileDrawer = (props: {
                       </Form.Item>
                     )}
                   </Field>
-
-                  <Field
-                    name="muteFlag"
-                    disabled={submitting}
-                  >
-                    {({ input }) => (
-                      <Form.Item
-                        label="群禁言"
+                  {
+                    groupType == "0" && isOwen && (
+                      <Field
+                        name="muteFlag"
+                        disabled={submitting}
                       >
-                        <Checkbox
-                          {...input}
-                          disabled={submitting}
-                        />
-                      </Form.Item>
-                    )}
-                  </Field>
+                        {({ input }) => (
+                          <Form.Item
+                            label="群禁言"
+                          >
+                            <Checkbox
+                              {...input}
+                              disabled={submitting}
+                            />
+                          </Form.Item>
+                        )}
+                      </Field>
+                    )
+
+                  }
                 </Form>
                 <Form.Action style={{ textAlign: 'center' }}>
                   <Button

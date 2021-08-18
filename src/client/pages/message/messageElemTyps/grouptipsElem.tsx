@@ -1,6 +1,7 @@
 import React from "react";
 
 import withMemo from "../../../utils/componentWithMemo";
+import { GroupInvitation, GroupRermission } from '../../../typings/interface'
 
 const GroupTipsElemItem = (props: any): JSX.Element => {
 
@@ -25,8 +26,15 @@ const GroupTipsElemItem = (props: any): JSX.Element => {
         const { group_tips_elem_op_user_info, group_tips_elem_group_change_info_array } = props;
         const { user_profile_nick_name, user_profile_identifier } = group_tips_elem_op_user_info;
         const res = []
-        for (let i = 0;i < group_tips_elem_group_change_info_array?.length;i++) {
-            res.push(`${user_profile_nick_name || user_profile_identifier}${groupInfoChange(group_tips_elem_group_change_info_array[i])}`)
+        //自定义字段修改  zwc
+        if(group_tips_elem_group_change_info_array?.filter(item => item?.group_tips_group_change_info_key == "group_invitation")?.length){
+            let GroupInvitationMy =  group_tips_elem_group_change_info_array.filter(item => item.group_tips_group_change_info_key == "group_invitation")[0].group_tips_group_change_info_value
+            let GroupRermissionMy =   group_tips_elem_group_change_info_array.filter(item => item.group_tips_group_change_info_key == "group_permission")[0].group_tips_group_change_info_value
+            res.push(`${user_profile_nick_name || user_profile_identifier}将群资料权限设置为${GroupRermission[GroupRermissionMy]}、邀请入群设置为${GroupInvitation[GroupInvitationMy]}`,)
+        }else{
+            for (let i = 0;i < group_tips_elem_group_change_info_array?.length;i++) {
+                res.push(`${user_profile_nick_name || user_profile_identifier}${groupInfoChange(group_tips_elem_group_change_info_array[i])}`)
+            }
         }
         return res
     }

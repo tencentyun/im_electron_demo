@@ -155,7 +155,7 @@ export const bufferToBase64Url = (data: string, type: string) => {
 }
 
 const getFilePath = () => {
-  return path.resolve(os.homedir(), 'Download/', `HuaRunIM/ScreenShot/${new Date().getTime()}-screent-shot.png`)
+  return path.resolve(os.homedir(), 'Download/', `HuaRunIM/${new Date().getTime()}-screent-shot.png`)
 }
 
 export const fileReaderAsBuffer = async (file: File) => {

@@ -27,13 +27,16 @@ export const ConnectUs = (): JSX.Element => {
                 </div>
                 <div className="connect-desc">
                     <p>
-                        企业数字化转型的通信助手
+                        珠海华润银行
                     </p>
                     <p>
-                        简单接入，稳定必达、覆盖全球的即时通信云服务
+                        总行智能科技部
+                    </p>
+                    <p>
+                        联系邮箱：yangguang@crbank.com.cn
                     </p>
                 </div>
-                <div className="im-logo"></div>
+                {/* <div className="im-logo"></div> */}
                 <div className="connect-us-button">
                     {/* <Button type="primary" onClick={handlePurchaseClick}  className="connect-us-button--purchase">立即选购</Button> */}
                     {/* <Button type="weak" onClick={handleContactClick} className="connect-us-button--contact">联系我们</Button> */}

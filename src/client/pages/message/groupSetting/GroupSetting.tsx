@@ -16,9 +16,10 @@ import { GroupJoinOption } from "./GroupJoinOption";
 
 export const GroupSetting = (props: {
   conversationInfo: State.conversationItem;
+  canEdit:boolean;
   close: () => void;
 }): JSX.Element => {
-  const { conversationInfo, close } = props;
+  const { conversationInfo, close, canEdit} = props;
   const groupId = conversationInfo.conv_id;
   
 
@@ -54,8 +55,8 @@ export const GroupSetting = (props: {
         return ""
     }
   }
-  //是讨论组  这是权限管理员 或 全员
-  const canEdit = returnsCustomValue('group_permission') == '0' && (groupDetail?.group_detial_info_group_type === 1 || [2, 3].includes(currentUserSetting.group_member_info_member_role)) ||  returnsCustomValue('group_permission') == '1';
+ 
+  // const canEdit = groupDetail.group_detial_info_group_type == 1 || (returnsCustomValue('group_permission') == '0' && (groupDetail?.group_detial_info_group_type === 1 || [2, 3].includes(currentUserSetting.group_member_info_member_role)) ||  returnsCustomValue('group_permission') == '1');
   console.log("--------+++++++++++",  value)
   console.log("groupDetail", value)
   return (
@@ -96,6 +97,7 @@ export const GroupSetting = (props: {
         groupId={groupDetail.group_detial_info_group_id}
         groupType={groupDetail.group_detial_info_group_type}
         groupAddOption={groupDetail.group_detial_info_add_option}
+        groupCustom={groupDetail.group_detial_info_custom_info}
         userIdentity={currentUserSetting.group_member_info_member_role}
       />
       {
