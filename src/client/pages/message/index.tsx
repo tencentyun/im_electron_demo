@@ -377,7 +377,9 @@ export const Message = (): JSX.Element => {
                                 <div ref={setRef(conv_id)} className={`conversion-list__item ${conv_id === currentSelectedConversation.conv_id ? 'is-active' : ''} ${conv_is_pinned ? 'is-pinned' : ''}`} key={conv_id} onClick={() => handleConvListClick(item)} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                     <div className="conversion-list__item--profile">
                                         {
-                                            conv_unread_num > 0 ? <div className="conversion-list__item--profile___unread">{getDisplayUnread(conv_unread_num)}</div> : null
+                                            conv_unread_num > 0 ? <div className="conversion-list__item--profile___unread">
+                                                {conv_recv_opt != 1 ? getDisplayUnread(conv_unread_num):null}
+                                                </div> : null
                                         }
                                         <Avatar url={faceUrl}  key={faceUrl} isClick={false} nickName={nickName} userID={conv_id} groupID={conv_id} size='small' />
                                     </div>

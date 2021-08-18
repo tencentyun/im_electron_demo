@@ -25,7 +25,7 @@ import { electron } from 'webpack';
 import MaxLength from 'braft-extensions/dist/max-length'
 
 const options = {
-    defaultValue: 4000, // 指定默认限制数，如不指定则为Infinity(无限)
+    defaultValue: 3000, // 指定默认限制数，如不指定则为Infinity(无限)
 };
 BraftEditor.use(MaxLength(options));
 
