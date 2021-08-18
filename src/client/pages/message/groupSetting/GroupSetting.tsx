@@ -45,6 +45,17 @@ export const GroupSetting = (props: {
   if(!Object.keys(groupDetail).length){
     return null
   }
+
+  //2021年8月18日09:13:11  返回群资料自定义字段值  zwc
+  const returnsCustomValue = (type_key:string):string=> {
+    if(groupDetail.group_detial_info_custom_info && groupDetail.group_detial_info_custom_info.length){
+        return groupDetail.group_detial_info_custom_info.filter(item => item.group_info_custom_string_info_key == type_key)[0].group_info_custom_string_info_value
+    }else{
+        return ""
+    }
+  }
+  //是讨论组  这是权限管理员 或 全员
+  const canEdit = returnsCustomValue('group_permission') == '0' && (groupDetail?.group_detial_info_group_type === 1 || [2, 3].includes(currentUserSetting.group_member_info_member_role)) ||  returnsCustomValue('group_permission') == '1';
   console.log("--------+++++++++++",  value)
   console.log("groupDetail", value)
   return (
@@ -52,6 +63,7 @@ export const GroupSetting = (props: {
       <GroupBaseInfo
         groupAvatar={groupDetail.group_detial_info_face_url}
         groupId={groupDetail.group_detial_info_group_id}
+        canEdit={canEdit}
         groupName={groupDetail.group_detial_info_group_name}
         groupType={groupDetail.group_detial_info_group_type}
         groupCustom={groupDetail.group_detial_info_custom_info}
@@ -63,6 +75,7 @@ export const GroupSetting = (props: {
         introduction={groupDetail.group_detial_info_introduction}
         groupId={groupDetail.group_detial_info_group_id}
         onRefresh={retry}
+        canEdit={canEdit}
         userIdentity={currentUserSetting.group_member_info_member_role}
         groupType={groupDetail.group_detial_info_group_type}
       />
@@ -70,6 +83,7 @@ export const GroupSetting = (props: {
       <GroupAccountecment
         accountecment={groupDetail.group_detial_info_notification}
         groupId={groupDetail.group_detial_info_group_id}
+        canEdit={canEdit}
         userIdentity={currentUserSetting.group_member_info_member_role}
         groupType={groupDetail.group_detial_info_group_type}
         onRefresh={retry}
