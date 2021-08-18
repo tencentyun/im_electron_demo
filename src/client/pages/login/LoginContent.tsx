@@ -111,7 +111,7 @@ export const LoginContent = (): JSX.Element => {
             const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
             console.log(Encypt)
             
-            const env = process.env.huarun_env
+            const env = process.env.HUARUN_ENV
             // const env = 'prod'
             let USERLOGIN;
             if(env=='prod'){
