@@ -80,7 +80,14 @@ export const MessageResult = (props) => {
         
                                 return (
                                     <div  key={index} className={`message-result__content-item ${activedItem?.conv_id === conv_id ? 'is-active' : ''}`} onClick={() => handleItemClick(item)}>
-                                        <Avatar url={faceUrl}></Avatar>
+                                        <Avatar 
+                                            url={faceUrl}
+                                            size="small"
+                                            nickName={nickName}
+                                            key={faceUrl}
+                                            userID={conv_id}
+                                            groupID={conv_id}
+                                        />
                                         <div className="message-result__content-item--text">
                                             <span className="message-result__content-item--nick-name">{nickName}</span>
                                             <span className="message-result__content-item--msg-text" >{`共${messageCount}条结果`}</span>
@@ -94,10 +101,16 @@ export const MessageResult = (props) => {
                         <div className="message-result__content--message-list-content customize-scroll-style">
                             {
                             activedItem?.messageArray?.map((item, index) => {
-                                const { message_elem_array, message_sender_profile: { user_profile_face_url, user_profile_nick_name} } = item as State.message;
+                                const { message_elem_array, message_sender_profile: { user_profile_face_url, user_profile_nick_name, user_profile_identifier} } = item as State.message;
                                 return (
                                     <div key={index} className="message-result__content-item" >
-                                            <Avatar url={user_profile_face_url}></Avatar>
+                                            <Avatar 
+                                                url={user_profile_face_url}
+                                                size="small"
+                                                nickName={user_profile_nick_name}
+                                                key={user_profile_face_url}
+                                                userID={user_profile_identifier}
+                                            />
                                             <div className="message-result__content-item--text">
                                                 <span className="message-result__content-item--nick-name">{user_profile_nick_name}</span>
                                                 <span className="message-result__content-item--msg-text" dangerouslySetInnerHTML={{__html: hilightKeyWords( message_elem_array[0].text_elem_content)}} ></span>

@@ -20,7 +20,7 @@ import { ipcRenderer, clipboard, nativeImage } from 'electron';
 import chooseImg from '../../assets/icon/choose.png'
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
-import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText } from './message-input-util';
+import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer } from './message-input-util';
 import { electron } from 'webpack';
 import MaxLength from 'braft-extensions/dist/max-length'
 
@@ -188,9 +188,17 @@ export const MessageInput = (props: Props): JSX.Element => {
         return atNameList.map(v => atUserMap[v]);
     }
 
+    const filePathAdapter = async (file) => {
+        let templateFile = file;
+        if(templateFile.path === "") {
+            const formatedFile = file instanceof File && await fileReaderAsBuffer(file);
+            templateFile = formatedFile;
+        }
+        return templateFile;
+    }
 
     const setFile = async (file: File | {size: number; type: string; path: string; name: string; fileContent: string}) => {
-        const imageObj = JSON.parse(window.localStorage.getItem('imageObj'));
+        file = await filePathAdapter(file);
         if (file) {
             const fileSize = file.size;
             const type = file.type;
@@ -198,16 +206,10 @@ export const MessageInput = (props: Props): JSX.Element => {
                 message.error({ content: "文件大小异常" })
                 return
             }
-            if(file.path == "" && imageObj == null){
-                // 处理微信截图等截图工具返回的图片
-                ipcRenderer.send("STORE_SCREENSHOT_TO_LOCAL");
-                return
-            }
-            console.log(type, '========',imageObj)
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v)) ||  type== "image/jpeg") {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
-                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path ? file.path : imageObj.path, size: file.size, base64URL: imgUrl }));
+                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
             } else if (SUPPORT_VIDEO_TYPE.find(v => type.includes(v))) {
                 if (fileSize > 100 * 1024 * 1024) return message.error({ content: "video size can not exceed 100m" })
                 ipcRenderer.send(RENDERPROCESSCALL, {
@@ -661,26 +663,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         setSendType(initVal)
         setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息');
 
-        // 针对于外部截图工具生成的图片
-        const screenShotReplyListiner = (event, {data, url}) => {
-            const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' });
-            const imageObj = {
-                lastModified: file.lastModified,
-                //@ts-ignore 
-                lastModifiedDate: file.lastModifiedDate,
-                name: file.name,
-                path: url,
-                size: file.size,
-                type: file.type,
-                //@ts-ignore 
-                webkitRelativePath: file.webkitRelativePath,
-                fileContent: data,
-                
-            };
-            setFile(imageObj);
-        }
-        ipcRenderer.on('STORE_SCREENSHOT_TO_LOCAL_REPLY', screenShotReplyListiner);
-
         // 自带截图生成的图片
         const screenShotUrlListiner = (event, {data, url}) => {
             console.log(typeof data, data, url, '+++++++++++++++++++')
@@ -688,18 +670,18 @@ export const MessageInput = (props: Props): JSX.Element => {
                 message.error({ content: '已取消截图' })
             } else {
                 const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' })
-                const fileObj = {
-                    lastModified: file.lastModified,
-                    // @ts-ignore
-                    lastModifiedDate: file.lastModifiedDate,
-                    name: file.name,
-                    path: url,
-                    size: file.size,
-                    type: 'png',
-                    fileContent: data,
-                    //@ts-ignore 
-                    webkitRelativePath: file.webkitRelativePath
-                }
+                // const fileObj = {
+                //     lastModified: file.lastModified,
+                //     // @ts-ignore
+                //     lastModifiedDate: file.lastModifiedDate,
+                //     name: file.name,
+                //     path: url,
+                //     size: file.size,
+                //     type: 'png',
+                //     fileContent: data,
+                //     //@ts-ignore 
+                //     webkitRelativePath: file.webkitRelativePath
+                // }
                 const imageObj = {
                     lastModified: file.lastModified,
                     //@ts-ignore 
@@ -709,15 +691,16 @@ export const MessageInput = (props: Props): JSX.Element => {
                     size: file.size,
                     type: file.type,
                     //@ts-ignore 
-                    webkitRelativePath: file.webkitRelativePath
+                    webkitRelativePath: file.webkitRelativePath,
+                    fileContent: data,
                 }
                 // console.log(convId, '截图文件对象22222', file, fileObj)
                 // const image = nativeImage.createFromPath(url)
                 // clipboard.writeImage(image)
-                window.localStorage.setItem('imageObj', JSON.stringify(imageObj))
+                // window.localStorage.setItem('imageObj', JSON.stringify(imageObj))
                 // sendMessages('image', fileObj)
                 // handlePastedFiles([imageObj])
-                setFile(fileObj)
+                setFile(imageObj)
                 return
             }
         }
@@ -725,7 +708,6 @@ export const MessageInput = (props: Props): JSX.Element => {
 
         return () => {
             ipcRenderer.off('screenShotUrl', screenShotUrlListiner);
-            ipcRenderer.off('STORE_SCREENSHOT_TO_LOCAL_REPLY', screenShotReplyListiner);
         }
     }, [])
 

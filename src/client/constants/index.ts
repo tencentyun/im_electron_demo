@@ -84,7 +84,8 @@ const HUARUN_CONFIG = {
     'dev': {
         TIM_BASE_URL: 'http://localhost:3000',
         PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
-        EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
+        TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
+        EMOJIURL: 'https://oaim.uat.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
@@ -92,9 +93,10 @@ const HUARUN_CONFIG = {
     },
     // 测试环境
     'test': {
-        TIM_BASE_URL: 'http://oaim.uat.crbank.com.cn:30002',
-        PUBBLIC_ACCOUNTS_URL: 'http://oaim.uat.crbank.com.cn:30002',
-        EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
+        TIM_BASE_URL: 'https://oaim.uat.crbank.com.cn:30002',
+        PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
+        TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
+        EMOJIURL: 'https://oaim.uat.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
@@ -103,8 +105,9 @@ const HUARUN_CONFIG = {
     // 正是环境
     'prod': {
         TIM_BASE_URL: 'http://oaim.crbank.com.cn:30002',
+        TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
         PUBBLIC_ACCOUNTS_URL: 'http://oaim.crbank.com.cn:30002',
-        EMOJIURL: 'http://oaim.uat.crbank.com.cn:30003/emoji/',
+        EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
@@ -115,6 +118,7 @@ type HuaRunConfig = {
     TIM_BASE_URL: string,
     PUBBLIC_ACCOUNTS_URL: string,
     EMOJIURL: string,
+    TRTC_BASE_URL:string,
     SERVERr_ADDRESS_IP: string,
     SERVERr_ADDRESS_PORT: number,
     HUA_RUN_LOGIN_TEST: string,
