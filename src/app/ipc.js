@@ -35,6 +35,7 @@ class IPC {
         const env = process.env?.NODE_ENV?.trim();;
         const isDev = env === 'development';
         setPath(isDev);
+        this.mkDownloadDic(); //创建download 文件目录
         this.win = win;
         ipcMain.handle(RENDERPROCESSCALL, async (event, data) => {
             const { type, params } = data;
@@ -218,10 +219,13 @@ class IPC {
             }
         }
     }
+    mkDownloadDic() {
+        const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
+        this.mkdirsSync(downloadDicPath)
+    }
     downloadFilesByUrl({ url: file_url, name, fileid }) {
         try {
             const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
-            this.mkdirsSync(downloadDicPath)
             let file_name
             let file_path
             let file_path_temp
