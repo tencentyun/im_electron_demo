@@ -472,9 +472,6 @@ app.whenReady().then(() => {
         appWindow.focus();
       }
     });
-    if (BrowserWindow.getAllWindows().length === 0) {
-      appWindow = createWindow();
-    }
   }
 });
 
