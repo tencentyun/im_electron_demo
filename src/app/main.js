@@ -177,7 +177,7 @@ function createWindow() {
     // 打开调试工具
     appWindow.webContents.openDevTools();
   } else {
-    appWindow.webContents.openDevTools(); //正式生产不需要开启
+    // appWindow.webContents.openDevTools(); //正式生产不需要开启
     appWindow.loadURL(
       url.format({
         pathname: path.join(__dirname, '../../bundle/index.html'),
@@ -310,7 +310,7 @@ function createWindow() {
     });
   })
 
-  ipcMain.send("storagePath", path.resolve(cwd, "./download/"))
+  // ipcMain.send("storagePath", path.resolve(process.cwd(), "./download/"))
 
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {

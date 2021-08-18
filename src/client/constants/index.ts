@@ -105,7 +105,7 @@ const HUARUN_CONFIG = {
     // 正是环境
     'prod': {
         TIM_BASE_URL: 'http://oaim.crbank.com.cn:30002',
-        TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
+        TRTC_BASE_URL: 'http://oaim.crbank.com.cn',
         PUBBLIC_ACCOUNTS_URL: 'http://oaim.crbank.com.cn:30002',
         EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.crbank.com.cn',
@@ -126,8 +126,8 @@ type HuaRunConfig = {
 }
 const getHuaRunConfig = (): HuaRunConfig => {
     console.log('环境变量', process.env.HUARUN_ENV, process.env.NODE_ENV)
-    // const env = process.env.HUARUN_ENV.trim();
-    const env = "prod"
+    const env = process.env.HUARUN_ENV.trim();
+    // const env = "prod"
     return HUARUN_CONFIG[env]
 }
 export default getHuaRunConfig();
