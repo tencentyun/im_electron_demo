@@ -36,7 +36,20 @@ new TimMain({
   sdkappid: 1400529075
   // sdkappid: SDK_APP_ID
 });
-
+// 防止同时打开多个客户端
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  // 有一个实例，直接打开
+  if (appWindow) {
+    if (appWindow.isMinimized()) appWindow.restore();
+    appWindow.focus();
+  }else {
+    dialog.showErrorBox('error','no appwindow lock')
+  }
+  
+} else {
+  
+}
 // crashReporter.start({
 //   submitURL: 'http://oaim.uat.crbank.com.cn:30002/huarun/report',
 // })
@@ -180,6 +193,7 @@ function createWindow() {
       data,
     });
   };
+  
   // 自动更新升级
   let checkForUpdates = () => {
     //console.log(feedUrl);
@@ -460,19 +474,10 @@ app.whenReady().then(() => {
   Menu.setApplicationMenu(menu);
 
   appTray = setAppTray();
-  // 防止同时打开多个客户端
-  const gotTheLock = app.requestSingleInstanceLock();
-  if (!gotTheLock) {
-    dialog.showErrorBox('错误','存在已经运行的应用程序，请关闭后在启动')
-    app.quit()
-  } else {
-    app.on("second-instance", (event) => {
-      if (appWindow) {
-        if (appWindow.isMinimized()) appWindow.restore();
-        appWindow.focus();
-      }
-    });
+  if (BrowserWindow.getAllWindows().length === 0) {
+    appWindow = createWindow()
   }
+  
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -481,7 +486,14 @@ app.whenReady().then(() => {
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
-
+app.on("second-instance", (event) => {
+  if (appWindow) {
+    if (appWindow.isMinimized()) appWindow.restore();
+    appWindow.focus();
+  }else {
+    dialog.showErrorBox('error','no appwindow')
+  }
+});
 // 自定义安装目录
 // "nsis": {
 //   "createDesktopShortcut": true,
