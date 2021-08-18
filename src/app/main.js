@@ -289,6 +289,8 @@ function createWindow() {
     appWindow.webContents.downloadURL(url)
   })
 
+  ipcMain.send("storagePath", path.resolve(cwd, "./download/"))
+
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {
     //console.log("123", file);
