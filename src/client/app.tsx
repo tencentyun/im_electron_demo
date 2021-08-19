@@ -102,6 +102,7 @@ export const App = () => {
                 if (data === 0) {
                     isInited = true;
                     console.log("初始化成功");
+                    timRenderInstance.TIMGetSDKVersion().then(data => console.log("IMSDK Version", data))
                     initListeners((callback) => {
                         const { data, type } = callback;
                         console.info(
