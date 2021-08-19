@@ -9,12 +9,13 @@ const TimMain = require("im_electron_sdk/dist/main");
 const { SDK_APP_ID } = require('./const/const');
 const createWindow = require('./createRenderWindows')
 const setAppTray = require('./traySetting')
-new TimMain({
+const TencentIM = new TimMain({
   // sdkappid: 1400529075
   sdkappid: SDK_APP_ID
 });
 global.sharedObject = {
-  appWindow: null
+  appWindow: null,
+  appTray:null
 }
 
 // let timer;
@@ -57,7 +58,7 @@ if (!gotTheLock) {
   app.whenReady().then(() => {
 
     global.sharedObject.appWindow = createWindow()
-    setAppTray(global.sharedObject.appWindow)
+    appTray.sharedObject.appTray = setAppTray(global.sharedObject.appWindow)
 
     app.on('activate', function () {
       // On macOS it's common to re-create a window in the app when the
@@ -68,7 +69,7 @@ if (!gotTheLock) {
     })
   })
   app.on("before-quit", () => {
-    forceQuit = true;
+    TencentIM.destroy()
   });
 
   app.on("click", () => {

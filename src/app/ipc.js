@@ -79,8 +79,8 @@ class IPC {
         });
 
 
-        this.createNewWindow(isDev);
-        this.eventListiner(isDev);
+        // this.createNewWindow(isDev);
+        // this.eventListiner(isDev);
     }
     async checkFileExist(path) {
         return new Promise((resolve) => {
