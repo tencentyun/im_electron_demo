@@ -6,6 +6,7 @@ const appAutoUploader = require('./autoUpdate')
 const initStore = require('./store')
 const registerCut = require('./shortcut')
 const setOtherIPC = require('./otheripc')
+const setSaveFileIPC = require('./saveFile');
 const url = require('url')
 const path = require('path')
 let ipc = null;
@@ -55,6 +56,9 @@ const _createWindow = () => {
 
         // 其他一些ipc
         setOtherIPC(mainWindow)
+
+        // 另存为Ipc
+        setSaveFileIPC();
     });
     mainWindow.on("close", function (e) {
         app.quit()
