@@ -15,7 +15,7 @@ import { setPathToLS } from '../../utils/messageUtils';
 import { ipcRenderer } from 'electron';
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
-import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText } from './message-input-util';
+import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer } from './message-input-util';
   
 type Props = {
     convId: string,
@@ -129,8 +129,18 @@ export const MessageInput = (props: Props): JSX.Element => {
         return atNameList.map(v => atUserMap[v]);
     }
 
+    const filePathAdapter = async (file) => {
+        let templateFile = file;
+        if(templateFile.path === "") {
+            const formatedFile = file instanceof File && await fileReaderAsBuffer(file);
+            templateFile = formatedFile;
+        }
+        return templateFile;
+    } 
+
     
     const setFile = async (file: File | {size: number; type: string; path: string; name: string; fileContent: string}) => {
+        file = await filePathAdapter(file);
         if(file) {
             const fileSize = file.size;
             const type = file.type;

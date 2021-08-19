@@ -17,20 +17,20 @@ export const Myloader = () => {
                 </div>
                 <div className="skeleton-content__message--content">
                     <div className="skeleton-content__message--item">
-                        <Skeleton className="icon" circle height={36} width={36} />
+                        <Skeleton className="icon" circle height={36} width={36} style={{marginRight: '8px'}} />
                         <Skeleton  height={84} width={360} />
                     </div>
                     <div className="skeleton-content__message--item">
                         <Skeleton  height={84} width={360} />
-                        <Skeleton className="icon" circle height={36} width={36} />
+                        <Skeleton className="icon" circle height={36} width={36} style={{marginLeft: '8px'}}/>
                     </div>
                     <div className="skeleton-content__message--item">
-                        <Skeleton className="icon" circle height={36} width={36} />
+                        <Skeleton className="icon" circle height={36} width={36} style={{marginRight: '8px'}} />
                         <Skeleton  height={44} width={150} />
                     </div>
                     <div className="skeleton-content__message--item">
                         <Skeleton  height={44} width={94} />
-                        <Skeleton className="icon" circle height={36} width={36} />
+                        <Skeleton className="icon" circle height={36} width={36} style={{marginLeft: '8px'}}/>
                     </div>
                 </div>
             </div>
