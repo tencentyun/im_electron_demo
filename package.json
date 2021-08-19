@@ -42,7 +42,7 @@
       "icon": "./icon/favicon.icns"
     },
     "win": {
-      "icon": "./src/client/assets/icon/windows.png",
+      "icon": "./icon/windows.png",
       "target": [
         {
           "target": "nsis",
