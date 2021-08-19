@@ -109,7 +109,7 @@ const HUARUN_CONFIG = {
         PUBBLIC_ACCOUNTS_URL: 'http://oaim.crbank.com.cn:30002',
         EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.crbank.com.cn',
-        SERVERr_ADDRESS_PORT: 30001,
+        SERVERr_ADDRESS_PORT: 9333,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
         HUA_RUN_SYSTEMID: 'P001'
     }
@@ -126,8 +126,8 @@ type HuaRunConfig = {
 }
 const getHuaRunConfig = (): HuaRunConfig => {
     console.log('环境变量', process.env.HUARUN_ENV, process.env.NODE_ENV)
-    const env = process.env.HUARUN_ENV.trim();
-    // const env = "test"
+    // const env = process.env.HUARUN_ENV.trim();
+    const env = "prod"
     return HUARUN_CONFIG[env]
 }
 export default getHuaRunConfig();
