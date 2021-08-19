@@ -10,12 +10,16 @@ const TimMain = require("im_electron_sdk/dist/main");
 const { SDK_APP_ID } = require('./const/const');
 const createWindow = require('./createRenderWindows')
 const setAppTray = require('./traySetting')
+const addTask = require('./task')
+
+
 new TimMain({
   // sdkappid: 1400529075
   sdkappid: SDK_APP_ID
 });
 global.sharedObject = {
-  appWindow: null
+  appWindow: null,
+  appTray: null
 }
 
 // let timer;
@@ -56,7 +60,8 @@ if (!gotTheLock) {
 
   app.on('ready', () => {
     global.sharedObject.appWindow = createWindow()
-    setAppTray(global.sharedObject.appWindow)
+    global.sharedObject.appTray = setAppTray(global.sharedObject.appWindow)
+    // addTask()
   });
 
   app.on("before-quit", () => {
