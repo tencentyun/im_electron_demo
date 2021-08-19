@@ -2,6 +2,7 @@
 const {
   app,
   BrowserWindow,
+  crashReporter
 } = require("electron");
 const TimMain = require("im_electron_sdk/dist/main");
 const { SDK_APP_ID } = require('./const/const');
