@@ -187,8 +187,10 @@ class IPC {
         });
         callWindow.removeMenu();
         if (isDev) {
+            callWindow.webContents.openDevTools();
             callWindow.loadURL(`http://localhost:3000/call.html`);
         } else {
+            callWindow.webContents.openDevTools(); //正式生产不需要开启
             callWindow.loadURL(
                 url.format({
                     pathname: path.join(__dirname, `../../bundle/call.html`),

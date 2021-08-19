@@ -19,7 +19,7 @@ const CHECK_FILE_EXIST = 'CHECK_FILE_EXIST';
 const GET_FILE_INFO_CALLBACK = 'GET_FILE_INFO_CALLBACK';
 const END_CALL_WINDOW = 'END_CALL_WINDOW'
 const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
-const SDK_APP_ID = '1400529075'; //公有云SDK app id
+const SDK_APP_ID = 1400529075; //公有云SDK app id
 const HIDE = 'HIDE'
 module.exports = {
     MINSIZEWIN,
