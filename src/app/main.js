@@ -3,7 +3,6 @@ const {
   app,
   BrowserWindow,
 } = require("electron");
-
 const TimMain = require("im_electron_sdk/dist/main");
 
 
