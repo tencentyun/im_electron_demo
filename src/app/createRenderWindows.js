@@ -34,6 +34,7 @@ const _createWindow = () => {
             contextIsolation: false,
         },
     });
+    console.log("启动主程序", mainWindow)
     mainWindow.on("ready-to-show", () => {
         mainWindow.setTitle(description);
         mainWindow.show();

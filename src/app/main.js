@@ -55,7 +55,6 @@ if (!gotTheLock) {
 
   
   app.whenReady().then(() => {
-
     global.sharedObject.appWindow = createWindow()
     setAppTray(global.sharedObject.appWindow)
 
