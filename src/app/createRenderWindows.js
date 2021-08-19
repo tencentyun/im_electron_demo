@@ -18,7 +18,7 @@ const _sendMessageToRender = (win,key,data)=>{
 
     }
 }
-const _createWindow = () => {
+const _createWindow = (TencentIM) => {
     const mainWindow = new BrowserWindow({
         height: 640,
         width: 960,
@@ -61,6 +61,7 @@ const _createWindow = () => {
         setSaveFileIPC();
     });
     mainWindow.on("close", function (e) {
+        TencentIM.destroy()
         app.quit()
     });
     // 通知渲染进程窗口是否可见
@@ -102,8 +103,8 @@ const _createWindow = () => {
     }
     return mainWindow;
 }
-const createWindow = () => {
-    return _createWindow();
+const createWindow = (TIM) => {
+    return _createWindow(TIM);
 }
 
 module.exports =  createWindow;
