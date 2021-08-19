@@ -82,12 +82,12 @@ const _createWindow = () => {
     // 通知渲染进程窗口是否可见 end
 
     // 加载url
-    if (process.env.NODE_ENV.trim() === 'development') {
+    if (process.env.NODE_ENV === 'development') {
         mainWindow.loadURL(`http://localhost:3000`);
         // 打开调试工具
         mainWindow.webContents.openDevTools();
     } else {
-        // mainWindow.webContents.openDevTools(); //正式生产不需要开启
+        mainWindow.webContents.openDevTools(); //正式生产不需要开启
         mainWindow.loadURL(
             url.format({
                 pathname: path.join(__dirname, '../../bundle/index.html'),
