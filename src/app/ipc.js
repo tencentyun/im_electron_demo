@@ -79,8 +79,8 @@ class IPC {
         });
 
 
-        // this.createNewWindow(isDev);
-        // this.eventListiner(isDev);
+        this.createNewWindow(isDev);
+        this.eventListiner(isDev);
     }
     async checkFileExist(path) {
         return new Promise((resolve) => {
@@ -231,6 +231,7 @@ class IPC {
         const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
         this.mkdirsSync(downloadDicPath)
     }
+    
     downloadFilesByUrl({ url: file_url, name, fileid }) {
         try {
             const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
