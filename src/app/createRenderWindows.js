@@ -86,7 +86,7 @@ const _createWindow = () => {
     // 通知渲染进程窗口是否可见 end
 
     // 加载url
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV.trim() === 'development') {
         mainWindow.loadURL(`http://localhost:3000`);
         // 打开调试工具
         mainWindow.webContents.openDevTools();
