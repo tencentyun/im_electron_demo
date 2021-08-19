@@ -12,7 +12,12 @@ const {
   dialog,
 } = require("electron");
 const { autoUpdater } = require('electron-updater')
-const feedUrl = `https://oaim.uat.crbank.com.cn:30003/_download/`;//http://oaim.crbank.com.cn:30003/_download/
+const feedUrl = '';//http://oaim.crbank.com.cn:30003/_download/
+if (process.env?.NODE_ENV?.trim() === 'development') {
+  feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download/'
+}else{
+  feedUrl = 'http://oaim.crbank.com.cn:30003/_download/'
+}
 const TimMain = require("im_electron_sdk/dist/main");
 const url = require("url");
 const path = require("path");
