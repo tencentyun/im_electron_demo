@@ -72,7 +72,7 @@ if (!gotTheLock) {
     log.info('app ready')
     log.info('崩溃日志目录:'+app.getPath('crashDumps'))
     global.sharedObject.appWindow = createWindow(TencentIM)
-    appTray.sharedObject.appTray = setAppTray(global.sharedObject.appWindow)
+    global.sharedObject.appTray = setAppTray(global.sharedObject.appWindow)
 
     app.on('activate', function () {
       log.info('app activate')
