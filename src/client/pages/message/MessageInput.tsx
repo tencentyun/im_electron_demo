@@ -15,7 +15,7 @@ import { setPathToLS } from '../../utils/messageUtils';
 import { ipcRenderer } from 'electron';
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
-import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer } from './message-input-util';
+import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer, generateTemplateElement } from './message-input-util';
   
 type Props = {
     convId: string,
@@ -71,7 +71,16 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ atUserMap, setAtUserMap] = useState({});
     const [ isZHCNAndFirstPopup, setIsZHCNAndFirstPopup]  = useState(false);
 
-    const { userId } = useSelector((state: State.RootState) => state.userInfo);
+    const { userId, signature, nickName, faceUrl, role, gender, addPermission } = useSelector((state: State.RootState) => state.userInfo);
+    const userProfile = {
+        ser_profile_role: role,
+        user_profile_face_url: faceUrl,
+        user_profile_nick_name: nickName,
+        user_profile_identifier: userId,
+        user_profile_gender: gender,
+        user_profile_self_signature: signature,
+        user_profile_add_permission: addPermission
+    }
 
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
@@ -83,38 +92,59 @@ export const MessageInput = (props: Props): JSX.Element => {
 
             const messageElementArray = getMessageElemArray(rawData, videoInfos);
 
+            const sendMsgSuccessCallback = ([res, userData]) => {
+                console.log('============send message success args ============', res);
+                const { code, json_params, desc } = res;
+
+                console.log('==========JSON.parse(json_params)=========', JSON.parse(json_params));
+                if (code === 0) {                
+                    dispatch(updateMessages({
+                        convId,
+                        message: JSON.parse(json_params)
+                    }))
+                }
+            };
+
             if(messageElementArray.length) {
-                const fetchList = messageElementArray.map((v => {
+                messageElementArray.map( async v => {
                     if(v.elem_type === 0) {
                         const atList = getAtList(v.text_elem_content);
-                        return  sendMsg({
+                        const { data: messageId } = await sendMsg({
                             convId,
                             convType,
                             messageElementArray: [v],
                             userId,
-                            messageAtArray: atList
+                            messageAtArray: atList,
+                            callback: sendMsgSuccessCallback
                         });
+                        const templateElement = generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+                        dispatch(updateMessages({
+                            convId,
+                            message: templateElement
+                        }));
+                        return
                     }
                     return sendMsg({
                         convId,
                         convType,
                         messageElementArray: [v],
                         userId,
+                        callback: sendMsgSuccessCallback
                     });
-                }));
+                });
 
                 setEditorState(ContentUtils.clear(editorState));
 
-                const results = await Promise.all(fetchList);
-                for(const res of results) {
-                    const { data: {code, json_params, desc }} = res;
-                    if (code === 0) {                
-                        dispatch(updateMessages({
-                            convId,
-                            message: JSON.parse(json_params)
-                        }))
-                    }
-                } 
+                // const results = await Promise.all(fetchList);
+                // for(const res of results) {
+                //     const { data: {code, json_params, desc }} = res;
+                //     if (code === 0) {                
+                //         dispatch(updateMessages({
+                //             convId,
+                //             message: JSON.parse(json_params)
+                //         }))
+                //     }
+                // } 
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });

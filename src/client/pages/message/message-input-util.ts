@@ -15,6 +15,20 @@ export const getNameByLink = (link: string) => {
   return decodeURIComponent(name);
 };
 
+export const generateTemplateElement = (convId, convType, userProfile, messageId, element) => {
+  return {
+    message_client_time:Math.round(new Date().getTime() /  1000),
+    message_is_peer_read: false,
+    message_status: 1,
+    message_conv_type: convType,
+    message_conv_id: convId,
+    message_is_from_self: true,
+    message_elem_array: [element],
+    message_msg_id: messageId,
+    message_sender_profile: userProfile
+  }
+}
+
 const getMessageElemItem = (
   type: string,
   data: { text?: string; path?: string; name?: string; size?: number },
