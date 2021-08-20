@@ -1,8 +1,8 @@
 {
   "name": "oaim",
   "productName": "oaim",
-  "version": "1.1.0",
-  "description": "oaim",
+  "version": "1.0.39",
+  "description": "员工工作平台",
   "main": "src/app/main.js",
   "scripts": {
     "start:dev": " set NODE_ENV=development && set HUARUN_ENV=dev && concurrently \"npm run dev:react\" \"npm run start-electron\"",
@@ -26,7 +26,7 @@
       "src/app",
       "bundle"
     ],
-    "productName": "oaim",
+    "productName": "员工工作平台",
     "appId": "huarunim",
     "nsis": {
       "oneClick": false,
@@ -36,7 +36,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "runAfterFinish": true,
-      "shortcutName": "oaim"
+      "shortcutName": "员工工作平台"
     },
     "mac": {
       "icon": "./icon/favicon.icns"
