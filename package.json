@@ -82,7 +82,6 @@
     "electron": "^13.1.5",
     "electron-builder": "^22.11.7",
     "install": "^0.13.0",
-    "minidump": "^0.15.0",
     "native-ext-loader": "^2.3.0",
     "npm": "^7.20.6"
   },
