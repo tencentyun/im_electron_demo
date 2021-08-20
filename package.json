@@ -1,14 +1,14 @@
 {
   "name": "oaim",
   "productName": "oaim",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "员工工作平台",
   "main": "src/app/main.js",
   "scripts": {
     "start:dev": " set NODE_ENV=development && set HUARUN_ENV=dev && concurrently \"npm run dev:react\" \"npm run start-electron\"",
     "start:prod": "set NODE_ENV=production && set HUARUN_ENV=prod && concurrently \"npm run dev:react\" \"npm run start-electron\"",
     "start:test": "set NODE_ENV=production && set HUARUN_ENV=test && concurrently \"npm run dev:react\" \"npm run start-electron\"",
-    "build:prod": "set NODE_ENV=production && set HUARUN_ENV=prod && npm run build:react && npm run build-electron\"",
+    "build:prod": "set NODE_ENV=production && set HUARUN_ENV=prod && npm run build:react && npm run build-electron",
     "build:test": "set NODE_ENV=production && set HUARUN_ENV=test && npm run build:react && npm run build-electron",
     "build:dev": "set NODE_ENV=production && set HUARUN_ENV=dev && npm run build:react && npm run build-electron",
     "build:react": "cd ./src/client && npm run build",
@@ -38,6 +38,9 @@
       "runAfterFinish": true,
       "shortcutName": "员工工作平台"
     },
+    "extraFiles": [
+      "node_modules/trtc-electron-sdk/build/Release/trtc_electron_sdk.node"
+    ],
     "mac": {
       "icon": "./icon/favicon.icns"
     },
@@ -47,7 +50,7 @@
         {
           "target": "nsis",
           "arch": [
-            "x64"
+            "ia32"
           ]
         }
       ],
@@ -94,7 +97,7 @@
     "file-type": "^16.5.2",
     "fluent-ffmpeg": "^2.1.2",
     "get-video-duration": "^3.1.0",
-    "im_electron_sdk": "^1.2.14",
+    "im_electron_sdk": "^1.2.16",
     "image-size": "^1.0.0",
     "node-fetch": "^2.6.1",
     "node-gyp": "^7.1.2",

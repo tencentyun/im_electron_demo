@@ -329,6 +329,7 @@ export const App = () => {
         const timeOutList = JSON.parse(message.message_elem_array[0].custom_elem_data)?.inviteeList;
         console.warn('====timeout params=====', timeOutList);
         if(timeOutList) {
+            
             const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
             const newList = inviteeList.filter(item => !timeOutList.includes(item));
             if (newList.length === 0) {
@@ -340,6 +341,7 @@ export const App = () => {
                     inviteeList: newList,
                     callType
                 }));
+                
                 updateInviteList(newList); //向通话窗口通信
             }
         }
