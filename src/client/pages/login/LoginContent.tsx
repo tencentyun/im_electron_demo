@@ -110,11 +110,10 @@ export const LoginContent = (): JSX.Element => {
         }).then(async getEncrptPwdRes => {
             const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
             console.log(Encypt)
-            
-            // const env = process.env.HUARUN_ENV
-            const env = 'prod'
+            const env = process.env.HUARUN_ENV
+            // const env = 'prod'
             let USERLOGIN;
-            if(env=='prod'){
+            if(env == 'prod'){
                 const res = await getUserLoginInfo({
                     systemid: getHuaRunConfig.HUA_RUN_SYSTEMID,
                     userName: userID.toUpperCase(),
@@ -123,13 +122,14 @@ export const LoginContent = (): JSX.Element => {
                     password: "MTIzNDU2"
                 })
     
-                const { RET, USERLOGIN:user, ERRCODE } = res
+                const { RET, USERLOGIN:User, ERRCODE } = res
                 if (RET === 'FALSE') {
                     message.error({
                         content: "登录失败：" + errType(ERRCODE),
                     })
+                    return false
                 } else {
-                   USERLOGIN = user;
+                   USERLOGIN = User;
                 }
             }else{
                 USERLOGIN = userID
