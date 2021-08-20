@@ -126,15 +126,9 @@ type HuaRunConfig = {
     HUA_RUN_SYSTEMID: string
 }
 const getHuaRunConfig = (): HuaRunConfig => {
-<<<<<<< HEAD
-    console.log('环境变量', process?.env?.HUARUN_ENV, process?.env?.NODE_ENV)
-    // const env = process.env.HUARUN_ENV.trim();
-    const env = "prod"
-=======
     console.log('环境变量', process.env.HUARUN_ENV, process.env.NODE_ENV)
     const env = process.env.HUARUN_ENV.trim();
     // const env = "prod"
->>>>>>> 744a477b76802b95cd2f0c3645e7da74fb513819
     return HUARUN_CONFIG[env]
 }
 export default getHuaRunConfig();

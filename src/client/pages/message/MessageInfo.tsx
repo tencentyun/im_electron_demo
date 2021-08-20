@@ -169,8 +169,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       callType,
       convType
     })
-
-
   }
 
   const inviteC2C = async () => {
@@ -256,7 +254,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     })
     groupMemberSelectorRef.current.open({
       groupId: conv_id,
-      userList: group_get_memeber_info_list_result_info_array
+      userList: group_get_memeber_info_list_result_info_array.filter(item => item.group_member_info_identifier !== userId)
     })
   }
 
