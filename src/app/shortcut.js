@@ -3,7 +3,7 @@ const { globalShortcut, clipboard, app,ipcMain }  = require("electron") ;
 const child_process  = require("child_process") ;
 const downloadUrl = app.getPath("downloads");
 const fs  = require("fs") ;
-
+const path = require("path");
 
 const _cut = (appWindow) => {
     const url = `${downloadUrl}\\${new Date().getTime()}-screenShot.png`;

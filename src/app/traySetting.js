@@ -1,9 +1,9 @@
 const { Menu, Tray, app, nativeImage, dialog } = require('electron')
 const { description } = require('../../package.json')
 const path = require("path")
-
+const log = require('electron-log');
 const setAppTray = (appWindow) => {
-    console.log(path.join(process.cwd(), "./resources/extraResources", "notification.ico"))
+    log.info(path.join(process.cwd(), "./resources/extraResources", "notification.ico"))
     const trayIcon = nativeImage.createFromPath(
         path.join(process.cwd(), "./resources/extraResources", "notification.ico")
     );

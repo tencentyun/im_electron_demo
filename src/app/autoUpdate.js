@@ -1,13 +1,15 @@
 const { autoUpdater  }  = require("electron-updater");
-
+const { ipcMain } = require('electron')
 
 let appWindow = null;
 
 let feedUrl = '';//http://oaim.crbank.com.cn:30003/_download/
-if (process.env?.NODE_ENV?.trim() === 'development') {
-  feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download/'
+const env = process.env.NODE_ENV
+//  const env = 'prod'
+if (env != 'prod') {
+    feedUrl = 'http://oaim.crbank.com.cn:30003/_download/'
 }else{
-  feedUrl = 'https://oaim.crbank.com.cn/_download/'
+    feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download/'
 }
 
 const sendUpdateMessage = (message, data) => {
@@ -65,6 +67,7 @@ const checkForUpdates = () => {
     //执行自动更新检查
     autoUpdater.checkForUpdates();
 };
+
 const appAutoUploader = (win) => {
     appWindow = win;
     setTimeout(checkForUpdates,1000)
