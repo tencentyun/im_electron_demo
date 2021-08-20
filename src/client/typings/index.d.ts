@@ -43,6 +43,7 @@ declare namespace State {
     
     export type section = {
         section: Array<object>
+        initGroupInfor:number
         mygroupInfor:mygroupInfor
     }
 

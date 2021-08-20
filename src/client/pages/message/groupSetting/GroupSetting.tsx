@@ -16,10 +16,10 @@ import { GroupJoinOption } from "./GroupJoinOption";
 
 export const GroupSetting = (props: {
   conversationInfo: State.conversationItem;
-  canEdit:boolean;
+  canEdit?:boolean;
   close: () => void;
 }): JSX.Element => {
-  const { conversationInfo, close, canEdit} = props;
+  const { conversationInfo, close, canEdit = false} = props;
   const groupId = conversationInfo.conv_id;
   
 

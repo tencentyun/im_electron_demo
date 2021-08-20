@@ -27,6 +27,9 @@ import {
     updateCurrentSelectedConversation,
 } from "./store/actions/conversation";
 import {
+    initGroupInfor
+} from "./store/actions/section";
+import {
     addProfileForConversition,
     getConversionList,
 } from "./pages/message/api";
@@ -380,6 +383,8 @@ export const App = () => {
         history.replace("/login");
         dispatch(setIsLogInAction(false));
     };
+    
+    let initNumber = 0
     const _handleGroupInfoModify = async (data) => {
         const response = await getConversionList();
         dispatch(updateConversationList(response));
@@ -389,6 +394,8 @@ export const App = () => {
             );
             if (newConversaionItem) {
                 dispatch(updateCurrentSelectedConversation(newConversaionItem));
+                //修改群身份触发群聊详情更新
+                newConversaionItem?.conv_last_msg?.message_elem_array[0]?.elem_type == 5 &&  dispatch(initGroupInfor(initNumber++))
             }
         }
     };

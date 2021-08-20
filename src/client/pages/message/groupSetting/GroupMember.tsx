@@ -19,7 +19,7 @@ import {
 } from '../../../components/pull/pull'
 
 import { GroupMemberBubble } from "./GroupMemberBubble";
-import { getLoginUserID, getGroupMemberList, getAllGroupMemberList } from '../api';
+import { getLoginUserID, getGroupMemberList, getAllGroupMemberList, modifyGroupMemberInfo} from '../api';
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
 import { GroupInfoCustemString } from '../../../typings/interface'
 export const GroupMember = (props: {
@@ -79,16 +79,19 @@ export const GroupMember = (props: {
       return ""
     }
   }
-   const [canInviteMember, setCanInviteMember] = useState(groupType == 1 || ([0, 1, 2].includes(groupType) && (returnsCustomValue('group_invitation', groupCustom) == '1' || (returnsCustomValue('group_invitation', groupCustom) == '0' && [2, 3].includes(mygroupInfor.group_member_info_member_role)))))
+
+
+  const [canInviteMember, setCanInviteMember] = useState(groupType == 1 || ([0, 1, 2].includes(groupType) && (returnsCustomValue('group_invitation', groupCustom) == '1' || (returnsCustomValue('group_invitation', groupCustom) == '0' && [2, 3].includes(mygroupInfor.group_member_info_member_role)))))
    //自定义字段更新 刷新页面
    useEffect(() => {
-      setCanInviteMember(groupType == 1 || ([0, 1, 2].includes(groupType) && (returnsCustomValue('group_invitation', currentSelectedConversation?.conv_profile?.group_detial_info_custom_info) == '1' || (returnsCustomValue('group_invitation', currentSelectedConversation?.conv_profile?.group_detial_info_custom_info) == '0' && [2, 3].includes(mygroupInfor.group_member_info_member_role)))))
+      setCanInviteMember(groupType == 1 || ([0, 1, 2].includes(groupType) && (returnsCustomValue('group_invitation', currentSelectedConversation?.conv_profile?.group_detial_info_custom_info) == '1' || (returnsCustomValue('group_invitation', currentSelectedConversation?.conv_profile?.group_detial_info_custom_info) == '0' && [2, 3].includes(mygroupInfor?.group_member_info_member_role)))))
   }, [currentSelectedConversation?.conv_profile?.group_detial_info_custom_info]);
 
   // 可拉人进群条件为 群类型不为直播群且当前群没有设置禁止加入   讨论组忽略随便邀请
   console.log("可拉人进群条件为 群类型不为直播群且当前群没有设置禁止加入", groupType)
 
 
+  console.log("可拉人进群条件为 群类型不为直播群且当前群没有设置禁止加入222222", groupCustom)
   /**
    * 对于私有群：只有创建者可删除群组成员。
    * 对于公开群和聊天室：只有管理员和群主可以踢人。
@@ -140,6 +143,19 @@ export const GroupMember = (props: {
       });
   };
 
+  //解除群管理
+  const removingAdministrato = async (userId) => {
+    await modifyGroupMemberInfo({
+      groupId,
+      userId,
+      modifyGroupMemberParams: {
+        group_modify_member_info_member_role: 1,
+      },
+    });
+    getAllMemberList();
+  }
+
+
   const isOnInternet = (id) => {
     let buuer = false;
     userGroupType.forEach((i) => {
@@ -179,6 +195,7 @@ export const GroupMember = (props: {
             >
               <GroupMemberBubble
                 user={v}
+                removingAdministrato={removingAdministrato}
                 children={
                   <>
                     <Avatar

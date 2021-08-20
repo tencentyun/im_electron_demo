@@ -23,12 +23,13 @@ export const GroupToolsDrawer = (props: {
 }): JSX.Element => {
   const { onClose, popupContainer, visible, conversationInfo, toolId } = props;
   // console.log("visible", visible);
-  const { mygroupInfor } = useSelector(
+  const { mygroupInfor, initGroupInfor} = useSelector(
       (state: State.RootState) => state.section
   );
   const { currentSelectedConversation } = useSelector(
     (state: State.RootState) => state.conversation
   );
+  
   const DisplayComponent = {
     setting: GroupSetting,
     announcement: GroupAccountecmentSetting,
@@ -66,10 +67,11 @@ export const GroupToolsDrawer = (props: {
 
   const profileDialogRef = useDialogRef<GroupProfileRecordsType>();
   const [groupDetail,setGroupDetail] = useState<groupProfile>()
-
+  const [updataGroup,setUpdataGroup] = useState(-1)
 
   
-  //自定义字段更新 刷新页面
+  //自定义字段更新 刷新页面  
+  //群成员身份更新 刷新页面
   useEffect(() => {
     if (visible) {
         setGroupDetail(currentSelectedConversation?.conv_profile)
@@ -83,6 +85,11 @@ export const GroupToolsDrawer = (props: {
     }
   }, [currentSelectedConversation.conv_id]);
 
+  useEffect(() => {
+    if (visible) {
+      setUpdataGroup(initGroupInfor)
+    }
+  },[initGroupInfor])
   const { userId } = useSelector((state: State.RootState) => state.userInfo);
     //2021年8月18日09:13:11  返回群资料自定义字段值  zwc
   const returnsCustomValue = (type_key:string):string=> {
@@ -96,9 +103,9 @@ export const GroupToolsDrawer = (props: {
     return " "
   }
   //针对外部   修改群资料
-  const isOwener = returnsCustomValue('group_permission') == '0' && (groupDetail.group_detial_info_owener_identifier === userId  || [2,3].includes(mygroupInfor.group_member_info_member_role)) ||  returnsCustomValue('group_permission') == '1'
+  const isOwener = updataGroup > -1 && returnsCustomValue('group_permission') == '0' && (groupDetail.group_detial_info_owener_identifier === userId  || [2,3].includes(mygroupInfor?.group_member_info_member_role)) ||  returnsCustomValue('group_permission') == '1'
    //如果是讨论组没有限制可以编辑 ||   是群组开启仅管理员可修改 | 所有人可修改  针对每个input编辑
-  const canEdit = groupDetail?.group_detial_info_group_type == 1 || (returnsCustomValue('group_permission') == '0' && (groupDetail?.group_detial_info_group_type === 1 || [2, 3].includes(mygroupInfor.group_member_info_member_role)) ||  returnsCustomValue('group_permission') == '1');
+  const canEdit = updataGroup > -1 && groupDetail?.group_detial_info_group_type == 1 || (returnsCustomValue('group_permission') == '0' && (groupDetail?.group_detial_info_group_type === 1 || [2, 3].includes(mygroupInfor?.group_member_info_member_role)) ||  returnsCustomValue('group_permission') == '1');
   
   return (
     <Drawer

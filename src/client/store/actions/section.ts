@@ -1,5 +1,6 @@
 export const GET_SECTION_COUNT = 'GET_SECTION_COUNT';
 export const GET_My_GROUP_INFORMATION = 'GET_My_GROUP_INFORMATION';
+export const GET_INIT_GROUP_INFO = 'GET_INIT_GROUP_INFO';
 
 type CallingPayload = {
     group_member_info_custom_info: Array<object>,
@@ -24,5 +25,11 @@ export const setUnreadCount = (payload: Array<Object>) : State.actcionType<Array
 
 export const setMyGroupInformation = (payload: CallingPayload) : State.actcionType<CallingPayload> => ({
     type: GET_My_GROUP_INFORMATION,
+    payload
+})
+
+
+export const initGroupInfor = (payload: number) : State.actcionType<number> => ({
+    type: GET_INIT_GROUP_INFO,
     payload
 })
