@@ -37,10 +37,11 @@ import {
     updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
-import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite, updateInviteList } from "./utils/callWindowTools";
+import { openCallWindow, closeCallWindow, remoteUserExit, remoteUserJoin, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite, updateInviteList } from "./utils/callWindowTools";
 import { updateCallingStatus } from "./store/actions/ui";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
+let joinedUserList = [];
 
 // @ts-ignore
 window.closeCallWindow = closeCallWindow;
@@ -491,20 +492,59 @@ export const App = () => {
                 console.log('接收返回', data)
             })
         });
-        callWindowCloseListiner(() => {
+        // callWindowCloseListiner(() => {
+        //     dispatch(updateCallingStatus({
+        //         callingId: '',
+        //         callingType: 0,
+        //         inviteeList: [],
+        //         callType: 0
+        //     }));
+        //   });
+        cancelCallInvite(({inviteID, realCallTime}) => {
+            const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
+            const catchUserId = ref.current.catchUserId;
+            const newInviteList = joinedUserList.filter(item => item !== catchUserId);
+            if(realCallTime === 0) {
+                timRenderInstance.TIMCancelInvite({
+                    inviteID: inviteID
+                }).then(data => {
+                    console.log('关闭邀请===', data)
+                })
+            } else {
+                if(newInviteList.length === 0) {
+                    timRenderInstance.TIMInviteInGroup({
+                        userIDs: newInviteList,
+                        groupID: callingId,
+                        senderID: userId,
+                        data: JSON.stringify({"businessID":"av_call", "call_end": realCallTime, "call_type":Number(callType), "version":4}),
+                      }).then(() => {
+                          console.log('===========data======');
+                      })
+                }
+            }
+
             dispatch(updateCallingStatus({
                 callingId: '',
                 callingType: 0,
                 inviteeList: [],
                 callType: 0
             }));
-          });
-        cancelCallInvite((inviteID) => {
-            timRenderInstance.TIMCancelInvite({
-                inviteID: inviteID
-            }).then(data => {
-                console.log('关闭邀请===', data)
-            })
+        });
+
+        remoteUserExit((userId) => {
+            const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
+            const newList = inviteeList.filter(item => item !== userId);
+            joinedUserList = [...newList];
+            dispatch(updateCallingStatus({
+                callingId,
+                callingType,
+                inviteeList: newList,
+                callType
+            }));
+        });
+
+        remoteUserJoin((userId) => {
+            joinedUserList.push(userId);
         });
     }, []);
     return (

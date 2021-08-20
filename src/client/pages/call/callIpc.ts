@@ -29,7 +29,7 @@ export const eventListiner = {
     refuseCall: (inviteID) => {
         ipcRenderer.send('refuse-call', inviteID);
     },
-    cancelCall: (inviteId) => {
-        ipcRenderer.send('cancel-call-invite', inviteId);
+    cancelCall: (inviteId, realCallTime) => {
+        ipcRenderer.send('cancel-call-invite', {inviteId, realCallTime});
     },
 }

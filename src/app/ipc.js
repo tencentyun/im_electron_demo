@@ -111,8 +111,8 @@ class IPC {
         });
 
         // 取消通话邀请
-        ipcMain.on('cancel-call-invite', (event, inviteID) => {
-            this.imWindowEvent.reply('cancel-call-invite-reply', inviteID);
+        ipcMain.on('cancel-call-invite', (event, data) => {
+            this.imWindowEvent.reply('cancel-call-invite-reply', data);
         });
 
         // 更新邀请列表(当用户拒绝邀请后，需通知通话窗口)
