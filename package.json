@@ -1,7 +1,7 @@
 {
   "name": "oaim",
   "productName": "oaim",
-  "version": "1.0.38",
+  "version": "2.0.3",
   "description": "员工工作平台",
   "main": "src/app/main.js",
   "scripts": {
@@ -47,7 +47,7 @@
         {
           "target": "nsis",
           "arch": [
-            "ia32"
+            "x64"
           ]
         }
       ],
@@ -78,7 +78,10 @@
     "cross-env": "^7.0.3",
     "electron": "^13.1.5",
     "electron-builder": "^22.11.7",
-    "native-ext-loader": "^2.3.0"
+    "install": "^0.13.0",
+    "minidump": "^0.15.0",
+    "native-ext-loader": "^2.3.0",
+    "npm": "^7.20.6"
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
@@ -91,12 +94,11 @@
     "file-type": "^16.5.2",
     "fluent-ffmpeg": "^2.1.2",
     "get-video-duration": "^3.1.0",
-    "im_electron_sdk": "^1.2.8",
+    "im_electron_sdk": "^1.2.14",
     "image-size": "^1.0.0",
     "node-fetch": "^2.6.1",
     "node-gyp": "^7.1.2",
     "node-gyp-build": "^4.2.3",
-    "npm": "^7.20.2",
     "progress-stream": "^2.0.0",
     "qs": "^6.5.2",
     "sass": "^1.35.1",

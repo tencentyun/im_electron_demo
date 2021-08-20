@@ -91,14 +91,14 @@ const _createWindow = (TencentIM) => {
     // 通知渲染进程窗口是否可见 end
 
     // 加载url
-    log.info('mainWindow loadURL '+process.env.NODE_ENV.trim())
-    if (process.env.NODE_ENV.trim() === 'development') {
+    log.info('mainWindow loadURL '+process?.env?.NODE_ENV?.trim())
+    if (process?.env?.NODE_ENV?.trim() === 'development') {
         mainWindow.loadURL(`http://localhost:3000`);
         // 打开调试工具
         mainWindow.webContents.openDevTools();
     } else {
         
-        mainWindow.webContents.openDevTools(); //正式生产不需要开启
+        // mainWindow.webContents.openDevTools(); //正式生产不需要开启
         mainWindow.loadURL(
             url.format({
                 pathname: path.join(__dirname, '../../bundle/index.html'),

@@ -4,7 +4,7 @@ const { autoUpdater  }  = require("electron-updater");
 let appWindow = null;
 
 let feedUrl = '';//http://oaim.crbank.com.cn:30003/_download/
-if (process.env?.NODE_ENV?.trim() === 'development') {
+if (process?.env?.NODE_ENV?.trim() === 'development') {
   feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download/'
 }else{
   feedUrl = 'https://oaim.crbank.com.cn/_download/'
