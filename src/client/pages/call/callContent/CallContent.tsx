@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { remote } from 'electron';
 import {
     TRTCAppScene, 
@@ -18,6 +18,8 @@ import event from '../event';
 
 import './call-content.scss';
 
+let realCallTime = 0;
+
 export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, userSig, sdkAppid, callType, inviteListWithInfo }) => {
     console.log('==============call window params=================', roomId, inviteID, inviteList, sdkAppid, userSig, callType, inviteListWithInfo);
     const [ isStart, setStartStatus ] = useState(false);
@@ -29,6 +31,10 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
         const win = remote.getCurrentWindow();
         win.close();
     }
+
+    const setRealCallTime = useCallback((time) => {
+        realCallTime = time;
+    }, [])
 
     const onRemoteUserEnterRoom = userId => {
         eventListiner.remoteUserJoin(userId);
@@ -96,13 +102,13 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     }
 
     const handleExitRoom =() => {
-        !isStart && eventListiner.cancelCall(inviteID); //挂断逻辑
+        eventListiner.cancelCall(inviteID, realCallTime); //挂断逻辑
         exitRoom();
     }
      
     return <div className="call-content">
        <header className="call-content__header">
-           <CallTime isStart={isStart} prefix={"通话时间: "} />
+           <CallTime setRealCallTime={setRealCallTime} isStart={isStart} prefix={"通话时间: "} />
        </header>
        <section className="call-content__video" >
             <CallVideo trtcInstance={trtcInstance} isVideoCall={isVideoCall}  inviteListWithInfo={inviteListWithInfo} convInfo={convInfo} userId={userId} inviteList={inviteList} />

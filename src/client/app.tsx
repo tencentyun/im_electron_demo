@@ -41,7 +41,7 @@ import {
     updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
-import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite, updateInviteList } from "./utils/callWindowTools";
+import { openCallWindow, closeCallWindow, remoteUserExit, remoteUserJoin, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite, updateInviteList } from "./utils/callWindowTools";
 import { updateCallingStatus } from "./store/actions/ui";
 // import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from "./constants";
 import { ipcRenderer } from "electron";
@@ -49,6 +49,7 @@ import { reportError } from "./utils/orgin";
 import getHuaRunConfig from "./constants";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
+let joinedUserList = [];
 
 // @ts-ignore
 window.closeCallWindow = closeCallWindow;
@@ -333,8 +334,8 @@ export const App = () => {
         const timeOutList = JSON.parse(message.message_elem_array[0].custom_elem_data)?.inviteeList;
         console.warn('====timeout params=====', timeOutList);
         if(timeOutList) {
+            
             const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
-            console.warn('============store invite list ==========', inviteeList);
             const newList = inviteeList.filter(item => !timeOutList.includes(item));
             if (newList.length === 0) {
                 closeCallWindow();
@@ -345,6 +346,7 @@ export const App = () => {
                     inviteeList: newList,
                     callType
                 }));
+                
                 updateInviteList(newList); //向通话窗口通信
             }
         }
@@ -354,7 +356,7 @@ export const App = () => {
         const { message_sender } = message;
         const { callingId, callingType, inviteeList,callType } = ref.current.catchCalling;
         if (inviteeList.includes(message_sender)) {
-            const newInviteeList = _removeFromArr(inviteeList, message_sender)
+            const newInviteeList = inviteeList.filter(item => item !== message_sender);
             if (newInviteeList.length === 0) {
                 closeCallWindow();
             } else {
@@ -569,20 +571,59 @@ export const App = () => {
                 console.log('接收返回', data)
             })
         });
-        callWindowCloseListiner(() => {
+        // callWindowCloseListiner(() => {
+        //     dispatch(updateCallingStatus({
+        //         callingId: '',
+        //         callingType: 0,
+        //         inviteeList: [],
+        //         callType: 0
+        //     }));
+        //   });
+        cancelCallInvite(({inviteID, realCallTime}) => {
+            const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
+            const catchUserId = ref.current.catchUserId;
+            const newInviteList = joinedUserList.filter(item => item !== catchUserId);
+            if(realCallTime === 0) {
+                timRenderInstance.TIMCancelInvite({
+                    inviteID: inviteID
+                }).then(data => {
+                    console.log('关闭邀请===', data)
+                })
+            } else {
+                if(newInviteList.length === 0) {
+                    timRenderInstance.TIMInviteInGroup({
+                        userIDs: newInviteList,
+                        groupID: callingId,
+                        senderID: userId,
+                        data: JSON.stringify({"businessID":"av_call", "call_end": realCallTime, "call_type":Number(callType), "version":4}),
+                      }).then(() => {
+                          console.log('===========data======');
+                      })
+                }
+            }
+
             dispatch(updateCallingStatus({
                 callingId: '',
                 callingType: 0,
                 inviteeList: [],
                 callType: 0
             }));
-          });
-        cancelCallInvite((inviteID) => {
-            timRenderInstance.TIMCancelInvite({
-                inviteID: inviteID
-            }).then(data => {
-                console.log('关闭邀请===', data)
-            })
+        });
+
+        remoteUserExit((userId) => {
+            const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
+            const newList = inviteeList.filter(item => item !== userId);
+            joinedUserList = [...newList];
+            dispatch(updateCallingStatus({
+                callingId,
+                callingType,
+                inviteeList: newList,
+                callType
+            }));
+        });
+
+        remoteUserJoin((userId) => {
+            joinedUserList.push(userId);
         });
     }, []);
     useEffect(() => {

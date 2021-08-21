@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { remote } from 'electron';
 
 import './notification.scss';
 import { eventListiner } from '../callIpc';
@@ -19,8 +20,18 @@ export const Notification = (props) => {
         console.log('注册退出事件')
         event.on('exitRoom',()=>{
             // 如果没有接通，走这个退出逻辑
-            endCallWindow()
-        })
+            endCallWindow();
+        });
+
+        let timer = setTimeout(() => {
+            // endCallWindow();
+            const win = remote.getCurrentWindow();
+            win.close();
+        }, 30 * 1000);
+
+        return () => {
+            clearTimeout(timer);
+        }
     },[])
 
     return (

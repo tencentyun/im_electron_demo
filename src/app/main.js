@@ -9,9 +9,11 @@ const { SDK_APP_ID } = require('./const/const');
 const createWindow = require('./createRenderWindows')
 const setAppTray = require('./traySetting')
 const { productName,version,author } = require('../../package.json')
+const IPC = require('./ipc')
 
 const log = require('electron-log');
 
+let ipc = null;
 crashReporter.start({
   productName: `${productName}_${version}`,
   companyName: author.name,
@@ -29,22 +31,7 @@ global.sharedObject = {
   appTray:null
 }
 
-// let timer;
 
-// function trayFlash() {
-//   if (appTray) {
-//     hasFlash = true;
-
-//     timer = setInterval(() => {
-//       toggle = !toggle;
-//       if (toggle) {
-//         appTray.setImage(nativeImage.createEmpty());
-//       } else {
-//         appTray.setImage(trayIcon);
-//       }
-//     }, 600);
-//   }
-// }
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -73,6 +60,10 @@ if (!gotTheLock) {
     log.info('崩溃日志目录:'+app.getPath('crashDumps'))
     global.sharedObject.appWindow = createWindow(TencentIM)
     global.sharedObject.appTray = setAppTray(global.sharedObject.appWindow)
+
+    // 设置ipc通信
+    if (!ipc) ipc = new IPC(global.sharedObject.appWindow);
+
 
     app.on('activate', function () {
       log.info('app activate')
