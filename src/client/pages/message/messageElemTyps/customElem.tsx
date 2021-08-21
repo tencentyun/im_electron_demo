@@ -34,6 +34,7 @@ const CustomElem = (props: any): JSX.Element => {
             // 信令
             // @ts-ignore
             const parsedData = JSON.parse(data.data);
+            console.log('11111',parsedData)
             switch(data.actionType){
               case 1:
                 return <span>{data.inviter}邀请{
