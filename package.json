@@ -79,7 +79,7 @@
   "devDependencies": {
     "concurrently": "^6.2.0",
     "cross-env": "^7.0.3",
-    "electron": "^13.1.5",
+    "electron": "^13.2.1",
     "electron-builder": "^22.11.7",
     "install": "^0.13.0",
     "native-ext-loader": "^2.3.0",
@@ -89,6 +89,7 @@
     "electron-log": "^4.4.1",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
+    "ffi-napi": "^4.0.3",
     "ffmpeg-extract-frame": "^1.0.2",
     "ffprobe": "^1.1.2",
     "file-type": "^16.5.2",
