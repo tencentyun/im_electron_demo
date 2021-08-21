@@ -85,6 +85,7 @@ const HUARUN_CONFIG = {
         TIM_BASE_URL: 'http://localhost:3000',
         PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
         TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
+        TRTC_ACCESS_IP:[],
         EMOJIURL: 'https://oaim.uat.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
@@ -96,6 +97,7 @@ const HUARUN_CONFIG = {
         TIM_BASE_URL: 'https://oaim.uat.crbank.com.cn:30002',
         PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
         TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
+        TRTC_ACCESS_IP:['10.241.131.180'],
         EMOJIURL: 'https://oaim.uat.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
@@ -106,6 +108,7 @@ const HUARUN_CONFIG = {
     'prod': {
         TIM_BASE_URL: 'http://oaim.crbank.com.cn:30002',
         TRTC_BASE_URL: 'http://oaim.crbank.com.cn',
+        TRTC_ACCESS_IP:[],
         PUBBLIC_ACCOUNTS_URL: 'http://oaim.crbank.com.cn:30002',
         EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.crbank.com.cn',
@@ -121,20 +124,15 @@ type HuaRunConfig = {
     EMOJIURL: string,
     TRTC_BASE_URL:string,
     SERVERr_ADDRESS_IP: string,
+    TRTC_ACCESS_IP:Array<string>,
     SERVERr_ADDRESS_PORT: number,
     HUA_RUN_LOGIN_TEST: string,
     HUA_RUN_SYSTEMID: string
 }
 const getHuaRunConfig = (): HuaRunConfig => {
-<<<<<<< HEAD
-    console.log('环境变量', process?.env?.HUARUN_ENV, process?.env?.NODE_ENV)
-    // const env = process.env.HUARUN_ENV.trim();
-    const env = "prod"
-=======
     console.log('环境变量', process.env.HUARUN_ENV, process.env.NODE_ENV)
     const env = process.env.HUARUN_ENV.trim();
     // const env = "prod"
->>>>>>> 744a477b76802b95cd2f0c3645e7da74fb513819
     return HUARUN_CONFIG[env]
 }
 export default getHuaRunConfig();

@@ -1,7 +1,7 @@
 {
   "name": "oaim",
   "productName": "oaim",
-  "version": "2.0.3",
+  "version": "1.0.40",
   "description": "员工工作平台",
   "main": "src/app/main.js",
   "scripts": {
@@ -47,10 +47,6 @@
         {
           "target": "nsis",
           "arch": [
-<<<<<<< HEAD
-=======
-            "ia32",
->>>>>>> 744a477b76802b95cd2f0c3645e7da74fb513819
             "x64"
           ]
         }
