@@ -1,6 +1,5 @@
 const { CLOSE, SDK_APP_ID,HIDE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, CHECK_FILE_EXIST, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
-const { ipcMain, BrowserWindow, dialog } = require('electron')
-const { screen } = require('electron')
+const { ipcMain, BrowserWindow, dialog,screen,app } = require('electron')
 const fs = require('fs')
 const path = require('path')
 const http = require('http')
@@ -8,21 +7,22 @@ const url = require('url')
 const fetch = require("node-fetch");
 const progressStream = require('progress-stream');
 const child_process = require('child_process')
-const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const FFmpeg = require("fluent-ffmpeg")
 const sizeOf = require('image-size')
 const FileType = require('file-type')
-const ffprobe = require('ffprobe-static');
 const os = require('os')
+const log = require('electron-log')
 const getSrceenSize = () => {
     const display = screen.getPrimaryDisplay();
 
     return display.size;
 }
 
-const setPath = isDev => {
-    const ffprobePath = isDev ? ffprobe.path : ffprobe.path.replace('app.asar', 'app.asar.unpacked');
-    const formateFfmpegPath = isDev ? ffmpegPath : ffmpegPath.replace('app.asar', 'app.asar.unpacked');
+const setPath = () => {
+    const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/win/${os.arch()}/ffprobe.exe`) : path.resolve(process.cwd(), `extraResources/win/${os.arch()}/ffprobe.exe`)
+    const formateFfmpegPath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/win32-${os.arch()}/ffmpeg.exe`) : path.resolve(process.cwd(), `extraResources/win32-${os.arch()}/ffmpeg.exe`)
+    log.info(`ffprobePath: ${ffprobePath}`)
+    log.info(`formateFfmpegPath: ${formateFfmpegPath}`)
     FFmpeg.setFfprobePath(ffprobePath);
     FFmpeg.setFfmpegPath(formateFfmpegPath);
 }
@@ -32,9 +32,9 @@ class IPC {
     callWindow = null; // 通话窗口
     imWindowEvent = null; // 聊天窗口
     constructor(win) {
-        const env = process?.env?.NODE_ENV?.trim();;
+        const env = process?.env?.NODE_ENV?.trim();
         const isDev = env === 'development';
-        setPath(isDev);
+        setPath();
         this.mkDownloadDic(); //创建download 文件目录
         this.win = win;
         ipcMain.handle(RENDERPROCESSCALL, async (event, data) => {
@@ -135,8 +135,8 @@ class IPC {
         });
 
         // 取消通话邀请
-        ipcMain.on('cancel-call-invite', (event, inviteID) => {
-            this.imWindowEvent.reply('cancel-call-invite-reply', inviteID);
+        ipcMain.on('cancel-call-invite', (event, data) => {
+            this.imWindowEvent.reply('cancel-call-invite-reply', data);
         });
 
         // 更新邀请列表(当用户拒绝邀请后，需通知通话窗口)
