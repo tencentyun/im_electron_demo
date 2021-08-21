@@ -1,8 +1,7 @@
 
 const { app, BrowserWindow } = require('electron')
 const { description } = require("../../package.json");
-const IPC = require("./ipc");
-const appAutoUploader = require('./autoUpdate')
+// const appAutoUploader = require('./autoUpdate')
 const initStore = require('./store')
 const registerCut = require('./shortcut')
 const setOtherIPC = require('./otheripc')
@@ -10,7 +9,7 @@ const setSaveFileIPC = require('./saveFile');
 const url = require('url')
 const path = require('path')
 const log = require('electron-log');
-let ipc = null;
+
 
 const _sendMessageToRender = (win,key,data)=>{
     try{
@@ -40,13 +39,9 @@ const _createWindow = (TencentIM) => {
         log.info('ready-to-show')
         mainWindow.setTitle(description);
         mainWindow.show();
-
-        // 设置ipc通信
-        if (!ipc) ipc = new IPC(mainWindow);
-
+        
         app.setAppUserModelId(description);
 
-        
 
         // 设置自定升级检测
         // appAutoUploader(mainWindow)

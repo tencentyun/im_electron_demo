@@ -27,7 +27,7 @@ import { Myloader } from '../../components/skeleton';
 import { replaceRouter } from '../../store/actions/ui';
 import { getUserTypeQuery } from '../../services/userType'
 import { getLoginUserID } from './api';
-import log from 'electron-log';
+
 
 let indervel = null
 
@@ -355,7 +355,6 @@ export const Message = (): JSX.Element => {
         return <Myloader />
     }
 
-    log.info('当前对话列表所有人员信息', conversationList);
     for (var i=0;i< conversationList.length;i++){
         if(conversationList[i].conv_id === localStorage.getItem("uid") && localStorage.getItem("myhead")){
             conversationList[i].conv_profile.user_profile_face_url = localStorage.getItem("myhead")
