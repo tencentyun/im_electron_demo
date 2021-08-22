@@ -110,17 +110,6 @@ export const displayDiffMessage = (message, element, index) => {
   let resp;
   switch (elem_type) {
     case 0:
-      // if(res.text_elem_content) {
-      //   let text_elem_content = JSON.parse(res.text_elem_content)
-      //   if(text_elem_content?.message?.message_elem_array[0]?.custom_elem_data)
-      //   console.log('打印内容',JSON.parse(text_elem_content?.message?.message_elem_array[0]?.custom_elem_data))
-      //   if(JSON.parse(text_elem_content?.message?.message_elem_array[0]?.custom_elem_data).actionType==(2||5)){
-      //     break;
-      //   }else{
-      //     resp = <TextElemItem {...res} />;
-      //     break;
-      //   }
-      // }
       resp = <TextElemItem {...res} />;
       break;
     case 1:
@@ -785,14 +774,13 @@ export const MessageView = (props: Props): JSX.Element => {
           if (!item) {
             return null;
           }
-          // if(item?.message_elem_array&& item?.message_elem_array[0]) {
-          //   if(item?.message_elem_array[0].elem_type == 0){
-          //   const result_trtc = JSON.parse(JSON.parse(item?.message_elem_array[0].text_elem_content)?.message?.message_elem_array[0].custom_elem_data)
-          //   console.log('打印内容2',result_trtc)
-          //   if(result_trtc.actionType == (2||5))
-          //     return null;
-          //   }
-          // }
+          if(item?.message_elem_array&& item?.message_elem_array[0] && item?.message_elem_array[0].elem_type == 0 && item?.message_elem_array[0].text_elem_content.substring(2,9) =='message' && item?.message_elem_array[0].text_elem_content.indexOf('actionType')>-1) {
+            const result_trtc = JSON.parse(JSON.parse(item?.message_elem_array[0].text_elem_content)?.message?.message_elem_array[0].custom_elem_data)
+            //console.log('打印内容2',result_trtc)
+            if(result_trtc.actionType == (2||5)) {
+              return null;
+            }
+          }
           if (item.isTimeDivider) {
             return (
               <div key={item.time} className="message-view__item--time-divider">
