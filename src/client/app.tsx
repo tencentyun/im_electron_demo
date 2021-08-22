@@ -563,14 +563,14 @@ export const App = () => {
                 console.log('接收返回', data)
             })
         });
-        // callWindowCloseListiner(() => {
-        //     dispatch(updateCallingStatus({
-        //         callingId: '',
-        //         callingType: 0,
-        //         inviteeList: [],
-        //         callType: 0
-        //     }));
-        //   });
+        callWindowCloseListiner(() => {
+            dispatch(updateCallingStatus({
+                callingId: '',
+                callingType: 0,
+                inviteeList: [],
+                callType: 0
+            }));
+          });
         cancelCallInvite(({inviteID, realCallTime}) => {
             const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
             const catchUserId = ref.current.catchUserId;
