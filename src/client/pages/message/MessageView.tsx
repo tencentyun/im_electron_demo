@@ -482,7 +482,16 @@ export const MessageView = (props: Props): JSX.Element => {
     const { data } = e.props;
     switch (id) {
       case "revoke":
-        handleRevokeMsg(data);
+        console.log(data)
+        if(data?.message?.message_elem_array[0].elem_type != 5){
+          handleRevokeMsg(data);
+          break;
+        }else if(data?.message?.message_elem_array[0].elem_type == 5){
+          message.warning({
+              content: "公告类型无法撤回消息哦",
+          })
+          break;
+        }
         break;
       case "addCustEmoji":
         handleAddCustEmoji(data);
@@ -656,6 +665,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const menuData = getMenuItemData();
     return menuData.map(({ id, text }) => {
       return (
+
         <Item key={id} onClick={(e) => handlRightClick(e, id)}>
           {text}
         </Item>

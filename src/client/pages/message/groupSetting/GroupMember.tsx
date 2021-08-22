@@ -150,9 +150,9 @@ export const GroupMember = (props: {
             <div
               className="group-member--avatar-box"
               key={`${v.group_member_info_face_url}-${index}`}
-              onDoubleClick={(e) => {
-                handleMsgGroupRead(v);
-              }}
+              // onDoubleClick={(e) => {
+              //   handleMsgGroupRead(v);
+              // }}
             >
               <GroupMemberBubble
                 user={v}
