@@ -4,8 +4,8 @@ const { ipcMain } = require('electron')
 let appWindow = null;
 
 let feedUrl = '';//http://oaim.crbank.com.cn:30003/_download/
-const env = process?.env?.NODE_ENV?.trim()
-//  const env = 'prod'
+// const env = process?.env?.NODE_ENV?.trim()
+ const env = 'prod'
 if (env === 'development') {
     feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download/'
 }else{

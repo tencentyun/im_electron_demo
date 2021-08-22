@@ -21,18 +21,7 @@ import chooseImg from '../../assets/icon/choose.png'
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
 import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer } from './message-input-util';
-<<<<<<< HEAD
-import { electron } from 'webpack';
-import MaxLength from 'braft-extensions/dist/max-length'
-
-const options = {
-    defaultValue: 3000, // 指定默认限制数，如不指定则为Infinity(无限)
-};
-BraftEditor.use(MaxLength(options));
-
-=======
   
->>>>>>> origin
 type Props = {
     convId: string,
     convType: number,
@@ -200,20 +189,12 @@ export const MessageInput = (props: Props): JSX.Element => {
             templateFile = formatedFile;
         }
         return templateFile;
-<<<<<<< HEAD
-    }
-
-    const setFile = async (file: File | {size: number; type: string; path: string; name: string; fileContent: string}) => {
-        file = await filePathAdapter(file);
-        if (file) {
-=======
     } 
 
     
     const setFile = async (file: File | {size: number; type: string; path: string; name: string; fileContent: string}) => {
         file = await filePathAdapter(file);
         if(file) {
->>>>>>> origin
             const fileSize = file.size;
             const type = file.type;
             if (fileSize === 0) {
