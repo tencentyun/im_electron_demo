@@ -276,15 +276,15 @@ export const App = () => {
             const catchUserId = ref.current.catchUserId;
             const newList = inviteeList.filter(item => !timeOutList.includes(item));
             const isEmpty = newList.filter(item => item !== catchUserId).length === 0;
+            dispatch(updateCallingStatus({
+                callingId,
+                callingType,
+                inviteeList: newList,
+                callType
+            }));
             if (isEmpty) {
                 closeCallWindow();
             } else {
-                dispatch(updateCallingStatus({
-                    callingId,
-                    callingType,
-                    inviteeList: newList,
-                    callType
-                }));
                 updateInviteList(newList); //向通话窗口通信
             }
         }
@@ -297,15 +297,15 @@ export const App = () => {
         if (inviteeList.includes(message_sender)) {
             const newInviteeList = inviteeList.filter(item => item !== message_sender);
             const isEmpty = newInviteeList.filter(item => item !== catchUserId).length === 0;
+            dispatch(updateCallingStatus({
+                callingId,
+                callingType,
+                inviteeList: newInviteeList,
+                callType
+            }));
             if (isEmpty) {
                 closeCallWindow();
             } else {
-                dispatch(updateCallingStatus({
-                    callingId,
-                    callingType,
-                    inviteeList: newInviteeList,
-                    callType
-                }));
                 updateInviteList(newInviteeList); //向通话窗口通信
             }
         }
@@ -494,10 +494,11 @@ export const App = () => {
             }));
           });
         cancelCallInvite(({inviteId, realCallTime}) => {
-            const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
+            const { callingId, inviteeList, callType } = ref.current.catchCalling;
             const catchUserId = ref.current.catchUserId;
             const newInviteList = joinedUserList.filter(item => item !== catchUserId);
-            if(realCallTime === 0) {
+            const isEmpty = inviteeList.filter(item => item !== catchUserId).length === 0;
+            if(realCallTime === 0 && !isEmpty) {
                 timRenderInstance.TIMCancelInvite({
                     inviteID: inviteId
                 }).then(data => {
