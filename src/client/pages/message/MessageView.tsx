@@ -50,7 +50,7 @@ import {
 } from "tea-component";
 import { custEmojiUpsert } from "../../services/custEmoji";
 import { custEmojiUpsertParams } from "../../services/custEmoji";
-import { showDialog, checkFileExist } from "../../utils/tools";
+import { showDialog, checkFileExist,returnFileVla } from "../../utils/tools";
 import { addTimeDivider } from "../../utils/addTimeDivider";
 import { HISTORY_MESSAGE_COUNT } from "../../constants";
 import GroupSysElm from "./messageElemTyps/groupSystemElem";
@@ -334,7 +334,12 @@ export const MessageView = (props: Props): JSX.Element => {
     console.log("文件另存为", params)
     if(params.message &&  params.message.message_elem_array){
         const fileElement =  params.message.message_elem_array[0];
-        const fileName = fileElement.file_elem_file_name || fileElement.image_elem_orig_id;
+        let fileName = ''
+        if(fileElement?.file_elem_file_name){
+          fileName = (returnFileVla(fileElement.file_elem_file_name,0)||fileElement.file_elem_file_name)+fileElement.file_elem_file_id;
+        }else{
+          fileName = (returnFileVla(fileElement.file_elem_file_name,0)||fileElement.file_elem_file_name)+fileElement.image_elem_orig_id;
+        }
         const filePath = getFilePath(fileName);
         const isExist = await checkFileExist(filePath);
         const index= filePath.lastIndexOf(".");
@@ -784,14 +789,14 @@ export const MessageView = (props: Props): JSX.Element => {
           if (!item) {
             return null;
           }
-          if(item?.message_elem_array&& item?.message_elem_array[0] && item?.message_elem_array[0].elem_type == 3 && item?.message_elem_array[0].custom_elem_data && item?.message_elem_array[0].custom_elem_data.indexOf('actionType')>-1 && inviteID) {
-            console.log(item?.message_elem_array[0].custom_elem_data)
-            const result_trtc = JSON.parse(item?.message_elem_array[0].custom_elem_data)
-            console.log('打印内容2',result_trtc)
-            if(result_trtc.actionType == (2||4||5)) {
-              return null;
-            }
-          }
+          // if(item?.message_elem_array&& item?.message_elem_array[0] && item?.message_elem_array[0].elem_type == 3 && item?.message_elem_array[0].custom_elem_data && item?.message_elem_array[0].custom_elem_data.indexOf('actionType')>-1) {
+          //   console.log(item?.message_elem_array[0].custom_elem_data)
+          //   const result_trtc = JSON.parse(item?.message_elem_array[0].custom_elem_data)
+          //   console.log('打印内容2',result_trtc)
+          //   if(result_trtc.actionType == (2||4||5)) {
+          //     return null;
+          //   }
+          // }
           if (item.isTimeDivider) {
             return (
               <div key={item.time} className="message-view__item--time-divider">

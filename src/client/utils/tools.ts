@@ -132,6 +132,15 @@ const callWindowCloseListiner = (callback) => {
 const generateRoomID = () => {
     return Math.floor(Math.random() * 1000);
 }
+const returnFileVla = (val,index) => {
+    let start = val.replace('.'+val.split('.')[val.split('.').length-1],'');
+    let end = val.split('.')[val.split('.').length-1];
+    if(index) {
+        return end
+    }else{
+        return start
+    }
+}
 export {
     isWin,
     minSizeWin,
@@ -148,5 +157,6 @@ export {
     openCallWindow,
     callWindowCloseListiner,
     previewVvatar,
+    returnFileVla,
     hideWin
 }

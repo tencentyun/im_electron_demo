@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { checkFileExist, downloadFilesByUrl, showDialog } from "../../../utils/tools";
+import { checkFileExist, downloadFilesByUrl, showDialog,returnFileVla } from "../../../utils/tools";
 import { cancelSendMsg } from "../api";
 import { shell } from 'electron'
 import { Icon,Bubble, message as teaMessage } from "tea-component";
@@ -15,7 +15,7 @@ export const getFilePath = (fileName) => {
 const FileElem = (props: any): JSX.Element => {
     const { message, element, index } = props
     const { message_conv_id, message_conv_type, message_status, message_msg_id, message_is_from_self } = message
-    const { file_elem_file_name, file_elem_file_size, file_elem_file_path, file_elem_url } = element
+    const { file_elem_file_name, file_elem_file_size, file_elem_file_path, file_elem_url,file_elem_file_id } = element
     const { uploadProgressList } = useSelector((state: State.RootState) => state.historyMessage);
     const progressKey = `${message_msg_id}_${index}`
     const uploadProgress = uploadProgressList.get(progressKey);
@@ -124,7 +124,7 @@ const FileElem = (props: any): JSX.Element => {
         }
     }
     const savePic = () => {
-        file_elem_url && downloadPic(file_elem_url,file_elem_file_name)
+        file_elem_url && downloadPic(file_elem_url,(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+(returnFileVla(file_elem_file_id,0)||file_elem_file_id))
     }
     const setHtml = async () => {
         const html = await getHandleElement()
