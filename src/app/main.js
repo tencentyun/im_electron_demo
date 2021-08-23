@@ -53,18 +53,20 @@ const createWindow = () => {
     if(!ipc) ipc = new IPC(mainWindow);
   });
 
-  if(process.env?.NODE_ENV?.trim() === 'development') {
-    mainWindow.loadURL(`http://localhost:3000`);
+  // if(process.env?.NODE_ENV?.trim() === 'development') {
+  //   mainWindow.loadURL(`http://localhost:3000`);
+  //   mainWindow.webContents.openDevTools();
+  // } else {
+  //   mainWindow.loadURL(
+  //     url.format({
+  //         pathname: path.join(__dirname, '../../bundle/index.html'),
+  //         protocol: 'file:',
+  //         slashes: true
+  //     })
+  //   );
+  // }
+  mainWindow.loadURL(`http://localhost:3000`);
     mainWindow.webContents.openDevTools();
-  } else {
-    mainWindow.loadURL(
-      url.format({
-          pathname: path.join(__dirname, '../../bundle/index.html'),
-          protocol: 'file:',
-          slashes: true
-      })
-    );
-  }
 };
 
 // This method will be called when Electron has finished
