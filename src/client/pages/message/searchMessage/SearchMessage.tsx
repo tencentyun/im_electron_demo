@@ -6,10 +6,11 @@ import { searchTextMessage, searchGroup, searchFriends, addProfileForConversitio
 import { GroupResult } from './GroupResult';
 import { ContacterResult } from './ContacterResult';
 import { MessageResult } from './MessageResult';
-
+import { GroupAllResult } from './GroupAllResult';
 import './search-message.scss';
-import { getstAffPrefix } from '../../../utils/orgin';
+import { getstAffPrefix, getFuzzy} from '../../../utils/orgin';
 import { ContactResult } from './ContactResult';
+import { resolve } from 'dns';
 
 export const SearchMessage = (props) => {
     const [inputValue, setInputValue] = useState("");
@@ -17,7 +18,8 @@ export const SearchMessage = (props) => {
         messageResult: [],
         groupResult: [],
         friendsResult: [],
-        contactResult: []
+        contactResult: [],
+        groupAllResult:[]
     });
     const searchContact = (inputValue):any => {
        return new Promise<any>((resolve) => {
@@ -31,6 +33,22 @@ export const SearchMessage = (props) => {
                     resolve([])
                 }
                 
+            }).catch(()=>{
+                resolve([])
+            })
+        })
+    }
+
+    const searchGroupAll = (GroupName) => {
+        return new Promise<any>((resolve) => {
+            getFuzzy({
+                GroupName
+            }).then(data => {
+                if(data && data.data && data.data.WebGroupInfo){
+                    resolve(data.data.WebGroupInfo)
+                }else{
+                    resolve([])
+                }
             }).catch(()=>{
                 resolve([])
             })
@@ -50,7 +68,9 @@ export const SearchMessage = (props) => {
                 keyWords: inputValue
             });
             const searchContactResult = searchContact(inputValue)
-            
+
+            const searchGroupAllResult = searchGroupAll(inputValue)
+
             const addProfileForMessageResult = async () => {
                 const msgResult = await messageResult;
                 const { msg_search_result_total_count, msg_search_result_item_array } = msgResult;
@@ -74,21 +94,22 @@ export const SearchMessage = (props) => {
                 const formatedData = contactRes.length > 0 ? contactRes.map(item => {
                     return {
                         dep_name: item.Extra?.department_name || '',
-                        conv_id: item.Uid,
+                        conv_id: item.Uid, 
                         conv_type: 1, // 默认都是c2c
                     }
                 }) : []
                 const response = await addProfileForConversition(formatedData);
                 return response;
             }
-            Promise.all([addProfileForMessageResult(), groupResult, friendsResult, formatedContact()]).then(searchResult => {
-                const [messageResult, groupResult, friendsResult, contactResult] = searchResult;
-                console.log(contactResult,9999)
+            Promise.all([addProfileForMessageResult(), groupResult, friendsResult, formatedContact(), searchGroupAllResult]).then(searchResult => {
+                const [messageResult, groupResult, friendsResult, contactResult, WebGroupInfo] = searchResult;
+                console.log(searchResult, 9999)
                 setSearchResult({
                     messageResult,
                     groupResult,
                     friendsResult,
-                    contactResult: contactResult
+                    contactResult: contactResult,
+                    groupAllResult:WebGroupInfo
                 });
             });
         } else {
@@ -96,7 +117,8 @@ export const SearchMessage = (props) => {
                 messageResult: [],
                 groupResult: [],
                 friendsResult: [],
-                contactResult: []
+                contactResult: [],
+                groupAllResult:[]
             })
         }
     }, [inputValue]);
@@ -110,7 +132,7 @@ export const SearchMessage = (props) => {
     const handleModalClose = () => props.close();
 
     const generateTabList = () => {
-        const { friendsResult, messageResult, groupResult, contactResult } = searchResult;
+        const { friendsResult, messageResult, groupResult, contactResult, groupAllResult} = searchResult;
         const tabList = [{
             id: 'contacter',
             label: `联系人(${friendsResult.length})`
@@ -124,6 +146,10 @@ export const SearchMessage = (props) => {
         {
             id: 'contact',
             label: `通讯录(${contactResult.length})`
+        },
+        {
+            id: 'allgroup',
+            label: `所有群组(${groupAllResult.length})`
         }];
 
         return tabList;
@@ -149,6 +175,9 @@ export const SearchMessage = (props) => {
                     </TabPanel>
                     <TabPanel id="contact">
                         <ContactResult result={searchResult.contactResult} onClose={handleModalClose} />
+                    </TabPanel>
+                    <TabPanel id="allgroup">
+                        <GroupAllResult result={searchResult.groupAllResult} onClose={handleModalClose} />
                     </TabPanel>
                 </Tabs>
             </section>

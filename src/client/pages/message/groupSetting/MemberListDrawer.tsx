@@ -86,6 +86,7 @@ export const GroupMemberListDrawer = (props: {
                   className="group-name-card--input member-list-drawer--item__name"
                   size="full"
                   maxLength={50}
+                  autoFocus
                   placeholder="输入成员昵称失焦确定"
                   value={input}
                   onChange={(value) => {
