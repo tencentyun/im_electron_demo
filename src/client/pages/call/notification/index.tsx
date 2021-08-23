@@ -4,6 +4,7 @@ import './notification.scss';
 import { eventListiner } from '../callIpc';
 import { endCallWindow } from '../../../utils/callWindowTools';
 import event from '../event';
+import { remote } from 'electron';
 export const Notification = (props) => {
     const { convInfo: { nickName, faceUrl, convType}, callType, inviteID } = props;
     console.log('callType', callType);
@@ -21,6 +22,16 @@ export const Notification = (props) => {
             // 如果没有接通，走这个退出逻辑
             endCallWindow()
         })
+
+        let timer = setTimeout(() => {
+            // endCallWindow();
+            const win = remote.getCurrentWindow();
+            win.close();
+        }, 30 * 1000);
+
+        return () => {
+            clearTimeout(timer);
+        }
     },[])
 
     return (

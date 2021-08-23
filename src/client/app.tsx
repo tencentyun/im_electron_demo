@@ -282,9 +282,10 @@ export const App = () => {
         console.warn('====timeout params=====', timeOutList);
         if(timeOutList) {
             const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
-            console.warn('============store invite list ==========', inviteeList);
+            const catchUserId = ref.current.catchUserId;
             const newList = inviteeList.filter(item => !timeOutList.includes(item));
-            if (newList.length === 0) {
+            const isEmpty = newList.filter(item => item !== catchUserId).length === 0;
+            if (isEmpty) {
                 closeCallWindow();
             } else {
                 dispatch(updateCallingStatus({
@@ -301,9 +302,11 @@ export const App = () => {
     const _handleRemoteUserReject = (message) => {
         const { message_sender } = message;
         const { callingId, callingType, inviteeList,callType } = ref.current.catchCalling;
+        const catchUserId = ref.current.catchUserId;
         if (inviteeList.includes(message_sender)) {
-            const newInviteeList = _removeFromArr(inviteeList, message_sender)
-            if (newInviteeList.length === 0) {
+            const newInviteeList = inviteeList.filter(item => item !== message_sender);
+            const isEmpty = newInviteeList.filter(item => item !== catchUserId).length === 0;
+            if (isEmpty) {
                 closeCallWindow();
             } else {
                 dispatch(updateCallingStatus({
@@ -500,13 +503,13 @@ export const App = () => {
                 callType: 0
             }));
           });
-        cancelCallInvite(({inviteID, realCallTime}) => {
+        cancelCallInvite(({inviteId, realCallTime}) => {
             const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
             const catchUserId = ref.current.catchUserId;
             const newInviteList = joinedUserList.filter(item => item !== catchUserId);
             if(realCallTime === 0) {
                 timRenderInstance.TIMCancelInvite({
-                    inviteID: inviteID
+                    inviteID: inviteId
                 }).then(data => {
                     console.log('关闭邀请===', data)
                 })
@@ -533,8 +536,14 @@ export const App = () => {
 
         remoteUserExit((userId) => {
             const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
+            const catchUserId = ref.current.catchUserId
             const newList = inviteeList.filter(item => item !== userId);
+            const isEmpty = newList.filter(item => item !== catchUserId).length === 0;
             joinedUserList = [...newList];
+            if(isEmpty) {
+                closeCallWindow();
+                return;
+            }
             dispatch(updateCallingStatus({
                 callingId,
                 callingType,
