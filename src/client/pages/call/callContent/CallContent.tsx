@@ -84,7 +84,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
 
     const onRemoteUserLeaveRoom = (userId) => {
         eventListiner.remoteUserExit(userId);
-        isC2CCall && trtcInstance.exitRoom();
+        // isC2CCall && trtcInstance.exitRoom();
     };
 
     const toggleVideo = isOpenCamera => {
@@ -98,12 +98,8 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     }
 
     const exitRoom = () => {
+        eventListiner.cancelCall(inviteID, realCallTime);
         trtcInstance.exitRoom();
-    }
-
-    const handleExitRoom =() => {
-        eventListiner.cancelCall(inviteID, realCallTime); //挂断逻辑
-        exitRoom();
     }
      
     return <div className="call-content">
@@ -114,7 +110,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
             <CallVideo trtcInstance={trtcInstance} isVideoCall={isVideoCall}  inviteListWithInfo={inviteListWithInfo} convInfo={convInfo} userId={userId} inviteList={inviteList} />
        </section>
        <footer className="call-content__footer">
-            <CallFooter isVideoCall={isVideoCall} toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={handleExitRoom} />
+            <CallFooter isVideoCall={isVideoCall} toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={exitRoom} />
        </footer>
     </div>
 };
