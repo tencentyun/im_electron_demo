@@ -250,15 +250,6 @@ export const App = () => {
         })
 
     }
-    const _removeFromArr = (arr: any[], target: any) => {
-        for (let i = 0; i < arr.length; i++) {
-            if (arr[i] = target) {
-                arr.splice(i, 1)
-                break;
-            }
-        }
-        return arr;
-    }
     const _onRejected = (data) => {
         data && _handleRemoteUserReject(JSON.parse(data)[0]);
     }
@@ -361,9 +352,9 @@ export const App = () => {
         if (!failedList) return;
         for (const i in failedList) {
             dispatch(
-                reciMessage({
+                updateMessages({
                     convId: i,
-                    messages: failedList[i],
+                    message: failedList[i][0],
                 })
             );
         }
@@ -438,16 +429,15 @@ export const App = () => {
             } catch (err) {
                 console.error(err)
             }
-            if (conversationList[0]?.conv_last_msg?.message_status === 1) {
-                const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
-                if (elemType === 4 || elemType === 9) {
-                    dispatch(updateMessages({
-                        convId: conversationList[0].conv_id,
-                        message: conversationList[0].conv_last_msg
-                    }))
-                }
-            }
-
+            // if (conversationList[0]?.conv_last_msg?.message_status === 1) {
+            //     const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
+            //     if (elemType === 4 || elemType === 9) {
+            //         dispatch(updateMessages({
+            //             convId: conversationList[0].conv_id,
+            //             message: conversationList[0].conv_last_msg
+            //         }))
+            //     }
+            // }
         }
     };
 

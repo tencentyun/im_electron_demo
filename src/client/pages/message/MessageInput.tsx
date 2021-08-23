@@ -93,10 +93,8 @@ export const MessageInput = (props: Props): JSX.Element => {
             const messageElementArray = getMessageElemArray(rawData, videoInfos);
 
             const sendMsgSuccessCallback = ([res, userData]) => {
-                console.log('============send message success args ============', res);
                 const { code, json_params, desc } = res;
 
-                console.log('==========JSON.parse(json_params)=========', JSON.parse(json_params));
                 if (code === 0) {                
                     dispatch(updateMessages({
                         convId,
@@ -117,34 +115,29 @@ export const MessageInput = (props: Props): JSX.Element => {
                             messageAtArray: atList,
                             callback: sendMsgSuccessCallback
                         });
-                        const templateElement = generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+                        const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
                         dispatch(updateMessages({
                             convId,
                             message: templateElement
                         }));
                         return
                     }
-                    return sendMsg({
+                    const { data: messageId } = await sendMsg({
                         convId,
                         convType,
                         messageElementArray: [v],
                         userId,
                         callback: sendMsgSuccessCallback
                     });
+
+                    const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+                    dispatch(updateMessages({
+                        convId,
+                        message: templateElement
+                    }));
                 });
 
                 setEditorState(ContentUtils.clear(editorState));
-
-                // const results = await Promise.all(fetchList);
-                // for(const res of results) {
-                //     const { data: {code, json_params, desc }} = res;
-                //     if (code === 0) {                
-                //         dispatch(updateMessages({
-                //             convId,
-                //             message: JSON.parse(json_params)
-                //         }))
-                //     }
-                // } 
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
@@ -248,52 +241,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 multiSelections: false
             }
         })
-    }
-    const sendImageMessage = async ({ imagePath }) => {
-        if(!imagePath) return false;
-        const { data: { code, desc, json_params } } = await sendImageMsg({
-            convId,
-            convType,
-            messageElementArray: [{
-                elem_type: 1,
-                image_elem_orig_path: imagePath,
-                image_elem_level: 0
-            }],
-            userId,
-        });
-        if (code === 0) {
-            dispatch(updateMessages({
-                convId,
-                message: JSON.parse(json_params)
-            }))
-        } else {
-            message.error({content: `消息发送失败 ${desc}`})
-        }
-    }
-
-    const sendFileMessage = async ({ filePath, fileSize, fileName }) => {
-        if(!filePath) return false;
-        if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
-        const { data: { code, desc, json_params } } = await sendFileMsg({
-            convId,
-            convType,
-            messageElementArray: [{
-                elem_type: 4,
-                file_elem_file_path: filePath,
-                file_elem_file_name: fileName,
-                file_elem_file_size: fileSize
-            }],
-            userId,
-        });
-        if (code === 0) {
-            dispatch(updateMessages({
-                convId,
-                message: JSON.parse(json_params)
-            }))
-            setPathToLS(filePath)
-        } else {
-            message.error({content: `消息发送失败 ${desc}`})
-        }
     }
 
     const handleSendAtMessage = () => {

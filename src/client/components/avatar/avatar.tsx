@@ -14,8 +14,6 @@ interface AvatarProps  {
     groupID?: string,
 }
 
-
-
 export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass = '',nickName:nick,userID:uid,groupID:gid } ): JSX.Element => {
     const [nickName,setNickName] = useState(nick)
     const [url,setUrl] = useState(avatar)

@@ -13,8 +13,8 @@ const PicElemItem = (props: any): JSX.Element => {
             shell.openPath(p)
         } catch(e) {}
     }
-    const item = ({ image_elem_thumb_url, image_elem_orig_url, image_elem_large_url }) => {
-        const url = image_elem_thumb_url || image_elem_orig_url || image_elem_large_url
+    const item = ({ image_elem_thumb_url, image_elem_orig_url, image_elem_large_url, image_elem_orig_path }) => {
+        const url = image_elem_thumb_url || image_elem_orig_url || image_elem_large_url || image_elem_orig_path
         return (
             <div className="message-view__item--text text right-menu-item" onDoubleClick={showPic}>
                 <img src={url} style={{ maxWidth: '100%' }}></img>
