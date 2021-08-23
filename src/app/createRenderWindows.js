@@ -90,7 +90,7 @@ const _createWindow = (TencentIM) => {
     if (process.env?.NODE_ENV?.trim() === 'development') {
         mainWindow.loadURL(`http://localhost:3000`);
         // 打开调试工具
-        // mainWindow.webContents.openDevTools();
+        mainWindow.webContents.openDevTools();
     } else {
         //mainWindow.webContents.openDevTools(); //正式生产不需要开启
         mainWindow.loadURL(

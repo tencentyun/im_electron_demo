@@ -124,6 +124,11 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handleSendMsg = async () => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
         try {
+            if(isShutUpAll){
+                message.warning({
+                    content: "群主已全员禁言，无法发送消息哦",
+                })
+            }
             const rawData = editorState.toRAW();
             let messageElementArray = getMessageElemArray(rawData, videoInfos);
             console.log(messageElementArray,"调试内容")

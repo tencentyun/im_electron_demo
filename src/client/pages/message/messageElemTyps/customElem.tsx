@@ -37,6 +37,10 @@ const CustomElem = (props: any): JSX.Element => {
             console.log('11111',parsedData)
             switch(data.actionType){
               case 1:
+                const { call_end } = parsedData;
+                if(call_end){
+                  return <span>通话结束，通话时长{call_end}s</span>
+                }
                 return <span>{data.inviter}邀请{
                   data.inviteeList.map((item,index)=>{
                     return <span className="" key={index}>{item}{index===data.inviteeList.length-1 ? '' : '、'}</span>
