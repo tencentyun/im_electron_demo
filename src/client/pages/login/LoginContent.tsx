@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Tabs, TabPanel, Input, Button, Checkbox, message } from "tea-component";
+import { Input, Button, message } from "tea-component";
 import { SDKAPPID, SECRETKEY } from '../../constants';
 import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
 import { changeFunctionTab } from '../../store/actions/ui';
 import { setUserInfo } from '../../store/actions/user';
-import { loginUser } from '../../store/actions/loginUser';
+// import { loginUser } from '../../store/actions/loginUser';
+// @ts-ignore
 import { loginParam } from 'im_electron_sdk/dist/interface';
 import { filterGetDepartment, assemblyData } from '../../utils/orgin'
 import { setUnreadCount } from '../../store/actions/section';
