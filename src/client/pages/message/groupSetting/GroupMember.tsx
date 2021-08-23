@@ -28,16 +28,19 @@ export const GroupMember = (props: {
   userId: string;
   groupId: string;
   groupType: number;
+  groupOwener:string;
   groupCustom:Array<GroupInfoCustemString>,
   groupAddOption: number;
   memberCount: number
 }): JSX.Element => {
   const {
     groupId,
+    userId,
     groupType,
     userIdentity,
     groupCustom,
-    memberCount
+    memberCount,
+    groupOwener
   } = props;
 
   const [userList, setUserList] = useState([]);
@@ -117,7 +120,8 @@ export const GroupMember = (props: {
   }, [userList]);
 
   const [userGroupType, setUserGroupType] = useState([]);
-
+  //是否是群主
+  const isGroupOwner = groupOwener == userId
   // 获取当前群内好友状态
   const getUsetGroupStatus = async () => {
     if (userList.length <= 0) {
@@ -195,6 +199,7 @@ export const GroupMember = (props: {
             >
               <GroupMemberBubble
                 user={v}
+                isGroupOwner={isGroupOwner}
                 removingAdministrato={removingAdministrato}
                 children={
                   <>

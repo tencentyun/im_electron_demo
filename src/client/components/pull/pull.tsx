@@ -106,6 +106,7 @@ export const AddGroupMemberDialog = (props: {
     reslut.push(...selectedList.map(item => {
       return {
         group_member_info_member_role: 0,
+        group_member_info_nick_name:item.Uname,
         group_member_info_identifier: item.Uid,
       }
     }))
@@ -116,7 +117,9 @@ export const AddGroupMemberDialog = (props: {
   const createWorkGroup = async () => {
     try {
       const groupMember: any = getGroupMember()
-      const groupName = `${nickName}的讨论组`
+      let nikeNames = groupMember.map(item => item.group_member_info_nick_name).filter(items => items != undefined)
+      nikeNames.unshift(nickName)
+      const groupName = `${nikeNames.join('、')}`
       const params: createGroupParams = {
         groupAvatarUrl: 'http://oaim.crbank.com.cn:30003/emoji/qunioc.png',
         groupName,

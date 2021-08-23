@@ -47,17 +47,6 @@ export const GroupSetting = (props: {
     return null
   }
 
-  //2021年8月18日09:13:11  返回群资料自定义字段值  zwc
-  const returnsCustomValue = (type_key:string):string=> {
-    if(groupDetail.group_detial_info_custom_info && groupDetail.group_detial_info_custom_info.length){
-        return groupDetail.group_detial_info_custom_info.filter(item => item.group_info_custom_string_info_key == type_key)[0].group_info_custom_string_info_value
-    }else{
-        return ""
-    }
-  }
- 
-  // const canEdit = groupDetail.group_detial_info_group_type == 1 || (returnsCustomValue('group_permission') == '0' && (groupDetail?.group_detial_info_group_type === 1 || [2, 3].includes(currentUserSetting.group_member_info_member_role)) ||  returnsCustomValue('group_permission') == '1');
-  console.log("--------+++++++++++",  value)
   console.log("groupDetail", value)
   return (
     <LoadingContainer loading={loading}>
@@ -98,6 +87,7 @@ export const GroupSetting = (props: {
         groupType={groupDetail.group_detial_info_group_type}
         groupAddOption={groupDetail.group_detial_info_add_option}
         groupCustom={groupDetail.group_detial_info_custom_info}
+        groupOwener={groupDetail.group_detial_info_owener_identifier}
         userIdentity={currentUserSetting.group_member_info_member_role}
       />
       {

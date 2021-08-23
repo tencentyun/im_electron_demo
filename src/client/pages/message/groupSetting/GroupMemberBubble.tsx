@@ -13,16 +13,16 @@ export const GroupMemberBubble = (props: {
     group_member_info_identifier: string;
     group_member_info_name_card: string;
   };
+  isGroupOwner:boolean;
   removingAdministrato:Function;
   children: any;
 }): JSX.Element => {
   const {
     user,
     children,
+    isGroupOwner = false,
     removingAdministrato
   } = props;
-  //自己是否为群主
-  const   isGroupOwner   =  true
   const directToMsgPage = useMessageDirect();
 
   const handleMsgReaded = async (UserId: Array<string>) => {
@@ -57,7 +57,7 @@ export const GroupMemberBubble = (props: {
               <div className="nickname">{user.group_member_info_nick_name || ''}</div>
             </div>
               {
-                isGroupOwner &&  <PopConfirm
+                isGroupOwner && user.group_member_info_member_role == 2 &&  <PopConfirm
                 title="确定要解除管理员身份？"
                 message="解除后，该成员将变为普通成员。"
                 footer={close => (
