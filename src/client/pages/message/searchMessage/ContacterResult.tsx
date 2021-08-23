@@ -24,13 +24,13 @@ export const ContacterResult = (props) => {
                     <div className="customize-scroll-style">
                         {
                             result.map((item, index) => {
-                                const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = item.friend_profile_user_profile;
+                                const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = item?.friendship_friend_info_get_result_field_info.friend_profile_user_profile;
                                 return (
                                     <ResultItem
                                         key={index}
                                         faceUrl={user_profile_face_url}
                                         nickName={user_profile_nick_name || user_profile_identifier}
-                                        onClick={() => handleDirect(item.friend_profile_user_profile)}
+                                        onClick={() => handleDirect(item?.friendship_friend_info_get_result_field_info.friend_profile_user_profile)}
                                     />
                                 )
                             }
