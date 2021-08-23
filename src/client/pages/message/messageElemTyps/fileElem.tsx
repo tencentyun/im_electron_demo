@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { checkFileExist, downloadFilesByUrl, showDialog } from "../../../utils/tools";
 import { cancelSendMsg } from "../api";
 import { shell } from 'electron'
-import { Icon, message as teaMessage } from "tea-component";
+import { Icon,Bubble, message as teaMessage } from "tea-component";
 import path from 'path';
 import os from 'os'
 import { ipcRenderer } from "electron";
@@ -146,7 +146,9 @@ const FileElem = (props: any): JSX.Element => {
             <div className="message-view__item--file" style={{ background: backgroundStyle }} onDoubleClick={showFile}>
                 <div className="message-view__item--file___ext">{getFileTypeName()}</div>
                 <div className="message-view__item--file___content">
-                    <div className="message-view__item--file___content____name">{displayName()}</div>
+                    <div className="message-view__item--file___content____name">
+                    <Bubble content={displayName()}>{displayName()}</Bubble>
+                    </div>
                     {getDetailText()}
                 </div>
                 <div className="message-view__item--file___handle">

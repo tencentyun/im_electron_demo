@@ -482,7 +482,16 @@ export const MessageView = (props: Props): JSX.Element => {
     const { data } = e.props;
     switch (id) {
       case "revoke":
-        handleRevokeMsg(data);
+        console.log(data)
+        if(data?.message?.message_elem_array[0].elem_type != 5){
+          handleRevokeMsg(data);
+          break;
+        }else if(data?.message?.message_elem_array[0].elem_type == 5){
+          message.warning({
+              content: "公告类型无法撤回消息哦",
+          })
+          break;
+        }
         break;
       case "addCustEmoji":
         handleAddCustEmoji(data);
@@ -656,6 +665,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const menuData = getMenuItemData();
     return menuData.map(({ id, text }) => {
       return (
+
         <Item key={id} onClick={(e) => handlRightClick(e, id)}>
           {text}
         </Item>
@@ -773,6 +783,13 @@ export const MessageView = (props: Props): JSX.Element => {
         messageList.map((item, index) => {
           if (!item) {
             return null;
+          }
+          if(item?.message_elem_array&& item?.message_elem_array[0] && item?.message_elem_array[0].elem_type == 0 && item?.message_elem_array[0].text_elem_content.substring(2,9) =='message' && item?.message_elem_array[0].text_elem_content.indexOf('actionType')>-1) {
+            const result_trtc = JSON.parse(JSON.parse(item?.message_elem_array[0].text_elem_content)?.message?.message_elem_array[0].custom_elem_data)
+            //console.log('打印内容2',result_trtc)
+            if(result_trtc.actionType == (2||5)) {
+              return null;
+            }
           }
           if (item.isTimeDivider) {
             return (
@@ -899,6 +916,7 @@ export const MessageView = (props: Props): JSX.Element => {
                   {message_elem_array &&
                     message_elem_array.length &&
                     message_elem_array.map((elment, index) => {
+                      const { ...res } = elment;
                       return (
                         <div
                           className="message-view__item--element"
