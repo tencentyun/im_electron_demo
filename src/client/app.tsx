@@ -208,7 +208,8 @@ export const App = () => {
         const notification = new window.Notification("收到新消息", {
           icon: "http://oaim.crbank.com.cn:30003/emoji/notification.png",
           // body: replaceAll(message.message_elem_array[0], '&nbsp;', ' ').substring(0, 15)
-          body: messages[0].message_elem_array[0].text_elem_content
+          //设置十个字
+          body: messages[0].message_elem_array[0].text_elem_content.length>9 ?messages[0].message_elem_array[0].text_elem_content.substring(0,10):messages[0].message_elem_array[0].text_elem_content
         });
         ipcRenderer.send("asynchronous-message", "setTaryTitle");
         notification.onclick = async () => {
