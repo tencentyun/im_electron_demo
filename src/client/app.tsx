@@ -208,7 +208,8 @@ export const App = () => {
         const notification = new window.Notification("收到新消息", {
           icon: "http://oaim.crbank.com.cn:30003/emoji/notification.png",
           // body: replaceAll(message.message_elem_array[0], '&nbsp;', ' ').substring(0, 15)
-          body: messages[0].message_elem_array[0].text_elem_content
+          //设置十个字
+          body: messages[0].message_elem_array[0].text_elem_content.length>9 ?messages[0].message_elem_array[0].text_elem_content.substring(0,10):messages[0].message_elem_array[0].text_elem_content
         });
         ipcRenderer.send("asynchronous-message", "setTaryTitle");
         notification.onclick = async () => {
@@ -335,16 +336,15 @@ export const App = () => {
             const catchUserId = ref.current.catchUserId;
             const newList = inviteeList.filter(item => !timeOutList.includes(item));
             const isEmpty = newList.filter(item => item !== catchUserId).length === 0;
+            dispatch(updateCallingStatus({
+                callingId,
+                callingType,
+                inviteeList: newList,
+                callType
+            }));
             if (isEmpty) {
                 closeCallWindow();
             } else {
-                dispatch(updateCallingStatus({
-                    callingId,
-                    callingType,
-                    inviteeList: newList,
-                    callType
-                }));
-                
                 updateInviteList(newList); //向通话窗口通信
             }
         }
@@ -357,15 +357,15 @@ export const App = () => {
         if (inviteeList.includes(message_sender)) {
             const newInviteeList = inviteeList.filter(item => item !== message_sender);
             const isEmpty = newInviteeList.filter(item => item !== catchUserId).length === 0;
+            dispatch(updateCallingStatus({
+                callingId,
+                callingType,
+                inviteeList: newInviteeList,
+                callType
+            }));
             if (isEmpty) {
                 closeCallWindow();
             } else {
-                dispatch(updateCallingStatus({
-                    callingId,
-                    callingType,
-                    inviteeList: newInviteeList,
-                    callType
-                }));
                 updateInviteList(newInviteeList); //向通话窗口通信
             }
         }
@@ -576,10 +576,11 @@ export const App = () => {
             }));
           });
         cancelCallInvite(({inviteId, realCallTime}) => {
-            const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
+            const { callingId, inviteeList, callType } = ref.current.catchCalling;
             const catchUserId = ref.current.catchUserId;
             const newInviteList = joinedUserList.filter(item => item !== catchUserId);
-            if(realCallTime === 0) {
+            const isEmpty = inviteeList.filter(item => item !== catchUserId).length === 0;
+            if(realCallTime === 0 && !isEmpty) {
                 timRenderInstance.TIMCancelInvite({
                     inviteID: inviteId
                 }).then(data => {

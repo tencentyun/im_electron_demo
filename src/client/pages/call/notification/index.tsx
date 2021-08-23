@@ -37,7 +37,7 @@ export const Notification = (props) => {
     return (
         <div className="notification">
             <div className="notification__title">
-                <img src={faceUrl} className="notification__avatar"/>
+                <img src={faceUrl || 'http://oaim.crbank.com.cn:30004/oaim/emoji/qunioc.png?imageView2/3/w/40/h/40'} className="notification__avatar"/>
                 <span className="notification__title--nick-name">{nickName}</span><br></br>
                 <span className="notification__title--text">{getDisplayText()}</span>
             </div>
