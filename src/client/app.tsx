@@ -254,7 +254,7 @@ export const App = () => {
         data && _handleRemoteUserReject(JSON.parse(data)[0]);
     }
     const _onAccepted = (data) => {
-
+        console.log('============accept call=======', data);
     }
     const _onCanceled = (data) => {
         // 关闭通知窗口
@@ -494,7 +494,7 @@ export const App = () => {
             }));
           });
         cancelCallInvite(({inviteId, realCallTime}) => {
-            const { callingId, inviteeList, callType } = ref.current.catchCalling;
+            const { callingId, inviteeList, callType, callingType } = ref.current.catchCalling;
             const catchUserId = ref.current.catchUserId;
             const newInviteList = joinedUserList.filter(item => item !== catchUserId);
             const isEmpty = inviteeList.filter(item => item !== catchUserId).length === 0;
@@ -506,14 +506,24 @@ export const App = () => {
                 })
             } else {
                 if(newInviteList.length === 0) {
-                    timRenderInstance.TIMInviteInGroup({
-                        userIDs: newInviteList,
-                        groupID: callingId,
-                        senderID: userId,
-                        data: JSON.stringify({"businessID":"av_call", "call_end": realCallTime, "call_type":Number(callType), "version":4}),
-                      }).then(() => {
-                          console.log('===========data======');
-                      })
+                    if(callingType === 1) {
+                        timRenderInstance.TIMInvite({
+                            userID: callingId,
+                            timeout: 0,
+                            senderID: catchUserId,
+                            data: JSON.stringify({"businessID":"av_call", "call_end": realCallTime, "call_type":Number(callType),"version":4})
+                          })
+                    } else {
+                        timRenderInstance.TIMInviteInGroup({
+                            userIDs: newInviteList,
+                            groupID: callingId,
+                            timeout: 0,
+                            senderID: catchUserId,
+                            data: JSON.stringify({"businessID":"av_call", "call_end": realCallTime, "call_type":Number(callType), "version":4}),
+                          }).then(() => {
+                              console.log('===========data======');
+                          })
+                    }
                 }
             }
 
