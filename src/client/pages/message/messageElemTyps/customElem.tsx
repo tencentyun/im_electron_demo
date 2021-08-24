@@ -33,12 +33,12 @@ const CustomElem = (props: any): JSX.Element => {
         case 1:
             // 信令
             // @ts-ignore
-            const parsedData = JSON.parse(data.data);
+            const parsedData = JSON.parse(data.data||JSON.stringify({}));
             console.log('11111',parsedData)
             switch(data.actionType){
               case 1:
                 const { call_end } = parsedData;
-                if(call_end){
+                if(call_end>=0){
                   return <span>通话结束，通话时长{call_end}s</span>
                 }
                 return <span>{data.inviter}邀请{
@@ -50,12 +50,19 @@ const CustomElem = (props: any): JSX.Element => {
                 return <span>{data.inviter}取消了通话</span>
               case 3:
                 return <span>{
-                  message_sender
+                  data.inviteeList.map((item,index)=>{
+                    return <span className="" key={index}>{item}{index===data.inviteeList.length-1 ? '' : '、'}</span>
+                  })
                 }接受通话</span>
               case 4:
-                return <span>{message_sender}拒绝了通话</span>
+                return <span>{data.inviteeList.map((item,index)=>{
+                  return <span className="" key={index}>{item}{index===data.inviteeList.length-1 ? '' : '、'}</span>
+                })}拒绝了通话</span>
               case 5:
-                return <span>{data.inviter}超时未接听</span>
+                return <span>{
+                  data.inviteeList.map((item,index)=>{
+                    return <span className="" key={index}>{item}{index===data.inviteeList.length-1 ? '' : '、'}</span>
+                  })}超时未接听</span>
               default:
                 return <span>信令未解析</span>
             }

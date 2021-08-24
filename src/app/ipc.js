@@ -100,8 +100,8 @@ class IPC {
             // 向聊天窗口通信
             const { inviteID, isVoiceCall } = acceptParams;
             this.imWindowEvent.reply('accept-call-reply', inviteID);
-            const windowWidth = isVoiceCall ? 450 : 800;
-            const windowHeight = isVoiceCall ? 800 : 600;
+            const windowWidth = isVoiceCall ? 400 : 800;
+            const windowHeight = isVoiceCall ? 650 : 600;
 
             const positionX = Math.floor((screenSize.width - windowWidth) / 2);
             const positionY = Math.floor((screenSize.height - windowHeight) / 2);
@@ -156,8 +156,8 @@ class IPC {
                 this.callWindow.setSize(320, 150);
                 this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
             } else if (convType === 1 && Number(callType) === 1) {
-                this.callWindow.setSize(450, 800);
-                this.callWindow.setPosition(Math.floor((screenSize.width - 450) / 2), Math.floor((screenSize.height - 800) / 2));
+                this.callWindow.setSize(400, 650);
+                this.callWindow.setPosition(Math.floor((screenSize.width - 400) / 2), Math.floor((screenSize.height - 650) / 2));
             }
             this.callWindow.show();
             this.callWindow.webContents.send('pass-call-data', params);

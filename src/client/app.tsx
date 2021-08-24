@@ -248,16 +248,16 @@ export const App = () => {
         const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
         const { room_id, call_type,call_end } = JSON.parse(formatedData.data)
         const { inviter, groupID, inviteID, inviteeList } = formatedData;
-        const { callingId,callingType } = ref.current.catchCalling;
+        const { callingId,callType } = ref.current.catchCalling;
         // 如果正在通话，拒绝对方通话。
         if(callingId) {
             timRenderInstance.TIMRejectInvite({
                 inviteID: inviteID,
-                data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
+                data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callType})
             });
             return;
         }
-        if(call_end > 0){
+        if(call_end >= 0){
             return
         }
         timRenderInstance.TIMProfileGetUserProfileList({
@@ -313,11 +313,18 @@ export const App = () => {
         data && _handleRemoteUserReject(JSON.parse(data)[0]);
     }
     const _onAccepted = (data) => {
-
+        console.log('============accept call=======', data);
     }
     const _onCanceled = (data) => {
         // 关闭通知窗口
-        closeCallWindow()
+        closeCallWindow();
+        dispatch(updateCallingStatus({
+            callingId: '',
+            callingType: 0,
+            inviteeList: [],
+            callType: 0
+        }));
+        joinedUserList = [];
     }
     const _onTimeout = (data) => {
         if(data) {
@@ -331,21 +338,19 @@ export const App = () => {
         const timeOutList = JSON.parse(message.message_elem_array[0].custom_elem_data)?.inviteeList;
         console.warn('====timeout params=====', timeOutList);
         if(timeOutList) {
-            
             const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
             const catchUserId = ref.current.catchUserId;
             const newList = inviteeList.filter(item => !timeOutList.includes(item));
             const isEmpty = newList.filter(item => item !== catchUserId).length === 0;
+            dispatch(updateCallingStatus({
+                callingId,
+                callingType,
+                inviteeList: newList,
+                callType
+            }));
             if (isEmpty) {
                 closeCallWindow();
             } else {
-                dispatch(updateCallingStatus({
-                    callingId,
-                    callingType,
-                    inviteeList: newList,
-                    callType
-                }));
-                
                 updateInviteList(newList); //向通话窗口通信
             }
         }
@@ -358,15 +363,15 @@ export const App = () => {
         if (inviteeList.includes(message_sender)) {
             const newInviteeList = inviteeList.filter(item => item !== message_sender);
             const isEmpty = newInviteeList.filter(item => item !== catchUserId).length === 0;
+            dispatch(updateCallingStatus({
+                callingId,
+                callingType,
+                inviteeList: newInviteeList,
+                callType
+            }));
             if (isEmpty) {
                 closeCallWindow();
             } else {
-                dispatch(updateCallingStatus({
-                    callingId,
-                    callingType,
-                    inviteeList: newInviteeList,
-                    callType
-                }));
                 updateInviteList(newInviteeList); //向通话窗口通信
             }
         }
@@ -425,7 +430,11 @@ export const App = () => {
     };
     const _handeMessage = (messages: State.message[]) => {
         // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
-        handleNotify(messages)
+        try {
+            handleNotify(messages)
+        } catch(error) {
+            console.log(error);
+        }
         const obj = {};
         for (let i = 0; i < messages.length; i++) {
             if (!obj[messages[i].message_conv_id]) {
@@ -493,7 +502,7 @@ export const App = () => {
             }
             // if (conversationList[0]?.conv_last_msg?.message_status === 1) {
                 const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
-                if (elemType === 4 || elemType === 9) {
+                if (elemType === 4 || elemType === 9 || elemType === 3) {
                     dispatch(updateMessages({
                         convId: conversationList[0].conv_id,
                         message: conversationList[0].conv_last_msg
@@ -551,51 +560,68 @@ export const App = () => {
         ipcRenderer.on("mainProcessMessage", ipcRendererLister);
         addErrorReport()
         acceptCallListiner((inviteID) => {
-            const { callingType } = ref.current.catchCalling;
+            const { callType } = ref.current.catchCalling;
             timRenderInstance.TIMAcceptInvite({
                 inviteID: inviteID,
-                data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
+                data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callType})
             }).then(data => {
                 console.log('接收返回', data)
             })
         });
         refuseCallListiner((inviteID) => {
-            const { callingType } = ref.current.catchCalling;
+            const { callType } = ref.current.catchCalling;
             timRenderInstance.TIMRejectInvite({
                 inviteID: inviteID,
-                data:JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
+                data:JSON.stringify({"version":4,"businessID":"av_call","call_type":callType})
             }).then(data => {
                 console.log('接收返回', data)
             })
         });
-        callWindowCloseListiner(() => {
-            dispatch(updateCallingStatus({
-                callingId: '',
-                callingType: 0,
-                inviteeList: [],
-                callType: 0
-            }));
-          });
+        // callWindowCloseListiner(() => {
+            // dispatch(updateCallingStatus({
+            //     callingId: '',
+            //     callingType: 0,
+            //     inviteeList: [],
+            //     callType: 0
+            // }));
+            // joinedUserList = [];
+        //   });
         cancelCallInvite(({inviteId, realCallTime}) => {
-            const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
+            const { callingId, inviteeList, callType, callingType } = ref.current.catchCalling;
             const catchUserId = ref.current.catchUserId;
-            const newInviteList = joinedUserList.filter(item => item !== catchUserId);
+            const callingUserList = joinedUserList.filter(item => item !== catchUserId);
+            const isAllUserRejectOrTimeout = inviteeList.filter(item => item !== catchUserId).length === 0;
             if(realCallTime === 0) {
-                timRenderInstance.TIMCancelInvite({
-                    inviteID: inviteId
-                }).then(data => {
-                    console.log('关闭邀请===', data)
-                })
+                // 如果点击挂断，此时没有用户接听，需要取消邀请
+                if(!isAllUserRejectOrTimeout) {
+                    timRenderInstance.TIMCancelInvite({
+                        inviteID: inviteId,
+                        data:JSON.stringify({"version":4,"businessID":"av_call","call_type": callingType})
+                    }).then(data => {
+                        console.log('关闭邀请===', data)
+                    })
+                }
             } else {
-                if(newInviteList.length === 0) {
-                    timRenderInstance.TIMInviteInGroup({
-                        userIDs: newInviteList,
-                        groupID: callingId,
-                        senderID: userId,
-                        data: JSON.stringify({"businessID":"av_call", "call_end": realCallTime, "call_type":Number(callType), "version":4}),
-                      }).then(() => {
-                          console.log('===========data======');
-                      })
+                // 如果自己是最后一个挂断电话的需要发送通话时长
+                if(callingUserList.length === 0) {
+                    if(callingType === 1) {
+                        timRenderInstance.TIMInvite({
+                            userID: callingId,
+                            timeout: 0,
+                            senderID: catchUserId,
+                            data: JSON.stringify({"businessID":"av_call", "call_end": realCallTime, "call_type":Number(callType),"version":4})
+                          })
+                    } else {
+                        timRenderInstance.TIMInviteInGroup({
+                            userIDs: callingUserList,
+                            groupID: callingId,
+                            timeout: 0,
+                            senderID: catchUserId,
+                            data: JSON.stringify({"businessID":"av_call", "call_end": realCallTime, "call_type":Number(callType), "version":4}),
+                          }).then(() => {
+                              console.log('===========data======');
+                          })
+                    }
                 }
             }
 
@@ -605,6 +631,7 @@ export const App = () => {
                 inviteeList: [],
                 callType: 0
             }));
+            joinedUserList = [];
         });
 
         remoteUserExit((userId) => {

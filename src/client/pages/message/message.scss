@@ -1,6 +1,6 @@
 .message-content {
     width: 100%;
-    height: 100%;
+    height: calc(100% - 26px);
     display: flex;
 
     .message-list {
@@ -18,7 +18,7 @@
 .conversion-list {
     overflow-y: overlay;
     overflow-x: hidden;
-    height: calc(100vh - 92px);
+    height: calc(100% - 50px);
     &:hover {
         &::-webkit-scrollbar {
             width:8px;

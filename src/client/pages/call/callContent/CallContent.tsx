@@ -19,6 +19,7 @@ import event from '../event';
 import './call-content.scss';
 
 let realCallTime = 0;
+let isClosedWindow = false;
 
 export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, userSig, sdkAppid, callType, inviteListWithInfo }) => {
     console.log('==============call window params=================', roomId, inviteID, inviteList, sdkAppid, userSig, callType, inviteListWithInfo);
@@ -30,6 +31,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     const onExitRoom = () => {
         const win = remote.getCurrentWindow();
         win.close();
+        isClosedWindow = true;
     }
 
     const setRealCallTime = useCallback((time) => {
@@ -79,7 +81,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     }, [userId]);
 
     useEffect(() => {
-        event.on('exitRoom', exitRoom)
+        event.on('exitRoom', exitRoom);
     }, []);
 
     const onRemoteUserLeaveRoom = (userId) => {
@@ -100,6 +102,11 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     const exitRoom = () => {
         eventListiner.cancelCall(inviteID, realCallTime);
         trtcInstance.exitRoom();
+        setTimeout(() => {
+            if(!isClosedWindow) {
+                onExitRoom();
+            }
+        }, 3000)
     }
      
     return <div className="call-content">
