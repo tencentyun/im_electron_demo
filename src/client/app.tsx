@@ -248,12 +248,12 @@ export const App = () => {
         const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
         const { room_id, call_type,call_end } = JSON.parse(formatedData.data)
         const { inviter, groupID, inviteID, inviteeList } = formatedData;
-        const { callingId,callingType } = ref.current.catchCalling;
+        const { callingId,callType } = ref.current.catchCalling;
         // 如果正在通话，拒绝对方通话。
         if(callingId) {
             timRenderInstance.TIMRejectInvite({
                 inviteID: inviteID,
-                data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
+                data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callType})
             });
             return;
         }
@@ -553,19 +553,19 @@ export const App = () => {
         ipcRenderer.on("mainProcessMessage", ipcRendererLister);
         addErrorReport()
         acceptCallListiner((inviteID) => {
-            const { callingType } = ref.current.catchCalling;
+            const { callType } = ref.current.catchCalling;
             timRenderInstance.TIMAcceptInvite({
                 inviteID: inviteID,
-                data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
+                data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callType})
             }).then(data => {
                 console.log('接收返回', data)
             })
         });
         refuseCallListiner((inviteID) => {
-            const { callingType } = ref.current.catchCalling;
+            const { callType } = ref.current.catchCalling;
             timRenderInstance.TIMRejectInvite({
                 inviteID: inviteID,
-                data:JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
+                data:JSON.stringify({"version":4,"businessID":"av_call","call_type":callType})
             }).then(data => {
                 console.log('接收返回', data)
             })
@@ -588,7 +588,8 @@ export const App = () => {
                 // 如果点击挂断，此时没有用户接听，需要取消邀请
                 if(!isAllUserRejectOrTimeout) {
                     timRenderInstance.TIMCancelInvite({
-                        inviteID: inviteId
+                        inviteID: inviteId,
+                        data:JSON.stringify({"version":4,"businessID":"av_call","call_type": callingType})
                     }).then(data => {
                         console.log('关闭邀请===', data)
                     })

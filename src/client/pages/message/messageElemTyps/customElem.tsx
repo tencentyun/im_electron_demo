@@ -33,7 +33,7 @@ const CustomElem = (props: any): JSX.Element => {
         case 1:
             // 信令
             // @ts-ignore
-            const parsedData = JSON.parse(data.data);
+            const parsedData = JSON.parse(data.data||JSON.stringify({}));
             console.log('11111',parsedData)
             switch(data.actionType){
               case 1:
