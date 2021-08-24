@@ -257,7 +257,7 @@ export const App = () => {
             });
             return;
         }
-        if(call_end > 0){
+        if(call_end >= 0){
             return
         }
         timRenderInstance.TIMProfileGetUserProfileList({

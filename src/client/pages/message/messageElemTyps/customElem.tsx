@@ -38,7 +38,7 @@ const CustomElem = (props: any): JSX.Element => {
             switch(data.actionType){
               case 1:
                 const { call_end } = parsedData;
-                if(call_end){
+                if(call_end>=0){
                   return <span>通话结束，通话时长{call_end}s</span>
                 }
                 return <span>{data.inviter}邀请{
