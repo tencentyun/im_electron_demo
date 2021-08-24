@@ -1,16 +1,22 @@
 import React from 'react';
 import { EmptyResult } from './EmptyResult';
 import { ResultItem } from './ResultItem';
-
 import './contacter-result.scss';
+// 申请入群 zwc
+import { joinGroup } from '../../relationship/group/api'
+import { message } from 'tea-component'
 
 export const GroupAllResult = (props) => {
     const { result, onClose } = props;
 
-    const handleDirect = (profile) => {
-       
+    const handleDirect = async (groupID) => {
+      await joinGroup(groupID)
+      message.success({
+        content: "申请入群成功",
+      })
+      onClose()
     };
-
+  
     return (
         <div className="contacter-result ">
             {
@@ -18,15 +24,17 @@ export const GroupAllResult = (props) => {
                     <div className="customize-scroll-style">
                         {
                             result.map((item, index) => {
-                                const { groupName,FaceUrl } = item;
+                                const { groupName, FaceUrl, groupID } = item;
                                 return (
                                     <ResultItem
                                         key={index}
+                                        isShowBtn={true}
+                                        btnText= "申请入群"
                                         faceUrl={FaceUrl}
                                         nickName={groupName}
                                         depName = { groupName }
-                                        userID = { groupName }
-                                        onClick={() => handleDirect(item.groupName)}
+                                        groupID = { groupID }
+                                        submit={(data)=> { handleDirect(data) }}
                                     />
                                 )
                             }

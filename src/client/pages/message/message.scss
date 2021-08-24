@@ -8,6 +8,20 @@
         border-right: 1px solid #eee;
         display: flex;
         flex-direction: column;
+        .message-group-chat{
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            cursor: pointer;
+            img{
+                width: 30px;
+                height: 30px;
+                margin-right: 10px;
+            }
+            &__test{
+                color: #000;
+            }
+        }
         .search-wrap {
             margin: 0 12px 0px 12px;
             padding: 12px;

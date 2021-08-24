@@ -132,6 +132,18 @@ const callWindowCloseListiner = (callback) => {
 const generateRoomID = () => {
     return Math.floor(Math.random() * 1000);
 }
+
+
+const formatDate = (timer) => {
+        let now = new Date(timer)
+    　　let year = now.getFullYear(),
+    　　month = now.getMonth() + 1,
+    　　date = now.getDate(),
+    　　hour = now.getHours().toString().padStart(2, '0'),
+    　　minute = now.getMinutes().toString().padStart(2, '0'),
+    　　second = now.getSeconds().toString().padStart(2, '0');
+    　　return year + "年" + month + "月" + date + "日"+ "  " + hour + ":" + minute + ":" + second;
+    }
 export {
     isWin,
     minSizeWin,
@@ -148,5 +160,6 @@ export {
     openCallWindow,
     callWindowCloseListiner,
     previewVvatar,
-    hideWin
+    hideWin,
+    formatDate
 }

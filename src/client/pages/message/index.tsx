@@ -28,7 +28,9 @@ import { replaceRouter } from '../../store/actions/ui';
 import { getUserTypeQuery } from '../../services/userType'
 import { getLoginUserID } from './api';
 
-
+// 未决消息通知
+import Tozhi from '../../assets/icon/tozhi.png'
+import { ModelInform }   from '../../components/modelInform/modelInform'
 let indervel = null
 
 let uid = ''
@@ -66,6 +68,7 @@ export const Message = (): JSX.Element => {
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
     const { replace_router } = useSelector((state:State.RootState)=>state.ui)
     const dialogRef = useDialogRef();
+    const groupListRef = useDialogRef();
     const [isonline, setIsonline] = useState(false);
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
     const [nowConvMenuItem, setNowConvMenuItem] = useState(convMenuItem)
@@ -145,6 +148,8 @@ export const Message = (): JSX.Element => {
 
     const handleSearchBoxClick = () => dialogRef.current.open();
 
+    const handleGroupInform = () => groupListRef.current.open()
+ 
     const getLastMsgInfo = (lastMsg:State.message,conv_type,conv_group_at_info_array) => {
         const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read,message_is_read,message_conv_type } = lastMsg;
         const { user_profile_nick_name } = message_sender_profile;
@@ -365,6 +370,12 @@ export const Message = (): JSX.Element => {
             <div className={`${ isonline ? 'online' : 'outline'}`} style={{position: 'fixed',left:'10px',bottom:'10px',width:'8px',height:'8px',borderRadius:'4px'}}></div>
             <div className="message-list" style={{userSelect: 'none'}}>
                 <div className="search-wrap" onClick={handleSearchBoxClick}><SearchBox /></div>
+                {/* 群聊未决消息  */}
+                <div className='message-group-chat' onClick={handleGroupInform}>
+                    <img src={Tozhi} alt=""/>
+                    <div className="__test">验证消息</div>
+                </div>
+                {/* 群聊未决消息  */}
                 <div className="conversion-list">
                     {
                         currentSelectedConversation === null ? <EmptyResult contentText="暂无会话" /> :  conversationList.map((item) => {
@@ -418,6 +429,7 @@ export const Message = (): JSX.Element => {
 
             </div>
             <SearchMessageModal dialogRef={dialogRef} />
+            <ModelInform dialogRef={groupListRef}></ModelInform>
             {
                 currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : <div className="empty"><EmptyResult contentText="暂无历史消息" /></div>
             }
