@@ -36,12 +36,19 @@ const CustomElem = (props: any): JSX.Element => {
                 return <span>{data.inviter}取消了通话</span>
               case 3:
                 return <span>{
-                  message_sender
+                  data.inviteeList.map((item,index)=>{
+                    return <span className="" key={index}>{item}{index===data.inviteeList.length-1 ? '' : '、'}</span>
+                  })
                 }接受通话</span>
               case 4:
-                return <span>{message_sender}拒绝了通话</span>
+                return <span>{data.inviteeList.map((item,index)=>{
+                  return <span className="" key={index}>{item}{index===data.inviteeList.length-1 ? '' : '、'}</span>
+                })}拒绝了通话</span>
               case 5:
-                return <span>{data.inviter}超时未接听</span>
+                return <span>{
+                  data.inviteeList.map((item,index)=>{
+                    return <span className="" key={index}>{item}{index===data.inviteeList.length-1 ? '' : '、'}</span>
+                  })}超时未接听</span>
               default:
                 return <span>信令未解析</span>
             }
