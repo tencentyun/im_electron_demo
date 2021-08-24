@@ -11,7 +11,6 @@ type Props = {
 
 const GroupVideoItem = (props: Props) => {
     const {setRef, hasFaceUrl, userNickName, userId, isEntering, isMicAvailable } = props;
-    console.log('groupVideoitem render');
     return (
         <React.Fragment>
             <div ref={setRef(userId)} style={{ position: 'relative', width: '100%', height: '100%' }}>

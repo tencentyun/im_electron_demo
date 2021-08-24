@@ -81,7 +81,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     }, [userId]);
 
     useEffect(() => {
-        event.on('exitRoom', exitRoom)
+        event.on('exitRoom', exitRoom);
     }, []);
 
     const onRemoteUserLeaveRoom = (userId) => {
