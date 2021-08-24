@@ -8,10 +8,10 @@ const CustomElem = (props: any): JSX.Element => {
     const { message_sender } = message;
     const { custom_elem_data,custom_elem_ext } = message.message_elem_array[0];
     let data = custom_elem_data;
-    console.log('111222',data)
+    //console.log('111222',data)
     try {
      data =  JSON.parse(custom_elem_data)
-     console.log('111222',data)
+     //console.log('111222',data)
     }catch(err){
     }
     try {
