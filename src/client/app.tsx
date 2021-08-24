@@ -492,20 +492,25 @@ export const App = () => {
                 inviteeList: [],
                 callType: 0
             }));
+            joinedUserList = [];
           });
         cancelCallInvite(({inviteId, realCallTime}) => {
             const { callingId, inviteeList, callType, callingType } = ref.current.catchCalling;
             const catchUserId = ref.current.catchUserId;
-            const newInviteList = joinedUserList.filter(item => item !== catchUserId);
-            const isEmpty = inviteeList.filter(item => item !== catchUserId).length === 0;
-            if(realCallTime === 0 && !isEmpty) {
-                timRenderInstance.TIMCancelInvite({
-                    inviteID: inviteId
-                }).then(data => {
-                    console.log('关闭邀请===', data)
-                })
+            const callingUserList = joinedUserList.filter(item => item !== catchUserId);
+            const isAllUserRejectOrTimeout = inviteeList.filter(item => item !== catchUserId).length === 0;
+            if(realCallTime === 0) {
+                // 如果点击挂断，此时没有用户接听，需要取消邀请
+                if(!isAllUserRejectOrTimeout) {
+                    timRenderInstance.TIMCancelInvite({
+                        inviteID: inviteId
+                    }).then(data => {
+                        console.log('关闭邀请===', data)
+                    })
+                }
             } else {
-                if(newInviteList.length === 0) {
+                // 如果自己是最后一个挂断电话的需要发送通话时长
+                if(callingUserList.length === 0) {
                     if(callingType === 1) {
                         timRenderInstance.TIMInvite({
                             userID: callingId,
@@ -515,7 +520,7 @@ export const App = () => {
                           })
                     } else {
                         timRenderInstance.TIMInviteInGroup({
-                            userIDs: newInviteList,
+                            userIDs: callingUserList,
                             groupID: callingId,
                             timeout: 0,
                             senderID: catchUserId,
