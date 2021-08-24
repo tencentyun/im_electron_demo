@@ -437,13 +437,13 @@ export const App = () => {
                 console.error(err)
             }
             // if (conversationList[0]?.conv_last_msg?.message_status === 1) {
-            //     const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
-            //     if (elemType === 4 || elemType === 9) {
-            //         dispatch(updateMessages({
-            //             convId: conversationList[0].conv_id,
-            //             message: conversationList[0].conv_last_msg
-            //         }))
-            //     }
+                const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
+                if (elemType === 3) {
+                    dispatch(updateMessages({
+                        convId: conversationList[0].conv_id,
+                        message: conversationList[0].conv_last_msg
+                    }))
+                }
             // }
         }
     };
