@@ -258,7 +258,14 @@ export const App = () => {
     }
     const _onCanceled = (data) => {
         // 关闭通知窗口
-        closeCallWindow()
+        closeCallWindow();
+        dispatch(updateCallingStatus({
+            callingId: '',
+            callingType: 0,
+            inviteeList: [],
+            callType: 0
+        }));
+        joinedUserList = [];
     }
     const _onTimeout = (data) => {
         if(data) {
@@ -485,15 +492,15 @@ export const App = () => {
                 console.log('接收返回', data)
             })
         });
-        callWindowCloseListiner(() => {
-            dispatch(updateCallingStatus({
-                callingId: '',
-                callingType: 0,
-                inviteeList: [],
-                callType: 0
-            }));
-            joinedUserList = [];
-          });
+        // callWindowCloseListiner(() => {
+            // dispatch(updateCallingStatus({
+            //     callingId: '',
+            //     callingType: 0,
+            //     inviteeList: [],
+            //     callType: 0
+            // }));
+            // joinedUserList = [];
+        //   });
         cancelCallInvite(({inviteId, realCallTime}) => {
             const { callingId, inviteeList, callType, callingType } = ref.current.catchCalling;
             const catchUserId = ref.current.catchUserId;
@@ -539,6 +546,7 @@ export const App = () => {
                 inviteeList: [],
                 callType: 0
             }));
+            joinedUserList = [];
         });
 
         remoteUserExit((userId) => {
