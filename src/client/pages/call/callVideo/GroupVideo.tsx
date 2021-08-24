@@ -32,8 +32,8 @@ export const GroupVideo = (props) => {
 
     useEffect(() => {
         if (enteringUser) {
-            const ref = getRef(enteringUser);
             if (enteringUser === userId) {
+                const ref = getRef(enteringUser);
                 trtcInstance.startLocalAudio();
                 trtcInstance.enableAudioVolumeEvaluation(300);
                 isVideoCall && openLocalVideo(ref);
