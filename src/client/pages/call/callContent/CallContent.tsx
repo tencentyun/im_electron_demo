@@ -106,7 +106,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
             if(!isClosedWindow) {
                 onExitRoom();
             }
-        }, 3000)
+        }, 1000)
     }
      
     return <div className="call-content">
