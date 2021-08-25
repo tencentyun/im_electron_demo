@@ -33,6 +33,7 @@ export const Notification = (props) => {
 
         return () => {
             clearTimeout(timer);
+            event.off('exitRoom');
         }
     },[])
 
