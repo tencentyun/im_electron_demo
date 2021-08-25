@@ -789,7 +789,7 @@ export const MessageView = (props: Props): JSX.Element => {
           if (!item) {
             return null;
           }
-          // if(item?.message_elem_array&& item?.message_elem_array[0] && item?.message_elem_array[0].elem_type == 3 && item?.message_elem_array[0].custom_elem_data && item?.message_elem_array[0].custom_elem_data.indexOf('actionType')>-1) {
+          // if(item?.message_elem_array&& item?.message_elem_array[0] && item?.message_elem_array[0].elem_type == 3 && item?.message_elem_array[0].custom_elem_data && item?.message_elem_array[0].custom_elem_data.indexOf('actionType')>-1 && inviteID) {
           //   console.log(item?.message_elem_array[0].custom_elem_data)
           //   const result_trtc = JSON.parse(item?.message_elem_array[0].custom_elem_data)
           //   console.log('打印内容2',result_trtc)

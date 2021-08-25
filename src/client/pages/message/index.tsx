@@ -354,7 +354,7 @@ export const Message = (): JSX.Element => {
     if (isLoading) {
         return <Myloader />
     }
-
+    console.log('会话列表',conversationList)
     for (var i=0;i< conversationList.length;i++){
         if(conversationList[i].conv_id === localStorage.getItem("uid") && localStorage.getItem("myhead")){
             conversationList[i].conv_profile.user_profile_face_url = localStorage.getItem("myhead")

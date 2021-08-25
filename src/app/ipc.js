@@ -32,8 +32,8 @@ class IPC {
     callWindow = null; // 通话窗口
     imWindowEvent = null; // 聊天窗口
     constructor(win) {
-        const env = process?.env?.NODE_ENV?.trim();
-        const isDev = env === 'development';
+        const { NODE_ENV } = process.env;
+        const isDev = NODE_ENV?.trim() === 'development';
         setPath();
         this.mkDownloadDic(); //创建download 文件目录
         this.win = win;
@@ -186,14 +186,15 @@ class IPC {
             },
         });
         callWindow.removeMenu();
+        const { NODE_ENV,HUARUN_ENV } = process.env;
         if (isDev) {
             callWindow.webContents.openDevTools();
-            callWindow.loadURL(`http://localhost:3000/call.html`);
+            callWindow.loadURL(`http://localhost:3000/call.html?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`);
         } else {
             //callWindow.webContents.openDevTools(); //正式生产不需要开启
             callWindow.loadURL(
                 url.format({
-                    pathname: path.join(__dirname, `../../bundle/call.html`),
+                    pathname: path.join(__dirname, `../../bundle/call.html?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`),
                     protocol: 'file:',
                     slashes: true
                 })
