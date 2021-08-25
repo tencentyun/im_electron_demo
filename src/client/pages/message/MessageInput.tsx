@@ -134,7 +134,9 @@ export const MessageInput = (props: Props): JSX.Element => {
             const rawData = editorState.toRAW();
             let messageElementArray = getMessageElemArray(rawData, videoInfos);
             console.log(messageElementArray,"调试内容")
-            messageElementArray[0].text_elem_content = messageElementArray[0].text_elem_content.substring(0,options.defaultValue)
+            if (messageElementArray[0]&&messageElementArray[0].text_elem_content) {
+                messageElementArray[0].text_elem_content = messageElementArray[0].text_elem_content.substring(0,options.defaultValue)
+            }
             if (messageElementArray.length) {
 
                 //解决换行多次发送问题  -- zwc
