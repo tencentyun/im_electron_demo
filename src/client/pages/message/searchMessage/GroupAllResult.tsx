@@ -24,7 +24,7 @@ export const GroupAllResult = (props) => {
                     <div className="customize-scroll-style">
                         {
                             result.map((item, index) => {
-                                const { groupName, FaceUrl, groupID } = item;
+                                const { groupName, FaceUrl, groupID,add_optional } = item;
                                 return (
                                     <ResultItem
                                         key={index}
@@ -34,6 +34,7 @@ export const GroupAllResult = (props) => {
                                         nickName={groupName}
                                         depName = { groupName }
                                         groupID = { groupID }
+                                        addOptional = { add_optional }
                                         submit={(data)=> { handleDirect(data) }}
                                     />
                                 )

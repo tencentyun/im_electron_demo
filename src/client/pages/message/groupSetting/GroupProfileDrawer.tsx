@@ -163,7 +163,7 @@ export const GroupProfileDrawer = (props: {
       popupContainer={popupContainer}
       onClose={onClose}
     >
-      <div style={{ padding: '20px 10px 40px 20px' }}>
+      <div style={{ padding: '20px 10px 40px 20px' }}> 
         <FinalForm
           onSubmit={_handlerSubmit}
           initialValuesEqual={() => true}

@@ -1,12 +1,14 @@
 import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
 import { Avatar } from "../../../components/avatar/avatar";
 import { Drawer, H3, Table, Input, Modal } from "tea-component";
+import { Spin } from 'antd';
 import { isWin } from "../../../utils/tools";
 import React, { useState, useEffect, useRef } from "react";
 import "./member-list-drawer.scss";
 import { modifyGroupMemberInfo } from "../api";
 import _ from 'lodash';
 import { useSelector } from "react-redux";
+import { Item } from "react-contexify";
 const { scrollable } = Table.addons;
 
 export interface GroupMemberListDrawerRecordsType {
@@ -34,15 +36,22 @@ export const GroupMemberListDrawer = (props: {
     useDialog<GroupMemberListDrawerRecordsType>(dialogRef, {});
 
   const memberList = defaultForm.memberList;
-
+  const [meberListFormate,setMeberListFormate] = useState([])
+  const [tanleLoading,setTanleLoading] = useState(false)
   const onClose = () => {
     setShowState(false);
   };
+
+  useEffect(() => {
+    setMeberListFormate(memberList)
+  }, [memberList]);
+
 
   const { mygroupInfor} = useSelector(
     (state: State.RootState) => state.section
 );
 
+    console.log("meberListFormate", meberListFormate)
 
   //更改成员群昵称
   const updataGroupName = (data) => {
@@ -51,7 +60,23 @@ export const GroupMemberListDrawer = (props: {
     console.log("更改成员群昵称", data)
   }
 
-  const handleModify = async (groupId, userId, card) => {
+  //更改后更新列表数据
+  const setGroupNickName = (data, card) => {
+    for(let i = 0;i < meberListFormate.length;  i++){
+      let elment = meberListFormate[i]
+         if(data.group_member_info_identifier == elment.group_member_info_identifier) {
+            elment.group_member_info_name_card = card
+            break;
+         }
+    }
+    console.log("meberListFormate,meberListFormate", meberListFormate)
+    setMeberListFormate(meberListFormate)
+  }
+
+  const handleModify = async (record, card) => {
+    let groupId = record.group_member_info_group_id,
+        userId =  record.group_member_info_identifier 
+    setTanleLoading(true)
     await modifyGroupMemberInfo({
       groupId,
       userId,
@@ -59,6 +84,8 @@ export const GroupMemberListDrawer = (props: {
         group_modify_member_info_name_card: card,
       },
     });
+    setGroupNickName(record, card)
+    setTanleLoading(false)
   };
 
   const columns = [
@@ -105,7 +132,7 @@ export const GroupMemberListDrawer = (props: {
                     });
                     if (yes) {
                       //调用修改群名片接口
-                      handleModify(record.group_member_info_group_id, record.group_member_info_identifier, input)
+                      handleModify(record, input)
                     }
                     setIsShowInput("")
                   }}
@@ -137,22 +164,28 @@ export const GroupMemberListDrawer = (props: {
       popupContainer={popupContainer}
       onClose={onClose}
     >
-      <Table
-        hideHeader
-        disableHoverHighlight
-        className="member-list-drawer--table"
-        bordered={false}
-        columns={columns}
-        records={memberList}
-        addons={[
-          scrollable({
-            virtualizedOptions: {
-              height,
-              itemHeight: 60,
-            },
-          }),
-        ]}
+      {
+        !!meberListFormate &&  
+        <Spin spinning={tanleLoading}>
+          <Table
+          hideHeader
+          disableHoverHighlight
+          className="member-list-drawer--table"
+          bordered={false}
+          columns={columns}
+          records={meberListFormate}
+          addons={[
+            scrollable({
+              virtualizedOptions: {
+                height,
+                itemHeight: 60,
+              },
+            }),
+          ]}
       />
+      </Spin>
+      }
+
     </Drawer>
   );
 };
