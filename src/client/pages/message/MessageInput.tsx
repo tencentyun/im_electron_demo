@@ -26,7 +26,7 @@ import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteTex
 import MaxLength from 'braft-extensions/dist/max-length'
 
 const options = {
-    defaultValue: 3000, // 指定默认限制数，如不指定则为Infinity(无限)
+    defaultValue: 3500, // 指定默认限制数，如不指定则为Infinity(无限)
 };
 BraftEditor.use(MaxLength(options));
 
@@ -134,6 +134,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             const rawData = editorState.toRAW();
             let messageElementArray = getMessageElemArray(rawData, videoInfos);
             console.log(messageElementArray,"调试内容")
+            messageElementArray[0].text_elem_content = messageElementArray[0].text_elem_content.substring(0,options.defaultValue)
             if (messageElementArray.length) {
 
                 //解决换行多次发送问题  -- zwc
@@ -766,7 +767,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
                     draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled' }}
-                    maxLength={4000}
+                    maxLength={options.defaultValue}
                     actions={[]}
                 />
             </div>

@@ -3,7 +3,6 @@ import { remote } from 'electron';
 
 import './notification.scss';
 import { eventListiner } from '../callIpc';
-import { endCallWindow } from '../../../utils/callWindowTools';
 import event from '../event';
 export const Notification = (props) => {
     const { convInfo: { nickName, faceUrl, convType}, callType, inviteID } = props;
@@ -17,6 +16,7 @@ export const Notification = (props) => {
     const getDisplayText = () => `邀请你进行${isVoiceCall ? '语音' : '视频'}通话`;
 
     const closeCallWIndow = () => {
+        eventListiner.cancelCall(null, 0);
         const win = remote.getCurrentWindow();
         win.close();
     }
@@ -33,6 +33,7 @@ export const Notification = (props) => {
 
         return () => {
             clearTimeout(timer);
+            event.off('exitRoom');
         }
     },[])
 
