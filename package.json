@@ -1,14 +1,14 @@
 {
   "name": "oaim",
   "productName": "oaim",
-  "version": "1.0.38",
+  "version": "1.0.40",
   "description": "员工工作平台",
   "main": "src/app/main.js",
   "scripts": {
     "start:dev": " set NODE_ENV=development && set HUARUN_ENV=dev && concurrently \"npm run dev:react\" \"npm run start-electron\"",
     "start:prod": "set NODE_ENV=production && set HUARUN_ENV=prod && concurrently \"npm run dev:react\" \"npm run start-electron\"",
     "start:test": "set NODE_ENV=production && set HUARUN_ENV=test && concurrently \"npm run dev:react\" \"npm run start-electron\"",
-    "build:prod": "set NODE_ENV=production && set HUARUN_ENV=prod && npm run build:react && npm run build-electron\"",
+    "build:prod": "set NODE_ENV=production && set HUARUN_ENV=prod && npm run build:react && npm run build-electron",
     "build:test": "set NODE_ENV=production && set HUARUN_ENV=test && npm run build:react && npm run build-electron",
     "build:dev": "set NODE_ENV=production && set HUARUN_ENV=dev && npm run build:react && npm run build-electron",
     "build:react": "cd ./src/client && npm run build",
@@ -38,6 +38,9 @@
       "runAfterFinish": true,
       "shortcutName": "员工工作平台"
     },
+    "extraFiles": [
+      "node_modules/trtc-electron-sdk/build/Release/trtc_electron_sdk.node"
+    ],
     "mac": {
       "icon": "./icon/favicon.icns"
     },
@@ -47,7 +50,7 @@
         {
           "target": "nsis",
           "arch": [
-            "x64"
+            "ia32"
           ]
         }
       ],
@@ -78,24 +81,23 @@
     "cross-env": "^7.0.3",
     "electron": "^13.1.5",
     "electron-builder": "^22.11.7",
-    "native-ext-loader": "^2.3.0"
+    "install": "^0.13.0",
+    "native-ext-loader": "^2.3.0",
+    "npm": "^7.20.6"
   },
   "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "electron-log": "^4.4.1",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
     "ffmpeg-extract-frame": "^1.0.2",
     "ffprobe": "^1.1.2",
-    "ffprobe-static": "^3.0.0",
     "file-type": "^16.5.2",
     "fluent-ffmpeg": "^2.1.2",
-    "get-video-duration": "^3.1.0",
-    "im_electron_sdk": "^1.2.7",
+    "im_electron_sdk": "^1.2.24",
     "image-size": "^1.0.0",
     "node-fetch": "^2.6.1",
     "node-gyp": "^7.1.2",
     "node-gyp-build": "^4.2.3",
-    "npm": "^7.20.2",
     "progress-stream": "^2.0.0",
     "qs": "^6.5.2",
     "sass": "^1.35.1",

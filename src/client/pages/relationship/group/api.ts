@@ -42,6 +42,46 @@ export const deleteGroup = async (groupId: string): Promise<any> => {
   throw new Error(desc);
 };
 
+//2021年8月24日09:57:46   zwc   申请入群
+export const joinGroup = async (groupId: string): Promise<any> => {
+  const { data } = await timRenderInstance.TIMGroupJoin({ groupId });
+  console.log("data", data);
+  const { code, desc } = data;
+  if (code === 0) {
+    return {};
+  }
+  throw new Error(desc);
+};
+
+//2021年8月24日09:57:46   zwc   群聊未决消息
+export const getPendencyList = async (limited: number = 0, time:number = 0): Promise<any> => {
+  const { data } = await timRenderInstance.TIMGroupGetPendencyList({ 
+    "group_pendency_option_max_limited" : 0,
+    "group_pendency_option_start_time" : 0
+   });
+  console.log("data", data);
+  const { code, desc, json_param} = data;
+  if (code === 0) {
+    return JSON.parse(json_param);
+  }
+  throw new Error(desc);
+};
+
+//2021年8月24日09:57:46   zwc   处理群未决消息
+export const handleGroupPendency = async (accept: boolean = false, msg:string = "", groupPendency): Promise<any> => {
+  const { data } = await timRenderInstance.TIMGroupHandlePendency({ 
+    "group_handle_pendency_param_is_accept" : accept,
+    "group_handle_pendency_param_handle_msg" : msg,
+    "group_handle_pendency_param_pendency" : groupPendency
+   });
+  console.log("data", data);
+  const { code, desc, json_param} = data;
+  if (code === 0) {
+    return json_param;
+  }
+  throw new Error(desc);
+};
+
 export const quitGroup = async (groupId: string): Promise<any> => {
   const { data } = await timRenderInstance.TIMGroupQuit({ groupId });
   const { code, desc } = data;

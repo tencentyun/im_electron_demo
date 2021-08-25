@@ -22,6 +22,15 @@ const getDepartment = (data) => {
     })
 }
 
+// 模糊搜索所有群组
+const getFuzzy = (data) => {
+    return axios({
+        url: `${TIM_BASE_URL}/v4/group_open_http_svc/seach_group_bylike?sdkappid=${SDKAPPID}&&contentType=json&&identifier=${localStorage.getItem('uid')}&userSig =${localStorage.getItem('usersig')}&random=${parseInt((Math.random() * 100000000).toString())}`,
+        method: 'POST',
+        data: data || {}
+    })
+}
+
 //筛选部门人员
 const filterGetDepartment = (data, callback, userId) => {
         getDepartment(data).then(res => {
@@ -190,5 +199,6 @@ export {
     getAccountsAdd,
     getDepAllStaff,
     isLead,
-    reportError
+    reportError,
+    getFuzzy
 }

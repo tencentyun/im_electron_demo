@@ -1,9 +1,10 @@
-import { GET_SECTION_COUNT,GET_My_GROUP_INFORMATION } from '../actions/section'
+import { GET_SECTION_COUNT,GET_My_GROUP_INFORMATION, GET_INIT_GROUP_INFO} from '../actions/section'
 
 enum typeEnum {
     GET_SECTION_COUNT ='GET_SECTION_COUNT',
-    GET_My_GROUP_INFORMATION = 'GET_My_GROUP_INFORMATION'
-}
+    GET_My_GROUP_INFORMATION = 'GET_My_GROUP_INFORMATION',
+    GET_INIT_GROUP_INFO = "GET_INIT_GROUP_INFO"
+  }
 
 const initState = {
     section:[],
@@ -33,6 +34,11 @@ const sectionReducer = (state = initState, action: { type: typeEnum; payload: an
             return {
               ...state,
               mygroupInfor: payload
+          }
+        case GET_INIT_GROUP_INFO:
+            return {
+              ...state,
+              initGroupInfor: payload
           }
         default:
           return state;

@@ -84,7 +84,8 @@ const HUARUN_CONFIG = {
     'dev': {
         TIM_BASE_URL: 'http://localhost:3000',
         PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
-        TRTC_BASE_URL: 'oaim.uat.crbank.com.cn',
+        TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
+        TRTC_ACCESS_IP:[],
         EMOJIURL: 'https://oaim.uat.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
@@ -95,7 +96,8 @@ const HUARUN_CONFIG = {
     'test': {
         TIM_BASE_URL: 'https://oaim.uat.crbank.com.cn:30002',
         PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
-        TRTC_BASE_URL: 'oaim.uat.crbank.com.cn',
+        TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
+        TRTC_ACCESS_IP:['10.241.131.180'],
         EMOJIURL: 'https://oaim.uat.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
@@ -105,7 +107,8 @@ const HUARUN_CONFIG = {
     // 正是环境
     'prod': {
         TIM_BASE_URL: 'http://oaim.crbank.com.cn:30002',
-        TRTC_BASE_URL: 'oaim.crbank.com.cn',
+        TRTC_BASE_URL: 'http://oaim.crbank.com.cn',
+        TRTC_ACCESS_IP:[],
         PUBBLIC_ACCOUNTS_URL: 'http://oaim.crbank.com.cn:30002',
         EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.crbank.com.cn',
@@ -114,12 +117,14 @@ const HUARUN_CONFIG = {
         HUA_RUN_SYSTEMID: 'P001'
     }
 }
+
 type HuaRunConfig = {
     TIM_BASE_URL: string,
     PUBBLIC_ACCOUNTS_URL: string,
     EMOJIURL: string,
     TRTC_BASE_URL:string,
     SERVERr_ADDRESS_IP: string,
+    TRTC_ACCESS_IP:Array<string>,
     SERVERr_ADDRESS_PORT: number,
     HUA_RUN_LOGIN_TEST: string,
     HUA_RUN_SYSTEMID: string

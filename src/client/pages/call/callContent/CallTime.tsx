@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export const CallTime = ({isStart, prefix}) => {
+export const CallTime = ({isStart, prefix, setRealCallTime}) => {
     const [callTime, setCallTime] = useState(0);
 
     useEffect(() => {
@@ -8,6 +8,7 @@ export const CallTime = ({isStart, prefix}) => {
         if(isStart) {
             timer = setInterval(() => {
                 setCallTime(time => {
+                    setRealCallTime(time + 1);
                     return time + 1;
                 });
             }, 1000);

@@ -18,6 +18,9 @@ const deduplicationMessages = (oldMessages:State.message[],messages:State.messag
     }
   }
 }
+
+const getBaseTime = messageList => messageList && messageList.length > 0 ?  messageList.find(item => item.isTimeDivider).time : 0;
+
 const messageReducer = (state = initState, action: Action): State.historyMessage => {
   const { type, payload } = action;
   switch (type) {
@@ -36,7 +39,7 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
     }
     case ActionTypeEnum.RECI_MESSAGE: {
       const history = state.historyMessageList.get(payload.convId);
-      const baseTime = history && history.length > 0 ? history[0].message_client_time : 0;
+      const baseTime = getBaseTime(history);
       const timeDividerResult = addTimeDivider(payload.messages, baseTime).reverse();
        
       const ret = {
@@ -107,7 +110,7 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
           }
       });
       if(!matched) {
-          const baseTime = newMessageList && newMessageList.length > 0 ? newMessageList[0].message_client_time : 0;
+          const baseTime = getBaseTime(newMessageList);
           const timeDividerResult = addTimeDivider([payload.message], baseTime).reverse();
           newMessageList.unshift(...timeDividerResult);
       }

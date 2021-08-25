@@ -1,15 +1,15 @@
 
 const { app, BrowserWindow } = require('electron')
 const { description } = require("../../package.json");
-const IPC = require("./ipc");
-const appAutoUploader = require('./autoUpdate')
+// const appAutoUploader = require('./autoUpdate')
 const initStore = require('./store')
 const registerCut = require('./shortcut')
 const setOtherIPC = require('./otheripc')
 const setSaveFileIPC = require('./saveFile');
 const url = require('url')
 const path = require('path')
-let ipc = null;
+const log = require('electron-log');
+
 
 const _sendMessageToRender = (win,key,data)=>{
     try{
@@ -18,7 +18,8 @@ const _sendMessageToRender = (win,key,data)=>{
 
     }
 }
-const _createWindow = () => {
+const _createWindow = (TencentIM) => {
+    log.info('create window')
     const mainWindow = new BrowserWindow({
         height: 640,
         width: 960,
@@ -36,15 +37,12 @@ const _createWindow = () => {
     });
     console.log("启动主程序", mainWindow)
     mainWindow.on("ready-to-show", () => {
+        log.info('ready-to-show')
         mainWindow.setTitle(description);
         mainWindow.show();
-
-        // 设置ipc通信
-        if (!ipc) ipc = new IPC(mainWindow);
-
+        
         app.setAppUserModelId(description);
 
-        
 
         // 设置自定升级检测
         // appAutoUploader(mainWindow)
@@ -62,6 +60,8 @@ const _createWindow = () => {
         setSaveFileIPC();
     });
     mainWindow.on("close", function (e) {
+        log.info('mainWindow close')
+        TencentIM.destroy()
         app.quit()
     });
     // 通知渲染进程窗口是否可见
@@ -87,12 +87,13 @@ const _createWindow = () => {
     // 通知渲染进程窗口是否可见 end
 
     // 加载url
-    if (process.env.NODE_ENV.trim() === 'development') {
+    log.info('mainWindow loadURL '+process?.env?.NODE_ENV?.trim())
+    if (process.env?.NODE_ENV?.trim() === 'development') {
         mainWindow.loadURL(`http://localhost:3000`);
         // 打开调试工具
         mainWindow.webContents.openDevTools();
     } else {
-        mainWindow.webContents.openDevTools(); //正式生产不需要开启
+        //mainWindow.webContents.openDevTools(); //正式生产不需要开启
         mainWindow.loadURL(
             url.format({
                 pathname: path.join(__dirname, '../../bundle/index.html'),
@@ -103,8 +104,8 @@ const _createWindow = () => {
     }
     return mainWindow;
 }
-const createWindow = () => {
-    return _createWindow();
+const createWindow = (TIM) => {
+    return _createWindow(TIM);
 }
 
 module.exports =  createWindow;

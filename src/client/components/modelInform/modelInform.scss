@@ -1,0 +1,33 @@
+.pendency-title{
+    padding: 30px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold
+}
+.pendency-main{
+    height: calc(100vh - 300px);
+    overflow-y: scroll;
+}
+.pendency-item{
+        padding: 20px;
+        width: 90%;
+        border-radius: 10px;
+        margin: 0px 5%;
+        margin-bottom: 15px;
+        background: #E6F5FF;
+        &__item{
+            color: #666;
+            margin-bottom: 8px;
+        }
+        &__span{
+            margin: 0px 10px;
+            color:blue;
+        }
+        &__footer{
+            display: flex;
+            justify-content: flex-end;
+           &__btn{
+               margin-right: 20px;
+           } 
+        }
+}
