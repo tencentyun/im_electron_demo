@@ -64,7 +64,20 @@ const checkFileExist = (path) => {
     })
 }
 
-
+const getParamsByKey = (key)=>{
+    const paramsArr = window.location.search.slice(1).split('&');
+    let res = ''
+    if(paramsArr.length){
+        for(let i = 0;i<paramsArr.length;i++){
+            const [itemKey,itemValue] = paramsArr[i].split('=');
+            if(itemKey === key){
+                res = itemValue;
+                break;
+            }
+        }
+    }
+    return res;
+}
 const throttle = (fn, delay) => {
     let timer
     let t_start = Date.now()
@@ -148,5 +161,6 @@ export {
     openCallWindow,
     callWindowCloseListiner,
     previewVvatar,
-    hideWin
+    hideWin,
+    getParamsByKey
 }

@@ -1,3 +1,5 @@
+import { getParamsByKey } from "../utils/tools";
+
 //The link of setting contact us page.
 export const PURCHASE_LINK = 'https://buy.cloud.tencent.com/avc';
 export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service'
@@ -130,9 +132,8 @@ type HuaRunConfig = {
     HUA_RUN_SYSTEMID: string
 }
 const getHuaRunConfig = (): HuaRunConfig => {
-    console.log('环境变量', process.env.HUARUN_ENV, process.env.NODE_ENV)
-    const env = process.env.HUARUN_ENV.trim();
-    // const env = "prod"
+    const env = getParamsByKey('HUARUN_ENV');
+    console.log('环境变量',env )
     return HUARUN_CONFIG[env]
 }
 export default getHuaRunConfig();
