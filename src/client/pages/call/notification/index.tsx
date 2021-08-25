@@ -3,7 +3,6 @@ import { remote } from 'electron';
 
 import './notification.scss';
 import { eventListiner } from '../callIpc';
-import { endCallWindow } from '../../../utils/callWindowTools';
 import event from '../event';
 export const Notification = (props) => {
     const { convInfo: { nickName, faceUrl, convType}, callType, inviteID } = props;
@@ -24,6 +23,7 @@ export const Notification = (props) => {
     useEffect(()=>{
         event.on('exitRoom',()=>{
             // 如果没有接通，走这个退出逻辑
+            eventListiner.cancelCall(null, 0);
             closeCallWIndow();
         });
 

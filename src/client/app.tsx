@@ -575,18 +575,35 @@ export const App = () => {
                 data:JSON.stringify({"version":4,"businessID":"av_call","call_type":callType})
             }).then(data => {
                 console.log('接收返回', data)
-            })
+            });
+            dispatch(updateCallingStatus({
+                callingId: '',
+                callingType: 0,
+                inviteeList: [],
+                callType: 0
+            }));
+            joinedUserList = [];
         });
         // callWindowCloseListiner(() => {
-            // dispatch(updateCallingStatus({
-            //     callingId: '',
-            //     callingType: 0,
-            //     inviteeList: [],
-            //     callType: 0
-            // }));
-            // joinedUserList = [];
+        //     dispatch(updateCallingStatus({
+        //         callingId: '',
+        //         callingType: 0,
+        //         inviteeList: [],
+        //         callType: 0
+        //     }));
+        //     joinedUserList = [];
         //   });
         cancelCallInvite(({inviteId, realCallTime}) => {
+            if(!inviteId) {
+                dispatch(updateCallingStatus({
+                    callingId: '',
+                    callingType: 0,
+                    inviteeList: [],
+                    callType: 0
+                }));
+                joinedUserList = [];
+                return;
+            }
             const { callingId, inviteeList, callType, callingType } = ref.current.catchCalling;
             const catchUserId = ref.current.catchUserId;
             const callingUserList = joinedUserList.filter(item => item !== catchUserId);
