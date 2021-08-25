@@ -272,8 +272,8 @@ export const App = () => {
             }
             const { data: { code, json_param } } = data;
             if (code === 0) {
-                const [userdata, ...inviteList] = JSON.parse(json_param);
-                console.log('===========invite list==============', inviteList);
+                const inviteListWithInfo = JSON.parse(json_param);
+                const inviterInfo =  inviteListWithInfo.filter(item => item.user_profile_identifier === inviter);
                 dispatch(updateCallingStatus({
                     callingId:groupID?groupID: inviter, //
                     callingType:groupID ? 2: 1,
@@ -285,15 +285,15 @@ export const App = () => {
                     callType: call_type + '',
                     convId: groupID ? groupID : inviter,
                     convInfo: {
-                        faceUrl: userdata.user_profile_face_url,
-                        nickName: userdata.user_profile_nick_name,
+                        faceUrl: inviterInfo.user_profile_face_url,
+                        nickName: inviterInfo.user_profile_nick_name || inviter,
                         convType: groupID ? 2 : 1,
                     },
                     roomId: room_id,
                     inviteID,
                     userID: catchUserId,
                     inviteList: [inviter, ...inviteeList],
-                    inviteListWithInfo: [userdata, ...inviteList],
+                    inviteListWithInfo: [...inviteListWithInfo],
                     userSig: catchUserSig
                 });
             }
