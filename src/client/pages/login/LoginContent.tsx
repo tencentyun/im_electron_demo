@@ -111,8 +111,8 @@ export const LoginContent = (): JSX.Element => {
         }).then(async getEncrptPwdRes => {
             const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
             console.log(Encypt)
-            const env = process.env.HUARUN_ENV
-            // const env = 'prod'
+            // const env = process.env.HUARUN_ENV
+            let env = 'dev'
             let USERLOGIN;
             if(env == 'prod'){
                 const res = await getUserLoginInfo({
@@ -141,6 +141,12 @@ export const LoginContent = (): JSX.Element => {
                 userSig: userSig
             }
             const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
+            if(code !== 0){
+                message.error({
+                    content:`登录失败 ${code} ${desc}`
+                })
+                return
+            }
             window.localStorage.setItem('uid', USERLOGIN)
             window.localStorage.setItem('usersig', Encypt)
             //获取部门
