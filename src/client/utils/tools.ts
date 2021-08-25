@@ -146,6 +146,7 @@ const generateRoomID = () => {
     return Math.floor(Math.random() * 1000);
 }
 const returnFileVla = (val,index) => {
+    //截断文件名
     let start = val.replace('.'+val.split('.')[val.split('.').length-1],'');
     let end = val.split('.')[val.split('.').length-1];
     if(index) {

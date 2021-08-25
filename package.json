@@ -15,8 +15,8 @@
     "dev:react": "cd ./src/client && npm run dev",
     "start-electron": "electron .",
     "build-electron": "electron-builder -w",
-    "start-app":"concurrently \"npm run dev:react\" \"npm run start-electron\"",
-    "build-app":"npm run build:react && npm run build-electron"
+    "start-app": "concurrently \"npm run dev:react\" \"npm run start-electron\"",
+    "build-app": "npm run build:react && npm run build-electron"
   },
   "keywords": [],
   "author": {

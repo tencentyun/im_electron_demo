@@ -65,7 +65,7 @@ const FileElem = (props: any): JSX.Element => {
         return match ? match[1] : "unknow"
     }
     const handleOpen = () => {
-        const p = getFilePath(file_elem_file_name)
+        const p = getFilePath(checkfilepath(2))
         try {
             shell.openPath(p).catch(err => {
                 shell.showItemInFolder(p)
@@ -90,7 +90,8 @@ const FileElem = (props: any): JSX.Element => {
         }
     }
     const getHandleElement = async () => {
-        const exits: boolean = await checkFileExist(getFilePath(file_elem_file_name))
+        let exits: boolean = await checkFileExist(getFilePath(checkfilepath(2)))
+        console.log(exits)
         if (message_status === 1) return <Icon type="dismiss" className="message-view__item--file___close" onClick={handleCancel} />
         if (message_status === 2) {
             if (!exits) return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} onClick={savePic}></div>
@@ -123,8 +124,60 @@ const FileElem = (props: any): JSX.Element => {
             })
         }
     }
+    const checkfilepath = (type) => {
+        let filelist = window.localStorage.getItem('File_list') ? JSON.parse(window.localStorage.getItem('File_list')) : '';
+        if(!filelist) return false
+        if(type==0 && filelist){
+            //统计同名数
+            let total = 0
+            for (let i=0;i<filelist.length;i++){ 
+                if(filelist[i].name == file_elem_file_name) {
+                    total = total+1
+                }
+            }
+            return total
+        }else if(filelist && type==1){
+            //告诉有没有下载过
+            for (let i=0;i<filelist.length;i++){ 
+                if(filelist[i].id == file_elem_file_id) {
+                    return i+1
+                }
+            }
+        }else if(filelist && type==2){
+            //换本地文件名
+            for (let i=0;i<filelist.length;i++){ 
+                if(filelist[i].id == file_elem_file_id) {
+                    console.log(filelist[i].name)
+                    return filelist[i].name
+                }
+            }
+        }
+    }
     const savePic = () => {
-        file_elem_url && downloadPic(file_elem_url,(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+(returnFileVla(file_elem_file_id,0)||file_elem_file_id))
+        if(file_elem_url){
+            let filelist = []
+            //缓存文件名，给另存为用
+            if(window.localStorage.getItem('File_list')){
+                filelist = JSON.parse(window.localStorage.getItem('File_list'))
+                filelist.push({
+                    url:file_elem_url,
+                    name:(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+checkfilepath(0)+').'+returnFileVla(file_elem_file_name,1),
+                    id:file_elem_file_id
+                })
+                window.localStorage.setItem('File_list',JSON.stringify(filelist));
+                downloadPic(file_elem_url,(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+Number(checkfilepath(0))+').'+returnFileVla(file_elem_file_name,1))
+            }else{
+                filelist = [
+                    {
+                        url:file_elem_url,
+                        name:file_elem_file_name,
+                        id:file_elem_file_id
+                    }
+                ]
+                window.localStorage.setItem('File_list',JSON.stringify(filelist));
+                downloadPic(file_elem_url,file_elem_file_name)
+            }
+        }
     }
     const setHtml = async () => {
         const html = await getHandleElement()

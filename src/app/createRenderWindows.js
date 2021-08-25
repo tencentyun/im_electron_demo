@@ -88,20 +88,9 @@ const _createWindow = (TencentIM) => {
     // 加载url
     const { NODE_ENV,HUARUN_ENV } = process.env
     console.log('当前环境:',NODE_ENV)
-    if (NODE_ENV === 'development') {
-        mainWindow.loadURL(`http://localhost:3000?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`);
+    mainWindow.loadURL(`http://localhost:3000?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`);
         // 打开调试工具
         mainWindow.webContents.openDevTools();
-    } else {
-        // mainWindow.webContents.openDevTools(); //正式生产不需要开启
-        mainWindow.loadURL(
-            url.format({
-                pathname: path.join(__dirname, `../../bundle/index.html?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`),
-                protocol: 'file:',
-                slashes: true
-            })
-        );
-    }
     return mainWindow;
 }
 const createWindow = (TIM) => {
