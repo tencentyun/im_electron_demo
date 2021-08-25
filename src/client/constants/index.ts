@@ -99,7 +99,7 @@ const HUARUN_CONFIG = {
         TIM_BASE_URL: 'https://oaim.uat.crbank.com.cn:30002',
         PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
         TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
-        TRTC_ACCESS_IP:['10.241.131.180'],
+        TRTC_ACCESS_IP:['10.241.131.180','10.241.131.181'],
         EMOJIURL: 'https://oaim.uat.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
