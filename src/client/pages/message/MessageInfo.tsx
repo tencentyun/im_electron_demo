@@ -237,7 +237,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       userID: userId,
       userSig: userSig,
       inviteList: [userId, ...userList],
-      inviteListWithInfo
+      inviteListWithInfo,
+      isInviter: true,
     });
   }
 

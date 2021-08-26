@@ -294,7 +294,8 @@ export const App = () => {
                     userID: catchUserId,
                     inviteList: [inviter, ...inviteeList],
                     inviteListWithInfo: [...inviteListWithInfo],
-                    userSig: catchUserSig
+                    userSig: catchUserSig,
+                    isInviter: false
                 });
             }
         })
