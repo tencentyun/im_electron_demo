@@ -1,3 +1,4 @@
+import { ipcRenderer, clipboard } from 'electron';
 let list: Array<string> = ["Control", "Alt", "Shift"];
 let returnStr: string = null; //返回的值
 let oldKey: string = null; //存放上一次的值
@@ -103,6 +104,9 @@ export const recordShortcut_keyup = (e) => {
   }
 };
 export const registerShortcut=(value)=>{
-  
+  clipboard.clear()
+  ipcRenderer.send('SHORTCUT.REGISTER',value)
+
+
 
 }
