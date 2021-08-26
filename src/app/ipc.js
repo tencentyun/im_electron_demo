@@ -19,8 +19,8 @@ const getSrceenSize = () => {
 }
 
 const setPath = () => {
-    const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/win/${os.arch()}/ffprobe.exe`) : path.resolve(process.cwd(), `extraResources/win/${os.arch()}/ffprobe.exe`)
-    const formateFfmpegPath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/win32-${os.arch()}/ffmpeg.exe`) : path.resolve(process.cwd(), `extraResources/win32-${os.arch()}/ffmpeg.exe`)
+    const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}/${os.arch()}/ffprobe.exe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}/${os.arch()}/ffprobe.exe`)
+    const formateFfmpegPath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}-${os.arch()}/ffmpeg.exe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}-${os.arch()}/ffmpeg.exe`)
     log.info(`ffprobePath: ${ffprobePath}`)
     log.info(`formateFfmpegPath: ${formateFfmpegPath}`)
     FFmpeg.setFfprobePath(ffprobePath);
