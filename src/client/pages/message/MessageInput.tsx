@@ -16,16 +16,17 @@ import { convertBase64UrlToBlob } from "../../utils/tools";
 import { SDKAPPID } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
 import { sendCustomMsg } from '../message/api'
+// @ts-ignore
 import { ipcRenderer, clipboard, nativeImage } from 'electron';
+// @ts-ignore
 import chooseImg from '../../assets/icon/choose.png'
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
 import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer } from './message-input-util';
-import { electron } from 'webpack';
 import MaxLength from 'braft-extensions/dist/max-length'
 
 const options = {
-    defaultValue: 3000, // 指定默认限制数，如不指定则为Infinity(无限)
+    defaultValue: 3500, // 指定默认限制数，如不指定则为Infinity(无限)
 };
 BraftEditor.use(MaxLength(options));
 
@@ -106,7 +107,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [atUserNameInput, setAtInput] = useState('');
     const [atUserMap, setAtUserMap] = useState({});
     const [isZHCNAndFirstPopup, setIsZHCNAndFirstPopup] = useState(false);
-
+    //@ts-ignore
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
@@ -125,9 +126,17 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handleSendMsg = async () => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
         try {
+            if(isShutUpAll){
+                message.warning({
+                    content: "群主已全员禁言，无法发送消息哦",
+                })
+            }
             const rawData = editorState.toRAW();
             let messageElementArray = getMessageElemArray(rawData, videoInfos);
             console.log(messageElementArray,"调试内容")
+            if (messageElementArray[0]&&messageElementArray[0].text_elem_content) {
+                messageElementArray[0].text_elem_content = messageElementArray[0].text_elem_content.substring(0,options.defaultValue)
+            }
             if (messageElementArray.length) {
 
                 //解决换行多次发送问题  -- zwc
@@ -210,17 +219,20 @@ export const MessageInput = (props: Props): JSX.Element => {
             if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v)) ||  type== "image/jpeg") {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
+                // @ts-ignore
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
             } else if (SUPPORT_VIDEO_TYPE.find(v => type.includes(v))) {
                 if (fileSize > 100 * 1024 * 1024) return message.error({ content: "video size can not exceed 100m" })
                 ipcRenderer.send(RENDERPROCESSCALL, {
                     type: GET_VIDEO_INFO,
+                    // @ts-ignore
                     params: { path: file.path }
                 })
+                // @ts-ignore
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, { name: file.name, path: file.path, size: file.size }));
             } else {
-                console.log(11111111111)
                 if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
+                // @ts-ignore
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
             }
         }
@@ -757,7 +769,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
                     draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled' }}
-                    maxLength={4000}
+                    maxLength={options.defaultValue}
                     actions={[]}
                 />
             </div>

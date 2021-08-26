@@ -50,7 +50,7 @@ export const GroupMemberBubble = (props: {
               <Avatar
                 key={user.group_member_info_face_url}
                 url={user.group_member_info_face_url}
-                isPreview={true}
+                isPreview={false}
                 nickName={user.group_member_info_nick_name}
                 userID={user.group_member_info_identifier}
               />

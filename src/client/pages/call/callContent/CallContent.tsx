@@ -19,6 +19,7 @@ import event from '../event';
 import './call-content.scss';
 
 let realCallTime = 0;
+let isClosedWindow = false;
 
 export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, userSig, sdkAppid, callType, inviteListWithInfo }) => {
     console.log('==============call window params=================', roomId, inviteID, inviteList, sdkAppid, userSig, callType, inviteListWithInfo);
@@ -30,6 +31,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     const onExitRoom = () => {
         const win = remote.getCurrentWindow();
         win.close();
+        isClosedWindow = true;
     }
 
     const setRealCallTime = useCallback((time) => {
@@ -79,12 +81,12 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     }, [userId]);
 
     useEffect(() => {
-        event.on('exitRoom', exitRoom)
+        event.on('exitRoom', exitRoom);
     }, []);
 
     const onRemoteUserLeaveRoom = (userId) => {
         eventListiner.remoteUserExit(userId);
-        isC2CCall && trtcInstance.exitRoom();
+        // isC2CCall && trtcInstance.exitRoom();
     };
 
     const toggleVideo = isOpenCamera => {
@@ -98,12 +100,13 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     }
 
     const exitRoom = () => {
+        eventListiner.cancelCall(inviteID, realCallTime);
         trtcInstance.exitRoom();
-    }
-
-    const handleExitRoom =() => {
-        eventListiner.cancelCall(inviteID, realCallTime); //挂断逻辑
-        exitRoom();
+        setTimeout(() => {
+            if(!isClosedWindow) {
+                onExitRoom();
+            }
+        }, 1000)
     }
      
     return <div className="call-content">
@@ -114,7 +117,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
             <CallVideo trtcInstance={trtcInstance} isVideoCall={isVideoCall}  inviteListWithInfo={inviteListWithInfo} convInfo={convInfo} userId={userId} inviteList={inviteList} />
        </section>
        <footer className="call-content__footer">
-            <CallFooter isVideoCall={isVideoCall} toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={handleExitRoom} />
+            <CallFooter isVideoCall={isVideoCall} toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={exitRoom} />
        </footer>
     </div>
 };

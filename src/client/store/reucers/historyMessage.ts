@@ -100,7 +100,7 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
 
     case ActionTypeEnum.UPDATE_MESSAGES: {
       let matched = false;
-      const oldMessageList = state.historyMessageList.get(payload.convId);
+      const oldMessageList = state.historyMessageList.get(payload.convId) || [];
       const newMessageList = oldMessageList.map(oldMessage => {
           if(oldMessage?.message_msg_id && (oldMessage.message_msg_id === payload.message.message_msg_id)) {
             matched = true

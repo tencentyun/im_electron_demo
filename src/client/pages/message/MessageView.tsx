@@ -50,7 +50,7 @@ import {
 } from "tea-component";
 import { custEmojiUpsert } from "../../services/custEmoji";
 import { custEmojiUpsertParams } from "../../services/custEmoji";
-import { showDialog, checkFileExist } from "../../utils/tools";
+import { showDialog, checkFileExist, returnFileVla } from "../../utils/tools";
 import { addTimeDivider } from "../../utils/addTimeDivider";
 import { HISTORY_MESSAGE_COUNT } from "../../constants";
 import GroupSysElm from "./messageElemTyps/groupSystemElem";
@@ -330,23 +330,40 @@ export const MessageView = (props: Props): JSX.Element => {
     setSeletedMessage([message]);
   };
 
+  const checkfilepath = (fileid) => {
+    let filelist = window.localStorage.getItem('File_list') ? JSON.parse(window.localStorage.getItem('File_list')) : '';
+    if (!filelist) return false
+    if (filelist) {
+      //换本地文件名
+      for (let i = 0; i < filelist.length; i++) {
+        if (filelist[i].id == fileid) {
+          console.log(filelist[i].name)
+          return filelist[i].name
+        }
+      }
+    }
+  }
+
   const handleFileSave = async (params) => {
     console.log("文件另存为", params)
-    if(params.message &&  params.message.message_elem_array){
-        const fileElement =  params.message.message_elem_array[0];
-        const fileName = fileElement.file_elem_file_name || fileElement.image_elem_orig_id;
-        const filePath = getFilePath(fileName);
-        const isExist = await checkFileExist(filePath);
-        const index= filePath.lastIndexOf(".");
-        const ext = filePath.substr(index+1);
-        if(!isExist) {
-            message.warning({content: '文件未下载，请先下载'});
-            return;
-        }
-        ipcRenderer.send('fileSave', {
-            url: filePath,
-            type: ext
-        });
+    if (params.message && params.message.message_elem_array) {
+      let fileElement = params.message.message_elem_array[0];
+      let fileName = ''
+      if (fileElement?.file_elem_file_name) {
+        fileName = checkfilepath(fileElement.file_elem_file_id);
+      }
+      const filePath = getFilePath(fileName);
+      const isExist = await checkFileExist(filePath);
+      const index = filePath.lastIndexOf(".");
+      const ext = filePath.substr(index + 1);
+      if (!isExist) {
+        message.warning({ content: '文件未下载，请先下载' });
+        return;
+      }
+      ipcRenderer.send('fileSave', {
+        url: filePath,
+        type: ext
+      });
     }
   };
 
@@ -482,7 +499,16 @@ export const MessageView = (props: Props): JSX.Element => {
     const { data } = e.props;
     switch (id) {
       case "revoke":
-        handleRevokeMsg(data);
+        console.log(data)
+        if (data?.message?.message_elem_array[0].elem_type != 5) {
+          handleRevokeMsg(data);
+          break;
+        } else if (data?.message?.message_elem_array[0].elem_type == 5) {
+          message.warning({
+            content: "公告类型无法撤回消息哦",
+          })
+          break;
+        }
         break;
       case "addCustEmoji":
         handleAddCustEmoji(data);
@@ -656,6 +682,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const menuData = getMenuItemData();
     return menuData.map(({ id, text }) => {
       return (
+
         <Item key={id} onClick={(e) => handlRightClick(e, id)}>
           {text}
         </Item>
@@ -774,6 +801,14 @@ export const MessageView = (props: Props): JSX.Element => {
           if (!item) {
             return null;
           }
+          // if(item?.message_elem_array&& item?.message_elem_array[0] && item?.message_elem_array[0].elem_type == 3 && item?.message_elem_array[0].custom_elem_data && item?.message_elem_array[0].custom_elem_data.indexOf('actionType')>-1 && inviteID) {
+          //   console.log(item?.message_elem_array[0].custom_elem_data)
+          //   const result_trtc = JSON.parse(item?.message_elem_array[0].custom_elem_data)
+          //   console.log('打印内容2',result_trtc)
+          //   if(result_trtc.actionType == (2||4||5)) {
+          //     return null;
+          //   }
+          // }
           if (item.isTimeDivider) {
             return (
               <div key={item.time} className="message-view__item--time-divider">
@@ -838,9 +873,8 @@ export const MessageView = (props: Props): JSX.Element => {
                 <div
                   key={index}
                   onClick={() => handleSelectMessage(item)}
-                  className={`message-view__item ${
-                    message_is_from_self ? "is-self" : ""
-                  }`}
+                  className={`message-view__item ${message_is_from_self ? "is-self" : ""
+                    }`}
                 >
                   {isMultiSelect &&
                     isNotGroupSysAndGroupTipsMessage &&
@@ -899,6 +933,7 @@ export const MessageView = (props: Props): JSX.Element => {
                   {message_elem_array &&
                     message_elem_array.length &&
                     message_elem_array.map((elment, index) => {
+                      const { ...res } = elment;
                       return (
                         <div
                           className="message-view__item--element"
@@ -933,9 +968,8 @@ export const MessageView = (props: Props): JSX.Element => {
                     })}
                   {shouldShowPerReadIcon ? (
                     <span
-                      className={`message-view__item--element-icon ${
-                        message_is_peer_read ? "is-read" : ""
-                      }`}
+                      className={`message-view__item--element-icon ${message_is_peer_read ? "is-read" : ""
+                        }`}
                     ></span>
                   ) : (
                     isMessageSendFailed && (

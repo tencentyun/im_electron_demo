@@ -2,7 +2,7 @@ import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIA
 
 import { ipcRenderer, remote } from 'electron';
 
-import { TIM_MASTER_URL_PORT,TIM_BREVIARY_URL_PORT }  from '../constants/index'
+import { TIM_MASTER_URL_PORT, TIM_BREVIARY_URL_PORT } from '../constants/index'
 const dialog = remote.dialog;
 const WIN = remote.getCurrentWindow();
 
@@ -33,8 +33,8 @@ const hideWin = () => {
 }
 
 const previewVvatar = (face_url, size = 40) => {
-    
-    return  face_url ?  face_url.replace(TIM_MASTER_URL_PORT,TIM_BREVIARY_URL_PORT)+`?imageView2/3/w/${size}/h/${size}` : ""
+
+    return face_url ? face_url.replace(TIM_MASTER_URL_PORT, TIM_BREVIARY_URL_PORT) + `?imageView2/3/w/${size}/h/${size}` : ""
 }
 
 const showDialog = () => {
@@ -42,29 +42,42 @@ const showDialog = () => {
         type: SHOWDIALOG
     })
 }
-const downloadFilesByUrl = (url,name,fileid)=>{
-    ipcRenderer.send(RENDERPROCESSCALL,{
-        type:DOWNLOADFILE,
+const downloadFilesByUrl = (url, name, fileid) => {
+    ipcRenderer.send(RENDERPROCESSCALL, {
+        type: DOWNLOADFILE,
         params: {
-            url,name,fileid
+            url, name, fileid
         }
     })
 }
 const checkFileExist = (path) => {
-    return new Promise<boolean>((resolve)=>{
+    return new Promise<boolean>((resolve) => {
         ipcRenderer.invoke('RENDERPROCESSCALL', {
             type: CHECK_FILE_EXIST,
             params: path
         }).then((result) => {
             // ...
             resolve(result)
-        }).catch(err=>{
+        }).catch(err => {
             resolve(false)
         })
     })
 }
 
-
+const getParamsByKey = (key) => {
+    const paramsArr = window.location.search.slice(1).split('&');
+    let res = ''
+    if (paramsArr.length) {
+        for (let i = 0; i < paramsArr.length; i++) {
+            const [itemKey, itemValue] = paramsArr[i].split('=');
+            if (itemKey === key) {
+                res = itemValue;
+                break;
+            }
+        }
+    }
+    return res;
+}
 const throttle = (fn, delay) => {
     let timer
     let t_start = Date.now()
@@ -105,7 +118,7 @@ const convertBase64UrlToBlob = (urlData) => {
     let bytes = window.atob(urlData.split(',')[1])
     let ab = new ArrayBuffer(bytes.length)
     let ia = new Uint8Array(ab)
-    for (let i = 0;i < bytes.length;i++) {
+    for (let i = 0; i < bytes.length; i++) {
         ia[i] = bytes.charCodeAt(i)
     }
     return new Blob([ab], { type: 'image/jpeg' })
@@ -133,17 +146,28 @@ const generateRoomID = () => {
     return Math.floor(Math.random() * 1000);
 }
 
-
 const formatDate = (timer) => {
-        let now = new Date(timer)
-    　　let year = now.getFullYear(),
-    　　month = now.getMonth() + 1,
-    　　date = now.getDate(),
-    　　hour = now.getHours().toString().padStart(2, '0'),
-    　　minute = now.getMinutes().toString().padStart(2, '0'),
-    　　second = now.getSeconds().toString().padStart(2, '0');
-    　　return year + "年" + month + "月" + date + "日"+ "  " + hour + ":" + minute + ":" + second;
+    let now = new Date(timer)
+    let year = now.getFullYear(),
+        month = now.getMonth() + 1,
+        date = now.getDate(),
+        hour = now.getHours().toString().padStart(2, '0'),
+        minute = now.getMinutes().toString().padStart(2, '0'),
+        second = now.getSeconds().toString().padStart(2, '0');
+    return year + "年" + month + "月" + date + "日" + "  " + hour + ":" + minute + ":" + second;
+}
+
+const returnFileVla = (val, index) => {
+    //截断文件名
+    let start = val.replace('.' + val.split('.')[val.split('.').length - 1], '');
+    let end = val.split('.')[val.split('.').length - 1];
+    if (index) {
+        return end
+    } else {
+        return start
     }
+}
+
 export {
     isWin,
     minSizeWin,
@@ -160,6 +184,8 @@ export {
     openCallWindow,
     callWindowCloseListiner,
     previewVvatar,
+    formatDate,
+    returnFileVla,
     hideWin,
-    formatDate
+    getParamsByKey
 }

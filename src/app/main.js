@@ -34,7 +34,6 @@ global.sharedObject = {
 
 
 const gotTheLock = app.requestSingleInstanceLock();
-
 if (!gotTheLock) {
   log.info('当前已有应用运行中，直接退出')
   // 已经有运行中的实例
