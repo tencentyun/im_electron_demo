@@ -110,7 +110,7 @@ const HUARUN_CONFIG = {
     'prod': {
         TIM_BASE_URL: 'http://oaim.crbank.com.cn:30002',
         TRTC_BASE_URL: 'http://oaim.crbank.com.cn',
-        TRTC_ACCESS_IP:[],
+        TRTC_ACCESS_IP:['57.12.14.18','57.12.14.19'],
         PUBBLIC_ACCOUNTS_URL: 'http://oaim.crbank.com.cn:30002',
         EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.crbank.com.cn',
