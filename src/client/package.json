@@ -41,6 +41,7 @@
     "antd": "^4.16.10",
     "braft-editor": "^2.3.9",
     "braft-extensions": "^0.1.1",
+    "braft-utils": "^3.0.12",
     "dplayer": "^1.26.0",
     "final-form": "^4.20.2",
     "js-audio-recorder": "^1.0.7",

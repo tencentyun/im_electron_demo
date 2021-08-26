@@ -67,6 +67,7 @@
             height: 100%;
             animation: hideIndex 0.3s;
             flex-wrap: wrap;
+            align-content: flex-start;
         }
 
         @keyframes hideIndex{

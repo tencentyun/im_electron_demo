@@ -24,10 +24,10 @@ export const LoginAbout = (): JSX.Element => {
             </section>
             <section className="login-about__text">
                 <p>
-                    企业数字化转型的通信助手
+                以即时通讯为基础，打造统一的员工工作和沟通平台
                 </p>
                 <p>
-                    简单接入，稳定必达、覆盖全球的即时通信云服务
+                实现员工互联互通，助推信息流的快速传递，实现高效企业协同办公。
                 </p>
             </section>
             <section className="login-about__logo" >

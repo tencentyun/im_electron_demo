@@ -1,20 +1,22 @@
 {
   "name": "oaim",
   "productName": "oaim",
-  "version": "1.0.40",
+  "version": "1.0.47",
   "description": "员工工作平台",
   "main": "src/app/main.js",
   "scripts": {
-    "start:dev": " set NODE_ENV=development && set HUARUN_ENV=dev && concurrently \"npm run dev:react\" \"npm run start-electron\"",
-    "start:prod": "set NODE_ENV=production && set HUARUN_ENV=prod && concurrently \"npm run dev:react\" \"npm run start-electron\"",
-    "start:test": "set NODE_ENV=production && set HUARUN_ENV=test && concurrently \"npm run dev:react\" \"npm run start-electron\"",
-    "build:prod": "set NODE_ENV=production && set HUARUN_ENV=prod && npm run build:react && npm run build-electron",
-    "build:test": "set NODE_ENV=production && set HUARUN_ENV=test && npm run build:react && npm run build-electron",
-    "build:dev": "set NODE_ENV=production && set HUARUN_ENV=dev && npm run build:react && npm run build-electron",
+    "start:dev": "cross-env NODE_ENV=development HUARUN_ENV=dev npm run start-app",
+    "start:prod": "cross-env NODE_ENV=development HUARUN_ENV=prod npm run start-app",
+    "start:test": "cross-env NODE_ENV=development HUARUN_ENV=test npm run start-app",
+    "build:prod": "cross-env NODE_ENV=production HUARUN_ENV=prod npm run build-app",
+    "build:test": "cross-env NODE_ENV=production HUARUN_ENV=test npm run build-app",
+    "build:dev": "cross-env NODE_ENV=production HUARUN_ENV=dev npm run build-app",
     "build:react": "cd ./src/client && npm run build",
     "dev:react": "cd ./src/client && npm run dev",
     "start-electron": "electron .",
-    "build-electron": "electron-builder -w"
+    "build-electron": "electron-builder -w",
+    "start-app": "concurrently \"npm run dev:react\" \"npm run start-electron\"",
+    "build-app": "npm run build:react && npm run build-electron"
   },
   "keywords": [],
   "author": {
@@ -50,7 +52,7 @@
         {
           "target": "nsis",
           "arch": [
-            "ia32"
+            "x64"
           ]
         }
       ],
@@ -79,7 +81,7 @@
   "devDependencies": {
     "concurrently": "^6.2.0",
     "cross-env": "^7.0.3",
-    "electron": "^13.1.5",
+    "electron": "^13.2.1",
     "electron-builder": "^22.11.7",
     "install": "^0.13.0",
     "native-ext-loader": "^2.3.0",
@@ -89,11 +91,12 @@
     "electron-log": "^4.4.1",
     "electron-store": "^8.0.0",
     "electron-updater": "^4.3.9",
+    "ffi-napi": "^4.0.3",
     "ffmpeg-extract-frame": "^1.0.2",
     "ffprobe": "^1.1.2",
     "file-type": "^16.5.2",
     "fluent-ffmpeg": "^2.1.2",
-    "im_electron_sdk": "^1.2.24",
+    "im_electron_sdk": "^1.2.36",
     "image-size": "^1.0.0",
     "node-fetch": "^2.6.1",
     "node-gyp": "^7.1.2",

@@ -359,7 +359,7 @@ export const Message = (): JSX.Element => {
     if (isLoading) {
         return <Myloader />
     }
-
+    console.log('会话列表',conversationList)
     for (var i=0;i< conversationList.length;i++){
         if(conversationList[i].conv_id === localStorage.getItem("uid") && localStorage.getItem("myhead")){
             conversationList[i].conv_profile.user_profile_face_url = localStorage.getItem("myhead")
@@ -383,6 +383,7 @@ export const Message = (): JSX.Element => {
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
                             return (
+                                conv_id ?
                                 <div ref={setRef(conv_id)} className={`conversion-list__item ${conv_id === currentSelectedConversation.conv_id ? 'is-active' : ''} ${conv_is_pinned ? 'is-pinned' : ''}`} key={conv_id} onClick={() => handleConvListClick(item)} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                     <div className="conversion-list__item--profile">
                                         {
@@ -407,7 +408,7 @@ export const Message = (): JSX.Element => {
                                     {
                                         conv_recv_opt===1 ? <span className="mute"></span>:null
                                     }
-                                </div>
+                                </div>:null
                             )
                         })
                     }

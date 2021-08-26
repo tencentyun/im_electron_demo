@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Tabs, TabPanel, Input, Button, Checkbox, message } from "tea-component";
+import { Input, Button, message } from "tea-component";
 import { SDKAPPID, SECRETKEY } from '../../constants';
 import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
 import { changeFunctionTab } from '../../store/actions/ui';
 import { setUserInfo } from '../../store/actions/user';
-import { loginUser } from '../../store/actions/loginUser';
+// import { loginUser } from '../../store/actions/loginUser';
+// @ts-ignore
 import { loginParam } from 'im_electron_sdk/dist/interface';
 import { filterGetDepartment, assemblyData } from '../../utils/orgin'
 import { setUnreadCount } from '../../store/actions/section';
@@ -16,6 +17,7 @@ import { getEncrptPwd } from '../../utils/addFriendForPoc'
 import { getUserLoginInfo } from '../../services/login'
 import { genTestUserSig } from './generateUserSig'
 import getHuaRunConfig from '../../constants'
+import { getParamsByKey } from '../../utils/tools';
 const tabs = [
     // {id: 'verifyCodeLogin', label: '验证码登陆'},
     { id: 'passwordLogin', label: '密码登陆' }
@@ -110,8 +112,7 @@ export const LoginContent = (): JSX.Element => {
         }).then(async getEncrptPwdRes => {
             const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
             console.log(Encypt)
-            const env = process.env.HUARUN_ENV
-            // const env = 'prod'
+            const env = getParamsByKey('HUARUN_ENV');
             let USERLOGIN;
             if(env == 'prod'){
                 const res = await getUserLoginInfo({
@@ -140,6 +141,12 @@ export const LoginContent = (): JSX.Element => {
                 userSig: userSig
             }
             const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
+            if(code !== 0){
+                message.error({
+                    content:`登录失败 ${code} ${desc}`
+                })
+                return
+            }
             window.localStorage.setItem('uid', USERLOGIN)
             window.localStorage.setItem('usersig', Encypt)
             //获取部门

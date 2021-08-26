@@ -19,8 +19,8 @@ const getSrceenSize = () => {
 }
 
 const setPath = () => {
-    const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/win/${os.arch()}/ffprobe.exe`) : path.resolve(process.cwd(), `extraResources/win/${os.arch()}/ffprobe.exe`)
-    const formateFfmpegPath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/win32-${os.arch()}/ffmpeg.exe`) : path.resolve(process.cwd(), `extraResources/win32-${os.arch()}/ffmpeg.exe`)
+    const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}/${os.arch()}/ffprobe.exe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}/${os.arch()}/ffprobe.exe`)
+    const formateFfmpegPath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}-${os.arch()}/ffmpeg.exe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}-${os.arch()}/ffmpeg.exe`)
     log.info(`ffprobePath: ${ffprobePath}`)
     log.info(`formateFfmpegPath: ${formateFfmpegPath}`)
     FFmpeg.setFfprobePath(ffprobePath);
@@ -32,8 +32,8 @@ class IPC {
     callWindow = null; // 通话窗口
     imWindowEvent = null; // 聊天窗口
     constructor(win) {
-        const env = process?.env?.NODE_ENV?.trim();
-        const isDev = env === 'development';
+        const { NODE_ENV } = process.env;
+        const isDev = NODE_ENV?.trim() === 'development';
         setPath();
         this.mkDownloadDic(); //创建download 文件目录
         this.win = win;
@@ -100,8 +100,8 @@ class IPC {
             // 向聊天窗口通信
             const { inviteID, isVoiceCall } = acceptParams;
             this.imWindowEvent.reply('accept-call-reply', inviteID);
-            const windowWidth = isVoiceCall ? 450 : 800;
-            const windowHeight = isVoiceCall ? 800 : 600;
+            const windowWidth = isVoiceCall ? 400 : 800;
+            const windowHeight = isVoiceCall ? 650 : 600;
 
             const positionX = Math.floor((screenSize.width - windowWidth) / 2);
             const positionY = Math.floor((screenSize.height - windowHeight) / 2);
@@ -156,8 +156,8 @@ class IPC {
                 this.callWindow.setSize(320, 150);
                 this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
             } else if (convType === 1 && Number(callType) === 1) {
-                this.callWindow.setSize(450, 800);
-                this.callWindow.setPosition(Math.floor((screenSize.width - 450) / 2), Math.floor((screenSize.height - 800) / 2));
+                this.callWindow.setSize(400, 650);
+                this.callWindow.setPosition(Math.floor((screenSize.width - 400) / 2), Math.floor((screenSize.height - 650) / 2));
             }
             this.callWindow.show();
             this.callWindow.webContents.send('pass-call-data', params);
@@ -186,14 +186,15 @@ class IPC {
             },
         });
         callWindow.removeMenu();
+        const { NODE_ENV,HUARUN_ENV } = process.env;
         if (isDev) {
-            // callWindow.webContents.openDevTools();
-            callWindow.loadURL(`http://localhost:3000/call.html`);
+            callWindow.webContents.openDevTools();
+            callWindow.loadURL(`http://localhost:3000/call.html?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`);
         } else {
             //callWindow.webContents.openDevTools(); //正式生产不需要开启
             callWindow.loadURL(
                 url.format({
-                    pathname: path.join(__dirname, `../../bundle/call.html`),
+                    pathname: path.join(__dirname, `../../bundle/call.html?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`),
                     protocol: 'file:',
                     slashes: true
                 })

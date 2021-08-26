@@ -14,6 +14,10 @@ import {
 } from "tea-component";
 import { Form as FinalForm, Field } from "react-final-form";
 import ImgCropper from "../../components/UploadFace";
+import { updateCurrentSelectedConversation } from '../../store/actions/conversation';
+import { useDispatch, useSelector } from 'react-redux';
+import { getConversionList } from '../../pages/message/api';
+import { replaceConversaionList } from '../../store/actions/conversation';
 
 const genderMap = {
   '1': '男',
@@ -88,6 +92,8 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
   const [imgUrl, setImgUrl] = useState('')
   const [btnDisabled, setBtnDisabled] = useState(false)
   const [closeMould, setCloseMould] = useState(false)
+  const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
+  const dispatch = useDispatch();
   const close = () => {
     setVisible(false)
     setCloseMould(false)
@@ -134,6 +140,16 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
       message.success({
         content: '修改成功'
       })
+      const response = await getConversionList();
+        dispatch(replaceConversaionList(response))
+        console.log('头像更新后',response)
+        // if (response.length) {
+        //     if (currentSelectedConversation === null || currentSelectedConversation === undefined) {
+        //         dispatch(updateCurrentSelectedConversation(response[0]))
+        //     }
+        // }else{
+        //   dispatch(updateCurrentSelectedConversation(null))
+        // }  
       onUpdateUserInfo && onUpdateUserInfo()
     } else {
       message.error({
