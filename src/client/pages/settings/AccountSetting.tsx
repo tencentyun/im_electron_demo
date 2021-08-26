@@ -3,46 +3,53 @@ import { useDispatch } from "react-redux";
 import { Button, Switch } from "tea-component";
 import { useHistory } from "react-router-dom";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import timRenderInstance from "../../utils/timRenderInstance";
 import { setIsLogInAction, userLogout } from "../../store/actions/login";
 import "./AccountSetting.scss";
-import { clearConversation } from '../../store/actions/conversation'
-import { clearHistory } from '../../store/actions/message';
+import { clearConversation } from "../../store/actions/conversation";
+import { clearHistory } from "../../store/actions/message";
 
 const { ipcRenderer } = require("electron");
 
-import { version, description} from '../../../../package.json'
+import { version, description } from "../../../../package.json";
+import { recordShortcut, registerShortcut } from "./ShortcutSetting";
 export const AccountSetting = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
-  const [pathurl, setPathUrl] = useState('');
-  const [msgBother, setMsgBother] = useState(null)
+  const [pathurl, setPathUrl] = useState("");
+  const [msgBother, setMsgBother] = useState(null);
+  const [inputValue, setInputValue] = useState('');
 
   ipcRenderer.on("storagePath", (e, { path }) => {
     console.log("storagePath", path);
     setPathUrl(path);
   });
 
-  const setNewsMode = val => {
-    console.log(val, 'val')
-    setMsgBother(val)
-    window.localStorage.setItem('msgBother', val)
-  }
+  const setNewsMode = (val) => {
+    console.log(val, "val");
+    setMsgBother(val);
+    window.localStorage.setItem("msgBother", val);
+  };
+  const setKeyDown = (e) => {
+    const value: string = recordShortcut(e);
+    setInputValue(value);
+  };
 
   useEffect(() => {
-    const initVal = window.localStorage.getItem('msgBother') == 'true' ? true : false
-    setMsgBother(initVal)
-  }, [])
-  
+    const initVal =
+      window.localStorage.getItem("msgBother") == "true" ? true : false;
+    setMsgBother(initVal);
+  }, []);
+
   const logOutHandler = async () => {
     await timRenderInstance.TIMLogout();
     dispatch(userLogout());
-    window.localStorage.clear()
-    history.replace('/login');
+    window.localStorage.clear();
+    history.replace("/login");
     dispatch(setIsLogInAction(false));
-    dispatch(clearConversation())
-    dispatch(clearHistory())
+    dispatch(clearConversation());
+    dispatch(clearHistory());
   };
   return (
     <div className="connect">
@@ -52,7 +59,7 @@ export const AccountSetting = (): JSX.Element => {
       </header>
       <section className="connet-section">
         <div className="setting-content">
-        <div className="setting-item">
+          <div className="setting-item">
             <span>版本名称</span>
             <span>{description}</span>
           </div>
@@ -70,7 +77,26 @@ export const AccountSetting = (): JSX.Element => {
           </div>
           <div className="setting-item">
             <span>消息提示</span>
-            <span className="item-val"> <Switch value={msgBother} onChange={(val) => setNewsMode(val)}></Switch></span>
+            <span className="item-val">
+              {" "}
+              <Switch
+                value={msgBother||''}
+                onChange={(val) => setNewsMode(val)}
+              ></Switch>
+            </span>
+          </div>
+          <div className="setting-item">
+            <span>截图</span>
+            <span className="item-val">
+              <input
+                className="setting-input"
+                type="text"
+                readOnly={true}
+                onKeyDown={setKeyDown}
+                onKeyUp={registerShortcut}
+                value={inputValue ||''}
+              />
+            </span>
           </div>
         </div>
         <Button
