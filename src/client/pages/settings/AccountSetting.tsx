@@ -10,26 +10,33 @@ import { clearConversation } from '../../store/actions/conversation'
 import { clearHistory } from '../../store/actions/message';
 import { DOWNLOAD_PATH } from '../../../app/const/const'
 const { ipcRenderer } = require("electron");
-import Store   from "electron-store"
+import Store from "electron-store"
 const store = new Store();
-import { version, description} from '../../../../package.json'
+import { version, description } from '../../../../package.json'
 export const AccountSetting = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [pathurl, setPathUrl] = useState('');
   const [msgBother, setMsgBother] = useState(null)
-
+  const [setting, setSetting] = useState(store.get('setting'))
   const setNewsMode = val => {
     console.log(val, 'val')
     setMsgBother(val)
     window.localStorage.setItem('msgBother', val)
   }
 
+
   useEffect(() => {
     const initVal = window.localStorage.getItem('msgBother') == 'true' ? true : false
     setMsgBother(initVal)
+    let sett = setInterval(() => {
+      setSetting(store.get('setting'))
+    }, 500)
+    return (
+      clearInterval(sett)
+    )
   }, [])
-  
+
   const logOutHandler = async () => {
     await timRenderInstance.TIMLogout();
     dispatch(userLogout());
@@ -47,7 +54,7 @@ export const AccountSetting = (): JSX.Element => {
       </header>
       <section className="connet-section">
         <div className="setting-content">
-        <div className="setting-item">
+          <div className="setting-item">
             <span>版本名称</span>
             <span>{description}</span>
           </div>
@@ -59,12 +66,12 @@ export const AccountSetting = (): JSX.Element => {
             <span>版权所有</span>
             <span className="item-val">珠海华润银行</span>
           </div>
-          <div className="setting-item" onClick={()=> {
-                  ipcRenderer.send('selectpath');
+          <div className="setting-item" onClick={() => {
+            ipcRenderer.send('selectpath');
           }}>
             <span>文件存储</span>
             <span className="item-val">{
-              store.get('setting')
+              setting
             }</span>
           </div>
           <div className="setting-item">

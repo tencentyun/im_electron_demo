@@ -56,13 +56,14 @@ const _createWindow = (TencentIM) => {
 
         // 其他一些ipc
         setOtherIPC(mainWindow)
-
-        // 另存为Ipc
-        setSaveFileIPC();
-
-        //选择路径Ipc
-        selectPathIPC()
     });
+    
+     // 另存为Ipc
+    setSaveFileIPC();
+
+    //选择路径Ipc
+    selectPathIPC()
+
     mainWindow.on("close", function (e) {
         log.info('mainWindow close')
         TencentIM.destroy()

@@ -1,8 +1,9 @@
-const  { ipcMain, dialog } = require('electron');
+const  { ipcMain, dialog, ipcRenderer} = require('electron');
 const { SETTING_FILES_ITEM } = require('./const/const')
+const Store = require("electron-store");
 const fs = require('fs');
 const path = require("path")
-
+const store = new Store();
 const selectPathIPC = () => {
     ipcMain.on("selectpath", function (event, data) {
         dialog.showOpenDialog({
@@ -14,7 +15,7 @@ const selectPathIPC = () => {
                 selectpath:saveTo.filePaths[0],
                 screenshot:""
             }
-            saveFileTest(JSON.stringify(setting))
+           !!saveTo.filePaths[0]  && saveFileTest(JSON.stringify(setting))
         });
       });
 }
@@ -26,6 +27,7 @@ const saveFileTest = (saveTo) => {
         if(err) {
             return console.log(err);
         }
+        store.set('setting', JSON.parse(saveTo).selectpath)
         console.log("The file was saved!");
     });
 }
