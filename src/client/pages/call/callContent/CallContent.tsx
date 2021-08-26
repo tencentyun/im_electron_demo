@@ -57,7 +57,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
         trtcInstance.setCurrentCameraDevice(deviceId);
 
         let encParam = new TRTCVideoEncParam();
-        encParam.videoResolution = TRTCVideoResolution.TRTCVideoResolution_640_360;
+        encParam.videoResolution = isC2CCall ? TRTCVideoResolution.TRTCVideoResolution_960_540  :  TRTCVideoResolution.TRTCVideoResolution_640_360;
         encParam.resMode = TRTCVideoResolutionMode.TRTCVideoResolutionModeLandscape;
         encParam.videoFps = 25;
         encParam.videoBitrate = 600;
