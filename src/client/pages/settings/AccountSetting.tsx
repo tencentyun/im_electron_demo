@@ -13,13 +13,17 @@ import { clearHistory } from "../../store/actions/message";
 const { ipcRenderer } = require("electron");
 
 import { version, description } from "../../../../package.json";
-import { recordShortcut, registerShortcut } from "./ShortcutSetting";
+import {
+  recordShortcut_keydown,
+  recordShortcut_keyup,
+  registerShortcut,
+} from "./ShortcutSetting";
 export const AccountSetting = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [pathurl, setPathUrl] = useState("");
   const [msgBother, setMsgBother] = useState(null);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
 
   ipcRenderer.on("storagePath", (e, { path }) => {
     console.log("storagePath", path);
@@ -32,8 +36,11 @@ export const AccountSetting = (): JSX.Element => {
     window.localStorage.setItem("msgBother", val);
   };
   const setKeyDown = (e) => {
-    const value: string = recordShortcut(e);
+    const value: string = recordShortcut_keydown(e);
     setInputValue(value);
+  };
+  const setBlur = () => {
+    registerShortcut(inputValue);
   };
 
   useEffect(() => {
@@ -80,7 +87,7 @@ export const AccountSetting = (): JSX.Element => {
             <span className="item-val">
               {" "}
               <Switch
-                value={msgBother||''}
+                value={msgBother || ""}
                 onChange={(val) => setNewsMode(val)}
               ></Switch>
             </span>
@@ -93,8 +100,9 @@ export const AccountSetting = (): JSX.Element => {
                 type="text"
                 readOnly={true}
                 onKeyDown={setKeyDown}
-                onKeyUp={registerShortcut}
-                value={inputValue ||''}
+                onKeyUp={recordShortcut_keyup}
+                onBlur={setBlur}
+                value={inputValue || ""}
               />
             </span>
           </div>

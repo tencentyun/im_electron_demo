@@ -67,13 +67,28 @@ export const getPendencyList = async (limited: number = 0, time:number = 0): Pro
   throw new Error(desc);
 };
 
+//2021年8月24日09:57:46   zwc   未决消息已读
+export const pendencyReaded = async (): Promise<any> => {
+  const { data } = await timRenderInstance.TIMGroupReportPendencyReaded({
+    timeStamp:parseInt(new Date().getTime() / 1000 + '')
+  });
+  console.log("data", data);
+  const { code, desc} = data;
+  if (code === 0) {
+    return {};
+  }
+  throw new Error(desc);
+};
+
 //2021年8月24日09:57:46   zwc   处理群未决消息
 export const handleGroupPendency = async (accept: boolean = false, msg:string = "", groupPendency): Promise<any> => {
-  const { data } = await timRenderInstance.TIMGroupHandlePendency({ 
-    "group_handle_pendency_param_is_accept" : accept,
-    "group_handle_pendency_param_handle_msg" : msg,
-    "group_handle_pendency_param_pendency" : groupPendency
-   });
+  const { data } = await timRenderInstance.TIMGroupHandlePendency({
+    params:{ 
+      "group_handle_pendency_param_is_accept" : accept,
+      "group_handle_pendency_param_handle_msg" : msg,
+      "group_handle_pendency_param_pendency" : groupPendency
+     }
+  });
   console.log("data", data);
   const { code, desc, json_param} = data;
   if (code === 0) {

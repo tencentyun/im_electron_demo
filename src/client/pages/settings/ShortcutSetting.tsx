@@ -1,4 +1,4 @@
-let list: Array<string> = ["Control", "Alt", "Shift", "Meta"];
+let list: Array<string> = ["Control", "Alt", "Shift"];
 let returnStr: string = null; //返回的值
 let oldKey: string = null; //存放上一次的值
 let arrList: string[] = []; //原始数组
@@ -49,7 +49,11 @@ function clearData() {
  */
 function setStr(hasMK, key) {
   if (hasMK) {
-    arrList.push(key);
+    if (key === "Control") {
+      arrList.push("Ctrl");
+    } else {
+      arrList.push(key);
+    }
     set = new Set(arrList);
     newArrList = Array.from(set);
   } else {
@@ -63,8 +67,12 @@ function setStr(hasMK, key) {
   oldKey = key;
   return returnStr;
 }
-
-export const recordShortcut = (e) => {
+/**
+ * 
+ * @param e event 原生事件  keydown
+ * @returns returnStr 
+ */
+export const recordShortcut_keydown = (e) => {
   let key: string = String(e.key);
   if (oldKey === key) {
     return returnStr;
@@ -79,7 +87,12 @@ export const recordShortcut = (e) => {
       return setStr(hasMK, key);
   }
 };
-export const registerShortcut = (e) => {
+/**
+ * 
+ * @param e  event 原生事件  keyup
+ * 
+ */
+export const recordShortcut_keyup = (e) => {
   const hasMK: boolean = list.indexOf(e.key) > -1;
   if (hasMK) {
     set.delete(e.key);
@@ -89,3 +102,7 @@ export const registerShortcut = (e) => {
     }
   }
 };
+export const registerShortcut=(value)=>{
+  
+
+}

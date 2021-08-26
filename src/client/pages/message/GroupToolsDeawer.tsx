@@ -104,7 +104,8 @@ export const GroupToolsDrawer = (props: {
   }
   //针对外部   修改群资料
   const isOwener = updataGroup >= -1 && returnsCustomValue('group_permission') == '0' && (groupDetail.group_detial_info_owener_identifier === userId  || [2,3].includes(mygroupInfor?.group_member_info_member_role)) ||  returnsCustomValue('group_permission') == '1'
-   //如果是讨论组没有限制可以编辑 ||   是群组开启仅管理员可修改 | 所有人可修改  针对每个input编辑
+  console.log("isOwener  针对外部", isOwener)
+  //如果是讨论组没有限制可以编辑 ||   是群组开启仅管理员可修改 | 所有人可修改  针对每个input编辑
   const canEdit = updataGroup >= -1 && groupDetail?.group_detial_info_group_type == 1 || (returnsCustomValue('group_permission') == '0' && (groupDetail?.group_detial_info_group_type === 1 || [2, 3].includes(mygroupInfor?.group_member_info_member_role)) ||  returnsCustomValue('group_permission') == '1');
   
   return (

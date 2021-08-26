@@ -11,13 +11,20 @@ type Props = {
     groupID?:string;
     depName?: string;
     btnText?:string;
+    addOptional?:number;
     isShowBtn?:boolean;
     submit?:Function;
     onClick?: () => void;
 }
 
+enum TIMGroupAddOption {
+    "禁止加群",  // 
+    "需管理员审批",    // 
+    "任何人都可以加群",     // 
+};
+
 export const ResultItem = (props: Props): JSX.Element => {
-    const { faceUrl,  nickName, lastMsg, onClick,userID,groupID ,depName, btnText, isShowBtn = false, submit} = props;
+    const { faceUrl,  nickName, lastMsg, onClick,userID,groupID ,depName, btnText, isShowBtn = false, submit, addOptional = -1} = props;
 
     return (
         <div className='result-content'>
@@ -29,9 +36,18 @@ export const ResultItem = (props: Props): JSX.Element => {
                 }
         </div>
         {
-            isShowBtn && <Button type="primary" onClick={()=> submit(groupID)}>
-                {btnText}
-            </Button>
+            isShowBtn && 
+            <div className='result-right'>
+                <div className='result-right__test'> 
+                   {TIMGroupAddOption[addOptional]}
+                </div>
+                {
+                    addOptional != 0 && 
+                    <Button type="primary" onClick={()=> submit(groupID)}>
+                        {btnText}
+                    </Button>
+                }
+            </div>
         }
         </div>
     )
