@@ -1,4 +1,4 @@
-const { CLOSE, SDK_APP_ID,HIDE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, CHECK_FILE_EXIST, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
+const { CLOSE, SDK_APP_ID,HIDE, DOWNLOADFILE, MAXSIZEWIN, SETTING_FILES_ITEM, MINSIZEWIN, CHECK_FILE_EXIST, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
 const { ipcMain, BrowserWindow, dialog,screen,app } = require('electron')
 const fs = require('fs')
 const path = require('path')
@@ -12,6 +12,8 @@ const sizeOf = require('image-size')
 const FileType = require('file-type')
 const os = require('os')
 const log = require('electron-log')
+const Store = require("electron-store");
+const store = new Store();
 const getSrceenSize = () => {
     const display = screen.getPrimaryDisplay();
 
@@ -27,6 +29,8 @@ const setPath = () => {
     FFmpeg.setFfmpegPath(formateFfmpegPath);
 }
 
+let  DOWNLOAD_PATH_T = DOWNLOAD_PATH
+
 class IPC {
     win = null;
     callWindow = null; // 通话窗口
@@ -36,6 +40,7 @@ class IPC {
         const isDev = NODE_ENV?.trim() === 'development';
         setPath();
         this.mkDownloadDic(); //创建download 文件目录
+        this.settingModle(); //设置快捷键 zwc  2021年8月26日18:08:35
         this.win = win;
         ipcMain.handle(RENDERPROCESSCALL, async (event, data) => {
             const { type, params } = data;
@@ -81,6 +86,7 @@ class IPC {
 
         this.createNewWindow(isDev);
         this.eventListiner(isDev);
+
     }
     async checkFileExist(path) {
         return new Promise((resolve) => {
@@ -203,6 +209,20 @@ class IPC {
 
         this.callWindow = callWindow;
     }
+    
+    settingModle(){
+        console.log("检测是否有配置文件:")
+            try {
+                fs.accessSync(SETTING_FILES_ITEM + "/setting.txt")
+                    const fileData =  fs.readFileSync(SETTING_FILES_ITEM + "/setting.txt",'utf-8')
+                    const fileDataJson = JSON.parse(fileData)
+                    DOWNLOAD_PATH_T = fileDataJson.selectpath + '\\'
+            } catch (error) {
+                
+            }
+            store.set('setting', DOWNLOAD_PATH_T)
+    }
+
     minsizewin() {
         this.win.minimize()
     }
@@ -216,7 +236,7 @@ class IPC {
         this.win.close()
     }
     showDialog() {
-        child_process.exec(`start "" ${path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')}`);
+        child_process.exec(`start "" ${DOWNLOAD_PATH_T}`);
     }
     mkdirsSync(dirname) {
         if (fs.existsSync(dirname)) {
@@ -229,13 +249,12 @@ class IPC {
         }
     }
     mkDownloadDic() {
-        const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
-        this.mkdirsSync(downloadDicPath)
+        this.mkdirsSync(DOWNLOAD_PATH_T)
     }
     
     downloadFilesByUrl({ url: file_url, name, fileid }) {
         try {
-            const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
+            const downloadDicPath = DOWNLOAD_PATH_T
             let file_name
             let file_path
             let file_path_temp
@@ -306,7 +325,7 @@ class IPC {
     async _getVideoInfo(event, filePath) {
         let videoDuration, videoSize
         const screenshotName = path.basename(filePath).split('.').shift() + '.png'
-        const screenshotPath = path.resolve(DOWNLOAD_PATH, screenshotName)
+        const screenshotPath = path.resolve(DOWNLOAD_PATH_T, screenshotName)
 
         const { ext } = await FileType.fromFile(filePath)
 
@@ -334,7 +353,7 @@ class IPC {
                     .screenshots({
                         timestamps: [0],
                         filename: screenshotName,
-                        folder: DOWNLOAD_PATH
+                        folder: DOWNLOAD_PATH_T
                     }).ffprobe((err, metadata) => {
                         if (!err) {
                             videoDuration = metadata.format.duration

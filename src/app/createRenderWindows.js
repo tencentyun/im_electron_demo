@@ -6,6 +6,8 @@ const initStore = require('./store')
 const registerCut = require('./shortcut')
 const setOtherIPC = require('./otheripc')
 const setSaveFileIPC = require('./saveFile');
+//选择路径IPC zwc  2021年8月26日16:34:22
+const selectPathIPC =  require('./selectPath');
 const url = require('url')
 const path = require('path')
 const log = require('electron-log');
@@ -57,6 +59,9 @@ const _createWindow = (TencentIM) => {
 
         // 另存为Ipc
         setSaveFileIPC();
+
+        //选择路径Ipc
+        selectPathIPC()
     });
     mainWindow.on("close", function (e) {
         log.info('mainWindow close')
