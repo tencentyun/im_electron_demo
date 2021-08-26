@@ -2,14 +2,14 @@ import { shell } from "electron";
 import React, { useEffect } from "react";
 import { downloadFilesByUrl } from "../../../utils/tools";
 import withMemo from "../../../utils/componentWithMemo";
-import path from 'path'
-import os from 'os'
+import Store from "electron-store";
+const store = new Store()
 const PicElemItem = (props: any): JSX.Element => {
     console.log("图片资源",props)
     const showPic = () => {
         try {
             const imageName = props.image_elem_orig_id
-            const p = path.resolve(os.homedir(), 'Download/','HuaRunIM/' + imageName)
+            const p =  store.get('setting') + `${imageName}`
             shell.openPath(p)
         } catch(e) {}
     }

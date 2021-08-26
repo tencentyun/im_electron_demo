@@ -1,8 +1,8 @@
 import BraftEditor from "braft-editor";
 import { emojiMap } from "./emoji-map";
 import fs from 'fs';
-import path from 'path';
-import os from 'os'
+import Store from "electron-store";
+const store = new Store()
 
 export const getFileTypeName = (fileName: string) => {
   const match = fileName.match(/\.(\w+)$/);
@@ -155,7 +155,7 @@ export const bufferToBase64Url = (data: string, type: string) => {
 }
 
 const getFilePath = () => {
-  return path.resolve(os.homedir(), 'Download/', `HuaRunIM/${new Date().getTime()}-screent-shot.png`)
+  return  store.get('setting') + `${new Date().getTime()}-screent-shot.png`
 }
 
 export const fileReaderAsBuffer = async (file: File) => {

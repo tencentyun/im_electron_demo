@@ -4,12 +4,12 @@ import { checkFileExist, downloadFilesByUrl, showDialog,returnFileVla } from "..
 import { cancelSendMsg } from "../api";
 import { shell } from 'electron'
 import { Icon,Bubble, message as teaMessage } from "tea-component";
-import path from 'path';
-import os from 'os'
 import { ipcRenderer } from "electron";
+import Store from "electron-store";
 
+const store = new Store()
 export const getFilePath = (fileName) => {
-    return path.resolve(os.homedir(), 'Download/', 'HuaRunIM/' + fileName)
+    return store.get('setting') + `${fileName}`
 }
 
 const FileElem = (props: any): JSX.Element => {

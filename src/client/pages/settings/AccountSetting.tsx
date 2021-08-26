@@ -2,17 +2,17 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { Button, Switch } from "tea-component";
 import { useHistory } from "react-router-dom";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"
 import timRenderInstance from "../../utils/timRenderInstance";
 import { setIsLogInAction, userLogout } from "../../store/actions/login";
 import "./AccountSetting.scss";
-import { clearConversation } from "../../store/actions/conversation";
-import { clearHistory } from "../../store/actions/message";
-
+import { clearConversation } from '../../store/actions/conversation'
+import { clearHistory } from '../../store/actions/message';
+import { DOWNLOAD_PATH } from '../../../app/const/const'
 const { ipcRenderer } = require("electron");
-
-import { version, description } from "../../../../package.json";
+import Store   from "electron-store"
+const store = new Store();
+import { version, description} from '../../../../package.json'
 import {
   recordShortcut_keydown,
   recordShortcut_keyup,
@@ -24,20 +24,13 @@ export const AccountSetting = (): JSX.Element => {
   const [pathurl, setPathUrl] = useState("");
   const [msgBother, setMsgBother] = useState(null);
   const [inputValue, setInputValue] = useState("");
-
-  ipcRenderer.on("storagePath", (e, { path }) => {
-    console.log("storagePath", path);
-    setPathUrl(path);
-  });
-
   const setNewsMode = (val) => {
     console.log(val, "val");
     setMsgBother(val);
     window.localStorage.setItem("msgBother", val);
   };
   const setKeyDown = (e) => {
-    const value: string = recordShortcut_keydown(e);
-    setInputValue(value);
+    setInputValue(recordShortcut_keydown(e));
   };
   const setBlur = () => {
     registerShortcut(inputValue);
@@ -78,9 +71,13 @@ export const AccountSetting = (): JSX.Element => {
             <span>版权所有</span>
             <span className="item-val">珠海华润银行</span>
           </div>
-          <div className="setting-item">
+          <div className="setting-item" onClick={()=> {
+                  ipcRenderer.send('selectpath');
+          }}>
             <span>文件存储</span>
-            <span className="item-val">{pathurl}</span>
+            <span className="item-val">{
+              store.get('setting')
+            }</span>
           </div>
           <div className="setting-item">
             <span>消息提示</span>
