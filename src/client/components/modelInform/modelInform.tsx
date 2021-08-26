@@ -84,7 +84,9 @@ export const ModelInform = (props) => {
                                     </div>
                                     <div>
                                         <Tag color={item.group_pendency_handled == 0 ? "#f50" : '#87d068'}>{TIMGroupPendencyHandle[item.group_pendency_handled]}</Tag>
-                                        <Tag color={item.group_pendency_handle_result == 0 ? "#f50" : '#87d068'}>{TIMGroupPendencyHandleResult[item.group_pendency_handle_result]}</Tag>
+                                        {
+                                            item.group_pendency_handled != 0 &&  <Tag color={item.group_pendency_handle_result == 0 ? "#f50" : '#87d068'}>{TIMGroupPendencyHandleResult[item.group_pendency_handle_result]}</Tag>
+                                        }
                                     </div>
                                     {
                                         item.group_pendency_handled == 0 &&

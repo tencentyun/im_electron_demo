@@ -69,9 +69,11 @@ export const getPendencyList = async (limited: number = 0, time:number = 0): Pro
 
 //2021年8月24日09:57:46   zwc   未决消息已读
 export const pendencyReaded = async (): Promise<any> => {
-  const { data } = await timRenderInstance.TIMGroupReportPendencyReaded(new Date().getTime());
+  const { data } = await timRenderInstance.TIMGroupReportPendencyReaded({
+    timeStamp:parseInt(new Date().getTime() / 1000 + '')
+  });
   console.log("data", data);
-  const { code, desc, json_param} = data;
+  const { code, desc} = data;
   if (code === 0) {
     return {};
   }
