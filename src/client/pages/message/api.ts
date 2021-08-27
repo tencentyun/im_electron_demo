@@ -458,7 +458,7 @@ export const searchTextMessage = async (params: {
   } = await timRenderInstance.TIMMsgSearchLocalMessages({
     params: {
       msg_search_param_keyword_array: [params.keyWords],
-      msg_search_param_message_type_array: [0],
+      msg_search_param_message_type_array: [0, 1, 4, 9],
       msg_search_param_conv_id: params.convId,
       msg_search_param_conv_type: params.convType
     },

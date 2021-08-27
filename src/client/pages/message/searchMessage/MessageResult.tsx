@@ -4,9 +4,11 @@ import { Avatar } from '../../../components/avatar/avatar';
 import { EmptyResult } from './EmptyResult';
 import { useMessageDirect } from '../../../utils/react-use/useDirectMsgPage';
 import { searchTextMessage } from '../api';
-
+import FileElem, { getFilePath } from "../messageElemTyps/fileElem";
+import VideoElem from "../messageElemTyps/videoElem";
+import PicElemItem from "../messageElemTyps/picElemItem";
 import './message-result.scss';
-
+import { formatDate } from '../../../utils/tools'
 
 const catchMessageList = new Map();
 
@@ -35,10 +37,10 @@ export const MessageResult = (props) => {
 
     useEffect(() => {
         const getMessageList = async () => {
-            if(activedItem && !activedItem.messageArray) {
+            if (activedItem && !activedItem.messageArray) {
                 const { conv_id, conv_type } = activedItem;
                 const catchedElementArray = catchMessageList.get(conv_id);
-                if(catchedElementArray) {
+                if (catchedElementArray) {
                     setActivedItem({
                         ...activedItem,
                         messageArray: catchedElementArray
@@ -66,65 +68,98 @@ export const MessageResult = (props) => {
         getMessageList();
     }, [activedItem]);
 
+
+    const displayDiffMessage = (message, element, index) => {
+        const { elem_type, ...res } = element;
+        let resp;
+        switch (elem_type) {
+            case 0: resp = <div className="message-result__content-item--text">
+                <span className="message-result__content-item--nick-name">{message.message_sender_profile.user_profile_nick_name}</span>
+                <span className="message-result__content-item--msg-text" dangerouslySetInnerHTML={{ __html: hilightKeyWords(res.text_elem_content) }} ></span>
+            </div>
+                break;
+            case 1:
+                resp = <PicElemItem {...res} />;
+                break;
+            case 4:
+                // @ts-ignore
+                resp = <FileElem message={message} element={element} index={index} />;
+                break;
+            case 9:
+                resp = <VideoElem message={message} {...res} />;
+                break;
+        }
+        return resp;
+    }
+
     return (
         <div className="message-result ">
             {
-                result.length > 0 ? 
-                <div className="message-result__content">
-                    <div className="message-result__content--item-content customize-scroll-style">
-                        {
-                            result.map((item, index) => {
-                                const { conv_profile, conv_id, messageCount } = item;
-                                const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
-                                const nickName = (conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name)|| conv_id;
-        
-                                return (
-                                    <div  key={index} className={`message-result__content-item ${activedItem?.conv_id === conv_id ? 'is-active' : ''}`} onClick={() => handleItemClick(item)}>
-                                        <Avatar 
-                                            url={faceUrl}
-                                            size="small"
-                                            nickName={nickName}
-                                            key={faceUrl}
-                                            userID={conv_id}
-                                            groupID={conv_id}
-                                        />
-                                        <div className="message-result__content-item--text">
-                                            <span className="message-result__content-item--nick-name">{nickName}</span>
-                                            <span className="message-result__content-item--msg-text" >{`共${messageCount}条结果`}</span>
-                                        </div>
-                                    </div>
-                                )
-                            })
-                        }
-                    </div>
-                    <div className="message-result__content--message-list ">
-                        <div className="message-result__content--message-list-content customize-scroll-style">
+                result.length > 0 ?
+                    <div className="message-result__content">
+                        <div className="message-result__content--item-content customize-scroll-style">
                             {
-                            activedItem?.messageArray?.map((item, index) => {
-                                const { message_elem_array, message_sender_profile: { user_profile_face_url, user_profile_nick_name, user_profile_identifier} } = item as State.message;
-                                return (
-                                    <div key={index} className="message-result__content-item" >
-                                            <Avatar 
-                                                url={user_profile_face_url}
+                                result.map((item, index) => {
+                                    const { conv_profile, conv_id, messageCount } = item;
+                                    const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
+                                    const nickName = (conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name) || conv_id;
+
+                                    return (
+                                        <div key={index} style={{ display: 'flex' }} className={`message-result__content-item ${activedItem?.conv_id === conv_id ? 'is-active' : ''}`} onClick={() => handleItemClick(item)}>
+                                            <Avatar
+                                                url={faceUrl}
                                                 size="small"
-                                                nickName={user_profile_nick_name}
-                                                key={user_profile_face_url}
-                                                userID={user_profile_identifier}
+                                                nickName={nickName}
+                                                key={faceUrl}
+                                                userID={conv_id}
+                                                groupID={conv_id}
                                             />
                                             <div className="message-result__content-item--text">
-                                                <span className="message-result__content-item--nick-name">{user_profile_nick_name}</span>
-                                                <span className="message-result__content-item--msg-text" dangerouslySetInnerHTML={{__html: hilightKeyWords( message_elem_array[0].text_elem_content)}} ></span>
+                                                <span className="message-result__content-item--nick-name">{nickName}</span>
+                                                <span className="message-result__content-item--msg-text" >{`共${messageCount}条结果`}</span>
                                             </div>
                                         </div>
-                                )
-                                
+                                    )
                                 })
                             }
                         </div>
-                        <Button className="message-result__content--button" type="primary" onClick={handleOpenConv}>打开会话</Button>
-                    </div>
-                </div> :
-                <EmptyResult />
+                        <div className="message-result__content--message-list ">
+                            <div className="message-result__content--message-list-content customize-scroll-style">
+                                {
+                                    activedItem?.messageArray?.map((item, index) => {
+                                        console.log("message_elem_array message_elem_array", item)
+                                        const { message_elem_array, message_server_time, message_sender_profile: { user_profile_face_url, user_profile_nick_name, user_profile_identifier } } = item as State.message;
+
+                                        return (
+                                            <>
+
+                                                <div key={index} className="message-result__content-item" >
+                                                    <div>
+                                                        {formatDate(message_server_time * 1000)}
+                                                    </div>
+                                                    <div className='message-result__content-item--doc'>
+                                                        <Avatar
+                                                            url={user_profile_face_url}
+                                                            size="small"
+                                                            nickName={user_profile_nick_name}
+                                                            key={user_profile_face_url}
+                                                            userID={user_profile_identifier}
+                                                        />
+                                                        {
+                                                            displayDiffMessage(item, message_elem_array[0], index)
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                            </>
+                                        )
+                                    })
+                                }
+                            </div>
+                            <Button className="message-result__content--button" type="primary" onClick={handleOpenConv}>打开会话</Button>
+                        </div>
+                    </div> :
+                    <EmptyResult />
             }
         </div>
     )

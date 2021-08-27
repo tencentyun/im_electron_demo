@@ -298,7 +298,8 @@ export const App = () => {
                     userID: catchUserId,
                     inviteList: [inviter, ...inviteeList],
                     inviteListWithInfo: [...inviteListWithInfo],
-                    userSig: catchUserSig
+                    userSig: catchUserSig,
+                    isInviter: false
                 });
             }
         })
@@ -398,6 +399,7 @@ export const App = () => {
     
     let initNumber = 0
     const _handleGroupInfoModify = async (data) => {
+        debugger
         const response = await getConversionList();
         dispatch(updateConversationList(response));
         if (response?.length) {

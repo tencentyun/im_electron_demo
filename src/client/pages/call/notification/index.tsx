@@ -9,7 +9,7 @@ export const Notification = (props) => {
     console.log('callType', callType);
     const isVoiceCall = callType === 1;
 
-    const accept = () => eventListiner.acceptCall({inviteID, isVoiceCall: isVoiceCall && convType === 1});
+    const accept = () => eventListiner.acceptCall({isVoiceCall: isVoiceCall && convType === 1});
 
     const refuse = () => eventListiner.refuseCall(inviteID);
 

@@ -23,8 +23,11 @@ export const eventListiner = {
         ipcRenderer.send('remote-user-exit', userId)
     },
     acceptCall: (acceptParams) => {
-        ipcRenderer.send('accept-call', acceptParams);
+        ipcRenderer.send('change-window-size', acceptParams);
         eventEmiter.emit('changeWindowType', 'callWindow');
+    },
+    onEnterRoom: (inviteID) => {
+        ipcRenderer.send('accept-call', inviteID);
     },
     refuseCall: (inviteID) => {
         ipcRenderer.send('refuse-call', inviteID);
