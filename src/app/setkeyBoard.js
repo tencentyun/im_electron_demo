@@ -9,12 +9,23 @@ const store = new Store();
  * @param {*} saveTo 写入的值
  */
 const saveFileTest = (saveTo) => {
+  mkdirsSync(SETTING_FILES_ITEM);
   fs.writeFile(SETTING_FILES_ITEM + "/setting.txt", saveTo, function (err) {
     if (err) {
       return console.log(err);
     }
   });
 };
+const  mkdirsSync = (dirname)=> {
+  if (fs.existsSync(dirname)) {
+      return true;
+  } else {
+      if (mkdirsSync(path.dirname(dirname))) {
+          fs.mkdirSync(dirname);
+          return true;
+      }
+  }
+}
 /**
  * 调起注册事件
  * @param {*} callback  回调函数
