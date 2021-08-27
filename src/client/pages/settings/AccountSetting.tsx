@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Button, Switch } from "tea-component";
+import { Button, Switch, Bubble} from "tea-component";
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react"
 import timRenderInstance from "../../utils/timRenderInstance";
@@ -32,9 +32,9 @@ export const AccountSetting = (): JSX.Element => {
     let sett = setInterval(() => {
       setSetting(store.get('setting'))
     }, 500)
-    return (
-      clearInterval(sett)
-    )
+    return   function(){
+         clearInterval(sett)
+    }
   }, [])
 
   const logOutHandler = async () => {
@@ -70,9 +70,15 @@ export const AccountSetting = (): JSX.Element => {
             ipcRenderer.send('selectpath');
           }}>
             <span>文件存储</span>
+            <Bubble
+              arrowPointAtCenter
+              placement="top"
+              content={setting}
+            >
             <span className="item-val">{
               setting
             }</span>
+             </Bubble>
           </div>
           <div className="setting-item">
             <span>消息提示</span>
