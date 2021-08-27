@@ -16,8 +16,8 @@
     "start-electron": "electron .",
     "start-electron-dev": "cross-env NODE_ENV=development HUARUN_ENV=dev electron .",
     "build-electron": "electron-builder -w",
-    "start-app":"concurrently --success=last \"npm run dev:react\"  \"npm run start-electron\"",
-    "build-app":"npm run build:react && npm run build-electron"
+    "start-app": "concurrently --success=last \"npm run dev:react\"  \"npm run start-electron\"",
+    "build-app": "npm run build:react && npm run build-electron"
   },
   "keywords": [],
   "author": {

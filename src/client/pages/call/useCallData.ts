@@ -29,9 +29,9 @@ export const useCallData = () => {
                 windowType,
                 callType: Number(callType),
                 convInfo: {
-                    faceUrl: convInfo.faceUrl,
-                    nickName: convInfo.nickName,
-                    convType: convInfo.convType
+                    faceUrl: convInfo?.faceUrl,
+                    nickName: convInfo?.nickName,
+                    convType: convInfo?.convType
                 },
                 convId: convId,
                 roomId: roomId,
@@ -55,6 +55,12 @@ export const useCallData = () => {
         eventEmiter.on('updateInviteList', inviteList => {
             setData(prev => ({...prev, inviteList }))
         });
+
+        return () => {
+            eventEmiter.off('getData');
+            eventEmiter.off('changeWindowType');
+            eventEmiter.off('updateInviteList');
+        }
     }, []);
 
     return data;

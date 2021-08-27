@@ -9,11 +9,13 @@ const { SDK_APP_ID } = require('./const/const');
 const createWindow = require('./createRenderWindows')
 const setAppTray = require('./traySetting')
 const { productName,version,author } = require('../../package.json')
-const IPC = require('./ipc')
+const IPC = require('./ipc');
+const CallWindowIpc = require('./callWindowIpc');
 
 const log = require('electron-log');
 
 let ipc = null;
+let callWindowIpc = null;
 crashReporter.start({
   productName: `${productName}_${version}`,
   companyName: author.name,
@@ -62,6 +64,7 @@ if (!gotTheLock) {
 
     // 设置ipc通信
     if (!ipc) ipc = new IPC(global.sharedObject.appWindow);
+    if (!callWindowIpc) callWindowIpc =  new CallWindowIpc();
 
 
     app.on('activate', function () {
