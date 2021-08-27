@@ -10,7 +10,11 @@ const closeCallWindow = () => {
 };
 
 const callWindowCloseListiner = (callback) => {
-    ipcRenderer.on(CALL_WINDOW_CLOSE_REPLY, callback);
+    ipcRenderer.on(CALL_WINDOW_CLOSE_REPLY, () => {
+        // setTimeout(() => {
+            callback();
+        // }, 0);
+    });
 };
 
 const acceptCallListiner = (callback) => {
