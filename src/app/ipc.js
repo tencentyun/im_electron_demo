@@ -130,7 +130,7 @@ class IPC {
                 return
             }
             if (!fs.existsSync(file_path)) {
-
+                let that = this
                 //创建写入流
                 const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
                     console.error('error==>', e)
@@ -141,7 +141,8 @@ class IPC {
                         //下载完成后重命名文件
                         fs.renameSync(file_path_temp, file_path);
                         console.log('文件下载完成:', file_path);
-                        this.imWindowEvent.reply('download_reset_view', true)
+                        that.win.webContents.send('download_reset', true)
+                        console.log('发完了')
                     } catch (err) {
 
                     }
@@ -164,7 +165,7 @@ class IPC {
                         let percentage = Math.round(progressData.percentage) + '%';
                         if (fileid) {
                             try {
-                                this.win.webContents.send(fileid, progressData.percentage)
+                                that.win.webContents.send('download_reset_view', percentage)
                             } catch (err) {
 
                             }

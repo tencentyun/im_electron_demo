@@ -25,13 +25,14 @@ const FileElem = (props: any): JSX.Element => {
     let backgroundStyle = ""
     let percentage = 0
 
-    if (message_status === 1 && uploadProgress) {
+    if (message_status === (1||2) && uploadProgress) {
         const { cur_size, total_size } = uploadProgress
         percentage = Math.floor((cur_size / total_size) * 100)
         backgroundStyle = message_status === 1 ? `linear-gradient(to right, #D4FFEB ${percentage}%, white 0%, white 100%)` : ""
     }
 
     const calcuSize = () => {
+        console.log(file_elem_file_size)
         return conver(file_elem_file_size)
     }
     const conver = (limit) => {
@@ -62,8 +63,14 @@ const FileElem = (props: any): JSX.Element => {
     }
     const getFileTypeName = () => {
         const match = file_elem_file_name.match(/\.(\w+)$/)
-        return match ? match[1] : "unknow"
+        const arrayList = ['txt','pdf','doc','docx','zip','xlsx','xls','doc','docx','exe','ppt','pptx']
+        if(arrayList.indexOf(match[1])>-1){
+            return match ? match[1]+'-' : "unknow"
+        }else{
+            return match ? match[1] : "unknow"
+        }
     }
+
     const handleOpen = () => {
         const p = getFilePath(checkfilepath(2))
         try {
@@ -94,8 +101,8 @@ const FileElem = (props: any): JSX.Element => {
         console.log(exits)
         if (message_status === 1) return <Icon type="dismiss" className="message-view__item--file___close" onClick={handleCancel} />
         if (message_status === 2) {
-            if (!exits) return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} onClick={savePic}></div>
-                else return <div className="message-view__item--file___open" onClick={handleOpen}></div>
+            if (!exits) return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} title="下载" onClick={savePic}></div>
+                else return <div className="message-view__item--file___open" title="打开文件" onClick={handleOpen}></div>
         }
     }
     const getDetailText = () => {
@@ -158,7 +165,7 @@ const FileElem = (props: any): JSX.Element => {
         if(file_elem_url){
             let filelist = []
             //缓存文件名，给另存为用
-            if(window.localStorage.getItem('File_list')){
+            if(window.localStorage.getItem('File_list') && window.localStorage.getItem('File_list')!= 'null'){
                 filelist = JSON.parse(window.localStorage.getItem('File_list'))
                 filelist.push({
                     url:file_elem_url,
@@ -166,7 +173,7 @@ const FileElem = (props: any): JSX.Element => {
                     id:file_elem_file_id
                 })
                 downloadPic(file_elem_url,(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+Number(checkfilepath(0))+').'+returnFileVla(file_elem_file_name,1))
-                window.localStorage.setItem('File_list',JSON.stringify(filelist));
+                window.localStorage.setItem('File_list_save',JSON.stringify(filelist));
             }else{
                 filelist = [
                     {
@@ -176,14 +183,24 @@ const FileElem = (props: any): JSX.Element => {
                     }
                 ]
                 downloadPic(file_elem_url,file_elem_file_name)
-                window.localStorage.setItem('File_list',JSON.stringify(filelist));
+                window.localStorage.setItem('File_list_save',JSON.stringify(filelist));
             }
         }
     }
+
     const setHtml = async () => {
         const html = await getHandleElement()
         setFileHTML(html)
     }
+    useEffect(() => {
+        ipcRenderer.on('download_reset', (e,boolean) => {
+            console.log('查看下载完状态',boolean)
+            if(boolean){
+                window.localStorage.setItem('File_list',window.localStorage.getItem('File_list_save'))
+                setHtml()
+            }
+        })
+    }, [])
     useEffect(() => {
         setHtml()
     }, [isDownloading])
@@ -195,10 +212,11 @@ const FileElem = (props: any): JSX.Element => {
             removeProgressListener()
         }
     },[fileid])
+    
     const item = () => {
         return (
             <div className="message-view__item--file" style={{ background: backgroundStyle }} onDoubleClick={showFile}>
-                <div className="message-view__item--file___ext">{getFileTypeName()}</div>
+                <div className={`message-view__item--file___ext message-view__item--file___${ getFileTypeName()}`}>{getFileTypeName().substring(getFileTypeName().length-1,getFileTypeName().length) == '-'?'':getFileTypeName()}</div>
                 <div className="message-view__item--file___content">
                     <div className="message-view__item--file___content____name">
                     <Bubble content={displayName()}>{displayName()}</Bubble>

@@ -194,14 +194,13 @@ export const MessageView = (props: Props): JSX.Element => {
     setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false);
   }, [messageList.length]);
   useEffect(() => {
-    ipcRenderer.on("download_reset_view", (e) => {
-      console.log(e)
-      console.log('监听下载完成')
-    });
-    ipcRenderer.on("PERCENTAGE", (e, percentage) => {
-      setPercent(percentage);
+    ipcRenderer.on('download_reset_view', (e,percentage) => {
       setTips("下载中");
-    });
+      setPercent(percentage)
+      if (percentage == "100%") {
+        setPercent("0%");
+      }
+    })
     // ipcRenderer.on('UPLOADPROGRESS', (e, percentage) => {
     //     setPercent(percentage)
     //     setTips('上传中')
@@ -210,6 +209,7 @@ export const MessageView = (props: Props): JSX.Element => {
   }, []);
   useEffect(() => {
     if (percent == "100%") {
+      console.log('搞完了')
       setPercent("0%");
     }
   }, [percent]);
@@ -769,7 +769,7 @@ export const MessageView = (props: Props): JSX.Element => {
         currentUrl = currentNode.currentSrc;
       }
     } else if (elem_type === 4) {
-      // ipcRenderer.send('openfilenow', currentMsgItem)
+      ipcRenderer.send('openfilenow', currentMsgItem)
     } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
       currentUrl = custom_elem_desc;
     }
