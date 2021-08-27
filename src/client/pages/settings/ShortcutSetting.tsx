@@ -1,4 +1,6 @@
-import { ipcRenderer, clipboard } from 'electron';
+import { ipcRenderer, clipboard } from "electron";
+const Store = require("electron-store");
+const store = new Store();
 let list: Array<string> = ["Control", "Alt", "Shift"];
 let returnStr: string = null; //返回的值
 let oldKey: string = null; //存放上一次的值
@@ -69,9 +71,9 @@ function setStr(hasMK, key) {
   return returnStr;
 }
 /**
- * 
+ *
  * @param e event 原生事件  keydown
- * @returns returnStr 
+ * @returns returnStr
  */
 export const recordShortcut_keydown = (e) => {
   let key: string = String(e.key);
@@ -89,9 +91,9 @@ export const recordShortcut_keydown = (e) => {
   }
 };
 /**
- * 
+ *
  * @param e  event 原生事件  keyup
- * 
+ *
  */
 export const recordShortcut_keyup = (e) => {
   const hasMK: boolean = list.indexOf(e.key) > -1;
@@ -103,10 +105,23 @@ export const recordShortcut_keyup = (e) => {
     }
   }
 };
-export const registerShortcut=(value)=>{
-  clipboard.clear()
-  ipcRenderer.send('SHORTCUT.REGISTER',value)
-
-
-
-}
+/**
+ * 注册快捷键
+ * @param value 传入的快捷键
+ */
+export const registerShortcut = (preValue, value) => {
+  console.log(preValue, value, "=====设置");
+  clipboard.clear();
+  if (!value) {
+    ipcRenderer.send("SHORTCUT.REGISTER", preValue); //注册新快捷键
+    return false;
+  }
+  ipcRenderer.send("SHORTCUT.REGISTER", value); //注册新快捷键
+};
+/**
+ * 解绑快捷键
+ * @param value 传入的快捷键
+ */
+export const unregisterShortcut = (value) => {
+  ipcRenderer.send("SHORTCUT.UNREGISTER", value); //解绑快捷键
+};

@@ -1,5 +1,5 @@
 const { CLOSE, SDK_APP_ID,HIDE, DOWNLOADFILE, MAXSIZEWIN, SETTING_FILES_ITEM, MINSIZEWIN, CHECK_FILE_EXIST, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
-const { ipcMain, BrowserWindow, dialog,screen,app } = require('electron')
+const { ipcMain, BrowserWindow, dialog,screen,app, ipcRenderer } = require('electron')
 const fs = require('fs')
 const path = require('path')
 const http = require('http')
@@ -212,15 +212,21 @@ class IPC {
     
     settingModle(){
         console.log("检测是否有配置文件:")
+        let settingModle = DOWNLOAD_PATH_T
+        let screenModle='Ctrl+Shift+X';
             try {
                 fs.accessSync(SETTING_FILES_ITEM + "/setting.txt")
                     const fileData =  fs.readFileSync(SETTING_FILES_ITEM + "/setting.txt",'utf-8')
                     const fileDataJson = JSON.parse(fileData)
-                    DOWNLOAD_PATH_T = fileDataJson.selectpath + '\\'
+                    console.log(!!fileDataJson)
+                    !!fileDataJson.selectpath && (settingModle = fileDataJson.selectpath + '\\')
+                    !!fileDataJson.screenshot && (screenModle = fileDataJson.screenshot)
             } catch (error) {
                 
             }
-            store.set('setting', DOWNLOAD_PATH_T)
+            store.set('setting', settingModle)
+            store.set('settingScreen', screenModle)
+            return settingModle
     }
 
     minsizewin() {
@@ -236,7 +242,7 @@ class IPC {
         this.win.close()
     }
     showDialog() {
-        child_process.exec(`start "" ${DOWNLOAD_PATH_T}`);
+        child_process.exec(`start "" ${this.settingModle()}`);
     }
     mkdirsSync(dirname) {
         if (fs.existsSync(dirname)) {
@@ -249,12 +255,12 @@ class IPC {
         }
     }
     mkDownloadDic() {
-        this.mkdirsSync(DOWNLOAD_PATH_T)
+        this.mkdirsSync(this.settingModle())
     }
     
     downloadFilesByUrl({ url: file_url, name, fileid }) {
         try {
-            const downloadDicPath = DOWNLOAD_PATH_T
+            const downloadDicPath = this.settingModle()
             let file_name
             let file_path
             let file_path_temp
@@ -325,7 +331,7 @@ class IPC {
     async _getVideoInfo(event, filePath) {
         let videoDuration, videoSize
         const screenshotName = path.basename(filePath).split('.').shift() + '.png'
-        const screenshotPath = path.resolve(DOWNLOAD_PATH_T, screenshotName)
+        const screenshotPath = path.resolve(this.settingModle(), screenshotName)
 
         const { ext } = await FileType.fromFile(filePath)
 
@@ -353,7 +359,7 @@ class IPC {
                     .screenshots({
                         timestamps: [0],
                         filename: screenshotName,
-                        folder: DOWNLOAD_PATH_T
+                        folder: this.settingModle()
                     }).ffprobe((err, metadata) => {
                         if (!err) {
                             videoDuration = metadata.format.duration

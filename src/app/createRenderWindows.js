@@ -1,17 +1,16 @@
 const { app, BrowserWindow } = require("electron");
 const { description } = require("../../package.json");
 // const appAutoUploader = require('./autoUpdate')
-const initStore = require('./store')
-const registerCut = require('./shortcut')
-const setOtherIPC = require('./otheripc')
-const setSaveFileIPC = require('./saveFile');
+const initStore = require("./store");
+const registerCut = require("./shortcut");
+const setOtherIPC = require("./otheripc");
+const setSaveFileIPC = require("./saveFile");
 //选择路径IPC zwc  2021年8月26日16:34:22
-const selectPathIPC =  require('./selectPath');
-const url = require('url')
-const path = require('path')
-const log = require('electron-log');
+const selectPathIPC = require("./selectPath");
+const url = require("url");
+const path = require("path");
+const log = require("electron-log");
 const setkeyBoard = require("./setkeyBoard");
-
 
 const _sendMessageToRender = (win, key, data) => {
   try {
@@ -54,18 +53,18 @@ const _createWindow = (TencentIM) => {
 
     // 其他一些ipc
     setOtherIPC(mainWindow);
-
-    // 另存为Ipc
-    setSaveFileIPC();
-
-      //选择路径Ipc
-      selectPathIPC()
-      
-    // 重设快捷键
-    setkeyBoard((mainWindow,key) => {
-      registerCut(mainWindow,key)
-    },mainWindow);
   });
+
+  // 另存为Ipc
+  setSaveFileIPC();
+
+  //选择路径Ipc
+  selectPathIPC();
+  // 重设快捷键
+  setkeyBoard((mainWindow) => {
+    registerCut(mainWindow);
+  }, mainWindow);
+
   mainWindow.on("close", function (e) {
     log.info("mainWindow close");
     TencentIM.destroy();
@@ -78,7 +77,6 @@ const _createWindow = (TencentIM) => {
   mainWindow.on("focus", function () {
     _sendMessageToRender(mainWindow, "mainProcessMessage", true);
   });
-
 
   mainWindow.on("minimize", function () {
     if (process.platform !== "darwin") {
