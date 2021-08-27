@@ -1,7 +1,7 @@
 {
   "name": "oaim",
   "productName": "oaim",
-  "version": "1.0.47",
+  "version": "1.0.50",
   "description": "员工工作平台",
   "main": "src/app/main.js",
   "scripts": {

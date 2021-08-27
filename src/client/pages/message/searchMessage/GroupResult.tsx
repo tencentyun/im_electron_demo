@@ -3,7 +3,7 @@ import React from 'react';
 import { EmptyResult } from './EmptyResult';
 import { useMessageDirect } from '../../../utils/react-use/useDirectMsgPage';
 import { ResultItem } from './ResultItem';
-import { getGroupMemberList } from '../api'
+import { getJoinedGroupList } from '../../relationship/group/api'
 import {
     message
   } from "tea-component";
@@ -15,13 +15,11 @@ export const GroupResult = (props) => {
     const directToMsgPage = useMessageDirect();
 
     const handleItemClick =async (profile) => {
-        const list = await getGroupMemberList({
-            groupId: profile.group_base_info_group_id
-        });
-        if(list.group_get_memeber_info_list_result_info_array){
-            const arr = list.group_get_memeber_info_list_result_info_array
+        const list = await getJoinedGroupList();
+        if(list){
+            const arr = list
                 if(arr.length){
-                let someUserList =  arr.some(item => item.group_member_info_identifier == localStorage.getItem('uid'))
+                let someUserList =  arr.some(item => item.group_detial_info_owener_identifier == profile.group_detial_info_owener_identifier)
                 someUserList &&  directToMsgPage({
                     convType: 2,
                     profile,

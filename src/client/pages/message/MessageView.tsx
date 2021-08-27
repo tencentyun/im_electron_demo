@@ -194,8 +194,11 @@ export const MessageView = (props: Props): JSX.Element => {
     setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false);
   }, [messageList.length]);
   useEffect(() => {
+    ipcRenderer.on("download_reset_view", (e) => {
+      console.log(e)
+      console.log('监听下载完成')
+    });
     ipcRenderer.on("PERCENTAGE", (e, percentage) => {
-      // console.log(percentage, '进度条。。。。。。。。。。。。。。。。。。。。。')
       setPercent(percentage);
       setTips("下载中");
     });

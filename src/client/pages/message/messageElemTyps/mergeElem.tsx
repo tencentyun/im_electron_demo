@@ -7,24 +7,33 @@ import { displayDiffMessage } from "../MessageView";
 import withMemo from "../../../utils/componentWithMemo";
 
 const MergeElem = (props: any): JSX.Element => {
-    const [showModal, setShowModal ] = useState(false);
-    const [ mergedMsg, setMergedMsg ] = useState([]); 
+    const [ showModal, setShowModal ] = useState(false);
+    const [ mergedMsg, setMergedMsg ] = useState([]);
     const showMergeDitail = async () => {
         if (props.merge_elem_message_array) {
             setMergedMsg(props.merge_elem_message_array);
         } else {
             console.log(props, 'props')
             const { data: { code, json_params } } = await downloadMergedMsg(props.message);
+            const json_params_arr = []
+            json_params_arr.push(1,json_params)
+            window.localStorage.setItem('ShowModal', JSON.stringify(json_params_arr))
             const mergedMsg = JSON.parse(json_params);
             setMergedMsg(mergedMsg);
         }
         setShowModal(true);
     }
-
-
     const handleModalClose = () => {
+        window.localStorage.setItem('ShowModal', '')
         setShowModal(false);
     }
+
+    
+    useEffect(() => {
+        if(window.localStorage.getItem('ShowModal')&&JSON.parse(window.localStorage.getItem('ShowModal'))[0] == '1'){
+            setMergedMsg(JSON.parse(window.localStorage.getItem('ShowModal'))[1])
+        }
+      }, [showModal])
 
 
     const item = (props) => {
@@ -41,7 +50,9 @@ const MergeElem = (props: any): JSX.Element => {
                 <Modal
                     className="message-info-modal"
                     disableEscape
-                    visible={showModal}
+                    visible={
+                        window.localStorage.getItem('ShowModal')&&JSON.parse(window.localStorage.getItem('ShowModal'))[0] == '1' ? true:showModal
+                    }
                     size="85%"
                     onClose={handleModalClose}
                 >

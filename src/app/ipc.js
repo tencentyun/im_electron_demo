@@ -261,6 +261,7 @@ class IPC {
                         //下载完成后重命名文件
                         fs.renameSync(file_path_temp, file_path);
                         console.log('文件下载完成:', file_path);
+                        ipcRenderer.send('download_reset_view', true)
                     } catch (err) {
 
                     }
