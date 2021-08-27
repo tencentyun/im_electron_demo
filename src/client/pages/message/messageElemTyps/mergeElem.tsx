@@ -15,25 +15,25 @@ const MergeElem = (props: any): JSX.Element => {
         } else {
             console.log(props, 'props')
             const { data: { code, json_params } } = await downloadMergedMsg(props.message);
-            const json_params_arr = []
-            json_params_arr.push(1,json_params)
-            window.localStorage.setItem('ShowModal', JSON.stringify(json_params_arr))
+            //const json_params_arr = []
+            //json_params_arr.push(1,json_params)
+            //window.localStorage.setItem('ShowModal', JSON.stringify(json_params_arr))
             const mergedMsg = JSON.parse(json_params);
             setMergedMsg(mergedMsg);
         }
         setShowModal(true);
     }
-    const handleModalClose = () => {
-        window.localStorage.setItem('ShowModal', '')
-        setShowModal(false);
-    }
+    // const handleModalClose = () => {
+    //     window.localStorage.setItem('ShowModal', '')
+    //     setShowModal(false);
+    // }
 
     
-    useEffect(() => {
-        if(window.localStorage.getItem('ShowModal')&&JSON.parse(window.localStorage.getItem('ShowModal'))[0] == '1'){
-            setMergedMsg(JSON.parse(window.localStorage.getItem('ShowModal'))[1])
-        }
-      }, [showModal])
+    // useEffect(() => {
+    //     if(window.localStorage.getItem('ShowModal')&&JSON.parse(window.localStorage.getItem('ShowModal'))[0] == '1'){
+    //         setMergedMsg(JSON.parse(window.localStorage.getItem('ShowModal'))[1])
+    //     }
+    //   }, [showModal])
 
 
     const item = (props) => {
