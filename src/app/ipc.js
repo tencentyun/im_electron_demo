@@ -12,15 +12,11 @@ const sizeOf = require('image-size')
 const FileType = require('file-type')
 const os = require('os')
 const log = require('electron-log')
-const getSrceenSize = () => {
-    const display = screen.getPrimaryDisplay();
 
-    return display.size;
-}
 
 const setPath = () => {
-    const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}/${os.arch()}/ffprobe.exe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}/${os.arch()}/ffprobe.exe`)
-    const formateFfmpegPath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}-${os.arch()}/ffmpeg.exe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}-${os.arch()}/ffmpeg.exe`)
+    const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}/${os.arch()}/ffprobe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}/${os.arch()}/ffprobe`)
+    const formateFfmpegPath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}-${os.arch()}/ffmpeg`) : path.resolve(process.cwd(), `extraResources/${os.platform()}-${os.arch()}/ffmpeg`)
     log.info(`ffprobePath: ${ffprobePath}`)
     log.info(`formateFfmpegPath: ${formateFfmpegPath}`)
     FFmpeg.setFfprobePath(ffprobePath);
@@ -29,11 +25,7 @@ const setPath = () => {
 
 class IPC {
     win = null;
-    callWindow = null; // 通话窗口
-    imWindowEvent = null; // 聊天窗口
     constructor(win) {
-        const { NODE_ENV } = process.env;
-        const isDev = NODE_ENV?.trim() === 'development';
         setPath();
         this.mkDownloadDic(); //创建download 文件目录
         this.win = win;
@@ -79,8 +71,6 @@ class IPC {
         });
 
 
-        this.createNewWindow(isDev);
-        this.eventListiner(isDev);
     }
     async checkFileExist(path) {
         return new Promise((resolve) => {
@@ -92,116 +82,6 @@ class IPC {
                 }
             }))
         })
-    }
-    eventListiner(isDev) {
-        const screenSize = getSrceenSize();
-        // 当作为接收方，接受电话后，更改窗口尺寸。
-        ipcMain.on('accept-call', (event, acceptParams) => {
-            // 向聊天窗口通信
-            const { inviteID, isVoiceCall } = acceptParams;
-            this.imWindowEvent.reply('accept-call-reply', inviteID);
-            const windowWidth = isVoiceCall ? 400 : 800;
-            const windowHeight = isVoiceCall ? 650 : 600;
-
-            const positionX = Math.floor((screenSize.width - windowWidth) / 2);
-            const positionY = Math.floor((screenSize.height - windowHeight) / 2);
-
-            this.callWindow.setSize(windowWidth, windowHeight);
-            this.callWindow.setPosition(positionX, positionY);
-        });
-
-        // 当作为接收方，挂断电话，关闭窗口
-        ipcMain.on('refuse-call', (event, inviteID) => {
-            this.callWindow.close();
-            // 向聊天窗口通信
-            this.imWindowEvent.reply('refuse-call-reply', inviteID);
-        });
-
-        // 当接受方拒绝通话后，调用该方法可关闭窗口，并退出房间
-        ipcMain.on(CLOSE_CALL_WINDOW, () => {
-            this.callWindow.webContents.send('exit-room');
-        });
-        ipcMain.on(END_CALL_WINDOW, () => {
-            this.callWindow.close()
-        })
-        // 远端用户进入
-        ipcMain.on('remote-user-join', (event, userId) => {
-            this.imWindowEvent.reply('remote-user-join-reply', userId)
-        });
-
-        // 远端用户离开
-        ipcMain.on('remote-user-exit', (event, userId) => {
-            this.imWindowEvent.reply('remote-user-exit-reply', userId)
-        });
-
-        // 取消通话邀请
-        ipcMain.on('cancel-call-invite', (event, data) => {
-            this.imWindowEvent.reply('cancel-call-invite-reply', data);
-        });
-
-        // 更新邀请列表(当用户拒绝邀请后，需通知通话窗口)
-        ipcMain.on('update-invite-list', (event, inviteList) => {
-            this.callWindow.webContents.send('update-invite-list', inviteList);
-        });
-
-        ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
-            this.imWindowEvent = event;
-            const addSdkAppid = {
-                ...data,
-                sdkAppid: "1400529075"
-            }
-            const params = JSON.stringify(addSdkAppid);
-            const { convInfo: { convType }, callType } = data;
-            if (data.windowType === 'notificationWindow') {
-                this.callWindow.setSize(320, 150);
-                this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
-            } else if (convType === 1 && Number(callType) === 1) {
-                this.callWindow.setSize(400, 650);
-                this.callWindow.setPosition(Math.floor((screenSize.width - 400) / 2), Math.floor((screenSize.height - 650) / 2));
-            }
-            this.callWindow.show();
-            this.callWindow.webContents.send('pass-call-data', params);
-            isDev && this.callWindow.webContents.openDevTools();
-            this.callWindow.on('close', () => {
-                event.reply(CALL_WINDOW_CLOSE_REPLY);
-                this.createNewWindow(isDev);
-            })
-        })
-    }
-
-    createNewWindow(isDev) {
-        const callWindow = new BrowserWindow({
-            height: 600,
-            width: 800,
-            show: false,
-            frame: false,
-            resizable: false,
-            webPreferences: {
-                parent: this.win,
-                webSecurity: true,
-                nodeIntegration: true,
-                nodeIntegrationInWorker: true,
-                enableRemoteModule: true,
-                contextIsolation: false,
-            },
-        });
-        callWindow.removeMenu();
-        const { NODE_ENV,HUARUN_ENV } = process.env;
-        if (isDev) {
-            callWindow.webContents.openDevTools();
-            callWindow.loadURL(`http://localhost:3000/call.html?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`);
-        } else {
-            //callWindow.webContents.openDevTools(); //正式生产不需要开启
-            callWindow.loadURL(
-                url.format({
-                    pathname: path.join(__dirname, `../../bundle/call.html?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`),
-                    protocol: 'file:',
-                    slashes: true
-                })
-            );
-        }
-
-        this.callWindow = callWindow;
     }
     minsizewin() {
         this.win.minimize()

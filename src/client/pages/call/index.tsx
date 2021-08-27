@@ -5,7 +5,7 @@ import { Notification } from './notification/index';
 
 
 export const Call = () => {
-    const { windowType, userID, convInfo, roomId, callType, inviteID, inviteList, userSig, sdkAppid, inviteListWithInfo } = useCallData();
+    const { windowType, userID, convInfo, roomId, callType, inviteID, inviteList, userSig, sdkAppid, inviteListWithInfo, isInviter } = useCallData();
     const isCallWindow = windowType === 'callWindow';
 
     if(roomId === 0){
@@ -26,6 +26,7 @@ export const Call = () => {
                     sdkAppid={sdkAppid} 
                     callType={callType}
                     inviteListWithInfo={inviteListWithInfo}
+                    isInviter={isInviter}
                 /> : 
                 <Notification 
                     convInfo={convInfo} 
