@@ -24,8 +24,9 @@ const saveFileTest = (saveTo) => {
 const setkeyBoard = (callback, mainWindow) => {
   // 示例  callback(value,"CommandOrControl+Shift+D");
   ipcMain.on("SHORTCUT.REGISTER", function (event, data) {
+    let formatSelectpath = store.get("setting")
     fileDataJson = {
-      selectpath: store.get("setting"),
+      selectpath: formatSelectpath.replace(/\\$/,""),
       screenshot: data,
     };
     saveFileTest(JSON.stringify(fileDataJson));
