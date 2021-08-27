@@ -1,12 +1,10 @@
 import { ipcRenderer, clipboard } from "electron";
-const Store = require("electron-store");
-const store = new Store();
 let list: Array<string> = ["Control", "Alt", "Shift"];
-let returnStr: string = null; //返回的值
-let oldKey: string = null; //存放上一次的值
-let arrList: string[] = []; //原始数组
-let newArrList: string[] = []; //去重后的数组
-let set: any = null; //去重后的数组
+let returnStr: string = ""; //返回的值
+let oldKey: string = ""; //存放上一次的值
+let arrList: Array<string> = []; //原始数组
+let newArrList: Array<string> = []; //去重后的数组
+let set: any; //去重后的数组
 
 /**
  * 转大写

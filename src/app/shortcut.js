@@ -6,7 +6,7 @@ const Store = require("electron-store");
 const store = new Store();
 const _cut = (appWindow) => {
   const url = `${downloadUrl}\\${new Date().getTime()}-screenShot.png`;
-  child_process.exec("start C:\\Users\\MiMyMine\\Desktop\\cut.exe", () => {
+  child_process.exec("start C:\\Users\\10457\\Desktop\\cut.exe", () => {
     let pngs = clipboard.readImage().toPNG();
     fs.writeFile(url, pngs, (err) => {
       fs.readFile(url, (err, data) => {

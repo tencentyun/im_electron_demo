@@ -24,8 +24,8 @@ export const AccountSetting = (): JSX.Element => {
   const dispatch = useDispatch();
   const [pathurl, setPathUrl] = useState("");
   const [msgBother, setMsgBother] = useState(null);
-  const [setting, setSetting] = useState(store.get("setting")?.replace(/\\$/,""));
-  const [inputValue, setInputValue] = useState(store.get("settingScreen"));
+  const [setting, setSetting] = useState(store.get("setting"));
+  const [inputValue, setInputValue] = useState(store.get("settingScreen").toString());
   const [preInPutVlue, setPreInputValue] = useState(null);
   const setNewsMode = (val) => {
     console.log(val, "val");

@@ -24,7 +24,8 @@ import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/co
 import { blockRendererFn, blockExportFn } from './CustomBlock';
 import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer } from './message-input-util';
 import MaxLength from 'braft-extensions/dist/max-length'
-
+import Store from "electron-store";
+const store = new Store();
 const options = {
     defaultValue: 3500, // 指定默认限制数，如不指定则为Infinity(无限)
 };
@@ -41,7 +42,7 @@ type Props = {
 const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
-const FEATURE_LIST_GROUP = [{
+let FEATURE_LIST_GROUP = [{
     id: 'face',
     content: '发表情'
 },
@@ -68,7 +69,7 @@ const FEATURE_LIST_GROUP = [{
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
 }]
-const FEATURE_LIST_C2C = [{
+let FEATURE_LIST_C2C = [{
     id: 'face',
     content: '发表情'
 }, {
@@ -90,10 +91,13 @@ const FEATURE_LIST_C2C = [{
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
 }]
-const FEATURE_LIST = {
-    1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
-}
+
 export const MessageInput = (props: Props): JSX.Element => {
+    FEATURE_LIST_C2C[5].content =   store.get("settingScreen").toString()
+    FEATURE_LIST_GROUP[5].content = store.get("settingScreen").toString()
+    const FEATURE_LIST = {
+        1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
+    }
     const { convId, convType, isShutUpAll, handleOpenCallWindow, isHandCal } = props;
     const [isDraging, setDraging] = useState(false);
     const [activeFeature, setActiveFeature] = useState('');
