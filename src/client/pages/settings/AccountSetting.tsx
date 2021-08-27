@@ -24,7 +24,7 @@ export const AccountSetting = (): JSX.Element => {
   const dispatch = useDispatch();
   const [pathurl, setPathUrl] = useState("");
   const [msgBother, setMsgBother] = useState(null);
-  const [setting, setSetting] = useState(store.get("setting"));
+  const [setting, setSetting] = useState(store.get("setting")?.toString()?.replace(/\\$/,""));
   const [inputValue, setInputValue] = useState(store.get("settingScreen").toString());
   const [preInPutVlue, setPreInputValue] = useState(null);
   const setNewsMode = (val) => {
@@ -48,7 +48,7 @@ export const AccountSetting = (): JSX.Element => {
       window.localStorage.getItem("msgBother") == "true" ? true : false;
     setMsgBother(initVal);
     let sett = setInterval(() => {
-        setSetting(store.get("setting")?.replace(/\\$/,""));
+        setSetting(store.get("setting")?.toString()?.replace(/\\$/,""));
     }, 500);
 
     return function () {

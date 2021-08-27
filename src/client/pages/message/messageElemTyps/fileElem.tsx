@@ -154,6 +154,7 @@ const FileElem = (props: any): JSX.Element => {
         }
     }
     const savePic = () => {
+        console.log('下载地址',file_elem_url)
         if(file_elem_url){
             let filelist = []
             //缓存文件名，给另存为用
@@ -164,8 +165,8 @@ const FileElem = (props: any): JSX.Element => {
                     name:(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+checkfilepath(0)+').'+returnFileVla(file_elem_file_name,1),
                     id:file_elem_file_id
                 })
-                window.localStorage.setItem('File_list',JSON.stringify(filelist));
                 downloadPic(file_elem_url,(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+Number(checkfilepath(0))+').'+returnFileVla(file_elem_file_name,1))
+                window.localStorage.setItem('File_list',JSON.stringify(filelist));
             }else{
                 filelist = [
                     {
@@ -174,8 +175,8 @@ const FileElem = (props: any): JSX.Element => {
                         id:file_elem_file_id
                     }
                 ]
-                window.localStorage.setItem('File_list',JSON.stringify(filelist));
                 downloadPic(file_elem_url,file_elem_file_name)
+                window.localStorage.setItem('File_list',JSON.stringify(filelist));
             }
         }
     }

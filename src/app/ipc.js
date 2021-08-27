@@ -14,11 +14,7 @@ const os = require('os')
 const log = require('electron-log')
 const Store = require("electron-store");
 const store = new Store();
-const getSrceenSize = () => {
-    const display = screen.getPrimaryDisplay();
 
-    return display.size;
-}
 
 const setPath = () => {
     const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}/${os.arch()}/ffprobe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}/${os.arch()}/ffprobe`)
@@ -33,11 +29,7 @@ let  DOWNLOAD_PATH_T = DOWNLOAD_PATH
 
 class IPC {
     win = null;
-    callWindow = null; // 通话窗口
-    imWindowEvent = null; // 聊天窗口
     constructor(win) {
-        const { NODE_ENV } = process.env;
-        const isDev = NODE_ENV?.trim() === 'development';
         setPath();
         this.mkDownloadDic(); //创建download 文件目录
         this.settingModle(); //设置快捷键 zwc  2021年8月26日18:08:35
@@ -84,9 +76,6 @@ class IPC {
         });
 
 
-        this.createNewWindow(isDev);
-        this.eventListiner(isDev);
-
     }
     async checkFileExist(path) {
         return new Promise((resolve) => {
@@ -99,120 +88,7 @@ class IPC {
             }))
         })
     }
-    eventListiner(isDev) {
-        const screenSize = getSrceenSize();
-        // 当作为接收方，接受电话后，更改窗口尺寸。
-        ipcMain.on('change-window-size', (event, acceptParams) => {
-            // 向聊天窗口通信
-            const { isVoiceCall } = acceptParams;
-            const windowWidth = isVoiceCall ? 400 : 800;
-            const windowHeight = isVoiceCall ? 650 : 600;
 
-            const positionX = Math.floor((screenSize.width - windowWidth) / 2);
-            const positionY = Math.floor((screenSize.height - windowHeight) / 2);
-
-            this.callWindow.setSize(windowWidth, windowHeight);
-            this.callWindow.setPosition(positionX, positionY);
-        });
-
-        ipcMain.on('accept-call', (event, inviteID) => {
-            this.imWindowEvent.reply('accept-call-reply', inviteID);
-        })
-
-        // 当作为接收方，挂断电话，关闭窗口
-        ipcMain.on('refuse-call', (event, inviteID) => {
-            this.callWindow.close();
-            // 向聊天窗口通信
-            this.imWindowEvent.reply('refuse-call-reply', inviteID);
-        });
-
-        // 当接受方拒绝通话后，调用该方法可关闭窗口，并退出房间
-        ipcMain.on(CLOSE_CALL_WINDOW, () => {
-            this.callWindow.webContents.send('exit-room');
-        });
-        ipcMain.on(END_CALL_WINDOW, () => {
-            this.callWindow.close()
-        })
-        // 远端用户进入
-        ipcMain.on('remote-user-join', (event, userId) => {
-            this.imWindowEvent.reply('remote-user-join-reply', userId)
-        });
-
-        // 远端用户离开
-        ipcMain.on('remote-user-exit', (event, userId) => {
-            this.imWindowEvent.reply('remote-user-exit-reply', userId)
-        });
-
-        // 取消通话邀请
-        ipcMain.on('cancel-call-invite', (event, data) => {
-            this.imWindowEvent.reply('cancel-call-invite-reply', data);
-        });
-
-        // 更新邀请列表(当用户拒绝邀请后，需通知通话窗口)
-        ipcMain.on('update-invite-list', (event, inviteList) => {
-            this.callWindow.webContents.send('update-invite-list', inviteList);
-        });
-
-        ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
-            this.imWindowEvent = event;
-            const addSdkAppid = {
-                ...data,
-                sdkAppid: "1400529075"
-            }
-            const params = JSON.stringify(addSdkAppid);
-            const { convInfo: { convType }, callType } = data;
-            if (data.windowType === 'notificationWindow') {
-                this.callWindow.setSize(320, 150);
-                this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
-            } else if (convType === 1 && Number(callType) === 1) {
-                this.callWindow.setSize(400, 650);
-                this.callWindow.setPosition(Math.floor((screenSize.width - 400) / 2), Math.floor((screenSize.height - 650) / 2));
-            }
-            this.callWindow.show();
-            this.callWindow.webContents.send('pass-call-data', params);
-            isDev && this.callWindow.webContents.openDevTools();
-            this.callWindow.on('close', () => {
-                event.reply(CALL_WINDOW_CLOSE_REPLY);
-                this.createNewWindow(isDev);
-            })
-        })
-    }
-
-    createNewWindow(isDev) {
-        const callWindow = new BrowserWindow({
-            height: 600,
-            width: 800,
-            show: false,
-            frame: false,
-            resizable: false,
-            webPreferences: {
-                parent: this.win,
-                webSecurity: true,
-                nodeIntegration: true,
-                nodeIntegrationInWorker: true,
-                enableRemoteModule: true,
-                contextIsolation: false,
-            },
-        });
-        callWindow.removeMenu();
-        const { NODE_ENV,HUARUN_ENV } = process.env;
-        if (isDev) {
-            callWindow.webContents.openDevTools();
-            callWindow.loadURL(`http://localhost:3000/call.html?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`);
-        } else {
-            //callWindow.webContents.openDevTools(); //正式生产不需要开启
-            callWindow.loadURL(
-                url.format({
-                    pathname: path.join(__dirname, `../../bundle/call.html?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`),
-                    protocol: 'file:',
-                    slashes: true
-                })
-            );
-        }
-
-        this.callWindow = callWindow;
-    }
-    
     settingModle(){
         console.log("检测是否有配置文件:")
         let settingModle = DOWNLOAD_PATH_T
@@ -230,7 +106,7 @@ class IPC {
             store.set('settingScreen', screenModle)
             return settingModle
     }
-
+    
     minsizewin() {
         this.win.minimize()
     }
@@ -288,6 +164,7 @@ class IPC {
                         //下载完成后重命名文件
                         fs.renameSync(file_path_temp, file_path);
                         console.log('文件下载完成:', file_path);
+                        this.imWindowEvent.reply('download_reset_view', true)
                     } catch (err) {
 
                     }

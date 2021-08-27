@@ -22,7 +22,7 @@ import {
 import { AddUserPopover } from "./AddUserPopover";
 import { addTimeDivider } from "../../utils/addTimeDivider";
 import { generateRoomID } from "../../utils/tools";
-import { openCallWindow, callWindowCloseListiner } from '../../utils/callWindowTools';
+import { openCallWindow } from '../../utils/callWindowTools';
 
 
 import { useDialogRef } from "../../utils/react-use/useDialog";
