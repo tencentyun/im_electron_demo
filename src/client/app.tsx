@@ -399,6 +399,7 @@ export const App = () => {
     
     let initNumber = 0
     const _handleGroupInfoModify = async (data) => {
+        debugger
         const response = await getConversionList();
         dispatch(updateConversationList(response));
         if (response?.length) {
