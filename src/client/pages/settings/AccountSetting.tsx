@@ -48,7 +48,7 @@ export const AccountSetting = (): JSX.Element => {
       window.localStorage.getItem("msgBother") == "true" ? true : false;
     setMsgBother(initVal);
     let sett = setInterval(() => {
-      setSetting(store.get("setting"));
+        setSetting(store.get("setting")?.replace(/\\$/,""));
     }, 500);
 
     return function () {

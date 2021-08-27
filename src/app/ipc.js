@@ -221,7 +221,6 @@ class IPC {
                 fs.accessSync(SETTING_FILES_ITEM + "/setting.txt")
                     const fileData =  fs.readFileSync(SETTING_FILES_ITEM + "/setting.txt",'utf-8')
                     const fileDataJson = JSON.parse(fileData)
-                    console.log(!!fileDataJson)
                     !!fileDataJson.selectpath && (settingModle = fileDataJson.selectpath + '\\')
                     !!fileDataJson.screenshot && (screenModle = fileDataJson.screenshot)
             } catch (error) {
