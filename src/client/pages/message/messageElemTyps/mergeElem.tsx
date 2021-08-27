@@ -23,10 +23,10 @@ const MergeElem = (props: any): JSX.Element => {
         }
         setShowModal(true);
     }
-    // const handleModalClose = () => {
-    //     window.localStorage.setItem('ShowModal', '')
-    //     setShowModal(false);
-    // }
+    const handleModalClose = () => {
+        window.localStorage.setItem('ShowModal', '')
+        setShowModal(false);
+    }
 
     
     // useEffect(() => {
