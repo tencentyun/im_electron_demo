@@ -319,13 +319,7 @@ export const App = () => {
     const _onCanceled = (data) => {
         // 关闭通知窗口
         closeCallWindow();
-        dispatch(updateCallingStatus({
-            callingId: '',
-            callingType: 0,
-            inviteeList: [],
-            callType: 0
-        }));
-        joinedUserList = [];
+        clearCallStore();
     }
     const _onTimeout = (data) => {
         if(data) {
@@ -528,6 +522,16 @@ export const App = () => {
         });
     };
 
+    const clearCallStore = () => {
+        dispatch(updateCallingStatus({
+            callingId: '',
+            callingType: 0,
+            inviteeList: [],
+            callType: 0
+        }));
+        joinedUserList = [];
+    }
+
     const _handleMessageReaded = (data) => {
         const c2cDdata = data.filter((item) => item.msg_receipt_conv_type === 1);
         const convIds = c2cDdata.map((item) => item.msg_receipt_conv_id);
@@ -577,32 +581,10 @@ export const App = () => {
             }).then(data => {
                 console.log('接收返回', data)
             });
-            dispatch(updateCallingStatus({
-                callingId: '',
-                callingType: 0,
-                inviteeList: [],
-                callType: 0
-            }));
-            joinedUserList = [];
         });
-        // callWindowCloseListiner(() => {
-        //     dispatch(updateCallingStatus({
-        //         callingId: '',
-        //         callingType: 0,
-        //         inviteeList: [],
-        //         callType: 0
-        //     }));
-        //     joinedUserList = [];
-        //   });
+        callWindowCloseListiner(clearCallStore);
         cancelCallInvite(({inviteId, realCallTime}) => {
             if(!inviteId) {
-                dispatch(updateCallingStatus({
-                    callingId: '',
-                    callingType: 0,
-                    inviteeList: [],
-                    callType: 0
-                }));
-                joinedUserList = [];
                 return;
             }
             const { callingId, inviteeList, callType, callingType } = ref.current.catchCalling;
@@ -642,14 +624,6 @@ export const App = () => {
                     }
                 }
             }
-
-            dispatch(updateCallingStatus({
-                callingId: '',
-                callingType: 0,
-                inviteeList: [],
-                callType: 0
-            }));
-            joinedUserList = [];
         });
 
         remoteUserExit((userId) => {

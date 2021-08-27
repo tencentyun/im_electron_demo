@@ -142,7 +142,7 @@ class CallWindowIpc {
             isDev && this.callWindow.webContents.openDevTools();
         });
 
-        this.callWindow.on('close', () => {
+        this.callWindow.on('closed', () => {
             this.imWindow.webContents.send(CALL_WINDOW_CLOSE_REPLY);
             this.destroy();
         });
