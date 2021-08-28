@@ -26,7 +26,7 @@ class CallWindowIpc {
 
     destroy() {
         this.offEventListiner();
-        this.mount();
+        this.addEventListiner();
     }
 
     createWindow() {
@@ -140,6 +140,10 @@ class CallWindowIpc {
             this.callWindow.show();
             this.callWindow.webContents.send('pass-call-data', params);
             isDev && this.callWindow.webContents.openDevTools();
+        });
+
+        this.callWindow.on('close', () => {
+            this.createWindow();
         });
 
         this.callWindow.on('closed', () => {
