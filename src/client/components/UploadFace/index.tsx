@@ -144,7 +144,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
       }).then(res => {
         if (res.data.error_code === 0) {
           console.log(res)
-          const { upload_url } = res.data
+          const { upload_url,download_url } = res.data
           let fr = new FileReader();
           fr.readAsDataURL(fileObj);
           fr.addEventListener(
@@ -158,6 +158,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
                 message.success({
                   content: "上传成功",
                 })
+                localStorage.setItem("myhead_download",download_url)
               }).catch(err => {
                 reject(err)
               }).finally(() => {
@@ -206,7 +207,7 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   return (
     <>
       <Upload
-        action={prop.value}
+        action=""
         onStart={handleOnStart}
         method={"put"}
         onSuccess={successChange}

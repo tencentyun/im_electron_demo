@@ -414,11 +414,24 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (userId) {
             const atText = userName || userId;
             setAtUserMap(pre => ({ ...pre, [atText]: userId }));
+            // 获取最后的人员
+            // const lastname = editorState.toText().substring(editorState.toText().lastIndexOf("@"))
+            // if(lastname == '@'+userName){
+            //     setEditorState(ContentUtils.insertText(editorState, `${atText} `));
+            // }else{
+            //     console.log(lastname)
+            //     console.log(editorState.toText().indexOf(lastname))
+            //     console.log(editorState.toText().substring(0,editorState.toText().indexOf(lastname)))
+            //     //设置重复姓氏
+            //     setEditorState(ContentUtils.clear(editorState))
+            //     setEditorState(ContentUtils.insertText(editorState.toText().substring(0,editorState.toText().indexOf(lastname)), `${atText} `));
+            // }
             setEditorState(ContentUtils.insertText(editorState, `${atText} `));
             setAtInput('');
         }
         if (userName) {
             const text = `${userName} `
+            console.log('人员2',editorState)
             setEditorState(ContentUtils.insertText(editorState, text))
         }
     }
