@@ -7,6 +7,7 @@ import { Icon,Bubble, message as teaMessage } from "tea-component";
 import path from 'path';
 import os from 'os'
 import { ipcRenderer } from "electron";
+import { updateMessages } from "../../../store/actions/message";
 
 export const getFilePath = (fileName) => {
     return path.resolve(os.homedir(), 'Download/', 'HuaRunIM/' + fileName)
@@ -14,23 +15,29 @@ export const getFilePath = (fileName) => {
 
 const FileElem = (props: any): JSX.Element => {
     const { message, element, index,isshow } = props
-    const { message_conv_id, message_conv_type, message_status, message_msg_id, message_is_from_self} = message
+    const { message_conv_id, message_conv_type,  message_msg_id, message_is_from_self} = message
     const { file_elem_file_name, file_elem_file_size, file_elem_file_path, file_elem_url,file_elem_file_id } = element
     const { uploadProgressList } = useSelector((state: State.RootState) => state.historyMessage);
-    const progressKey = `${message_msg_id}_${index}`
-    const uploadProgress = uploadProgressList.get(progressKey);
+    
     const [FileHTML, setFileHTML] = useState(null);
     const [isDownloading,setiSDownloading] = useState(false)
-    const [fileid,setFileID] = useState(message_msg_id)
-    let backgroundStyle = ""
-    let percentage = 0
-
-    if (message_status === (1||2) && uploadProgress) {
-        const { cur_size, total_size } = uploadProgress
-        percentage = Math.floor((cur_size / total_size) * 100)
-        backgroundStyle = message_status === 1 ? `linear-gradient(to right, #D4FFEB ${percentage}%, white 0%, white 100%)` : ""
-    }
-
+    const [fileid,] = useState(message_msg_id)
+    const [message_status,setmessage_status] = useState(message.message_status)
+    const dispatch = useDispatch()
+    const [backgroundStyle,setbackgroundStyle] = useState("")
+    const [percentage,setpercentage] = useState(0)
+    const [exits,setexits] = useState(false)
+    const progressKey = `${message_msg_id}_${index}`
+    const uploadProgress = uploadProgressList.get(progressKey);
+    useEffect(()=>{
+        if (uploadProgress) {
+            const { cur_size, total_size } = uploadProgress
+            setpercentage(Math.floor((cur_size / total_size) * 100))
+            setbackgroundStyle(message_status === 1 ? `linear-gradient(to right, #D4FFEB ${percentage}%, white 0%, white 100%)` : "")
+            
+        }
+        setmessage_status(message.message_status)
+    },[message])
     const calcuSize = () => {
         //console.log(file_elem_file_size)
         getHandleElement()
@@ -95,23 +102,28 @@ const FileElem = (props: any): JSX.Element => {
         });
 
         if (code === 0) {
-            // dispatch(updateMessages({
-            //     convId,
-            //     message: JSON.parse(json_params)
-            // }))
+            dispatch(updateMessages({
+                convId: message_conv_id,
+                message: JSON.parse(json_params)
+            }))
         }
     }
-    const getHandleElement = async () => {
-        let exits = await checkFileExist(message_msg_id)
-        // console.log(isshow)
-        if (message_status === 1) return <Icon type="dismiss" className="message-view__item--file___close" onClick={handleCancel} />
-        if (message_status === 2) {
+    const getHandleElement = () => {
+        
+        console.log('当前文件状态：',exits,message_status,percentage,message_msg_id)
+        if (message_status === 1) {
+            console.log("当前状态",message_status)
+            return <Icon type="dismiss" className="message-view__item--file___close" onClick={handleCancel} />
+        }
+        else if (message_status === 2) {
+            console.log("当前",message_status)
             if (exits) {
                 return <div className="message-view__item--file___open" title="打开文件" onClick={handleOpen}></div>
             }else {
                 return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} title="下载" onClick={savePic}></div>
             }
         }
+       
     }
     const getDetailText = () => {
         if (message_status === 1) return <div className="message-view__item--file___content____size">{calcuSize()} 加速上传中 {percentage}%</div>
@@ -188,24 +200,29 @@ const FileElem = (props: any): JSX.Element => {
             removeProgressListener()
         }
     },[fileid])
-    
-    const item = () => {
-        return (
-            <div className="message-view__item--file" style={{ background: backgroundStyle }} onDoubleClick={showFile}>
-                <div className={`message-view__item--file___ext message-view__item--file___${ getFileTypeName()}`}>{getFileTypeName().substring(getFileTypeName().length-1,getFileTypeName().length) == '-'?'':getFileTypeName()}</div>
-                <div className="message-view__item--file___content">
-                    <div className="message-view__item--file___content____name">
-                    <Bubble content={displayName()}>{displayName()}</Bubble>
-                    </div>
-                    {getDetailText()}
+    useEffect(()=>{
+        check()
+    },[message_msg_id,isDownloading])
+    const check = async ()=>{
+        let ex = await checkFileExist(message_msg_id)
+        setexits(ex)
+    }
+    return (
+        <div className="message-view__item--file" style={{ background: backgroundStyle }} onDoubleClick={showFile}>
+            <div className={`message-view__item--file___ext message-view__item--file___${ getFileTypeName()}`}>{getFileTypeName().substring(getFileTypeName().length-1,getFileTypeName().length) == '-'?'':getFileTypeName()}</div>
+            <div className="message-view__item--file___content">
+                <div className="message-view__item--file___content____name">
+                <Bubble content={displayName()}>{displayName()}</Bubble>
                 </div>
-                <div className="message-view__item--file___handle">
-                    {FileHTML}
-                </div>
+                {getDetailText()}
             </div>
-        )
-    };
-    return item();
+            <div className="message-view__item--file___handle">
+                {
+                    getHandleElement()
+                }
+            </div>
+        </div>
+    )
 }
 
 export default FileElem;

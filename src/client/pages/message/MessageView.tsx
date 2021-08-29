@@ -891,7 +891,7 @@ return (
         const elemType = message_elem_array?.[0]?.elem_type; // 取message array的第一个判断消息类型
         const isNotGroupSysAndGroupTipsMessage = ![5, 8].includes(elemType); // 5,8作为群系统消息 不需要多选转发
         return (
-          <React.Fragment key={index}>
+          <React.Fragment key={message_msg_id||index}>
             {message_status === 6 ? (
               <div className="message-view__item is-revoked">
                 {`${revokedPerson} 撤回了一条消息`}
@@ -911,7 +911,7 @@ return (
               </div>
             ) : (
               <div
-                key={index}
+                key={message_msg_id||index}
                 onClick={() => handleSelectMessage(item)}
                 className={`message-view__item ${message_is_from_self ? "is-self" : ""
                   }`}
@@ -935,7 +935,7 @@ return (
                         <div className="main-info">
                           <div className="info-item">
                             <Avatar
-                              key={user_profile_face_url}
+                              key={user_profile_identifier}
                               url={user_profile_face_url}
                               nickName={user_profile_nick_name}
                               userID={user_profile_identifier}
@@ -963,7 +963,7 @@ return (
                     <Avatar
                       url={user_profile_face_url}
                       isClick={false}
-                      key={user_profile_face_url}
+                      key={user_profile_identifier}
                       size="small"
                       nickName={user_profile_nick_name}
                       userID={user_profile_identifier}
@@ -977,7 +977,7 @@ return (
                     return (
                       <div
                         className="message-view__item--element"
-                        key={index}
+                        key={item.message_conv_id}
                       >
                         {
                           //群里会话列表添加名称  zwc
@@ -996,7 +996,6 @@ return (
                             elment,
                             messageList
                           )}
-                          key={index}
                           onContextMenu={(e) => {
                             handleContextMenuEvent(e, item);
                           }}

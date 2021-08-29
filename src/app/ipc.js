@@ -149,7 +149,7 @@ class IPC {
                 return
             }
             if (!fs.existsSync(file_path)) {
-                this.innerDownload(file_path_temp,file_path,file_url,fileid,downloadKey,file_name)
+                this.innerDownload(file_path_temp,file_path,file_url,fileid,downloadKey,file_name,true)
             } else {
                 // 相同文件名文件已下载，看看id是否一样
                 if(!originDownloadKey){
@@ -163,7 +163,7 @@ class IPC {
                         const names = nameArr.join()
                         const file_path = path.resolve(downloadDicPath, `${names}_${currentIndex}.${ext}`);
                         const file_path_temp = `${file_path}.tmp` 
-                        this.innerDownload(file_path_temp,file_path,file_url,fileid,downloadKey,file_name)
+                        this.innerDownload(file_path_temp,file_path,file_url,fileid,downloadKey,file_name,false)
                     }else{
                         console.log('index 计算异常')
                     }
@@ -176,7 +176,7 @@ class IPC {
             console.log('下载文件失败，请稍后重试。', err)
         }
     }
-    async innerDownload(file_path_temp,file_path,file_url,fileid,downloadKey,file_name){
+    async innerDownload(file_path_temp,file_path,file_url,fileid,downloadKey,file_name,isfirst){
         let that = this
         //创建写入流
         const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
@@ -220,6 +220,10 @@ class IPC {
                     let nextIndex;
                     if(index){
                         nextIndex  = Number(index) + 1
+                    }
+                    if(isfirst){
+                        // 首次下载index设置成0
+                        nextIndex = 0
                     }
                     store.set(file_name,index ? `${nextIndex}`:'0')
                     if (fileid) {
