@@ -152,7 +152,40 @@ const returnFileVla = (val,index) => {
         return start
     }
 }
+
+const checkfilepath = (type,file_elem_file_id,file_elem_file_name) => {
+    let filelist = window.localStorage.getItem('File_list') ? JSON.parse(window.localStorage.getItem('File_list')) : '';
+    if(!filelist) return false
+    if(type==0 && filelist){
+        //统计同名数
+        let total = 0
+        for (let i=0;i<filelist.length;i++){ 
+            if(filelist[i].samename == file_elem_file_name) {
+                total = total+1
+            }
+        }
+        //console.log(total)
+        return total
+    }else if(filelist && type==1){
+        //告诉有没有下载过
+        for (let i=0;i<filelist.length;i++){ 
+            if(filelist[i].id == file_elem_file_id) {
+                return i+1
+            }
+        }
+    }else if(filelist && type==2){
+        //换本地文件名
+        for (let i=0;i<filelist.length;i++){ 
+            if(filelist[i].id == file_elem_file_id) {
+                //console.log(filelist[i].name)
+                return filelist[i].name
+            }
+        }
+    }
+}
+
 export {
+    checkfilepath,
     isWin,
     minSizeWin,
     maxSizeWin,

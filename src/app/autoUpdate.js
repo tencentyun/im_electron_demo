@@ -11,7 +11,7 @@ let agent = navigator.userAgent.toLowerCase();
 //     return /macintosh|mac os x/i.test(navigator.userAgent);
 // }();
 //  const env = 'prod'
-if (env === 'development') {
+if (env === 'development' || env === 'test') {
     if (agent.indexOf("win32") >= 0 || agent.indexOf("wow32") >= 0) {
         feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download_32/'
     }else if (agent.indexOf("win64") >= 0 || agent.indexOf("wow64") >= 0) {

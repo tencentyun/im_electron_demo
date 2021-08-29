@@ -497,11 +497,15 @@ export const App = () => {
             }
             // if (conversationList[0]?.conv_last_msg?.message_status === 1) {
                 const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
+                console.log(elemType)
                 if (elemType === 4 || elemType === 9 || elemType === 3) {
                     dispatch(updateMessages({
                         convId: conversationList[0].conv_id,
                         message: conversationList[0].conv_last_msg
                     }))
+                    //elemType4,文件上传存在延时，但视图已经更新，利用渲染进程发给主进程再发给主进程进行通信
+                    //解决上传失败等问题
+                    ipcRenderer.send("RENDERPROCESSCALL", "upload_reset_view");
                 }
             // }
         }

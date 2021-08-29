@@ -41,6 +41,11 @@ class IPC {
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             console.log("get message from render process", event.processId, data)
             const { type, params } = data;
+            switch (data) {
+                case 'upload_reset_view':
+                    this.win.webContents.send('UPLOAD_RESET_MESSAGE_VIEW', true)
+                    break;
+            }
             switch (type) {
                 case MINSIZEWIN:
                     this.minsizewin();
@@ -171,6 +176,11 @@ class IPC {
                             }
                         }
                         console.log(percentage);
+                        if(percentage == '100%') {
+                            console.log('下载完了')
+                            //上传下载秒传文件、错误消息、报错等需要刷新界面，信息回调不同步会有很多错误信息，强制刷新视图
+                            that.win.webContents.send('download_reset_view_upload', true)
+                        }
                     });
                     res.body.pipe(str).pipe(fileStream);
                 }).catch(e => {
