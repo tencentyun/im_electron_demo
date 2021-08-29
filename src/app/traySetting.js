@@ -14,7 +14,7 @@ const setAppTray = (appWindow) => {
             label: "退出",
             click: () => {
                 if (app) {
-                    app.quit();
+                    app.exit();
                 }
             },
         },

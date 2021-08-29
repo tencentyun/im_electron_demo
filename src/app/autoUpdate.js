@@ -15,13 +15,13 @@ if (env === 'development' || env === 'test') {
     if (agent.indexOf("win32") >= 0 || agent.indexOf("wow32") >= 0) {
         feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download_32/'
     }else if (agent.indexOf("win64") >= 0 || agent.indexOf("wow64") >= 0) {
-        feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download/'
+        feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download_64/'
     }
 }else{
     if (agent.indexOf("win32") >= 0 || agent.indexOf("wow32") >= 0) {
         feedUrl = 'http://oaim.crbank.com.cn:30003/_download_32/'
     }else if (agent.indexOf("win64") >= 0 || agent.indexOf("wow64") >= 0) {
-        feedUrl = 'http://oaim.crbank.com.cn:30003/_download/'
+        feedUrl = 'http://oaim.crbank.com.cn:30003/_download_64/'
     }
 }
 
