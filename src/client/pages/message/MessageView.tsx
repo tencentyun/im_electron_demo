@@ -113,7 +113,7 @@ export const displayDiffMessage = (message, element, index) => {
       resp = <TextElemItem {...res} />;
       break;
     case 1:
-      resp = <PicElemItem {...res} />;
+      resp = <PicElemItem {...res} message={message} />;
       break;
     case 2:
       resp = <VoiceElem {...res} />;
@@ -386,12 +386,14 @@ const handleFileSave = async (params) => {
   console.log("文件另存为", params)
   if (params.message && params.message.message_elem_array) {
     let fileElement = params.message.message_elem_array[0];
-    let fileName = ''
-    if (fileElement?.file_elem_file_name) {
+    const { message_msg_id } = params.message
+    let fileName = fileElement?.file_elem_file_name
+    if (!fileName) {
+      return
       //fileName = checkfilepath(fileElement.file_elem_file_id);
     }
     const filePath = getFilePath(fileName);
-    const isExist = await checkFileExist(filePath);
+    const isExist = await checkFileExist(message_msg_id);
     const index = filePath.lastIndexOf(".");
     const ext = filePath.substr(index + 1);
     if (!isExist) {

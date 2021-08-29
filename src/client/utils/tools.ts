@@ -1,4 +1,4 @@
-import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW, HIDE } from "../../app/const/const";
+import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG,GETNATIVEPATH, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW, HIDE } from "../../app/const/const";
 
 import { ipcRenderer, remote } from 'electron';
 
@@ -50,11 +50,13 @@ const downloadFilesByUrl = (url,name,fileid)=>{
         }
     })
 }
-const checkFileExist = (path) => {
-    return new Promise<boolean>((resolve)=>{
-        ipcRenderer.invoke('RENDERPROCESSCALL', {
+const checkFileExist = (message_msg_id) => {
+    return new Promise<any>((resolve)=>{
+        ipcRenderer.invoke(RENDERPROCESSCALL, {
             type: CHECK_FILE_EXIST,
-            params: path
+            params: {
+                message_msg_id
+            }
         }).then((result) => {
             // ...
             resolve(result)
@@ -63,7 +65,21 @@ const checkFileExist = (path) => {
         })
     })
 }
-
+const getNativePath = (message_msg_id) =>{
+    return new Promise<string>((resolve)=>{
+        ipcRenderer.invoke(RENDERPROCESSCALL, {
+            type: GETNATIVEPATH,
+            params: {
+                message_msg_id
+            }
+        }).then((result) => {
+            // ...
+            resolve(result)
+        }).catch(err=>{
+            resolve("")
+        })
+    })
+}
 const getParamsByKey = (key)=>{
     const paramsArr = window.location.search.slice(1).split('&');
     let res = ''
@@ -202,5 +218,6 @@ export {
     previewVvatar,
     returnFileVla,
     hideWin,
-    getParamsByKey
+    getParamsByKey,
+    getNativePath
 }

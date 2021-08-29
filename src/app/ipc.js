@@ -12,8 +12,8 @@ const sizeOf = require('image-size')
 const FileType = require('file-type')
 const os = require('os')
 const log = require('electron-log')
-
-
+const Store = require('electron-store');
+const store = new Store();
 const setPath = () => {
     const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}/${os.arch()}/ffprobe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}/${os.arch()}/ffprobe`)
     const formateFfmpegPath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}-${os.arch()}/ffmpeg`) : path.resolve(process.cwd(), `extraResources/${os.platform()}-${os.arch()}/ffmpeg`)
@@ -35,6 +35,8 @@ class IPC {
             switch (type) {
                 case CHECK_FILE_EXIST:
                     return await this.checkFileExist(params);
+                case GETNATIVEPATH:
+                    break
             }
 
         })
@@ -77,13 +79,23 @@ class IPC {
 
 
     }
-    async checkFileExist(path) {
+    
+    async checkFileExist({message_msg_id}) {
+        const downloadKey = `huarun_download_check_key_${message_msg_id}`
+        const name = store.get(downloadKey)
+        console.log('checkFileExist',downloadKey,name)
+
+        if(!name){
+            return false
+        }
         return new Promise((resolve) => {
-            fs.access(path, (err => {
+            fs.access(name, (err => {
                 if (err) {
                     resolve(false)
                 } else {
-                    resolve(true)
+                    resolve({
+                        path: name
+                    })
                 }
             }))
         })
@@ -121,6 +133,8 @@ class IPC {
     downloadFilesByUrl({ url: file_url, name, fileid }) {
         try {
             const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
+            const downloadKey = `huarun_download_check_key_${fileid}`
+            const originDownloadKey = store.get(downloadKey)
             let file_name
             let file_path
             let file_path_temp
@@ -135,65 +149,94 @@ class IPC {
                 return
             }
             if (!fs.existsSync(file_path)) {
-                let that = this
-                //创建写入流
-                const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
-                    console.error('error==>', e)
-                }).on('ready', function () {
-                    console.log("开始下载:", file_url);
-                }).on('finish', function () {
-                    try {
-                        //下载完成后重命名文件
-                        fs.renameSync(file_path_temp, file_path);
-                        console.log('文件下载完成:', file_path);
-                        that.win.webContents.send('download_reset', true)
-                        console.log('发完了')
-                    } catch (err) {
-
-                    }
-                });
-                //请求文件
-                fetch(file_url, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/octet-stream' },
-                }).then(res => {
-                    //获取请求头中的文件大小数据
-                    let fsize = res.headers.get("content-length");
-                    //创建进度
-                    let str = progressStream({
-                        length: fsize,
-                        time: 100 /* ms */
-                    });
-                    // 下载进度 
-                    str.on('progress', (progressData) => {
-                        //不换行输出
-                        let percentage = Math.round(progressData.percentage) + '%';
-                        if (fileid) {
-                            try {
-                                that.win.webContents.send('download_reset_view', percentage)
-                            } catch (err) {
-
-                            }
-                        }
-                        console.log(percentage);
-                        if(percentage == '100%') {
-                            console.log('下载完了')
-                            //上传下载秒传文件、错误消息、报错等需要刷新界面，信息回调不同步会有很多错误信息，强制刷新视图
-                            that.win.webContents.send('download_reset_view_upload', true)
-                        }
-                    });
-                    res.body.pipe(str).pipe(fileStream);
-                }).catch(e => {
-                    //自定义异常处理
-                    console.log(e);
-                });
+                this.innerDownload(file_path_temp,file_path,file_url,fileid,downloadKey,file_name)
             } else {
-                // 已存在
-                console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+                // 相同文件名文件已下载，看看id是否一样
+                if(!originDownloadKey){
+                    //新发的消息，有相同的文件名，这个时候也要下载
+                    const preIndex = Number(store.get(file_name) || '0');
+                    const currentIndex = preIndex + 1
+                    if(currentIndex > 0){
+                        //重新下载
+                        const nameArr = file_name.split('.')
+                        const ext = nameArr.pop()
+                        const names = nameArr.join()
+                        const file_path = path.resolve(downloadDicPath, `${names}_${currentIndex}.${ext}`);
+                        const file_path_temp = `${file_path}.tmp` 
+                        this.innerDownload(file_path_temp,file_path,file_url,fileid,downloadKey,file_name)
+                    }else{
+                        console.log('index 计算异常')
+                    }
+                }else {
+                    // 已存在
+                    console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+                }
             }
         } catch (err) {
             console.log('下载文件失败，请稍后重试。', err)
         }
+    }
+    async innerDownload(file_path_temp,file_path,file_url,fileid,downloadKey,file_name){
+        let that = this
+        //创建写入流
+        const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
+            console.error('error==>', e)
+        }).on('ready', function () {
+            console.log("开始下载:", file_url);
+        }).on('finish', function () {
+            try {
+                //下载完成后重命名文件
+                fs.renameSync(file_path_temp, file_path);
+                console.log('文件下载完成:', file_path);
+                // that.win.webContents.send('download_reset', true)
+                console.log('发完了')
+            } catch (err) {
+
+            }
+        });
+        //请求文件
+        fetch(file_url, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/octet-stream' },
+        }).then(res => {
+            //获取请求头中的文件大小数据
+            let fsize = res.headers.get("content-length");
+            //创建进度
+            let str = progressStream({
+                length: fsize,
+                time: 100 /* ms */
+            });
+            // 下载进度 
+            str.on('progress', (progressData) => {
+                //不换行输出
+                let percentage = Math.round(progressData.percentage) + '%';
+                
+                console.log(percentage);
+                if(percentage == '100%') {
+                    console.log('下载完了')
+                    //上传下载秒传文件、错误消息、报错等需要刷新界面，信息回调不同步会有很多错误信息，强制刷新视图 // 什么玩意儿！
+                    store.set(downloadKey,file_path)
+                    let index = store.get(file_name);
+                    let nextIndex;
+                    if(index){
+                        nextIndex  = Number(index) + 1
+                    }
+                    store.set(file_name,index ? `${nextIndex}`:'0')
+                    if (fileid) {
+                        try {
+                            console.log(fileid,percentage)
+                            that.win.webContents.send(fileid, Math.round(progressData.percentage) )
+                        } catch (err) {
+    
+                        }
+                    }
+                }
+            });
+            res.body.pipe(str).pipe(fileStream);
+        }).catch(e => {
+            //自定义异常处理
+            console.log(e);
+        });
     }
     async _getVideoInfo(event, filePath) {
         let videoDuration, videoSize

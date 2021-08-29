@@ -504,8 +504,8 @@ export const App = () => {
                         message: conversationList[0].conv_last_msg
                     }))
                     //elemType4,文件上传存在延时，但视图已经更新，利用渲染进程发给主进程再发给主进程进行通信
-                    //解决上传失败等问题
-                    ipcRenderer.send("RENDERPROCESSCALL", "upload_reset_view");
+                    //解决上传失败等问题 瞎几把写！
+                    // ipcRenderer.send("RENDERPROCESSCALL", "upload_reset_view");
                 }
             // }
         }

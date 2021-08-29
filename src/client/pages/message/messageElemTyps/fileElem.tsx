@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { checkFileExist, downloadFilesByUrl, showDialog,returnFileVla,checkfilepath } from "../../../utils/tools";
+import { checkFileExist, downloadFilesByUrl, showDialog,returnFileVla,checkfilepath, getNativePath } from "../../../utils/tools";
 import { cancelSendMsg } from "../api";
 import { shell } from 'electron'
 import { Icon,Bubble, message as teaMessage } from "tea-component";
@@ -14,7 +14,7 @@ export const getFilePath = (fileName) => {
 
 const FileElem = (props: any): JSX.Element => {
     const { message, element, index,isshow } = props
-    const { message_conv_id, message_conv_type, message_status, message_msg_id, message_is_from_self } = message
+    const { message_conv_id, message_conv_type, message_status, message_msg_id, message_is_from_self} = message
     const { file_elem_file_name, file_elem_file_size, file_elem_file_path, file_elem_url,file_elem_file_id } = element
     const { uploadProgressList } = useSelector((state: State.RootState) => state.historyMessage);
     const progressKey = `${message_msg_id}_${index}`
@@ -72,15 +72,19 @@ const FileElem = (props: any): JSX.Element => {
         }
     }
 
-    const handleOpen = () => {
-        const p = getFilePath(checkfilepath(2,file_elem_file_id,file_elem_file_name))
-        try {
-            shell.openPath(p).catch(err => {
-                shell.showItemInFolder(p)
-            })
-        } catch {
-
+    const handleOpen = async () => {
+        let data = await checkFileExist(message_msg_id)
+        if(data){
+            const { path } = data;
+            try {
+                shell.openPath(path).catch(err => {
+                    shell.showItemInFolder(path)
+                })
+            } catch {
+    
+            }
         }
+        
     }
     const handleCancel = async () => {
         const { data: { json_params, code } } = await cancelSendMsg({
@@ -97,12 +101,12 @@ const FileElem = (props: any): JSX.Element => {
             // }))
         }
     }
-    const getHandleElement = () => {
-        //let exits: boolean = await checkFileExist(getFilePath(checkfilepath(2)))
-        console.log(isshow)
+    const getHandleElement = async () => {
+        let exits = await checkFileExist(message_msg_id)
+        // console.log(isshow)
         if (message_status === 1) return <Icon type="dismiss" className="message-view__item--file___close" onClick={handleCancel} />
         if (message_status === 2) {
-            if (isshow) {
+            if (exits) {
                 return <div className="message-view__item--file___open" title="打开文件" onClick={handleOpen}></div>
             }else {
                 return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} title="下载" onClick={savePic}></div>
@@ -114,6 +118,7 @@ const FileElem = (props: any): JSX.Element => {
         if (message_status === 2) return <div className="message-view__item--file___content____size">{calcuSize()}</div>
     }
     const handleProgress = (event,data)=>{
+        
         if(data === 100){
             setiSDownloading(false)
         }
@@ -124,7 +129,7 @@ const FileElem = (props: any): JSX.Element => {
     const removeProgressListener = ()=>{
         ipcRenderer.off(fileid,handleProgress)
     }
-    const downloadPic = (url,file_elem_file_name) => {
+    const downloadPic = (url,file_elem_file_name,file_id) => {
         try {
             setiSDownloading(true)
             downloadFilesByUrl(url,file_elem_file_name,fileid)
@@ -137,55 +142,41 @@ const FileElem = (props: any): JSX.Element => {
     
     
     const savePic = () => {
-        console.log('下载地址',file_elem_url)
-        if(file_elem_url){
-            let filelist = []
-            //缓存文件名，给另存为用
-            if(window.localStorage.getItem('File_list') && window.localStorage.getItem('File_list')!= 'null'){
-                filelist = JSON.parse(window.localStorage.getItem('File_list'))
-                filelist.push({
-                    url:file_elem_url,
-                    name:(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+checkfilepath(0,file_elem_file_id,file_elem_file_name)+').'+returnFileVla(file_elem_file_name,1),
-                    samename:file_elem_file_name,
-                    id:file_elem_file_id
-                })
-                downloadPic(file_elem_url,(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+Number(checkfilepath(0,file_elem_file_id,file_elem_file_name))+').'+returnFileVla(file_elem_file_name,1))
-                window.localStorage.setItem('File_list_save',JSON.stringify(filelist));
-            }else{
-                filelist = [
-                    {
-                        url:file_elem_url,
-                        name:file_elem_file_name,
-                        samename:file_elem_file_name,
-                        id:file_elem_file_id
-                    }
-                ]
-                downloadPic(file_elem_url,file_elem_file_name)
-                window.localStorage.setItem('File_list_save',JSON.stringify(filelist));
-            }
-        }
+        // console.log('下载地址',file_elem_url)
+        // if(file_elem_url){
+        //     let filelist = []
+        //     //缓存文件名，给另存为用
+        //     if(window.localStorage.getItem('File_list') && window.localStorage.getItem('File_list')!= 'null'){
+        //         filelist = JSON.parse(window.localStorage.getItem('File_list'))
+        //         filelist.push({
+        //             url:file_elem_url,
+        //             name:(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+checkfilepath(0,file_elem_file_id,file_elem_file_name)+').'+returnFileVla(file_elem_file_name,1),
+        //             samename:file_elem_file_name,
+        //             id:file_elem_file_id
+        //         })
+        //         downloadPic(file_elem_url,(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+Number(checkfilepath(0,file_elem_file_id,file_elem_file_name))+').'+returnFileVla(file_elem_file_name,1))
+        //         window.localStorage.setItem('File_list_save',JSON.stringify(filelist));
+        //     }else{
+        //         filelist = [
+        //             {
+        //                 url:file_elem_url,
+        //                 name:file_elem_file_name,
+        //                 samename:file_elem_file_name,
+        //                 id:file_elem_file_id
+        //             }
+        //         ]
+                
+        //         window.localStorage.setItem('File_list_save',JSON.stringify(filelist));
+        //     }
+        // }
+        downloadPic(file_elem_url,file_elem_file_name,message_msg_id)
     }
 
-    const setHtml = () => {
-        const html = getHandleElement()
+    const setHtml = async () => {
+        const html = await getHandleElement()
         setFileHTML(html)
     }
-    useEffect(() => {
-        // ipcRenderer.on('download_reset', (e,boolean) => {
-        //     console.log('查看下载完状态IN',boolean)
-        //     if(boolean){
-        //         window.localStorage.setItem('File_list',window.localStorage.getItem('File_list_save'))
-        //         setHtml()
-        //     }
-        // })
-        // ipcRenderer.on('UPLOAD_RESET_MESSAGE_VIEW', (e,boolean) => {
-        //     if(boolean){
-        //         console.log('查看刷新了没有2',boolean)
-        //         window.localStorage.setItem('File_list',window.localStorage.getItem('File_list_save'))
-        //         setHtml()
-        //     }
-        // })
-    }, [])
+    
     useEffect(() => {
         setHtml()
     }, [isDownloading])
