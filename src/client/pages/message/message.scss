@@ -58,16 +58,16 @@
             height: 36px;
             &___unread {
                 position: absolute;
-                top: 0;
-                right: 0;
-                width: 12px;
-                height: 12px;
+                top: -5px;
+                right: -6px;
+                width: 14px;
+                height: 14px;
                 background: #FF584C;
                 font-size: 10px;
                 transform: scale(10 / 12);
                 transform-origin: left center;
                 color: #fff;
-                border-radius: 6px;
+                border-radius: 7px;
                 text-align: center;
                 line-height: 12px;
             }
