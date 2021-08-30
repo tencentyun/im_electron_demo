@@ -1,10 +1,10 @@
 const { autoUpdater  }  = require("electron-updater");
 const { ipcMain } = require('electron')
-
+import { getParamsByKey } from '../../utils/tools';
 let appWindow = null;
 
 let feedUrl = '';//http://oaim.crbank.com.cn:30003/_download/
-const env = process?.env?.NODE_ENV?.trim()
+const env = getParamsByKey('NODE_ENV');
 //判断系统位数
 let agent = navigator.userAgent.toLowerCase();
 // let isMac = function() {
