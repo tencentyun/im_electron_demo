@@ -97,6 +97,26 @@ export const handleGroupPendency = async (accept: boolean = false, msg:string = 
   throw new Error(desc);
 };
 
+
+//2021年8月24日09:57:46   zwc   搜索群成员
+export const searchGroupPendency = async (groupid: Array<string> , keyword: Array<string>, field: Array<number>): Promise<any> => {
+  const { data } = await timRenderInstance.TIMGroupSearchGroupMembers({
+    searchParams:{ 
+      "group_search_member_params_groupid_list" : groupid,
+      "group_search_member_params_keyword_list" : keyword,
+      "group_search_member_params_field_list" : field
+     }
+  });
+  console.log("data", data);
+  const { code, desc, json_param} = data;
+  if (code === 0) {
+    return JSON.parse(json_param);
+  }
+  throw new Error(desc);
+};
+
+
+
 export const quitGroup = async (groupId: string): Promise<any> => {
   const { data } = await timRenderInstance.TIMGroupQuit({ groupId });
   const { code, desc } = data;
