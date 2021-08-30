@@ -5,24 +5,30 @@ let appWindow = null;
 
 let feedUrl = '';//http://oaim.crbank.com.cn:30003/_download/
 const env = process?.env?.NODE_ENV?.trim()
+//let env = 'prod'
 //判断系统位数
-let agent = navigator.userAgent.toLowerCase();
+// let agent = navigator?.userAgent?.toLowerCase();
 // let isMac = function() {
 //     return /macintosh|mac os x/i.test(navigator.userAgent);
 // }();
 //  const env = 'prod'
-if (env === 'development' || env === 'test') {
-    if (agent.indexOf("win32") >= 0 || agent.indexOf("wow32") >= 0) {
-        feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download_32/'
-    }else if (agent.indexOf("win64") >= 0 || agent.indexOf("wow64") >= 0) {
-        feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download_64/'
-    }
-}else{
-    if (agent.indexOf("win32") >= 0 || agent.indexOf("wow32") >= 0) {
-        feedUrl = 'http://oaim.crbank.com.cn:30003/_download_32/'
-    }else if (agent.indexOf("win64") >= 0 || agent.indexOf("wow64") >= 0) {
-        feedUrl = 'http://oaim.crbank.com.cn:30003/_download_64/'
-    }
+// if (env === 'development' || env === 'test') {
+//     if (agent.indexOf("win32") >= 0 || agent.indexOf("wow32") >= 0) {
+//         feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download_32/'
+//     }else if (agent.indexOf("win64") >= 0 || agent.indexOf("wow64") >= 0) {
+//         feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download_64/'
+//     }
+// }else{
+//     if (agent.indexOf("win32") >= 0 || agent.indexOf("wow32") >= 0) {
+//         feedUrl = 'http://oaim.crbank.com.cn:30003/_download_32/'
+//     }else if (agent.indexOf("win64") >= 0 || agent.indexOf("wow64") >= 0) {
+//         feedUrl = 'http://oaim.crbank.com.cn:30003/_download_64/'
+//     }
+// }
+if (env === 'dev' || env === 'test') {
+    feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download_32/'
+  }else{
+    feedUrl = 'http://oaim.crbank.com.cn:30003/_download_32/'
 }
 
 const sendUpdateMessage = (message, data) => {
@@ -34,6 +40,7 @@ const sendUpdateMessage = (message, data) => {
 
 
 const checkForUpdates = () => {
+    console.log('feedUrl',feedUrl)
     autoUpdater.setFeedURL(feedUrl);
 
     autoUpdater.on("error", function (message) {
