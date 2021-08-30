@@ -7,7 +7,7 @@ import './index.scss'
 import "cropperjs/dist/cropper.css"
 import { dataURLtoBlob, convertBase64UrlToBlob } from '../../utils/tools'
 import { SDKAPPID } from '../../constants/index'
-import { TIM_BASE_URL } from '../../constants/index'
+import getHuaRunConfig from '../../constants/index'
 
 const imgStyle = { width: '60px', height: '60px', cursor: 'pointer' }
 
@@ -133,26 +133,26 @@ const ImgCropper = (prop: ImgCropperProp): JSX.Element => {
   const handleUpload = (base64Data) => {
     return new Promise((resolve, reject) => {
       setUploading(true)
-      axios.post(`${TIM_BASE_URL}/huarun/im_cos_msg/pre_sig`, {
+      axios.post(`${getHuaRunConfig.TIM_BASE_URL}/huarun/im_cos_msg/pre_sig`, {
         sdkappid: SDKAPPID,
         uid: uid,
         userSig: userSig,
         file_type: 1,
-        file_name: 'headUrl/' + fileObj.name,
+        file_name: 'headUrl/' + localStorage.getItem("uid")+new Date().getTime() +fileObj.name,
         Duration: 900,
         upload_method: 0,
       }).then(res => {
         if (res.data.error_code === 0) {
           console.log(res)
-          const { download_url } = res.data
+          const { upload_url } = res.data
           let fr = new FileReader();
           fr.readAsDataURL(fileObj);
           fr.addEventListener(
             "load",
             () => {
-              axios.put(download_url, convertBase64UrlToBlob(base64Data)).then((response) => {
-                const { download_url } = res.data
-                setVal(download_url)
+              axios.put(upload_url, convertBase64UrlToBlob(base64Data)).then((response) => {
+                const { upload_url } = res.data
+                setVal(upload_url)
                 setImgUrl('')
                 resolve(res.data)
                 message.success({

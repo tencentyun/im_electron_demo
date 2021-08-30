@@ -1,4 +1,4 @@
-const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW,END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
+const { CLOSE, SDK_APP_ID, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN,CHECK_FILE_EXIST, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE } = require("./const/const");
 const { ipcMain, BrowserWindow, dialog } = require('electron')
 const { screen } = require('electron')
 const fs = require('fs')
@@ -13,7 +13,7 @@ const FFmpeg = require("fluent-ffmpeg")
 const sizeOf = require('image-size')
 const FileType = require('file-type')
 const ffprobe = require('ffprobe-static');
-
+const os = require('os')
 const getSrceenSize = () => {
     const display = screen.getPrimaryDisplay();
 
@@ -31,11 +31,20 @@ class IPC {
     win = null;
     callWindow = null; // 通话窗口
     imWindowEvent = null; // 聊天窗口
-    constructor(win){
-        const env = process.env?.NODE_ENV?.trim();
+    constructor(win) {
+        const env =  process.env?.NODE_ENV?.trim();;
         const isDev = env === 'development';
         setPath(isDev);
         this.win = win;
+        ipcMain.handle(RENDERPROCESSCALL, async (event, data) => {
+            const { type, params } = data;
+            console.log("get message from render process", event.processId, data)
+            switch (type) {
+                case CHECK_FILE_EXIST:
+                    return await this.checkFileExist(params);
+            }
+            
+        })
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             console.log("get message from render process", event.processId, data)
             const { type, params } = data;
@@ -61,6 +70,7 @@ class IPC {
                 case SELECT_FILES:
                     this.selectFiles(event, params);
                     break;
+                
             }
         });
 
@@ -68,14 +78,24 @@ class IPC {
         this.createNewWindow(isDev);
         this.eventListiner(isDev);
     }
-
-    eventListiner (isDev) {
+    async checkFileExist(path){
+        return new Promise((resolve)=>{
+            fs.access(path,(err=>{
+                if(err){
+                    resolve(false)
+                }else{
+                    resolve(true)
+                }
+            }))
+        })
+    }
+    eventListiner(isDev) {
         const screenSize = getSrceenSize();
         // 当作为接收方，接受电话后，更改窗口尺寸。
         ipcMain.on('accept-call', (event, acceptParams) => {
             // 向聊天窗口通信
             const { inviteID, isVoiceCall } = acceptParams;
-            this.imWindowEvent.reply('accept-call-reply',inviteID);
+            this.imWindowEvent.reply('accept-call-reply', inviteID);
             const windowWidth = isVoiceCall ? 450 : 800;
             const windowHeight = isVoiceCall ? 800 : 600;
 
@@ -87,17 +107,17 @@ class IPC {
         });
 
         // 当作为接收方，挂断电话，关闭窗口
-        ipcMain.on('refuse-call', (event,inviteID) => {
+        ipcMain.on('refuse-call', (event, inviteID) => {
             this.callWindow.close();
             // 向聊天窗口通信
-            this.imWindowEvent.reply('refuse-call-reply',inviteID);
+            this.imWindowEvent.reply('refuse-call-reply', inviteID);
         });
 
         // 当接受方拒绝通话后，调用该方法可关闭窗口，并退出房间
         ipcMain.on(CLOSE_CALL_WINDOW, () => {
             this.callWindow.webContents.send('exit-room');
         });
-        ipcMain.on(END_CALL_WINDOW,()=>{
+        ipcMain.on(END_CALL_WINDOW, () => {
             this.callWindow.close()
         })
         // 远端用户进入
@@ -128,17 +148,16 @@ class IPC {
             }
             const params = JSON.stringify(addSdkAppid);
             const { convInfo: { convType }, callType } = data;
-            if(data.windowType === 'notificationWindow') {
+            if (data.windowType === 'notificationWindow') {
                 this.callWindow.setSize(320, 150);
                 this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
-            } else if( convType === 1 && Number(callType) === 1) {
+            } else if (convType === 1 && Number(callType) === 1) {
                 this.callWindow.setSize(450, 800);
                 this.callWindow.setPosition(Math.floor((screenSize.width - 450) / 2), Math.floor((screenSize.height - 800) / 2));
             }
             this.callWindow.show();
             this.callWindow.webContents.send('pass-call-data', params);
             isDev && this.callWindow.webContents.openDevTools();
-
             this.callWindow.on('close', () => {
                 event.reply(CALL_WINDOW_CLOSE_REPLY);
                 this.createNewWindow(isDev);
@@ -146,13 +165,13 @@ class IPC {
         })
     }
 
-    createNewWindow (isDev) {
+    createNewWindow(isDev) {
         const callWindow = new BrowserWindow({
             height: 600,
             width: 800,
             show: false,
             frame: false,
-            resizable:false,
+            resizable: false,
             webPreferences: {
                 parent: this.win,
                 webSecurity: true,
@@ -177,41 +196,61 @@ class IPC {
 
         this.callWindow = callWindow;
     }
-    minsizewin () {
+    minsizewin() {
         this.win.minimize()
     }
-    maxsizewin () {
+    maxsizewin() {
         this.win.isMaximized() ? this.win.unmaximize() : this.win.maximize()
     }
-    close () {
+    close() {
         this.win.close()
     }
-    showDialog () {
-        child_process.exec(`start "" ${path.resolve(process.cwd(), './download/')}`);
+    showDialog() {
+        child_process.exec(`start "" ${path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')}`);
     }
-    downloadFilesByUrl (file_url) {
-        const cwd = process.cwd();
-        const downloadDicPath = path.resolve(cwd, './download/')
-        if (!fs.existsSync(downloadDicPath)) {
-            fs.mkdirSync(downloadDicPath)
+    mkdirsSync(dirname) {
+        if (fs.existsSync(dirname)) {
+            return true;
+        } else {
+            if (this.mkdirsSync(path.dirname(dirname))) {
+                fs.mkdirSync(dirname);
+                return true;
+            }
         }
-        console.log(22333)
-        console.log(file_url)
-        const file_name = url.parse(file_url).pathname.split('/').pop()
-        const file_path = path.resolve(downloadDicPath, file_name)
-        const file_path_temp =  `${file_path}.tmp`
-        if (!fs.existsSync(file_path)) {
+    }
+    downloadFilesByUrl({ url:file_url,name }) {
+        try {
+            const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
+            this.mkdirsSync(downloadDicPath)
+            let file_name
+            let file_path
+            let file_path_temp
+            try {
+                file_name = name
+                file_path = path.resolve(downloadDicPath, file_name)
+                file_path_temp = `${file_path}.tmp`
+            } catch (err) {
 
-            //创建写入流
-            const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
-                console.error('error==>', e)
-            }).on('ready', function () {
-                console.log("开始下载:", file_url);
-            }).on('finish', function () {
-                //下载完成后重命名文件
-                fs.renameSync(file_path_temp, file_path);
-                console.log('文件下载完成:', file_path);
+            }
+            if (!file_name || !file_path || !file_path_temp) {
+                return
+            }
+            if (!fs.existsSync(file_path)) {
 
+                //创建写入流
+                const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
+                    console.error('error==>', e)
+                }).on('ready', function () {
+                    console.log("开始下载:", file_url);
+                }).on('finish', function () {
+                    try {
+                        //下载完成后重命名文件
+                        fs.renameSync(file_path_temp, file_path);
+                        console.log('文件下载完成:', file_path);
+                    } catch (err) {
+
+                    }
+                });
                 //请求文件
                 fetch(file_url, {
                     method: 'GET',
@@ -235,14 +274,15 @@ class IPC {
                     //自定义异常处理
                     console.log(e);
                 });
-            });
-
-        } else {
-            // 已存在
-            console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+            } else {
+                // 已存在
+                console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+            }
+        } catch (err) {
+            console.log('下载文件失败，请稍后重试。', err)
         }
     }
-    async _getVideoInfo (event, filePath) {
+    async _getVideoInfo(event, filePath) {
         let videoDuration, videoSize
         const screenshotName = path.basename(filePath).split('.').shift() + '.png'
         const screenshotPath = path.resolve(DOWNLOAD_PATH, screenshotName)
@@ -266,7 +306,6 @@ class IPC {
                             screenshotSize: size,
                         })
                     })
-
                     .on('error', (err, info) => {
                         event.reply('main-process-error', err);
                         reject(err)
@@ -290,7 +329,7 @@ class IPC {
             }
         })
     }
-    async _getImageInfo (path) {
+    async _getImageInfo(path) {
         const { width, height, type } = await sizeOf(path)
         const { size } = fs.statSync(path)
         return {
@@ -298,13 +337,13 @@ class IPC {
         }
     }
 
-    async getVideoInfo (event, params) {
+    async getVideoInfo(event, params) {
         const { path } = params;
         const data = await this._getVideoInfo(event, path)
         event.reply(GET_FILE_INFO_CALLBACK, { triggerType: GET_VIDEO_INFO, data })
     }
 
-    async selectFiles (event, params) {
+    async selectFiles(event, params) {
         const { extensions, fileType, multiSelections } = params
         const [filePath] = dialog.showOpenDialogSync(this.win, {
             properties: ['openFile'],
@@ -322,8 +361,6 @@ class IPC {
             name,
             type
         };
-        console.log(data)
-        console.log(11223344)
         if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v))) {
             const fileContent = await fs.readFileSync(filePath);
             data.fileContent = fileContent;

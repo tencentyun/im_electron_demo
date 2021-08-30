@@ -126,8 +126,6 @@ export const Avatar: FC<AvatarProps> = ({ size = 'default', url: avatar, extralC
     }
 
     const handleOpen = () => {
-        console.log(url)
-        console.log(previewVvatar(url, 200))
         if (!url) return
         dispatch(setImgViewerAction({
             isShow: true,

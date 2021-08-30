@@ -21,12 +21,12 @@ import {
 } from '../../utils/messageUtils'
 import { Avatar } from '../../components/avatar/avatar';
 import TextElemItem from './messageElemTyps/textElemItem';
-import PicElemItem from './messageElemTyps/picElemItem';
+import PicElemItem  from './messageElemTyps/picElemItem';
 import CustomElem from './messageElemTyps/customElem';
 import VoiceElem from './messageElemTyps/voiceElem';
 import FileElem from './messageElemTyps/fileElem';
 import GroupTipsElemItem from './messageElemTyps/grouptipsElem';
-import { VideoElem } from './messageElemTyps/videoElem';
+import VideoElem from './messageElemTyps/videoElem';
 import MergeElem from './messageElemTyps/mergeElem';
 import { Expression } from './messageElemTyps/expression';
 import { ForwardPopup } from './components/forwardPopup';
@@ -54,7 +54,8 @@ type Props = {
     convId: string;
 }
 
-const RIGHT_CLICK_MENU_LIST = [{
+const RIGHT_CLICK_MENU_LIST = [
+{
     id: 'revoke',
     text: '撤回'
 },
@@ -69,6 +70,10 @@ const RIGHT_CLICK_MENU_LIST = [{
 {
     id: 'transimit',
     text: '转发'
+},
+{
+    id: 'fileSave',
+    text: '另存为'
 },
 // {
 //     id: 'reply',
@@ -176,6 +181,11 @@ export const MessageView = (props: Props): JSX.Element => {
             setPercent('0%')
         }
     }, [percent])
+
+    useEffect(() => {
+        setSeletedMessage([]);
+        setMultiSelect(false);
+    }, [convId]);
     const getNewGroupInfo = () => {
         let newGroupInfo: any = localStorage.getItem('newGroupInfo')
         newGroupInfo = newGroupInfo ? JSON.parse(newGroupInfo) : []
@@ -267,6 +277,19 @@ export const MessageView = (props: Props): JSX.Element => {
         setSeletedMessage([message])
     }
 
+    const handleFileSave = (params) => {
+        console.log("文件另存为", params)
+        if(params.message &&  params.message.message_elem_array){
+            const  fileUrl =  params.message.message_elem_array[0]
+            if(fileUrl.image_elem_large_url || fileUrl.file_elem_url || fileUrl.video_elem_video_url){
+                ipcRenderer.send('fileSave', {
+                    url: fileUrl.image_elem_large_url || fileUrl.file_elem_url || fileUrl.video_elem_video_url,
+                    name: fileUrl.image_elem_orig_id || fileUrl.file_elem_file_name || fileUrl.video_elem_video_id
+                })
+            }
+        }
+    }
+
     const handleReplyMsg = (params) => {
         const { message } = params;
         const { message_sender, message_sender_profile } = message
@@ -349,6 +372,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 messageIdArray: messageList
             }));
             setMultiSelect(false);
+            setSeletedMessage([]);
         } else {
             message.warning({content: '删除消息失败'})
         }
@@ -384,6 +408,9 @@ export const MessageView = (props: Props): JSX.Element => {
                 break;
             case 'transimit':
                 handleTransimitMsg(data);
+                break;
+            case 'fileSave':
+                handleFileSave(data);
                 break;
             case 'reply':
                 handleReplyMsg(data);
@@ -504,13 +531,15 @@ export const MessageView = (props: Props): JSX.Element => {
     // console.warn('查看当前会话所有消息',messageList)
     const getMenuItemData = () => {
         const { elem_type, custom_elem_data = '', text_elem_content } = currMenuMessage.message_elem_array[0];
+        
         // elemtype:1图片, 3 自定义消息为CUST_EMOJI类型
         const isEmoji = elem_type === 1 || onIsCustEmoji(elem_type, custom_elem_data) || onIsIncludeImg(elem_type, text_elem_content)
         const message_is_from_self = currMenuMessage.message_is_from_self
         let menuData = RIGHT_CLICK_MENU_LIST
-        if (elem_type !== 4) {
+        if ((elem_type !== 4 && elem_type !== 9) && !isEmoji) {
             // 非文件过滤打开文件夹按钮
-            menuData = menuData.filter(item => item.id !== 'openFile')
+            menuData = menuData.filter(item =>  item.id !== 'fileSave')
+            menuData = menuData.filter(item =>  item.id !== 'openFile')
         }
         if (!isEmoji) {
             // 过滤添加到表情MenuItem
@@ -596,7 +625,11 @@ export const MessageView = (props: Props): JSX.Element => {
                 imgs: imgsUrl
             }))
         }
+    }
 
+    const handleCloseForwardModal = () => {
+        setMultiSelect(false);
+        setSeletedMessage([]);
     }
     return (
 
@@ -663,7 +696,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                                     </div>
                                                 }
                                             >
-                                                <span style={{ display: 'none' }}>占位{user_profile_face_url}</span><Avatar url={user_profile_face_url} isClick={false} size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
+                                                <span style={{ display: 'none' }}>占位</span><Avatar url={user_profile_face_url} isClick={false}  key={user_profile_face_url}  size="small" nickName={user_profile_nick_name} userID={user_profile_identifier} />
                                             </Bubble>
                                         </div>
                                         {
@@ -673,7 +706,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                                         {
                                                             //群里会话列表添加名称  zwc
                                                             item.message_conv_type === 2 && <div className="message-view__nick_name">
-                                                                {item?.message_sender_group_member_info.group_member_info_name_card || item.message_sender_profile.user_profile_nick_name}
+                                                                {item.message_sender_profile.user_profile_nick_name}
                                                             </div>
                                                         }
                                                         <div onClick={handleImgMsgClick.bind(this, elment, messageList)} key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
@@ -712,7 +745,7 @@ export const MessageView = (props: Props): JSX.Element => {
             {
                 isMultiSelect &&
                 <div className="forward-type-popup">
-                    <Icon type="close" className="forward-type-popup__close" onClick={() => setMultiSelect(false)} />
+                    <Icon type="close" className="forward-type-popup__close" onClick={handleCloseForwardModal} />
                     <div className="forward-type-popup__combine" onClick={() => handleForwardTypePopup(ForwardType.combine)}>
                         <p>合并转发</p>
                     </div>
@@ -727,4 +760,4 @@ export const MessageView = (props: Props): JSX.Element => {
             <div className={`showMore ${noMore ? 'no-more' : ''}`} onClick={getMoreMsg}>{noMore ? '没有更多了' : '查看更多'}</div>
         </div>
     )
-};
+}

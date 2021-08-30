@@ -3,13 +3,13 @@ import React, { useEffect } from "react";
 import { downloadFilesByUrl } from "../../../utils/tools";
 import withMemo from "../../../utils/componentWithMemo";
 import path from 'path'
-
+import os from 'os'
 const PicElemItem = (props: any): JSX.Element => {
+    console.log("图片资源",props)
     const showPic = () => {
         try {
-            const imageName = props.image_elem_orig_id.split('_').pop()
-            const p = path.resolve(process.cwd() + '/download/' + imageName)
-            console.log(p)
+            const imageName = props.image_elem_orig_id
+            const p = path.resolve(os.homedir(), 'Download/','HuaRunIM/' + imageName)
             shell.openPath(p)
         } catch(e) {}
     }
@@ -21,13 +21,13 @@ const PicElemItem = (props: any): JSX.Element => {
             </div>
         )
     };
-    const downloadPic = (url) => {
-        downloadFilesByUrl(url)
+    const downloadPic = (url,name) => {
+        downloadFilesByUrl(url,name)
     }
     const savePic = () => {
         // 大图、原图、缩略图
-        const { image_elem_orig_url } = props;
-        image_elem_orig_url && downloadPic(image_elem_orig_url)
+        const { image_elem_orig_url ,image_elem_orig_id} = props;
+        image_elem_orig_url && downloadPic(image_elem_orig_url,image_elem_orig_id)
     }
     useEffect(() => {
         savePic()

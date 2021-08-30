@@ -1,5 +1,6 @@
 import { HISTORY_MESSAGE_COUNT } from "../../constants";
 import timRenderInstance from "../../utils/timRenderInstance";
+import { sortBy } from 'lodash';
 
 type SendMsgParams<T> = {
   convId: string;
@@ -83,6 +84,7 @@ type MemberInfo = {
   group_get_memeber_info_list_result_info_array: {
     group_member_info_identifier: string;
   }[];
+  group_get_memeber_info_list_result_next_seq: number;
 };
 
 
@@ -448,6 +450,8 @@ export const inviteMemberGroup = async (params: {
 
 export const searchTextMessage = async (params: {
   keyWords: string;
+  convId?: string;
+  convType?: number;
 }): Promise<any> => {
   const {
     data: { json_params },
@@ -455,6 +459,8 @@ export const searchTextMessage = async (params: {
     params: {
       msg_search_param_keyword_array: [params.keyWords],
       msg_search_param_message_type_array: [0],
+      msg_search_param_conv_id: params.convId,
+      msg_search_param_conv_type: params.convType
     },
     user_data: "123",
   });
@@ -494,13 +500,17 @@ export const searchFriends = async (params: {
 
 export const getGroupMemberList = async (params: {
   groupId: string;
-  nextSeq: number;
+  nextSeq?: number;
   userIds?: string[];
+  role?: number
 }): Promise<MemberInfo> => {
-  const { groupId, userIds, nextSeq } = params;
+  const { groupId, userIds, nextSeq,role=0x00 } = params;
   const queryParams: any = {
     group_get_members_info_list_param_group_id: groupId,
-    group_get_members_info_list_param_next_seq: nextSeq
+    group_get_members_info_list_param_next_seq: nextSeq,
+    group_get_members_info_list_param_option:{
+      group_member_get_info_option_role_flag: role
+    }
   };
 
   if (userIds && userIds?.length) {
@@ -518,8 +528,23 @@ export const getGroupMemberList = async (params: {
   return {} as any;
 };
 
+export const getAllGroupMemberList = async ({groupId, seq, resultArray}) : Promise<{
+  group_member_info_identifier: string;
+}[]> => {
+  const res = await getGroupMemberList({groupId, nextSeq: seq});
+  const {
+    group_get_memeber_info_list_result_info_array: userList,
+    group_get_memeber_info_list_result_next_seq: newNextSeq,
+  } = res;
+  if(newNextSeq !== 0) return getAllGroupMemberList({groupId, seq: newNextSeq, resultArray: [...resultArray, ...userList]});
+  const allMemberList = [...resultArray, ...userList];
+  return sortBy(allMemberList, (item) => -item.group_member_info_member_role);
+}
+
 export const getGroupMemberInfoList = async (params: {
   groupId: string;
+  nextSeq: number;
+  userIds?: string[];
 }): Promise<any> => {
   try {
     const { groupId, nextSeq, userIds } = params;
@@ -538,7 +563,7 @@ export const getGroupMemberInfoList = async (params: {
       });
       return { userList, nextSeq: seq };
     }
-  } catch (e) {
+  } catch (e) {   
     console.log(e);
   }
 };

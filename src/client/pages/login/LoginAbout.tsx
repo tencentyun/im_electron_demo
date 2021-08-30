@@ -20,14 +20,14 @@ export const LoginAbout = (): JSX.Element => {
                 <span className="login-about__header--logo" />
                 <span className="login-about__header--tc-text">华润银行</span>
                 <span className='login-about__header--split' />
-                <span className='login-about__header--im-text'> 即时通信</span>
+                <span className='login-about__header--im-text'>员工工作平台</span>
             </section>
             <section className="login-about__text">
                 <p>
                     企业数字化转型的通信助手
                 </p>
                 <p>
-                    简单接入，稳定必答、覆盖全球的即时通信云服务
+                    简单接入，稳定必达、覆盖全球的即时通信云服务
                 </p>
             </section>
             <section className="login-about__logo" >

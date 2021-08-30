@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { remote } from 'electron';
 import {
-    TRTCAppScene,
-    TRTCParams,
+    TRTCAppScene, 
+    TRTCParams, 
     TRTCVideoEncParam,
     TRTCVideoResolution,
     TRTCVideoResolutionMode,
@@ -20,7 +20,7 @@ import './call-content.scss';
 
 export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, userSig, sdkAppid, callType, inviteListWithInfo }) => {
     console.log('==============call window params=================', roomId, inviteID, inviteList, sdkAppid, userSig, callType, inviteListWithInfo);
-    const [isStart, setStartStatus] = useState(false);
+    const [ isStart, setStartStatus ] = useState(false);
     const convType = convInfo.convType;
     const isC2CCall = convType === 1; // 1: c2c, 2: 群聊
     const isVideoCall = callType === 2; // 1: 语音通话, 2: 视频通话
@@ -39,7 +39,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
         trtcInstance.on('onExitRoom', onExitRoom);
         trtcInstance.on('onRemoteUserEnterRoom', onRemoteUserEnterRoom);
         trtcInstance.on('onRemoteUserLeaveRoom', onRemoteUserLeaveRoom);
-        isVideoCall && setVideoParams();
+        isVideoCall && setVideoParams(); 
         enterRoom();
     }
 
@@ -67,7 +67,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     }
 
     useEffect(() => {
-        if (userId) {
+        if(userId) {
             startVideo();
         }
     }, [userId]);
@@ -95,12 +95,11 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
         trtcInstance.exitRoom();
     }
 
-    const handleExitRoom = () => {
-        console.log('handleExitRoom', '111111111111111111')
+    const handleExitRoom =() => {
         !isStart && eventListiner.cancelCall(inviteID); //挂断逻辑
         exitRoom();
     }
-
+     
     return <div className="call-content">
        <header className="call-content__header">
            <CallTime isStart={isStart} prefix={"通话时间: "} />
@@ -110,6 +109,6 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
        </section>
        <footer className="call-content__footer">
             <CallFooter isVideoCall={isVideoCall} toggleVideo={toggleVideo} toggleVoice={toggleVoice} exitRoom={handleExitRoom} />
-        </footer>
+       </footer>
     </div>
 };

@@ -34,15 +34,16 @@ let trayIcon = nativeImage.createFromPath(
 let forceQuit = false;
 const downloadUrl = app.getPath("downloads");
 const progressStream = require("progress-stream");
+const env = 'development'
 let ipc;
 new TimMain({
   sdkappid: 1400529075
   // sdkappid: SDK_APP_ID
 });
 
-crashReporter.start({
-  uploadToServer: false
-})
+// crashReporter.start({
+//   submitURL: 'http://oaim.uat.crbank.com.cn:30002/huarun/report',
+// })
 
 // 设置系统托盘
 const setAppTray = () => {
@@ -87,7 +88,7 @@ const setAppTray = () => {
 let appTray;
 let appWindow;
 let toggle = false;
-function createWindow () {
+function createWindow() {
   // Create the browser window.
   Menu.setApplicationMenu(null);
   let mainWindow = new BrowserWindow({
@@ -109,10 +110,10 @@ function createWindow () {
   // mainWindow.webContents.send("SENDSTORE", store.get("sendType") || "0");
 
   mainWindow.once("ready-to-show", () => {
-    mainWindow.setTitle("华润银行即时通讯（内测版）");
+    mainWindow.setTitle("员工工作平台");
     mainWindow.show();
     if (!ipc) ipc = new IPC(mainWindow);
-    app.setAppUserModelId("华润银行即时通讯（内测版）");
+    app.setAppUserModelId("员工工作平台");
   });
   mainWindow.on("close", function (e) {
     if (!forceQuit && appWindow && app) {
@@ -165,6 +166,7 @@ function createWindow () {
       mainWindow.webContents.send("mainProcessMessage", false);
     }
   })
+
   if (process.env?.NODE_ENV?.trim() === 'development') {
     mainWindow.loadURL(`http://localhost:3000`);
     // 打开调试工具
@@ -278,6 +280,19 @@ function createWindow () {
     );
   });
 
+  ipcMain.on("STORE_SCREENSHOT_TO_LOCAL", (event, file) => {
+    const url = downloadUrl + "\\screenShot.png";
+    let pngs = clipboard.readImage().toPNG();
+    fs.writeFile(url, pngs, (err) => {
+      fs.readFile(url, (err, data) => {
+        event.reply("STORE_SCREENSHOT_TO_LOCAL_REPLY", {
+          data,
+          url,
+        });
+      });
+    });
+  });
+
   // 接受截图事件
   ipcMain.on("SCREENSHOT", function () {
     //news 是自定义的命令 ，只要与页面发过来的命令名字统一就可以
@@ -304,6 +319,16 @@ function createWindow () {
   //   console.log(data, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
   //   mainWindow.webContents.send('UPLOADPROGRESS', data)
   // })
+
+  //文件另存成
+  ipcMain.on("fileSave", function (event, {
+    url,
+    name
+  }) {
+    console.log("文件另存成原地址", url)
+    mainWindow.webContents.downloadURL(url)
+  })
+
   // 打开文件
   ipcMain.on("openfilenow", function (event, file) {
     //console.log("123", file);
@@ -381,7 +406,7 @@ function createWindow () {
 }
 
 let timer;
-function changeWindow () {
+function changeWindow() {
   if (appWindow) {
     // 设置大小
     appWindow.setSize(1000, 650);
@@ -391,7 +416,7 @@ function changeWindow () {
     appWindow.setResizable(true);
   }
 }
-function reSizeWindow () {
+function reSizeWindow() {
   if (appWindow) {
     // 设置大小
     appWindow.setSize(460, 358);
@@ -401,7 +426,7 @@ function reSizeWindow () {
     appWindow.setResizable(false);
   }
 }
-function trayFlash () {
+function trayFlash() {
   if (appTray) {
     hasFlash = true;
 
@@ -416,14 +441,14 @@ function trayFlash () {
   }
 }
 
-function openWindow () {
+function openWindow() {
   if (appWindow) {
     appWindow.show();
   }
 }
 let num = 0;
 let hasFlash = false;
-function setTaryTitle () {
+function setTaryTitle() {
   num++;
   appTray.setTitle(num === 0 ? "" : `${num}`);
   appWindow.flashFrame(true);

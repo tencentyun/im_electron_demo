@@ -11,6 +11,8 @@ import { clearConversation } from '../../store/actions/conversation'
 import { clearHistory } from '../../store/actions/message';
 
 const { ipcRenderer } = require("electron");
+
+import { version, description} from '../../../../package.json'
 export const AccountSetting = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -31,7 +33,6 @@ export const AccountSetting = (): JSX.Element => {
 
   useEffect(() => {
     const initVal = window.localStorage.getItem('msgBother') == 'true' ? true : false
-    console.log(111111111111111, initVal)
     setMsgBother(initVal)
   }, [])
   loadFileMsg();
@@ -53,9 +54,13 @@ export const AccountSetting = (): JSX.Element => {
       </header>
       <section className="connet-section">
         <div className="setting-content">
+        <div className="setting-item">
+            <span>版本名称</span>
+            <span>{description}</span>
+          </div>
           <div className="setting-item">
             <span>版本信息</span>
-            <span>0.0.1</span>
+            <span>{version}</span>
           </div>
           <div className="setting-item">
             <span>版权所有</span>

@@ -44,9 +44,7 @@
 
   &--table {
     & .tea-table__body {
-      padding: 20px;
       border: 0;
-
       overflow-y: overlay !important;
       overflow-x: hidden;
 
@@ -87,7 +85,8 @@
     display: flex;
     align-items: center;
     position: relative;
-
+    height: 60px;
+    padding:0px 20px;
     &-type {
       display: inline-block;
       width: 10px;

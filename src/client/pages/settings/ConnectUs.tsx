@@ -23,14 +23,14 @@ export const ConnectUs = (): JSX.Element => {
             <section className="connet-section">
                 <div className="connect-section--title">
                     <span className="tencent-cloud-logo"></span>
-                    <span className="tencent-cloud-name im">即时通信</span>
+                    <span className="tencent-cloud-name im">员工工作平台</span>
                 </div>
                 <div className="connect-desc">
                     <p>
                         企业数字化转型的通信助手
                     </p>
                     <p>
-                        简单接入，稳定必答、覆盖全球的即时通信云服务
+                        简单接入，稳定必达、覆盖全球的即时通信云服务
                     </p>
                 </div>
                 <div className="im-logo"></div>

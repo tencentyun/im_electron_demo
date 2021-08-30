@@ -13,7 +13,7 @@ import {
     animation
 } from 'react-contexify';
 import { emojiMap, emojiName } from '../emoji-map'
-import { EMOJIURL } from '../../../constants/index'
+import getHuaRunConfig from '../../../constants/index'
 import { getCustEmoji, custEmojiUpsert } from '../../../services/custEmoji'
 import type { getCustEmojiType, custEmojiUpsertParams } from '../../../services/custEmoji'
 import { message, StatusTip } from 'tea-component';
@@ -141,7 +141,7 @@ export const EmojiPopup: FC<EmojiPopupProps> = ({ callback }): JSX.Element => {
                 !isShowCustEmoji && <div className="emojis emojis-default">
                     {
                         emojiName.map((v, i) => <span key={i} onClick={() => callback(v)}>
-                            < img src={EMOJIURL + emojiMap[v]} />
+                            < img src={getHuaRunConfig.EMOJIURL + emojiMap[v]} />
                         </span>)
                     }
                 </div>

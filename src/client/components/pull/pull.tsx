@@ -211,7 +211,6 @@ export const AddGroupMemberDialog = (props: {
   }
 
   const callbackPersonnel = (refData: any) => {
-    console.log("人员列表", refData)
     //填充人员
     let filterSearch = searchList.filter(item => item.search)
     for (const iterator of filterSearch) {

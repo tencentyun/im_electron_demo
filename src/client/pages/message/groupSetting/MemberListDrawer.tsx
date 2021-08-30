@@ -2,15 +2,18 @@ import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
 import { Avatar } from "../../../components/avatar/avatar";
 import { Drawer, H3, Table, SearchBox } from "tea-component";
 import { isWin, throttle, highlightText } from "../../../utils/tools";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useMessageDirect } from '../../../utils/react-use/useDirectMsgPage';
 import { GroupMemberBubble } from "./GroupMemberBubble";
 import "./member-list-drawer.scss";
-
+import { getGroupMemberList } from "../api";
+import _ from 'lodash';
 const { scrollable } = Table.addons;
 
 export interface GroupMemberListDrawerRecordsType {
   memberList: any[];
+  groupId: string;
+  To_Account: string
 }
 
 export type userTypeData = {
@@ -22,93 +25,39 @@ export const GroupMemberListDrawer = (props: {
   onSuccess?: () => void;
   popupContainer?: HTMLElement;
   dialogRef: DialogRef<GroupMemberListDrawerRecordsType>;
-  userGroupType: Array<userTypeData>
 }): JSX.Element => {
-  const height = window.innerHeight - 77 - (isWin() ? 24 : 0);
-
-  const { dialogRef, popupContainer, userGroupType } = props;
+  const height = window.innerHeight - 77 - (isWin() ? 30 : 0);
+  const { dialogRef, popupContainer } = props;
 
   const [visible, setShowState, defaultForm] =
     useDialog<GroupMemberListDrawerRecordsType>(dialogRef, {});
 
-  const [searchData, setSearchData] = useState(defaultForm.memberList)
-  const [searchText, setSearchText] = useState('') // 搜索文本
-
-  useEffect(() => {
-    setSearchData(defaultForm.memberList)
-  }, [defaultForm])
+  const memberList = defaultForm.memberList;
 
   const onClose = () => {
     setShowState(false);
   };
-
-  const directToMsgPage = useMessageDirect();
-
-  // 双击与群成员建立单独会话
-  const handleMsgGroupRead = async (profile) => {
-    directToMsgPage({
-      convType: 1,
-      profile: profile,
-    })
-  };
-
-  const isOnInternet = (id)=>{
-    let buuer = false;
-    userGroupType.forEach(i=>{
-      if(i.To_Account === id && i.Status === 'Online'){
-        buuer = true 
-      }
-    })
-    return buuer
-  };
-
-  // 搜索
-  const onSearch = throttle((value) => {
-    setSearchText(value)
-    let dataList = defaultForm.memberList
-    if (value) {
-      dataList = dataList.filter(item => item.group_member_info_nick_name.includes(value) || item.group_member_info_identifier.includes(value))
-    }
-    setSearchData(dataList)
-  }, 400)
-
 
   const columns = [
     {
       header: "",
       key: "member",
       render: (record: any) => {
+        const isAdmin = record.group_member_info_member_role === 2;
         const isOwner = record.group_member_info_member_role === 3;
-        const isManage = record.group_member_info_member_role === 2;
+        const shouldShowTitle = isAdmin || isOwner;
         return (
-          <div className="member-list-drawer--item" onDoubleClick={() => { handleMsgGroupRead(record) }}>
-            <GroupMemberBubble
-              user={record}
-              children={
-                <>
-                  <Avatar
-                    key={ record.group_member_info_face_url }
-                    url={record.group_member_info_face_url}
-                    nickName={record.group_member_info_nick_name}
-                    userID={record.group_member_info_identifier}
-                  />
-                </>
-              }
+          <div className="member-list-drawer--item">
+            <Avatar
+              url={record.group_member_info_face_url}
+              nickName={record.group_member_info_nick_name}
+              userID={record.group_member_info_identifier}
             />
-            <span title={isOnInternet(record.group_member_info_identifier) ? '在线' : '离线'}
-                className={['member-list-drawer--item-type', !isOnInternet(record.group_member_info_identifier) ? 'member-list-drawer--item-typeoff' : ''].join(' ')}
-              >
-              </span>
-            <span
-              className="member-list-drawer--item__name"
-              dangerouslySetInnerHTML={{ __html: highlightText(searchText, record.group_member_info_nick_name || record.group_member_info_identifier)}}
-            >
+            <span className="member-list-drawer--item__name">
+              {record.group_member_info_nick_name || record.group_member_info_identifier}
             </span>
-            {isOwner && (
-              <span className="member-list-drawer--item__owner">群主</span>
-            )}
-            {isManage && (
-              <span className="member-list-drawer--item__owner">管理员</span>
+            {shouldShowTitle && (
+              <span className="member-list-drawer--item__owner">{ isOwner ? '群主' : '管理员'}</span>
             )}
           </div>
         );
@@ -128,18 +77,13 @@ export const GroupMemberListDrawer = (props: {
       popupContainer={popupContainer}
       onClose={onClose}
     >
-      {
-        defaultForm?.memberList?.length > 10 && <div className="member-list-search">
-        <SearchBox placeholder="请输入昵称" onChange={onSearch} onSearch={onSearch} onClear={() => onSearch('')} />
-      </div>
-      }
       <Table
         hideHeader
         disableHoverHighlight
         className="member-list-drawer--table"
         bordered={false}
         columns={columns}
-        records={JSON.parse(JSON.stringify((searchData || []))).reverse()}
+        records={memberList}
         addons={[
           scrollable({
             virtualizedOptions: {

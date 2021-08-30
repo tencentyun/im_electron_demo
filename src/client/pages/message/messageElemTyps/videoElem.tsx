@@ -1,42 +1,25 @@
-import React, { useRef, useEffect } from "react";
-import Dplayer from 'dplayer'
+import React from "react";
 
-const ininVideoPlayer = (props) => {
-    const videoDom = useRef()
-    const videoDomId = new Date().getTime().toString() + Math.floor(Math.random() * 1000).toString()
-    useEffect(() => {
-        const dom = document.getElementById(videoDomId)
-        if (dom) {
-            new Dplayer({
-                container: dom,
-                video: {
-                    url: props.video_elem_video_url
-                }
-            })
-        }
-    }, [videoDom])
+import withMemo from "../../../utils/componentWithMemo";
 
-    return (
-        <div style={{ margin: '-16px' }}>
-            <div ref={videoDom} id={videoDomId} style={{ width: '100%', display: 'inherit', maxHeight: '300px' }} className="message-video"></div>
-        </div>
-    )
-}
-
-export const VideoElem = (props: any): JSX.Element => {
+const VideoElem = (props: any): JSX.Element => {
+    const autoRate =  200 / props.video_elem_image_width;
+    
     const item = () => {
         return (
-            props.video_elem_video_duration ?
-            <div className="message-view__item--text text right-menu-item" style={{minWidth:'350px',maxWidth:'auto'}}>
+            <div className="message-view__item--text text right-menu-item" >
                 {
-                    ininVideoPlayer(props)
+                    <video style={{height: props.video_elem_image_height * autoRate, maxWidth: '100%'}} webkit-playsInline x-webkit-airplay="allow" playsInline preload="metadata" controls poster={props.video_elem_image_url} width={props.video_elem_image_width} height={props.video_elem_image_height}>
+                        <source src={props.video_elem_video_url}  />
+                    </video>
                 }
-                {/* <video controls poster={props.video_elem_image_url} width={props.video_elem_image_width} height={props.video_elem_image_height}>
-                    <source src={props.video_elem_video_url}  />
-                </video> */}
             </div>
-            : null
         )
     };
+    
+    
+    // console.log('视频消息',props)
     return item()
-}
+};
+
+export default withMemo(VideoElem);

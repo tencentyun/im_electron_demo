@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   font-family: PingFangSC-Regular, PingFang SC;
+  position: relative;
 }
 
 .dialog {
@@ -19,4 +20,23 @@
   flex: 1;
   justify-content: center;
   align-items: center;
+}
+.version {
+  position: absolute;
+  z-index: 1000000;
+  top: 10;
+  left: 10;
+}
+
+// 重写样式
+.search-message__tab .tea-tabs__tabitem {
+  margin-top: 0px !important;
+}
+.tea-input:disabled, .tea-textarea-group:disabled, .tea-textarea:disabled {
+  background-color: #fff;
+    border-color: #fff;
+    color: rgba(0, 0, 0, 0.25);
+    background-image: none;
+    cursor:  pointer;
+    border-radius: 12px;
 }

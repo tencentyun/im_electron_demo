@@ -13,7 +13,7 @@ import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
 import './message-input.scss';
 import { convertBase64UrlToBlob } from "../../utils/tools";
-import { SDKAPPID, TIM_BASE_URL } from '../../constants/index'
+import { SDKAPPID } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
 import { sendCustomMsg } from '../message/api'
 import { ipcRenderer, clipboard, nativeImage } from 'electron';
@@ -174,7 +174,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                     }
                     // setEditorState(ContentUtils.clear(editorState));
                 }
-                setEditorState(ContentUtils.clear(editorState));
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
@@ -190,9 +189,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
 
-    const setFile = async (file: File | { size: number; type: string; path: string; name: string; fileContent: string }) => {
-        console.log(file, '文件对象', typeof (file.fileContent))
-        const imageObj = JSON.parse(window.localStorage.getItem('imageObj'))
+    const setFile = async (file: File | {size: number; type: string; path: string; name: string; fileContent: string}) => {
+        const imageObj = JSON.parse(window.localStorage.getItem('imageObj'));
         if (file) {
             const fileSize = file.size;
             const type = file.type;
@@ -201,7 +199,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                 return
             }
             if(file.path == "" && imageObj == null){
-                message.error({ content: "暂不支持此操作" })
+                // 处理微信截图等截图工具返回的图片
+                ipcRenderer.send("STORE_SCREENSHOT_TO_LOCAL");
                 return
             }
             console.log(type, '========',imageObj)
@@ -417,6 +416,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 convType,
                 messageElementArray: [{
                     elem_type: 6,
+                    // @ts-ignore
                     face_elem_buf: url
                 }],
                 userId
@@ -659,8 +659,30 @@ export const MessageInput = (props: Props): JSX.Element => {
     useEffect(() => {
         const initVal = window.localStorage.getItem('sendMsgKey') || '0'
         setSendType(initVal)
-        setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息')
-        ipcRenderer.on('screenShotUrl', (e, { data, url }) => {
+        setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息');
+
+        // 针对于外部截图工具生成的图片
+        const screenShotReplyListiner = (event, {data, url}) => {
+            const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' });
+            const imageObj = {
+                lastModified: file.lastModified,
+                //@ts-ignore 
+                lastModifiedDate: file.lastModifiedDate,
+                name: file.name,
+                path: url,
+                size: file.size,
+                type: file.type,
+                //@ts-ignore 
+                webkitRelativePath: file.webkitRelativePath,
+                fileContent: data,
+                
+            };
+            setFile(imageObj);
+        }
+        ipcRenderer.on('STORE_SCREENSHOT_TO_LOCAL_REPLY', screenShotReplyListiner);
+
+        // 自带截图生成的图片
+        const screenShotUrlListiner = (event, {data, url}) => {
             console.log(typeof data, data, url, '+++++++++++++++++++')
             if (data.length == 0) {
                 message.error({ content: '已取消截图' })
@@ -668,16 +690,19 @@ export const MessageInput = (props: Props): JSX.Element => {
                 const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' })
                 const fileObj = {
                     lastModified: file.lastModified,
+                    // @ts-ignore
                     lastModifiedDate: file.lastModifiedDate,
                     name: file.name,
                     path: url,
                     size: file.size,
                     type: 'png',
                     fileContent: data,
+                    //@ts-ignore 
                     webkitRelativePath: file.webkitRelativePath
                 }
                 const imageObj = {
                     lastModified: file.lastModified,
+                    //@ts-ignore 
                     lastModifiedDate: file.lastModifiedDate,
                     name: file.name,
                     path: url,
@@ -695,9 +720,12 @@ export const MessageInput = (props: Props): JSX.Element => {
                 setFile(fileObj)
                 return
             }
-        })
+        }
+        ipcRenderer.on('screenShotUrl', screenShotUrlListiner);
+
         return () => {
-            ipcRenderer.removeAllListeners('screenShotUrl')
+            ipcRenderer.off('screenShotUrl', screenShotUrlListiner);
+            ipcRenderer.off('STORE_SCREENSHOT_TO_LOCAL_REPLY', screenShotReplyListiner);
         }
     }, [])
 

@@ -12,8 +12,7 @@ import GroupVideoItem from './GroupVideoItem';
 
 export const GroupVideo = (props) => {
     const { trtcInstance, inviteList, userId, isVideoCall, inviteListWithInfo } = props;
-    const [userList, setUserList] = useState(inviteList);
-    const [groupSplit, deleteUser, setUserEntering, setUserAudioAvailable, setUserSpeaking ,setUserOrder] = useUserList(inviteList);
+    const [groupSplit, deleteUser, setUserEntering, setUserAudioAvailable, setUserSpeaking, setUserOrder] = useUserList(inviteList);
     const [currentPage, setCurrentPage] = useState(0);
     const [enteringUser, setEnteringUser] = useState('');
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
@@ -62,20 +61,12 @@ export const GroupVideo = (props) => {
             setUserOrder(userId, true); // 自己始终在第一位
             setUserEntering(userId);
             setEnteringUser(userId);
-            if(!isVideoCall) {
-                const ref = getRef(userId);
-                ref.current.getElementsByTagName('span')[0].style.display = 'none';
-            }
         };
     };
 
     const onRemoteUserEnterRoom = (userId) => {
         setUserEntering(userId);
         setEnteringUser(userId);
-        if(!isVideoCall) {
-            const ref = getRef(userId);
-            ref.current.getElementsByTagName('span')[0].style.display = 'none';
-        }
     }
 
     const onUserVoiceVolume = (params) => {

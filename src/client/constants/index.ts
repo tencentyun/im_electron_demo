@@ -50,28 +50,80 @@ export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service
 // export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
 
 //生产需要开启华润登录和更换代理地址   ************************
-export const TIM_BASE_URL = 'http://localhost:3000'  //                      开发           ---         接口地址
-// export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002' //            测试
+// export const TIM_BASE_URL = 'http://localhost:3000'  //                      开发           ---         接口地址
+//export const TIM_BASE_URL = 'http://oaim.uat.crbank.com.cn:30002' //            测试
 // export const TIM_BASE_URL = 'http://oaim.crbank.com.cn:30002' //             生产
 
-export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.uat.crbank.com.cn:30002'//     测试           ---         公众号后管地址
+// export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.uat.crbank.com.cn:30002'//     测试           ---         公众号后管地址
 // export const PUBBLIC_ACCOUNTS_URL = 'http://oaim.crbank.com.cn:30002'//      生产
 
 // export const EMOJIURL = 'http://oaim.crbank.com.cn:30003/emoji/' //            生产         ---         表情
-export const EMOJIURL = 'http://oaim.uat.crbank.com.cn:30003/emoji/' //           测试
+// export const EMOJIURL = 'http://oaim.uat.crbank.com.cn:30003/emoji/' //           测试
 
 export const SDKAPPID = 1400529075//                                            生产/测试       ---        IM账号
 export const SECRETKEY = '08349186ecd23fafaf7f98ca0116077e5b507fceac558e3dbd32f0dfeb9393a9'
 
 // export const SERVERr_ADDRESS_IP = "oaim.crbank.com.cn"//                     生产            ---        IM长链接地址
-export const SERVERr_ADDRESS_IP = "oaim.uat.crbank.com.cn"//                    测试 
-export const SERVERr_ADDRESS_PORT = 30001                 //                    生产/测试        ---       IM长链接端口
+// export const SERVERr_ADDRESS_IP = "oaim.uat.crbank.com.cn"//                    测试 
+// export const SERVERr_ADDRESS_PORT = 30001                 //                    生产/测试        ---       IM长链接端口
 
-export const HUA_RUN_LOGIN_TEST = 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin' //生产华润登录
+// export const HUA_RUN_LOGIN_TEST = 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin' //生产华润登录
 //export const HUA_RUN_LOGIN_TEST = 'http://10.241.24.31:39021/commonauthservice_crbk/ws/OIDAuthService/userLogin'
 //export const HUA_RUN_LOGIN_PROD = 'https://ldapservice.crc.com.cn/commonauthservice_new/ws/OIDAuthService/userLogin'
-export const HUA_RUN_SYSTEMID = 'P001'
+// export const HUA_RUN_SYSTEMID = 'P001'
 
-export const DEFAULT_USERID = '940928';
-export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
-export const HISTORY_MESSAGE_COUNT = 100
+// export const DEFAULT_USERID = '940928'; 
+// export const DEFAULT_USER_SIG = 'eJwtjMsKwjAQRf8lW6VMxiYmBRciWgt1YR-SbSWpDKKGtogo-rux7d3dc*B8WJHmwdO2LGIYAJsPn4y999TQgHUIGtVkOnOtnSPDIh4CcLVcCByNfTlqrecACvxG2tPtzyRKEAKknip08eGy5G-u0m2cqENM*GgR6-Wu2G94Kbpzc5pxnYnsmGOVrNj3B6MpLvI_'
+export const HISTORY_MESSAGE_COUNT = 20
+
+export const TIM_MASTER_URL_PORT = '30003';
+export const TIM_BREVIARY_URL_PORT = '30004/oaim';
+
+const HUARUN_CONFIG = {
+    // 开发环境
+    'dev': {
+        TIM_BASE_URL: 'http://localhost:3000',
+        PUBBLIC_ACCOUNTS_URL: 'http://oaim.uat.crbank.com.cn:30002',
+        EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
+        SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
+        SERVERr_ADDRESS_PORT: 30001,
+        HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
+        HUA_RUN_SYSTEMID: 'P001'
+    },
+    // 测试环境
+    'test': {
+        TIM_BASE_URL: 'http://oaim.uat.crbank.com.cn:30002',
+        PUBBLIC_ACCOUNTS_URL: 'http://oaim.uat.crbank.com.cn:30002',
+        EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
+        SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
+        SERVERr_ADDRESS_PORT: 30001,
+        HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
+        HUA_RUN_SYSTEMID: 'P001'
+    },
+    // 正是环境
+    'prod': {
+        TIM_BASE_URL: 'http://oaim.crbank.com.cn:30002',
+        PUBBLIC_ACCOUNTS_URL: 'http://oaim.crbank.com.cn:30002',
+        EMOJIURL: 'http://oaim.uat.crbank.com.cn:30003/emoji/',
+        SERVERr_ADDRESS_IP: 'oaim.crbank.com.cn',
+        SERVERr_ADDRESS_PORT: 30001,
+        HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
+        HUA_RUN_SYSTEMID: 'P001'
+    }
+}
+type HuaRunConfig = {
+    TIM_BASE_URL: string,
+    PUBBLIC_ACCOUNTS_URL: string,
+    EMOJIURL: string,
+    SERVERr_ADDRESS_IP: string,
+    SERVERr_ADDRESS_PORT: number,
+    HUA_RUN_LOGIN_TEST: string,
+    HUA_RUN_SYSTEMID: string
+}
+const getHuaRunConfig = (): HuaRunConfig => {
+    console.log('环境变量', process.env.HUARUN_ENV, process.env.NODE_ENV)
+    const env = process.env.HUARUN_ENV.trim();
+    // const env = "prod"
+    return HUARUN_CONFIG[env]
+}
+export default getHuaRunConfig();

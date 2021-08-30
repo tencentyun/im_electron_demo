@@ -65,6 +65,7 @@ export const Message = (): JSX.Element => {
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
     const { replace_router } = useSelector((state:State.RootState)=>state.ui)
     const dialogRef = useDialogRef();
+    const [isonline, setIsonline] = useState(false);
     const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
     const [nowConvMenuItem, setNowConvMenuItem] = useState(convMenuItem)
     const convMenuID = "CONV_HANDLE"
@@ -87,6 +88,15 @@ export const Message = (): JSX.Element => {
         uid = await getLoginUserID()
     }
     useEffect(() => {
+        setTimeout(() => {
+            if(window.navigator.onLine){
+                setIsonline(true)
+                console.log('网络正常！');
+            }else{
+                setIsonline(false)
+                console.log('网络中断！');
+            }
+        }, 3000)
         if(!replace_router){
             conversationList.length === 0 && setLoadingStatus(true);
             getData();
@@ -138,9 +148,10 @@ export const Message = (): JSX.Element => {
         const { message_elem_array, message_status, message_is_from_self, message_sender_profile, message_is_peer_read,message_is_read,message_conv_type } = lastMsg;
         const { user_profile_nick_name } = message_sender_profile;
         const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
-        const firstMsg = message_elem_array[0];
+        const firstMsg = message_elem_array[0] || {};
         const imgImg = message_status === 1 ? firstMsg?.image_elem_thumb_url : "[图片消息]";
         const displayTextMsg = message_status === 6 ? `${revokedPerson} 撤回了一条消息` : firstMsg?.text_elem_content;
+        const revokeMsg =  `${revokedPerson} 撤回了一条消息`;
         const displayLastMsg = {
             '0': displayTextMsg,
             '1': imgImg,
@@ -167,7 +178,7 @@ export const Message = (): JSX.Element => {
             {
                 conv_type && hasAtMessage ? <span className="at-msg">{atDisPlayMessage}</span> : null
             }
-            <span className="text">{displayLastMsg}</span>
+            <span className="text">{ message_status === 6 ? revokeMsg : displayLastMsg}</span>
         </React.Fragment>;
     }
 
@@ -177,6 +188,11 @@ export const Message = (): JSX.Element => {
 
     const filterMenu = (data)=>{
         let filterMenu = convMenuItem
+        console.log('自己打扰',data.conv_id)
+        //过滤自己
+        if(data.conv_id === localStorage.getItem("uid")) {
+            filterMenu = filterMenu.filter(item => item.id != 'disable')
+        }
         for (const key in data) {
             if (data.hasOwnProperty(key)) {
                 const element = data[key];
@@ -339,12 +355,16 @@ export const Message = (): JSX.Element => {
         return <Myloader />
     }
 
-    if (currentSelectedConversation === null ||  currentSelectedConversation === undefined) {
-        return <EmptyResult contentText="暂无会话" />
+    
+    console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
+    for (var i=0;i< conversationList.length;i++){
+        if(conversationList[i].conv_id === localStorage.getItem("uid") && localStorage.getItem("myhead")){
+            conversationList[i].conv_profile.user_profile_face_url = localStorage.getItem("myhead")
+        }
     }
-    // console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
     return (
         <div className="message-content">
+            <div className={`${ isonline ? 'online' : 'outline'}`} style={{position: 'fixed',left:'10px',bottom:'10px',width:'8px',height:'8px',borderRadius:'4px'}}></div>
             <div className="message-list" style={{userSelect: 'none'}}>
                 <div className="search-wrap" onClick={handleSearchBoxClick}><SearchBox /></div>
                 <div className="conversion-list">

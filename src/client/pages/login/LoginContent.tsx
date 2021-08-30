@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Tabs, TabPanel, Input, Button, Checkbox, message } from "tea-component";
-import { SDKAPPID, SECRETKEY, HUA_RUN_SYSTEMID } from '../../constants';
+import { SDKAPPID, SECRETKEY } from '../../constants';
 import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
 import { changeFunctionTab } from '../../store/actions/ui';
@@ -15,6 +15,7 @@ import { setUnreadCount } from '../../store/actions/section';
 import { getEncrptPwd } from '../../utils/addFriendForPoc'
 import { getUserLoginInfo } from '../../services/login'
 import { genTestUserSig } from './generateUserSig'
+import getHuaRunConfig from '../../constants'
 const tabs = [
     // {id: 'verifyCodeLogin', label: '验证码登陆'},
     { id: 'passwordLogin', label: '密码登陆' }
@@ -64,7 +65,7 @@ interface IEncrptPwdRes {
 export const LoginContent = (): JSX.Element => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const [userID, setUserID] = useState('');
+    const [userID, setUserID] = useState(window.localStorage.getItem('uid') || '');
     const [password, setPassword] = useState('');
     const isDisablelogin = userID && password;
 
@@ -85,57 +86,57 @@ export const LoginContent = (): JSX.Element => {
         setUserID(val.toLocaleUpperCase())
     }
     const handleLoginClick = async () => {
-        console.log(111222333)
         getEncrptPwd({
             Pwd: password
         }).then(async getEncrptPwdRes => {
             const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
             console.log(Encypt)
-            // getUserLoginInfo({
-            //     systemid: HUA_RUN_SYSTEMID,
-            //     userName: userID.toUpperCase(),
-            //     userPass: Encypt,
-            //     asyuserind: null,
-            //     password: "MTIzNDU2"
-            // }).then(async res => {
-            //     console.log(res)
-            //     const { RET, USERLOGIN, ERRCODE } = res
-            //     if (RET === 'FALSE') {
-            //         message.error({
-            //             content: "登录失败：" + errType(ERRCODE),
-            //         })
-            //     } else {
-                    const USERLOGIN = userID
-                    const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
-                    const params: loginParam = {
-                        userID: USERLOGIN.toUpperCase(),
-                        userSig: userSig
-                    }
-                    const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
-                    window.localStorage.setItem('uid', USERLOGIN)
-                    window.localStorage.setItem('usersig', Encypt)
-                    //获取部门
-                    filterGetDepartment({
-                        DepId: "root_1"
-                    }, (data) => {
-                        let sectionData = assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children
-                        window.localStorage.setItem('section', JSON.stringify(sectionData))
-                        dispatch(setUserInfo({
-                            userId: USERLOGIN,
-                            userSig: userSig
-                        }));
-                        dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children))
-                        dispatch(setIsLogInAction(true));
-                        dispatch(changeFunctionTab('message'));
-                        history.replace('/home/message');
-                    }, USERLOGIN)
-            //     }
-            // }).catch(err => {
-            //     const { ERRCODE } = err.data
-            //     message.error({
-            //         content: "登录失败：" + err.message || errType(ERRCODE),
-            //     })
-            // })
+            
+            const env = process.env.huarun_env
+            let USERLOGIN;
+            if(env=='prod'){
+                const res = await getUserLoginInfo({
+                    systemid: getHuaRunConfig.HUA_RUN_SYSTEMID,
+                    userName: userID.toUpperCase(),
+                    userPass: Encypt,
+                    asyuserind: null,
+                    password: "MTIzNDU2"
+                })
+    
+                const { RET, USERLOGIN:user, ERRCODE } = res
+                if (RET === 'FALSE') {
+                    message.error({
+                        content: "登录失败：" + errType(ERRCODE),
+                    })
+                } else {
+                   USERLOGIN = user;
+                }
+            }else{
+                USERLOGIN = userID
+            }
+            const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
+            const params: loginParam = {
+                userID: USERLOGIN.toUpperCase(),
+                userSig: userSig
+            }
+            const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
+            window.localStorage.setItem('uid', USERLOGIN)
+            window.localStorage.setItem('usersig', Encypt)
+            //获取部门
+            filterGetDepartment({
+                DepId: "root_1"
+            }, (data) => {
+                let sectionData = assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children
+                window.localStorage.setItem('section', JSON.stringify(sectionData))
+                dispatch(setUserInfo({
+                    userId: USERLOGIN,
+                    userSig: userSig
+                }));
+                dispatch(setUnreadCount(assemblyData([data], 'SubDepsInfoList', 'StaffInfoList', 'DepName', 'Uname')[0].children))
+                dispatch(setIsLogInAction(true));
+                dispatch(changeFunctionTab('message'));
+                history.replace('/home/message');
+            }, USERLOGIN)
         }).catch(err => {
             message.error({
                 content: "登录失败：" + err.message || err.ErrorInfo,
@@ -146,25 +147,20 @@ export const LoginContent = (): JSX.Element => {
 
     return (
         <div className="login--context">
-            <h2 className="login--context__title">登陆IM</h2>
-            <Tabs tabs={tabs} placement="top" tabBarRender={customizeTabBarRender}>
-                {/* <TabPanel id="verifyCodeLogin">
-                    <Input placeholder="请输入用户名" className="login--input" />
-                    <Input placeholder="请输入密码" className="login--input" />
-                </TabPanel> */}
-                {/* <TabPanel id="passwordLogin">
-                    <Input placeholder="请输入userid" value={userID} className="login--input" onChange={(val) => { setUserID(val)}} />
-                    <Input placeholder="请输入usersig"  value={usersig} className="login--input" onChange={(val) => setUserSig(val)} />
-                </TabPanel> */}
+            <h2 className="login--context__title">员工登录</h2>
+            <Input placeholder="请输入UM用户名" value={userID} className="login--input" onChange={chkIt} />
+            <Input placeholder="请输入UM密码" type="password" value={password} className="login--input" onChange={(val) => setPassword(val)} />
+            
+            {/* <Tabs tabs={tabs} placement="top" tabBarRender={customizeTabBarRender}>
                 <TabPanel id="passwordLogin">
                     <Input placeholder="请输入userid" value={userID} className="login--input" onChange={chkIt} />
                     <Input placeholder="请输入密码" type="password" value={password} className="login--input" onChange={(val) => setPassword(val)} />
                 </TabPanel>
-            </Tabs>
+            </Tabs> */}
             {/* <Checkbox display="block" value={false} className="login--auto">
                 下次自动登录
             </Checkbox> */}
-            <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}> 登陆</Button>
+            <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}>登录</Button>
         </div>
     )
 }

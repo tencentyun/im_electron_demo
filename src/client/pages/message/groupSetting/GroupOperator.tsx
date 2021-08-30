@@ -152,7 +152,6 @@ export const GroupOperator = (props: {
         )}
       </div>
       <TransferGroupDialog
-        userList={userList}
         dialogRef={transferDialogRef}
         onSuccess={onRefresh}
       />

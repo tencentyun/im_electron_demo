@@ -40,7 +40,6 @@ type Info = {
 };
 
 export const MessageInfo = (props: State.conversationItem): JSX.Element => {
-  console.log("人员",props)
   const { conv_id, conv_type, conv_profile } = props;
   const [callType, setCallType] = useState(0)
   const [callInfo, setCallInfo] = useState({
@@ -121,9 +120,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       }
       try {
         const { message_msg_id } = validatelastMessage(msgList) || {};
-        if (!message_msg_id) {
-          return;
-        }
+        
         const { code, ...res } = await markMessageAsRead(
           conv_id,
           conv_type,
@@ -280,7 +277,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       };
       dispatch(addMessage(payload));
     };
-    if (conv_id && !msgList) {
+    if (conv_id) {
       getMessageList();
     }
   }, [conv_id]);
@@ -363,12 +360,12 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
                 canInviteMember && <span title='添加群成员' className="add-icon" onClick={() => addMemberDialogRef.current.open({ groupId: conv_id })} />
               }
               {/* <span className="message-info-view__header--video" onClick={handleOpenCallWindow} /> */}
-              <span className={`message-info-view__header--video ${callingId === conv_id ? 'is-calling' : ''}`} onClick={() => handleOpenCallWindow('videoCall')} />
+              {/* <span className={`message-info-view__header--video ${callingId === conv_id ? 'is-calling' : ''}`} onClick={() => handleOpenCallWindow('videoCall')} /> */}
             </div>
           </header>
           <section className="message-info-view__content">
             <div className="message-info-view__content--view">
-              <MessageView messageList={msgList || []} groupType={groupType} convId={conv_id} convType={conv_type} editorState={(data) => { setIsHandCal(data) }} setEditorState={setEditorState} />
+              <MessageView messageList={msgList || []} groupType={groupType} convId={conv_id} convType={conv_type} editorState={(data) => { setIsHandCal(data) }} />
             </div>
             <div className="message-info-view__content--slider"
               onMouseDown={() => setIsPress(true)}

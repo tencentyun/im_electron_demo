@@ -1,6 +1,7 @@
 import  request from '../utils/request'
-import { SDKAPPID,TIM_BASE_URL } from '../constants/index'
-
+import getHuaRunConfig from '../constants/index'
+import { SDKAPPID } from '../constants/index'
+const  { TIM_BASE_URL }  = getHuaRunConfig
 export type custEmojiUpsertParams = {
     uid: string; // 当前用户id
     sticker_url?: string; // 自定义表情地址
