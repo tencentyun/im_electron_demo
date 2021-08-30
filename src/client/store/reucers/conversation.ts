@@ -2,32 +2,50 @@ import { REPLACE_CONV_LIST, SET_UNREAD_COUNT, UPDATE_CONVERSATIONLIST, UPDATE_CU
 
 const initState = {
     unreadCount: 0,
-    conversationList:[],
+    conversationList: [],
     currentSelectedConversation: null
 }
-const sortByPindAndTime = (conversationList:Array<State.conversationItem>) :Array<State.conversationItem>=>{
-    return  conversationList.sort((pre,next)=>{
-        if(pre.conv_is_pinned){
-            return  1
+// const sortByPindAndTime = (conversationList: Array<State.conversationItem>): Array<State.conversationItem> => {
+//     return conversationList.sort((pre, next) => {
+//         if (pre.conv_is_pinned) {
+//             return 1
+//         }
+//         return next.conv_active_time - pre.conv_active_time
+//     })
+// }
+
+
+const sortByPindAndTime = (conversationList: Array<State.conversationItem>): Array<State.conversationItem> => {
+    return conversationList.sort((pre, next) => {
+        //conv_is_pinned 都为true
+        if (pre.conv_is_pinned && next.conv_is_pinned) {
+            return next.conv_last_msg.message_server_time - pre.conv_last_msg.message_server_time
         }
-        return next.conv_active_time - pre.conv_active_time
+        //conv_is_pinned 都为false
+        else if (!pre.conv_is_pinned && !next.conv_is_pinned) {
+            return pre.conv_last_msg.message_server_time < next.conv_last_msg.message_server_time ? 1 : -1;
+        }
+        //conv_is_pinned 不同时为true
+        // else {
+        //     return pre.conv_is_pinned > next.conv_is_pinned ? -1 : 1;
+        // }
     })
 }
 const conversationReducer = (state = initState, action: { type: any; payload: any }) => {
     switch (action.type) {
         case SET_UNREAD_COUNT:
-          return {
-              ...state,
-              unreadCount: action.payload
-          }
+            return {
+                ...state,
+                unreadCount: action.payload
+            }
         case UPDATE_CONVERSATIONLIST: {
             // 会话按是否置顶、时间排序
             // eslint-disable-next-line no-case-declarations
             const listCopy = [...state.conversationList]
-            for(let i = 0;i<action.payload.length;i++){
+            for (let i = 0;i < action.payload.length;i++) {
                 const { conv_id } = action.payload[i];
-                const conv_index = listCopy.findIndex((item)=>{return item.conv_id === conv_id})
-                if(conv_index>-1){
+                const conv_index = listCopy.findIndex((item) => { return item.conv_id === conv_id })
+                if (conv_index > -1) {
                     // console.log('更新会话')
                     // 存在，直接更新
                     listCopy[conv_index] = action.payload[i]
@@ -54,13 +72,13 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
                 conversationList: action.payload
             }
 
-        case MARK_CONV_LAST_MSG_IS_READED: 
+        case MARK_CONV_LAST_MSG_IS_READED:
             const catchList = [...state.conversationList];
-            const { payload  } = action;
-            const convIds = payload.map((element : State.MessageReceipt)  => element.msg_receipt_conv_id);
+            const { payload } = action;
+            const convIds = payload.map((element: State.MessageReceipt) => element.msg_receipt_conv_id);
             catchList.forEach(item => {
-                if(convIds.includes(item.conv_id)) {
-                    if(item.conv_last_msg){
+                if (convIds.includes(item.conv_id)) {
+                    if (item.conv_last_msg) {
                         item.conv_last_msg.message_is_peer_read = true;
                     }
                 }
@@ -73,11 +91,11 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
         case CLEAR_CONVERSATION:
             return {
                 unreadCount: 0,
-                conversationList:[],
+                conversationList: [],
                 currentSelectedConversation: null
             }
         default:
-          return state;
+            return state;
     }
 }
 

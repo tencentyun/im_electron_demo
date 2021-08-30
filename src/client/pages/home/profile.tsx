@@ -81,7 +81,7 @@ export const Profile = (): JSX.Element => {
     setUserVisible(val)
   }
   const genderMast = (data) => {
-    console.log(data);
+    // console.log(data);
     switch (data) {
       case 1:
         return "男";

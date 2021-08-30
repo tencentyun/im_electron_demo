@@ -7,10 +7,10 @@ interface CallbackData {
 }
 
 interface InitListenersCallback {
-    (data: CallbackData):void;
+    (data: CallbackData): void;
 }
 
-export default function initListeners(callback:InitListenersCallback){
+export default function initListeners(callback: InitListenersCallback) {
 
 
     /**
@@ -28,7 +28,7 @@ export default function initListeners(callback:InitListenersCallback){
     * 在用户登录之后，ImSDK会拉取离线消息，为了不漏掉消息通知，需要在登录之前注册新消息通知。
     */
     timRenderInstance.TIMAddRecvNewMsgCallback({
-        callback:(args)=>{
+        callback: (args) => {
             callback({
                 type: 'TIMAddRecvNewMsgCallback',
                 data: JSON.parse(args[0])
@@ -47,7 +47,7 @@ export default function initListeners(callback:InitListenersCallback){
     * 发送方发送消息，接收方调用接口[TIMMsgReportReaded]()上报该消息已读，发送方ImSDK会通过此接口设置的回调抛出。
     */
     timRenderInstance.TIMSetMsgReadedReceiptCallback({
-        callback:(...args)=>{
+        callback: (...args) => {
             callback({
                 type: 'TIMSetMsgReadedReceiptCallback',
                 data: JSON.parse(args[0][0])
@@ -66,7 +66,7 @@ export default function initListeners(callback:InitListenersCallback){
     * 发送方发送消息，接收方收到消息。此时发送方调用接口[TIMMsgRevoke]()撤回该消息，接收方的ImSDK会通过此接口设置的回调抛出。
     */
     timRenderInstance.TIMSetMsgRevokeCallback({
-        callback:(args)=>{
+        callback: (args) => {
             callback({
                 type: 'TIMSetMsgRevokeCallback',
                 data: JSON.parse(args[0])
@@ -86,8 +86,8 @@ export default function initListeners(callback:InitListenersCallback){
     * 设置消息元素上传进度回调。当消息内包含图片、声音、文件、视频元素时，ImSDK会上传这些文件，并触发此接口设置的回调，用户可以根据回调感知上传的进度
     */
     timRenderInstance.TIMSetMsgElemUploadProgressCallback({
-        callback:(args)=>{
-            const [message, index, cur_size, total_size, user_data] = args 
+        callback: (args) => {
+            const [message, index, cur_size, total_size, user_data] = args
             callback({
                 type: 'TIMSetMsgElemUploadProgressCallback',
                 data: {
@@ -111,10 +111,10 @@ export default function initListeners(callback:InitListenersCallback){
     * 群组系统消息事件包括 加入群、退出群、踢出群、设置管理员、取消管理员、群资料变更、群成员资料变更。此消息是针对所有群组成员下发的
     */
     timRenderInstance.TIMSetGroupTipsEventCallback({
-        callback:(args)=>{
+        callback: (args) => {
             callback({
                 type: 'TIMSetGroupTipsEventCallback',
-                data:  JSON.parse(args[0])
+                data: JSON.parse(args[0])
             })
         },
         user_data: "test"
@@ -130,7 +130,7 @@ export default function initListeners(callback:InitListenersCallback){
     * 某个已加入的群的属性被修改了，会返回所在群组的所有属性（该群所有的成员都能收到）
     */
     timRenderInstance.TIMSetGroupAttributeChangedCallback({
-        callback:()=>{
+        callback: () => {
 
         },
         user_data: "test"
@@ -155,16 +155,16 @@ export default function initListeners(callback:InitListenersCallback){
     * 调用接口[TIMConvDelete]()删除会话成功时会触发会话删除事件。
     */
     timRenderInstance.TIMSetConvEventCallback({
-        callback:(...args)=>{
+        callback: (...args) => {
             callback({
                 type: 'TIMSetConvEventCallback',
                 data: {
-                    type:args[0][0],
-                    data:args[0][1]!=="" ? JSON.parse(args[0][1]) : []
+                    type: args[0][0],
+                    data: args[0][1] !== "" ? JSON.parse(args[0][1]) : []
                 }
             })
         },
-        user_data:"TIMSetConvEventCallback"
+        user_data: "TIMSetConvEventCallback"
     })
 
     /**
@@ -174,7 +174,7 @@ export default function initListeners(callback:InitListenersCallback){
     * 
     */
     timRenderInstance.TIMSetConvTotalUnreadMessageCountChangedCallback({
-        callback:(...args)=>{
+        callback: (...args) => {
             callback({
                 type: 'TIMSetConvTotalUnreadMessageCountChangedCallback',
                 data: args[0][0]
@@ -195,7 +195,7 @@ export default function initListeners(callback:InitListenersCallback){
     * > 只要用户处于登录状态，ImSDK内部会进行断网重连，用户无需关心。
     */
     timRenderInstance.TIMSetNetworkStatusListenerCallback({
-        callback:()=>{
+        callback: () => {
 
         }
     })
@@ -217,7 +217,7 @@ export default function initListeners(callback:InitListenersCallback){
     *    如果需要，则再次调用login强制上线，设备2的登录的实例将会收到 TIMKickedOfflineCallback 回调。
     */
     timRenderInstance.TIMSetKickedOfflineCallback({
-        callback:(...args)=>{
+        callback: (...args) => {
             callback({
                 type: 'TIMSetKickedOfflineCallback',
                 data: args
@@ -236,7 +236,7 @@ export default function initListeners(callback:InitListenersCallback){
     * [TIMLogin]()也将会返回70001错误码。开发者可根据错误码或者票据过期回调进行票据更换
     */
     timRenderInstance.TIMSetUserSigExpiredCallback({
-        callback:()=>{
+        callback: () => {
 
         }
     })
@@ -251,7 +251,7 @@ export default function initListeners(callback:InitListenersCallback){
     * 此回调为了多终端同步。例如A设备、B设备都登录了同一帐号的ImSDK，A设备添加了好友，B设备ImSDK会收到添加好友的推送，ImSDK通过此回调告知开发者。
     */
     timRenderInstance.TIMSetOnAddFriendCallback({
-        callback:()=>{
+        callback: () => {
 
         }
     })
@@ -266,7 +266,7 @@ export default function initListeners(callback:InitListenersCallback){
     * 此回调为了多终端同步。例如A设备、B设备都登录了同一帐号的ImSDK，A设备删除了好友，B设备ImSDK会收到删除好友的推送，ImSDK通过此回调告知开发者。
     */
     timRenderInstance.TIMSetOnDeleteFriendCallback({
-        callback:()=>{
+        callback: () => {
 
         }
     })
@@ -280,7 +280,7 @@ export default function initListeners(callback:InitListenersCallback){
     * 此回调为了多终端同步。例如A设备、B设备都登录了同一帐号的ImSDK，A设备更新了好友资料，B设备ImSDK会收到更新好友资料的推送，ImSDK通过此回调告知开发者。
     */
     timRenderInstance.TIMSetUpdateFriendProfileCallback({
-        callback:()=>{
+        callback: () => {
 
         }
     })
@@ -295,7 +295,7 @@ export default function initListeners(callback:InitListenersCallback){
     * 当前登入用户设置添加好友需要确认时，如果有用户请求加当前登入用户为好友，会收到好友添加请求的回调，ImSDK通过此回调告知开发者。如果多终端登入同一帐号，每个终端都会收到这个回调。
     */
     timRenderInstance.TIMSetFriendAddRequestCallback({
-        callback:()=>{
+        callback: () => {
 
         }
     })
@@ -313,7 +313,7 @@ export default function initListeners(callback:InitListenersCallback){
     *  4. 申请加别人好友被拒绝
     */
     timRenderInstance.TIMSetFriendApplicationListDeletedCallback({
-        callback:()=>{
+        callback: () => {
 
         }
     })
@@ -328,7 +328,7 @@ export default function initListeners(callback:InitListenersCallback){
     */
 
     timRenderInstance.TIMSetFriendApplicationListReadCallback({
-        callback:()=>{
+        callback: () => {
 
         }
     })
@@ -341,7 +341,7 @@ export default function initListeners(callback:InitListenersCallback){
     *
     */
     timRenderInstance.TIMSetFriendBlackListAddedCallback({
-        callback:()=>{
+        callback: () => {
 
         }
     })
@@ -353,7 +353,7 @@ export default function initListeners(callback:InitListenersCallback){
     *
     */
     timRenderInstance.TIMSetFriendBlackListDeletedCallback({
-        callback:()=>{
+        callback: () => {
 
         }
     })
@@ -371,8 +371,49 @@ export default function initListeners(callback:InitListenersCallback){
     * > 您的业务服务器可以对该条消息进行修改（例如过滤敏感词），如果您的服务器对消息进行了修改，ImSDK就会通过此回调通知您。
     */
     timRenderInstance.TIMSetMsgUpdateCallback({
-        callback:()=>{
+        callback: () => {
 
+        }
+    })
+    timRenderInstance.TIMOnInvited({
+        callback: (data) => {
+            callback({
+                type: 'TIMOnInvited',
+                data: data
+            })
+        }
+    })
+    timRenderInstance.TIMOnRejected({
+        callback: (data) => {
+            callback({
+                type: 'TIMOnRejected',
+                data: data
+            })
+        }
+    })
+    timRenderInstance.TIMOnAccepted({
+        callback: (data) => {
+            callback({
+                type: 'TIMOnAccepted',
+                data: data
+            })
+        }
+    })
+    timRenderInstance.TIMOnCanceled({
+        callback: (data) => {
+            callback({
+                type: 'TIMOnCanceled',
+                data: data
+            })
+        }
+    })
+
+    timRenderInstance.TIMOnTimeout({
+        callback: (data) => {
+            callback({
+                type: 'TIMOnTimeout',
+                data: data
+            })
         }
     })
     timRenderInstance.TIMOnInvited({
