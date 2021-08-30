@@ -22,7 +22,7 @@ import {
 import { AddUserPopover } from "./AddUserPopover";
 import { addTimeDivider } from "../../utils/addTimeDivider";
 import { generateRoomID } from "../../utils/tools";
-import { openCallWindow, callWindowCloseListiner } from '../../utils/callWindowTools';
+import { openCallWindow } from '../../utils/callWindowTools';
 
 
 import { useDialogRef } from "../../utils/react-use/useDialog";
@@ -112,19 +112,26 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     }
     return msg;
   };
-  const setMessageRead = () => {
+
+  const getLastMessageId = () => {
+    if (!msgList || msgList.length === 0) {
+      return "";
+    }
+    const { message_msg_id } = validatelastMessage(msgList) || {};
+
+    return message_msg_id;
+  };
+
+  const lastMessageId = getLastMessageId();
+
+  const setMessageRead = (messageId) => {
     // 个人会话且未读数大于0才设置已读
     const handleMsgReaded = async () => {
-      if (!msgList || msgList.length === 0) {
-        return;
-      }
       try {
-        const { message_msg_id } = validatelastMessage(msgList) || {};
-        
         const { code, ...res } = await markMessageAsRead(
           conv_id,
           conv_type,
-          message_msg_id
+          messageId
         );
 
         if (code === 0) {
@@ -168,8 +175,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       callType,
       convType
     })
-
-
   }
 
   const inviteC2C = async () => {
@@ -231,7 +236,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       userID: userId,
       userSig: userSig,
       inviteList: [userId, ...userList],
-      inviteListWithInfo
+      inviteListWithInfo,
+      isInviter: true,
     });
   }
 
@@ -255,7 +261,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     })
     groupMemberSelectorRef.current.open({
       groupId: conv_id,
-      userList: group_get_memeber_info_list_result_info_array
+      userList: group_get_memeber_info_list_result_info_array.filter(item => item.group_member_info_identifier !== userId)
     })
   }
 
@@ -263,9 +269,9 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
   useEffect(() => {
     setTimeout(() => {
-      setMessageRead();
+      setMessageRead(lastMessageId);
     }, 500)
-  }, [msgList]);
+  }, [lastMessageId]);
 
   useEffect(() => {
     const getMessageList = async () => {

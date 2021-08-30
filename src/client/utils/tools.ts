@@ -1,4 +1,4 @@
-import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW } from "../../app/const/const";
+import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG,GETNATIVEPATH, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW, HIDE } from "../../app/const/const";
 
 import { ipcRenderer, remote } from 'electron';
 
@@ -26,6 +26,12 @@ const closeWin = () => {
     })
 }
 
+const hideWin = () => {
+    ipcRenderer.send(RENDERPROCESSCALL, {
+        type: HIDE
+    })
+}
+
 const previewVvatar = (face_url, size = 40) => {
     
     return  face_url ?  face_url.replace(TIM_MASTER_URL_PORT,TIM_BREVIARY_URL_PORT)+`?imageView2/3/w/${size}/h/${size}` : ""
@@ -36,19 +42,21 @@ const showDialog = () => {
         type: SHOWDIALOG
     })
 }
-const downloadFilesByUrl = (url,name)=>{
+const downloadFilesByUrl = (url,name,fileid)=>{
     ipcRenderer.send(RENDERPROCESSCALL,{
         type:DOWNLOADFILE,
         params: {
-            url,name
+            url,name,fileid
         }
     })
 }
-const checkFileExist = (path) => {
-    return new Promise<boolean>((resolve)=>{
-        ipcRenderer.invoke('RENDERPROCESSCALL', {
+const checkFileExist = (message_msg_id) => {
+    return new Promise<any>((resolve)=>{
+        ipcRenderer.invoke(RENDERPROCESSCALL, {
             type: CHECK_FILE_EXIST,
-            params: path
+            params: {
+                message_msg_id
+            }
         }).then((result) => {
             // ...
             resolve(result)
@@ -57,8 +65,35 @@ const checkFileExist = (path) => {
         })
     })
 }
-
-
+const getNativePath = (message_msg_id) =>{
+    return new Promise<string>((resolve)=>{
+        ipcRenderer.invoke(RENDERPROCESSCALL, {
+            type: GETNATIVEPATH,
+            params: {
+                message_msg_id
+            }
+        }).then((result) => {
+            // ...
+            resolve(result)
+        }).catch(err=>{
+            resolve("")
+        })
+    })
+}
+const getParamsByKey = (key)=>{
+    const paramsArr = window.location.search.slice(1).split('&');
+    let res = ''
+    if(paramsArr.length){
+        for(let i = 0;i<paramsArr.length;i++){
+            const [itemKey,itemValue] = paramsArr[i].split('=');
+            if(itemKey === key){
+                res = itemValue;
+                break;
+            }
+        }
+    }
+    return res;
+}
 const throttle = (fn, delay) => {
     let timer
     let t_start = Date.now()
@@ -120,13 +155,53 @@ const openCallWindow = (data) => {
     ipcRenderer.send(OPEN_CALL_WINDOW, data);
 }
 
-const callWindowCloseListiner = (callback) => {
-    ipcRenderer.on(CALL_WINDOW_CLOSE_REPLY, callback);
-};
 const generateRoomID = () => {
     return Math.floor(Math.random() * 1000);
 }
+const returnFileVla = (val,index) => {
+    //截断文件名
+    let start = val.replace('.'+val.split('.')[val.split('.').length-1],'');
+    let end = val.split('.')[val.split('.').length-1];
+    if(index) {
+        return end
+    }else{
+        return start
+    }
+}
+
+const checkfilepath = (type,file_elem_file_id,file_elem_file_name) => {
+    let filelist = window.localStorage.getItem('File_list') ? JSON.parse(window.localStorage.getItem('File_list')) : '';
+    if(!filelist) return false
+    if(type==0 && filelist){
+        //统计同名数
+        let total = 0
+        for (let i=0;i<filelist.length;i++){ 
+            if(filelist[i].samename == file_elem_file_name) {
+                total = total+1
+            }
+        }
+        //console.log(total)
+        return total
+    }else if(filelist && type==1){
+        //告诉有没有下载过
+        for (let i=0;i<filelist.length;i++){ 
+            if(filelist[i].id == file_elem_file_id) {
+                return i+1
+            }
+        }
+    }else if(filelist && type==2){
+        //换本地文件名
+        for (let i=0;i<filelist.length;i++){ 
+            if(filelist[i].id == file_elem_file_id) {
+                //console.log(filelist[i].name)
+                return filelist[i].name
+            }
+        }
+    }
+}
+
 export {
+    checkfilepath,
     isWin,
     minSizeWin,
     maxSizeWin,
@@ -140,6 +215,9 @@ export {
     convertBase64UrlToBlob,
     highlightText,
     openCallWindow,
-    callWindowCloseListiner,
-    previewVvatar
+    previewVvatar,
+    returnFileVla,
+    hideWin,
+    getParamsByKey,
+    getNativePath
 }

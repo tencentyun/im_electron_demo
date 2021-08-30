@@ -2,11 +2,11 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack  = require('webpack');
 
-console.log('=============process env=======', process.env.NODE_ENV);
+console.log('=============process env=======', process?.env?.NODE_ENV);
 
-console.log('=============process env huarun_config==========', process.env.HUARUN_ENV);
+console.log('=============process env huarun_config==========', process?.env?.HUARUN_ENV);
 
-const APADDRESS =  process.env.HUARUN_ENV === 'prod' ?  'http://oaim.crbank.com.cn:30002/' : "http://oaim.uat.crbank.com.cn:30002/" //测试
+const APADDRESS =  process?.env?.HUARUN_ENV === 'prod' ?  'http://oaim.crbank.com.cn:30002/' : "https://oaim.uat.crbank.com.cn:30002/" //测试
 
 module.exports = {
   resolve: {

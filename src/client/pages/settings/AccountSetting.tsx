@@ -17,13 +17,12 @@ export const AccountSetting = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [pathurl, setPathUrl] = useState('');
-  const [msgBother, setMsgBother] = useState(null)
-  const loadFileMsg = () => {
-    ipcRenderer.on("storagePath", (e, { path }) => {
-      console.log(path);
-      setPathUrl(path);
-    });
-  };
+  const [msgBother, setMsgBother] = useState(true)
+
+  ipcRenderer.on("storagePath", (e, { path }) => {
+    console.log("storagePath", path);
+    setPathUrl(path);
+  });
 
   const setNewsMode = val => {
     console.log(val, 'val')
@@ -35,8 +34,7 @@ export const AccountSetting = (): JSX.Element => {
     const initVal = window.localStorage.getItem('msgBother') == 'true' ? true : false
     setMsgBother(initVal)
   }, [])
-  loadFileMsg();
-
+  
   const logOutHandler = async () => {
     await timRenderInstance.TIMLogout();
     dispatch(userLogout());

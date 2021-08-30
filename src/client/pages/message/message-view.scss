@@ -185,7 +185,6 @@
         }
         &--text {
             display: inline-block;
-            max-width: 200px;
             padding: 12px;
             font-size: 14px;
             border-radius: 2px 8px 8px 8px;
@@ -193,6 +192,8 @@
             vertical-align: middle;
             word-wrap: break-word;
             word-break: break-all;
+            max-width: 33vw;
+            
             span {
                 vertical-align: middle;
             }
@@ -200,6 +201,15 @@
         .dplayer-controller .dplayer-icons .dplayer-icon .dplayer-icon-content{
             display: initial;
         }
+        @keyframes changewidth {
+            
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+          }
         &--file {
             width: 236px;
             height: 70px;
@@ -219,12 +229,71 @@
                 height: 18px;
                 margin-left: 10px;
                 margin-top: 35px;
-                background-image: url('../../assets/icon/file-message.svg');;
+                margin-right:10px;
+                background-image: url('../../assets/icon/file-message.svg');
+                background-size: 18px 18px;
+                background-repeat: no-repeat;
+            }
+            &___zip- {
+                margin-left: 10px;
+                margin-top: 13px;
+                background-image: url('../../assets/icon/zip.svg');
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            &___xlsx-,&___xls- {
+                margin-left: 10px;
+                margin-top: 13px;
+                background-image: url('../../assets/icon/excel.svg');
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            &___docx-,&___doc- {
+                margin-left: 6px;
+                margin-top: 12px;
+                background-image: url('../../assets/icon/doc.svg');
+                background-size: 46px 46px;
+                background-repeat: no-repeat;
+            }
+            &___ppt-,&___pptx- {
+                margin-left: 10px;
+                margin-top: 13px;
+                background-image: url('../../assets/icon/ppt.svg');
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            &___exe- {
+                margin-left: 10px;
+                margin-top: 13px;
+                background-image: url('../../assets/icon/exe.svg');
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            &___pdf- {
+                margin-left: 10px;
+                margin-top: 13px;
+                background-image: url('../../assets/icon/pdf.svg');
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            &___txt- {
+                margin-left: 10px;
+                margin-top: 13px;
+                background-image: url('../../assets/icon/txt.svg');
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
             }
             &___download {
                 background-image: url('../../assets/icon/download.svg');
             }
-            
+            &___download.downloading {
+                background-image: url('../../assets/icon/loading.png');
+                animation-duration: 1s;
+                animation-name: changewidth;
+                animation-iteration-count: infinite;
+                animation-direction: alternate;
+                animation-fill-mode: forwards
+            }
             &___ext{
                 width: 50px;
                 height: 70px;

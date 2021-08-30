@@ -28,6 +28,7 @@ import { replaceRouter } from '../../store/actions/ui';
 import { getUserTypeQuery } from '../../services/userType'
 import { getLoginUserID } from './api';
 
+
 let indervel = null
 
 let uid = ''
@@ -103,9 +104,10 @@ export const Message = (): JSX.Element => {
         }else{
             dispatch(replaceRouter(false))
         }
-        indervel = setInterval(()=>{
-            setStatusIndervel(v=>v+1)
-        },1000*5)
+        // 人为增加工作量！
+        // indervel = setInterval(()=>{
+        //     setStatusIndervel(v=>v+1)
+        // },1000*5)
         getUid()
         return () => {
             clearInterval(indervel)
@@ -322,7 +324,6 @@ export const Message = (): JSX.Element => {
         if(conv_type === 2){
            data = await TIMMsgSetGroupReceiveMessageOpt(conv_id,isDisable?1:0)
         }
-        console.log(data)
     }
     const handleClickMenuItem = (e,id) => {
         console.log("好友列表功能区", e,id)
@@ -354,9 +355,7 @@ export const Message = (): JSX.Element => {
     if (isLoading) {
         return <Myloader />
     }
-
-    
-    console.warn('当前对话列表所有人员信息', conversationList, currentSelectedConversation)
+    console.log('会话列表',conversationList)
     for (var i=0;i< conversationList.length;i++){
         if(conversationList[i].conv_id === localStorage.getItem("uid") && localStorage.getItem("myhead")){
             conversationList[i].conv_profile.user_profile_face_url = localStorage.getItem("myhead")
@@ -374,10 +373,13 @@ export const Message = (): JSX.Element => {
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
                             return (
+                                conv_id ?
                                 <div ref={setRef(conv_id)} className={`conversion-list__item ${conv_id === currentSelectedConversation.conv_id ? 'is-active' : ''} ${conv_is_pinned ? 'is-pinned' : ''}`} key={conv_id} onClick={() => handleConvListClick(item)} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                     <div className="conversion-list__item--profile">
                                         {
-                                            conv_unread_num > 0 ? <div className="conversion-list__item--profile___unread">{getDisplayUnread(conv_unread_num)}</div> : null
+                                            conv_unread_num > 0 ? <div className="conversion-list__item--profile___unread">
+                                                {conv_recv_opt != 1 ? getDisplayUnread(conv_unread_num):null}
+                                                </div> : null
                                         }
                                         <Avatar url={faceUrl}  key={faceUrl} isClick={false} nickName={nickName} userID={conv_id} groupID={conv_id} size='small' />
                                     </div>
@@ -385,7 +387,7 @@ export const Message = (): JSX.Element => {
                                         <div className="conversion-list__item--time-wrapper">
                                             <span className="conversion-list__item--nick-name">{nickName || conv_id}</span>
                                             {
-                                                conv_last_msg && <span className="conversion-list__item--format-time">{timeFormat(conv_last_msg.message_client_time * 1000, false)}</span>
+                                                conv_last_msg && <span className="conversion-list__item--format-time">{timeFormat(conv_last_msg.message_server_time * 1000, false)}</span>
                                             }
                                         </div>
                                         {
@@ -396,7 +398,7 @@ export const Message = (): JSX.Element => {
                                     {
                                         conv_recv_opt===1 ? <span className="mute"></span>:null
                                     }
-                                </div>
+                                </div>:null
                             )
                         })
                     }

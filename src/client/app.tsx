@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import "tea-component/dist/tea.css";
+import "antd/dist/antd.css";
 import {
     HashRouter as Router,
     Switch,
@@ -24,6 +25,7 @@ import {
     updateConversationList,
     markConvLastMsgIsReaded,
     updateCurrentSelectedConversation,
+    replaceConversaionList
 } from "./store/actions/conversation";
 import {
     addProfileForConversition,
@@ -37,10 +39,15 @@ import {
     updateMessageElemProgress,
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
-import { openCallWindow, closeCallWindow, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite, updateInviteList } from "./utils/callWindowTools";
+import { openCallWindow, closeCallWindow, remoteUserExit, remoteUserJoin, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite, updateInviteList } from "./utils/callWindowTools";
 import { updateCallingStatus } from "./store/actions/ui";
+// import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from "./constants";
+import { ipcRenderer } from "electron";
+import { reportError } from "./utils/orgin";
+import getHuaRunConfig from "./constants";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
+let joinedUserList = [];
 
 // @ts-ignore
 window.closeCallWindow = closeCallWindow;
@@ -55,7 +62,7 @@ export const App = () => {
             callingType: 0,
             callingId: '',
             inviteeList: [],
-            callType:0
+            callType: 0
         }
     });
 
@@ -75,19 +82,24 @@ export const App = () => {
 
     const initIMSDK = async () => {
         if (!isInited) {
-            //   const privite = await timRenderInstance.callExperimentalAPI({
-            //       json_param: {
-            //           request_internal_operation: 'internal_operation_set_custom_server_info',
-            //           request_set_custom_server_info_param: {
-            //             longconnection_address_array: [{
-            //                   server_address_ip: "106.55.144.99",// ip
-            //                   server_address_port: 80// 端口
-            //             }],
-            //             server_public_key: '0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f'// 公钥
-            //           }
-            //       }
-            //   })
-            //   console.log('私有化', privite)
+            const privite = await timRenderInstance.callExperimentalAPI({
+                json_param: {
+                    request_internal_operation:
+                        "internal_operation_set_custom_server_info",
+                    request_set_custom_server_info_param: {
+                        longconnection_address_array: [
+                            {
+                                // server_address_ip: "oaim.crbank.com.cn", // ip 生产
+                                server_address_ip: getHuaRunConfig.SERVERr_ADDRESS_IP,
+                                server_address_port: getHuaRunConfig.SERVERr_ADDRESS_PORT, // 端口
+                            },
+                        ],
+                        server_public_key:
+                            "0436ddd1de2ec99e57f8a796745bf5c639fe038d65f9df155e3cbc622d0b1b75a40ee49074920e56c6012f90c77be69f7f", // 公钥
+                    },
+                },
+            });
+            console.log("私有化", privite);
             timRenderInstance.TIMInit().then(async ({ data }) => {
                 if (data === 0) {
                     isInited = true;
@@ -184,6 +196,55 @@ export const App = () => {
             });
         }
     };
+    const getData = async () => {
+        const response = await getConversionList();
+        dispatch(replaceConversaionList(response))
+        if (response.length) {
+            dispatch(updateCurrentSelectedConversation(response[0]))
+        } else {
+            dispatch(updateCurrentSelectedConversation(null))
+        }
+    }
+    let showApp = true;
+    const handleNotify = (messages) => {
+        const msgBother = window.localStorage.getItem('msgBother') || false
+        console.log(showApp, '[[[[[[[[[[[[[[[', msgBother)
+        console.log(messages)
+        // 客户端没有展示在最顶层或者设置了消息提示免打扰，就不接收消息通知
+        if (showApp || msgBother == 'false') {
+            return;
+        }
+        console.log(messages[0].message_elem_array[0], '通知消息------------------------------------', messages)
+        const notification = new window.Notification("收到新消息", {
+            icon: "http://oaim.crbank.com.cn:30003/emoji/notification.png",
+            // body: replaceAll(message.message_elem_array[0], '&nbsp;', ' ').substring(0, 15)
+            //设置十个字
+            body: messages[0].message_elem_array[0].text_elem_content.length > 9 ? messages[0].message_elem_array[0].text_elem_content.substring(0, 10) : messages[0].message_elem_array[0].text_elem_content
+        });
+        ipcRenderer.send("asynchronous-message", "setTaryTitle");
+        notification.onclick = async () => {
+            ipcRenderer.send("asynchronous-message", "openWindow");
+            dispatch(updateCurrentSelectedConversation(messages));
+            const response = await getConversionList();
+            dispatch(updateConversationList(response));
+            // console.log(response, '对话列表。。。。。。。。。。。。。。。。。。。')
+            if (response?.length) {
+                const newConversaionItem = response.find(
+                    (v) => v.conv_id === messages[0].message_conv_id
+                );
+                if (newConversaionItem) {
+                    dispatch(updateCurrentSelectedConversation(newConversaionItem));
+                }
+            }
+            notification.close();
+        };
+    };
+    const escapeRegExp = (string) => {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    };
+    const replaceAll = (str, match, replacement) => {
+        return str.replace(new RegExp(escapeRegExp(match), "g"), () => replacement);
+    };
     const _onInvited = (data) => {
         // actionType: 1
         // businessID: 1
@@ -193,20 +254,20 @@ export const App = () => {
         // inviteeList: ["3708"]
         // inviter: "109442"
         // timeout: 30
-        
+
         const formatedData = JSON.parse(JSON.parse(data)[0].message_elem_array[0].custom_elem_data)
-        const { room_id, call_type,call_end } = JSON.parse(formatedData.data)
+        const { room_id, call_type, call_end } = JSON.parse(formatedData.data)
         const { inviter, groupID, inviteID, inviteeList } = formatedData;
-        const { callingId,callingType } = ref.current.catchCalling;
+        const { callingId, callType } = ref.current.catchCalling;
         // 如果正在通话，拒绝对方通话。
-        if(callingId) {
+        if (callingId) {
             timRenderInstance.TIMRejectInvite({
                 inviteID: inviteID,
-                data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
+                data: JSON.stringify({ "version": 4, "businessID": "av_call", "call_type": callType })
             });
             return;
         }
-        if(call_end > 0){
+        if (call_end >= 0) {
             return
         }
         timRenderInstance.TIMProfileGetUserProfileList({
@@ -215,42 +276,43 @@ export const App = () => {
                 friendship_getprofilelist_param_force_update: false
             }
         }).then(async (data) => {
-            const { catchUserId, catchUserSig  } = ref.current;
-            if(!catchUserId){
+            const { catchUserId, catchUserSig } = ref.current;
+            if (!catchUserId) {
                 return
             }
             const { data: { code, json_param } } = data;
             if (code === 0) {
-                const [userdata, ...inviteList] = JSON.parse(json_param);
-                console.log('===========invite list==============', inviteList);
+                const inviteListWithInfo = JSON.parse(json_param);
+                const inviterInfo = inviteListWithInfo.filter(item => item.user_profile_identifier === inviter);
                 dispatch(updateCallingStatus({
-                    callingId:groupID?groupID: inviter, //
-                    callingType:groupID ? 2: 1,
+                    callingId: groupID ? groupID : inviter, //
+                    callingType: groupID ? 2 : 1,
                     inviteeList: [inviter, ...inviteeList],
-                    callType:call_type
+                    callType: call_type
                 }))
                 openCallWindow({
                     windowType: 'notificationWindow',
                     callType: call_type + '',
                     convId: groupID ? groupID : inviter,
                     convInfo: {
-                        faceUrl: userdata.user_profile_face_url,
-                        nickName: userdata.user_profile_nick_name,
+                        faceUrl: inviterInfo.user_profile_face_url,
+                        nickName: inviterInfo.user_profile_nick_name || inviter,
                         convType: groupID ? 2 : 1,
                     },
                     roomId: room_id,
                     inviteID,
                     userID: catchUserId,
                     inviteList: [inviter, ...inviteeList],
-                    inviteListWithInfo: [userdata, ...inviteList],
-                    userSig: catchUserSig
+                    inviteListWithInfo: [...inviteListWithInfo],
+                    userSig: catchUserSig,
+                    isInviter: false
                 });
             }
         })
 
     }
     const _removeFromArr = (arr: any[], target: any) => {
-        for (let i = 0; i < arr.length; i++) {
+        for (let i = 0;i < arr.length;i++) {
             if (arr[i] = target) {
                 arr.splice(i, 1)
                 break;
@@ -262,14 +324,15 @@ export const App = () => {
         data && _handleRemoteUserReject(JSON.parse(data)[0]);
     }
     const _onAccepted = (data) => {
-
+        console.log('============accept call=======', data);
     }
     const _onCanceled = (data) => {
         // 关闭通知窗口
-        closeCallWindow()
+        closeCallWindow();
+        clearCallStore();
     }
     const _onTimeout = (data) => {
-        if(data) {
+        if (data) {
             const parsedData = JSON.parse(data);
             const params = Array.isArray(parsedData) ? parsedData[0] : parsedData;
             _handleRemoteUserTimeOut(params);
@@ -279,19 +342,20 @@ export const App = () => {
     const _handleRemoteUserTimeOut = (message) => {
         const timeOutList = JSON.parse(message.message_elem_array[0].custom_elem_data)?.inviteeList;
         console.warn('====timeout params=====', timeOutList);
-        if(timeOutList) {
+        if (timeOutList) {
             const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
-            console.warn('============store invite list ==========', inviteeList);
+            const catchUserId = ref.current.catchUserId;
             const newList = inviteeList.filter(item => !timeOutList.includes(item));
-            if (newList.length === 0) {
+            const isEmpty = newList.filter(item => item !== catchUserId).length === 0;
+            dispatch(updateCallingStatus({
+                callingId,
+                callingType,
+                inviteeList: newList,
+                callType
+            }));
+            if (isEmpty) {
                 closeCallWindow();
             } else {
-                dispatch(updateCallingStatus({
-                    callingId,
-                    callingType,
-                    inviteeList: newList,
-                    callType
-                }));
                 updateInviteList(newList); //向通话窗口通信
             }
         }
@@ -299,18 +363,20 @@ export const App = () => {
 
     const _handleRemoteUserReject = (message) => {
         const { message_sender } = message;
-        const { callingId, callingType, inviteeList,callType } = ref.current.catchCalling;
+        const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
+        const catchUserId = ref.current.catchUserId;
         if (inviteeList.includes(message_sender)) {
-            const newInviteeList = _removeFromArr(inviteeList, message_sender)
-            if (newInviteeList.length === 0) {
+            const newInviteeList = inviteeList.filter(item => item !== message_sender);
+            const isEmpty = newInviteeList.filter(item => item !== catchUserId).length === 0;
+            dispatch(updateCallingStatus({
+                callingId,
+                callingType,
+                inviteeList: newInviteeList,
+                callType
+            }));
+            if (isEmpty) {
                 closeCallWindow();
             } else {
-                dispatch(updateCallingStatus({
-                    callingId,
-                    callingType,
-                    inviteeList: newInviteeList,
-                    callType
-                }));
                 updateInviteList(newInviteeList); //向通话窗口通信
             }
         }
@@ -369,8 +435,14 @@ export const App = () => {
     };
     const _handeMessage = (messages: State.message[]) => {
         // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
+        try {
+            getData()
+            handleNotify(messages)
+        } catch (error) {
+            console.log(error);
+        }
         const obj = {};
-        for (let i = 0; i < messages.length; i++) {
+        for (let i = 0;i < messages.length;i++) {
             if (!obj[messages[i].message_conv_id]) {
                 obj[messages[i].message_conv_id] = [];
             }
@@ -434,16 +506,19 @@ export const App = () => {
             } catch (err) {
                 console.error(err)
             }
-            if (conversationList[0]?.conv_last_msg?.message_status === 1) {
-                const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
-                if (elemType === 4 || elemType === 9) {
-                    dispatch(updateMessages({
-                        convId: conversationList[0].conv_id,
-                        message: conversationList[0].conv_last_msg
-                    }))
-                }
+            // if (conversationList[0]?.conv_last_msg?.message_status === 1) {
+            const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
+            console.log(elemType)
+            if (elemType === 4 || elemType === 9 || elemType === 3) {
+                dispatch(updateMessages({
+                    convId: conversationList[0].conv_id,
+                    message: conversationList[0].conv_last_msg
+                }))
+                //elemType4,文件上传存在延时，但视图已经更新，利用渲染进程发给主进程再发给主进程进行通信
+                //解决上传失败等问题 瞎几把写！
+                // ipcRenderer.send("RENDERPROCESSCALL", "upload_reset_view");
             }
-
+            // }
         }
     };
 
@@ -462,6 +537,16 @@ export const App = () => {
         });
     };
 
+    const clearCallStore = () => {
+        dispatch(updateCallingStatus({
+            callingId: '',
+            callingType: 0,
+            inviteeList: [],
+            callType: 0
+        }));
+        joinedUserList = [];
+    }
+
     const _handleMessageReaded = (data) => {
         const c2cDdata = data.filter((item) => item.msg_receipt_conv_type === 1);
         const convIds = c2cDdata.map((item) => item.msg_receipt_conv_id);
@@ -470,46 +555,123 @@ export const App = () => {
             dispatch(markMessageAsReaded({ convIds }));
         }
     };
-
+    const onError = (err) => {
+        const { catchUserId } = ref.current;
+        reportError({
+            errorText: err.message,
+            userID: catchUserId
+        })
+    }
+    const addErrorReport = () => {
+        window.addEventListener('error', onError)
+    }
+    const removeReport = () => {
+        window.removeEventListener('error', onError)
+    }
+    const ipcRendererLister = (event, data) => {
+        if (event) {
+            // console.log('changedata:', data)
+            showApp = data;
+            // console.log(showApp, 'showApp')
+        }
+    };
     useEffect(() => {
         initIMSDK();
+        ipcRenderer.on("mainProcessMessage", ipcRendererLister);
+        addErrorReport()
         acceptCallListiner((inviteID) => {
-            const { callingType } = ref.current.catchCalling;
+            const { callType } = ref.current.catchCalling;
             timRenderInstance.TIMAcceptInvite({
                 inviteID: inviteID,
-                data: JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
+                data: JSON.stringify({ "version": 4, "businessID": "av_call", "call_type": callType })
             }).then(data => {
                 console.log('接收返回', data)
             })
         });
         refuseCallListiner((inviteID) => {
-            const { callingType } = ref.current.catchCalling;
+            const { callType } = ref.current.catchCalling;
             timRenderInstance.TIMRejectInvite({
                 inviteID: inviteID,
-                data:JSON.stringify({"version":4,"businessID":"av_call","call_type":callingType})
+                data: JSON.stringify({ "version": 4, "businessID": "av_call", "call_type": callType })
             }).then(data => {
                 console.log('接收返回', data)
-            })
+            });
         });
-        callWindowCloseListiner(() => {
+        callWindowCloseListiner(clearCallStore);
+        cancelCallInvite(({ inviteId, realCallTime }) => {
+            if (!inviteId) {
+                return;
+            }
+            const { callingId, inviteeList, callType, callingType } = ref.current.catchCalling;
+            const catchUserId = ref.current.catchUserId;
+            const callingUserList = joinedUserList.filter(item => item !== catchUserId);
+            const isAllUserRejectOrTimeout = inviteeList.filter(item => item !== catchUserId).length === 0;
+            if (realCallTime === 0) {
+                // 如果点击挂断，此时没有用户接听，需要取消邀请
+                if (!isAllUserRejectOrTimeout) {
+                    timRenderInstance.TIMCancelInvite({
+                        inviteID: inviteId,
+                        data: JSON.stringify({ "version": 4, "businessID": "av_call", "call_type": callingType })
+                    }).then(data => {
+                        console.log('关闭邀请===', data)
+                    })
+                }
+            } else {
+                // 如果自己是最后一个挂断电话的需要发送通话时长
+                if (callingUserList.length === 0) {
+                    if (callingType === 1) {
+                        timRenderInstance.TIMInvite({
+                            userID: callingId,
+                            timeout: 0,
+                            senderID: catchUserId,
+                            data: JSON.stringify({ "businessID": "av_call", "call_end": realCallTime, "call_type": Number(callType), "version": 4 })
+                        })
+                    } else {
+                        timRenderInstance.TIMInviteInGroup({
+                            userIDs: callingUserList,
+                            groupID: callingId,
+                            timeout: 0,
+                            senderID: catchUserId,
+                            data: JSON.stringify({ "businessID": "av_call", "call_end": realCallTime, "call_type": Number(callType), "version": 4 }),
+                        }).then(() => {
+                            console.log('===========data======');
+                        })
+                    }
+                }
+            }
+        });
+
+        remoteUserExit((userId) => {
+            const { callingId, callingType, inviteeList, callType } = ref.current.catchCalling;
+            const catchUserId = ref.current.catchUserId
+            const newList = inviteeList.filter(item => item !== userId);
+            const isEmpty = newList.filter(item => item !== catchUserId).length === 0;
+            joinedUserList = [...newList];
+            if (isEmpty) {
+                closeCallWindow();
+                return;
+            }
             dispatch(updateCallingStatus({
-                callingId: '',
-                callingType: 0,
-                inviteeList: [],
-                callType: 0
+                callingId,
+                callingType,
+                inviteeList: newList,
+                callType
             }));
-          });
-        cancelCallInvite((inviteID) => {
-            timRenderInstance.TIMCancelInvite({
-                inviteID: inviteID
-            }).then(data => {
-                console.log('关闭邀请===', data)
-            })
         });
+
+        remoteUserJoin((userId) => {
+            joinedUserList.push(userId);
+        });
+    }, []);
+    useEffect(() => {
+        return () => {
+            ipcRenderer.removeListener("mainProcessMessage", ipcRendererLister);
+            removeReport()
+        };
     }, []);
     return (
         <div id="app-container">
-            <ToolsBar></ToolsBar>
+            {/* <ToolsBar></ToolsBar> */}
             <Switch>
                 <Route path="/home" component={Home}></Route>
                 <Route path="/" component={Login} />

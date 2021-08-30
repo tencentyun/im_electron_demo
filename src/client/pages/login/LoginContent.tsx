@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Tabs, TabPanel, Input, Button, Checkbox, message } from "tea-component";
+import { Input, Button, message } from "tea-component";
 import { SDKAPPID, SECRETKEY } from '../../constants';
 import timRenderInstance from '../../utils/timRenderInstance';
 import { setIsLogInAction } from '../../store/actions/login';
 import { changeFunctionTab } from '../../store/actions/ui';
 import { setUserInfo } from '../../store/actions/user';
-import { loginUser } from '../../store/actions/loginUser';
+// import { loginUser } from '../../store/actions/loginUser';
+// @ts-ignore
 import { loginParam } from 'im_electron_sdk/dist/interface';
 import { filterGetDepartment, assemblyData } from '../../utils/orgin'
 import { setUnreadCount } from '../../store/actions/section';
@@ -16,6 +17,7 @@ import { getEncrptPwd } from '../../utils/addFriendForPoc'
 import { getUserLoginInfo } from '../../services/login'
 import { genTestUserSig } from './generateUserSig'
 import getHuaRunConfig from '../../constants'
+import { getParamsByKey } from '../../utils/tools';
 const tabs = [
     // {id: 'verifyCodeLogin', label: '验证码登陆'},
     { id: 'passwordLogin', label: '密码登陆' }
@@ -69,6 +71,25 @@ export const LoginContent = (): JSX.Element => {
     const [password, setPassword] = useState('');
     const isDisablelogin = userID && password;
 
+        document.addEventListener('DOMContentLoaded', () => {
+        console.log("自动更新2")
+        const { ipcRenderer } = require('electron');
+        ipcRenderer.on('message', (event, { message, data }) => {
+            console.log("自动更新进入")
+            console.log(message, data);
+            switch (message) {
+                case 'isUpdateNow':
+                    if (confirm('发现有新版本，是否现在更新？')) {
+                        ipcRenderer.send('updateNow');
+                    }
+                    break;
+                default:
+                    //document.querySelector('h1').innerHTML = message;
+                    break;
+            }
+        })
+    })
+
     const customizeTabBarRender = (children: JSX.Element) => {
         return <a className="customize-tab-bar">{children}</a>
     }
@@ -91,10 +112,9 @@ export const LoginContent = (): JSX.Element => {
         }).then(async getEncrptPwdRes => {
             const { Encypt } = getEncrptPwdRes as unknown as IEncrptPwdRes
             console.log(Encypt)
-            
-            const env = process.env.huarun_env
+            const env = getParamsByKey('HUARUN_ENV');
             let USERLOGIN;
-            if(env=='prod'){
+            if(env == 'prod'){
                 const res = await getUserLoginInfo({
                     systemid: getHuaRunConfig.HUA_RUN_SYSTEMID,
                     userName: userID.toUpperCase(),
@@ -103,13 +123,14 @@ export const LoginContent = (): JSX.Element => {
                     password: "MTIzNDU2"
                 })
     
-                const { RET, USERLOGIN:user, ERRCODE } = res
+                const { RET, USERLOGIN:User, ERRCODE } = res
                 if (RET === 'FALSE') {
                     message.error({
                         content: "登录失败：" + errType(ERRCODE),
                     })
+                    return false
                 } else {
-                   USERLOGIN = user;
+                   USERLOGIN = User;
                 }
             }else{
                 USERLOGIN = userID
@@ -120,6 +141,12 @@ export const LoginContent = (): JSX.Element => {
                 userSig: userSig
             }
             const { data: { code, data, desc, json_param } } = await timRenderInstance.TIMLogin(params);
+            if(code !== 0){
+                message.error({
+                    content:`登录失败 ${code} ${desc}`
+                })
+                return
+            }
             window.localStorage.setItem('uid', USERLOGIN)
             window.localStorage.setItem('usersig', Encypt)
             //获取部门
@@ -149,7 +176,16 @@ export const LoginContent = (): JSX.Element => {
         <div className="login--context">
             <h2 className="login--context__title">员工登录</h2>
             <Input placeholder="请输入UM用户名" value={userID} className="login--input" onChange={chkIt} />
-            <Input placeholder="请输入UM密码" type="password" value={password} className="login--input" onChange={(val) => setPassword(val)} />
+            <Input placeholder="请输入UM密码"
+             onKeyDown={(e) => {
+                if (e.which === 13) {
+                    handleLoginClick()
+                }
+              }} 
+              type="password"  
+              value={password} 
+              className="login--input" 
+              onChange={(val) => setPassword(val)} />
             
             {/* <Tabs tabs={tabs} placement="top" tabBarRender={customizeTabBarRender}>
                 <TabPanel id="passwordLogin">
@@ -160,7 +196,10 @@ export const LoginContent = (): JSX.Element => {
             {/* <Checkbox display="block" value={false} className="login--auto">
                 下次自动登录
             </Checkbox> */}
-            <Button type="primary" className="login--button" onClick={handleLoginClick} disabled={!isDisablelogin}>登录</Button>
+            <Button type="primary" 
+            className="login--button" 
+            onClick={handleLoginClick} 
+            disabled={!isDisablelogin}>登录</Button>
         </div>
     )
 }

@@ -1,3 +1,5 @@
+import { getParamsByKey } from "../utils/tools";
+
 //The link of setting contact us page.
 export const PURCHASE_LINK = 'https://buy.cloud.tencent.com/avc';
 export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service'
@@ -83,8 +85,10 @@ const HUARUN_CONFIG = {
     // 开发环境
     'dev': {
         TIM_BASE_URL: 'http://localhost:3000',
-        PUBBLIC_ACCOUNTS_URL: 'http://oaim.uat.crbank.com.cn:30002',
-        EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
+        PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
+        TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
+        TRTC_ACCESS_IP:[],
+        EMOJIURL: 'https://oaim.uat.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
@@ -92,9 +96,11 @@ const HUARUN_CONFIG = {
     },
     // 测试环境
     'test': {
-        TIM_BASE_URL: 'http://oaim.uat.crbank.com.cn:30002',
-        PUBBLIC_ACCOUNTS_URL: 'http://oaim.uat.crbank.com.cn:30002',
-        EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
+        TIM_BASE_URL: 'https://oaim.uat.crbank.com.cn:30002',
+        PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
+        TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
+        TRTC_ACCESS_IP:['10.241.131.180','10.241.131.181'],
+        EMOJIURL: 'https://oaim.uat.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
@@ -103,27 +109,31 @@ const HUARUN_CONFIG = {
     // 正是环境
     'prod': {
         TIM_BASE_URL: 'http://oaim.crbank.com.cn:30002',
+        TRTC_BASE_URL: 'http://oaim.crbank.com.cn',
+        TRTC_ACCESS_IP:['57.12.14.18','57.12.14.19'],
         PUBBLIC_ACCOUNTS_URL: 'http://oaim.crbank.com.cn:30002',
-        EMOJIURL: 'http://oaim.uat.crbank.com.cn:30003/emoji/',
+        EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.crbank.com.cn',
-        SERVERr_ADDRESS_PORT: 30001,
+        SERVERr_ADDRESS_PORT: 9333,
         HUA_RUN_LOGIN_TEST: 'http://um.crbank.com.cn:30024/commonauthservice_crbk/ws/OIDAuthService/userLogin',
         HUA_RUN_SYSTEMID: 'P001'
     }
 }
+
 type HuaRunConfig = {
     TIM_BASE_URL: string,
     PUBBLIC_ACCOUNTS_URL: string,
     EMOJIURL: string,
+    TRTC_BASE_URL:string,
     SERVERr_ADDRESS_IP: string,
+    TRTC_ACCESS_IP:Array<string>,
     SERVERr_ADDRESS_PORT: number,
     HUA_RUN_LOGIN_TEST: string,
     HUA_RUN_SYSTEMID: string
 }
 const getHuaRunConfig = (): HuaRunConfig => {
-    console.log('环境变量', process.env.HUARUN_ENV, process.env.NODE_ENV)
-    const env = process.env.HUARUN_ENV.trim();
-    // const env = "prod"
+    const env = getParamsByKey('HUARUN_ENV');
+    console.log('环境变量',env )
     return HUARUN_CONFIG[env]
 }
 export default getHuaRunConfig();

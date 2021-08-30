@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message, Dropdown, List, Bubble } from 'tea-component';
-import { sendTextMsg, sendImageMsg, sendFileMsg, sendVideoMsg, sendMsg } from './api'
-import { updateMessages,  reciMessage} from '../../store/actions/message'
+import { sendTextMsg, sendImageMsg, sendFileMsg, sendVideoMsg, sendMsg, getConversionList } from './api'
+import { replaceConversaionList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
+import { updateMessages, reciMessage } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
@@ -16,16 +17,17 @@ import { convertBase64UrlToBlob } from "../../utils/tools";
 import { SDKAPPID } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
 import { sendCustomMsg } from '../message/api'
+// @ts-ignore
 import { ipcRenderer, clipboard, nativeImage } from 'electron';
+// @ts-ignore
 import chooseImg from '../../assets/icon/choose.png'
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
-import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText } from './message-input-util';
-import { electron } from 'webpack';
+import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer } from './message-input-util';
 import MaxLength from 'braft-extensions/dist/max-length'
 
 const options = {
-    defaultValue: 4000, // 指定默认限制数，如不指定则为Infinity(无限)
+    defaultValue: 3500, // 指定默认限制数，如不指定则为Infinity(无限)
 };
 BraftEditor.use(MaxLength(options));
 
@@ -106,7 +108,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [atUserNameInput, setAtInput] = useState('');
     const [atUserMap, setAtUserMap] = useState({});
     const [isZHCNAndFirstPopup, setIsZHCNAndFirstPopup] = useState(false);
-
+    //@ts-ignore
     const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
@@ -114,33 +116,41 @@ export const MessageInput = (props: Props): JSX.Element => {
     const soundPicker = React.useRef(null);
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
+    console.log(editorState)
     const [sendType, setSendType] = useState(null); // 0->enter,1->ctrl+enter
     let editorInstance;
 
-     //我的
-     useEffect(() => {
-            reedite(isHandCal)
-     }, [isHandCal])
+    //我的
+    useEffect(() => {
+        reedite(isHandCal)
+    }, [isHandCal])
     const handleSendMsg = async () => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
         try {
+            if (isShutUpAll) {
+                message.warning({
+                    content: "群主已全员禁言，无法发送消息哦",
+                })
+            }
             const rawData = editorState.toRAW();
             let messageElementArray = getMessageElemArray(rawData, videoInfos);
-            console.log(messageElementArray,"调试内容")
+            console.log(messageElementArray, "调试内容")
+            if (messageElementArray[0] && messageElementArray[0].text_elem_content) {
+                messageElementArray[0].text_elem_content = messageElementArray[0].text_elem_content.substring(0, options.defaultValue)
+            }
             if (messageElementArray.length) {
 
                 //解决换行多次发送问题  -- zwc
-                let  textElement =  messageElementArray.filter(item => item.elem_type == 0)
-                if(textElement.length > 0)
-                {   
-                    let  outerlement =  messageElementArray.filter(item => item.elem_type != 0)
-                    let  obj:any = {
-                            elem_type : textElement[0].elem_type,
-                            text_elem_content : textElement.map(item => item.text_elem_content).join('\n')
+                let textElement = messageElementArray.filter(item => item.elem_type == 0)
+                if (textElement.length > 0) {
+                    let outerlement = messageElementArray.filter(item => item.elem_type != 0)
+                    let obj: any = {
+                        elem_type: textElement[0].elem_type,
+                        text_elem_content: textElement.map(item => item.text_elem_content).join('\n')
                     }
-                    messageElementArray = [obj,...outerlement]
+                    messageElementArray = [obj, ...outerlement]
                 }
-                
+
                 const fetchList = messageElementArray.map((v => {
                     if (v.elem_type === 0) {
                         const atList = getAtList(v.text_elem_content);
@@ -178,19 +188,36 @@ export const MessageInput = (props: Props): JSX.Element => {
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
         }
+        // getData()
         setAtUserMap({});
         setVideoInfos([]);
     }
-
+    // const getData = async () => {
+    //     const response = await getConversionList();
+    //     dispatch(replaceConversaionList(response))
+    //     if (response.length) {
+    //         dispatch(updateCurrentSelectedConversation(response[0]))
+    //     } else {
+    //         dispatch(updateCurrentSelectedConversation(null))
+    //     }
+    // }
     const getAtList = (text: string) => {
         const list = text.match(/@[a-zA-Z0-9_\u4e00-\u9fa5]+/g);
         const atNameList = list ? list.map(v => v.slice(1)) : [];
         return atNameList.map(v => atUserMap[v]);
     }
 
+    const filePathAdapter = async (file) => {
+        let templateFile = file;
+        if (templateFile.path === "") {
+            const formatedFile = file instanceof File && await fileReaderAsBuffer(file);
+            templateFile = formatedFile;
+        }
+        return templateFile;
+    }
 
-    const setFile = async (file: File | {size: number; type: string; path: string; name: string; fileContent: string}) => {
-        const imageObj = JSON.parse(window.localStorage.getItem('imageObj'));
+    const setFile = async (file: File | { size: number; type: string; path: string; name: string; fileContent: string }) => {
+        file = await filePathAdapter(file);
         if (file) {
             const fileSize = file.size;
             const type = file.type;
@@ -198,26 +225,23 @@ export const MessageInput = (props: Props): JSX.Element => {
                 message.error({ content: "文件大小异常" })
                 return
             }
-            if(file.path == "" && imageObj == null){
-                // 处理微信截图等截图工具返回的图片
-                ipcRenderer.send("STORE_SCREENSHOT_TO_LOCAL");
-                return
-            }
-            console.log(type, '========',imageObj)
-            if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v)) ||  type== "image/jpeg") {
+            if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v)) || type == "image/jpeg") {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
-                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path ? file.path : imageObj.path, size: file.size, base64URL: imgUrl }));
+                // @ts-ignore
+                setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-image', true, { name: file.name, path: file.path, size: file.size, base64URL: imgUrl }));
             } else if (SUPPORT_VIDEO_TYPE.find(v => type.includes(v))) {
                 if (fileSize > 100 * 1024 * 1024) return message.error({ content: "video size can not exceed 100m" })
                 ipcRenderer.send(RENDERPROCESSCALL, {
                     type: GET_VIDEO_INFO,
+                    // @ts-ignore
                     params: { path: file.path }
                 })
+                // @ts-ignore
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, { name: file.name, path: file.path, size: file.size }));
             } else {
-                console.log(11111111111)
                 if (fileSize > 100 * 1024 * 1024) return message.error({ content: "file size can not exceed 100m" })
+                // @ts-ignore
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, { name: file.name, path: file.path, size: file.size }));
             }
         }
@@ -399,11 +423,24 @@ export const MessageInput = (props: Props): JSX.Element => {
         if (userId) {
             const atText = userName || userId;
             setAtUserMap(pre => ({ ...pre, [atText]: userId }));
+            // 获取最后的人员
+            // const lastname = editorState.toText().substring(editorState.toText().lastIndexOf("@"))
+            // if(lastname == '@'+userName){
+            //     setEditorState(ContentUtils.insertText(editorState, `${atText} `));
+            // }else{
+            //     console.log(lastname)
+            //     console.log(editorState.toText().indexOf(lastname))
+            //     console.log(editorState.toText().substring(0,editorState.toText().indexOf(lastname)))
+            //     //设置重复姓氏
+            //     setEditorState(ContentUtils.clear(editorState))
+            //     setEditorState(ContentUtils.insertText(editorState.toText().substring(0,editorState.toText().indexOf(lastname)), `${atText} `));
+            // }
             setEditorState(ContentUtils.insertText(editorState, `${atText} `));
             setAtInput('');
         }
         if (userName) {
             const text = `${userName} `
+            console.log('人员2', editorState)
             setEditorState(ContentUtils.insertText(editorState, text))
         }
     }
@@ -661,45 +698,25 @@ export const MessageInput = (props: Props): JSX.Element => {
         setSendType(initVal)
         setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息');
 
-        // 针对于外部截图工具生成的图片
-        const screenShotReplyListiner = (event, {data, url}) => {
-            const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' });
-            const imageObj = {
-                lastModified: file.lastModified,
-                //@ts-ignore 
-                lastModifiedDate: file.lastModifiedDate,
-                name: file.name,
-                path: url,
-                size: file.size,
-                type: file.type,
-                //@ts-ignore 
-                webkitRelativePath: file.webkitRelativePath,
-                fileContent: data,
-                
-            };
-            setFile(imageObj);
-        }
-        ipcRenderer.on('STORE_SCREENSHOT_TO_LOCAL_REPLY', screenShotReplyListiner);
-
         // 自带截图生成的图片
-        const screenShotUrlListiner = (event, {data, url}) => {
+        const screenShotUrlListiner = (event, { data, url }) => {
             console.log(typeof data, data, url, '+++++++++++++++++++')
             if (data.length == 0) {
                 message.error({ content: '已取消截图' })
             } else {
                 const file = new File([data], new Date().getTime() + 'screenShot.png', { type: 'image/jpeg' })
-                const fileObj = {
-                    lastModified: file.lastModified,
-                    // @ts-ignore
-                    lastModifiedDate: file.lastModifiedDate,
-                    name: file.name,
-                    path: url,
-                    size: file.size,
-                    type: 'png',
-                    fileContent: data,
-                    //@ts-ignore 
-                    webkitRelativePath: file.webkitRelativePath
-                }
+                // const fileObj = {
+                //     lastModified: file.lastModified,
+                //     // @ts-ignore
+                //     lastModifiedDate: file.lastModifiedDate,
+                //     name: file.name,
+                //     path: url,
+                //     size: file.size,
+                //     type: 'png',
+                //     fileContent: data,
+                //     //@ts-ignore 
+                //     webkitRelativePath: file.webkitRelativePath
+                // }
                 const imageObj = {
                     lastModified: file.lastModified,
                     //@ts-ignore 
@@ -709,15 +726,16 @@ export const MessageInput = (props: Props): JSX.Element => {
                     size: file.size,
                     type: file.type,
                     //@ts-ignore 
-                    webkitRelativePath: file.webkitRelativePath
+                    webkitRelativePath: file.webkitRelativePath,
+                    fileContent: data,
                 }
                 // console.log(convId, '截图文件对象22222', file, fileObj)
                 // const image = nativeImage.createFromPath(url)
                 // clipboard.writeImage(image)
-                window.localStorage.setItem('imageObj', JSON.stringify(imageObj))
+                // window.localStorage.setItem('imageObj', JSON.stringify(imageObj))
                 // sendMessages('image', fileObj)
                 // handlePastedFiles([imageObj])
-                setFile(fileObj)
+                setFile(imageObj)
                 return
             }
         }
@@ -725,7 +743,6 @@ export const MessageInput = (props: Props): JSX.Element => {
 
         return () => {
             ipcRenderer.off('screenShotUrl', screenShotUrlListiner);
-            ipcRenderer.off('STORE_SCREENSHOT_TO_LOCAL_REPLY', screenShotReplyListiner);
         }
     }, [])
 
@@ -774,7 +791,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                     converts={{ blockExportFn }}
                     placeholder={placeHolderText}
                     draftProps={{ handlePastedFiles, handlePastedText, handleDroppedFiles: () => 'handled' }}
-                    maxLength={4000}
+                    maxLength={options.defaultValue}
                     actions={[]}
                 />
             </div>

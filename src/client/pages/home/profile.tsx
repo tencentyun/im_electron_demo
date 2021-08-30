@@ -18,6 +18,7 @@ export const Profile = (): JSX.Element => {
   const history = useHistory()
   // eslint-disable-next-line prefer-const
   let { faceUrl, nickName, userId, gender, role } = useSelector((state: State.RootState) => state.userInfo);
+
   const fillStyle = { width: "100%" };
   const [initData, setInitData] = useState({});
 
@@ -29,7 +30,6 @@ export const Profile = (): JSX.Element => {
         friendship_getprofilelist_param_identifier_array: [uId]
       },
     });
-
 
     if (code === 0) {
       const {

@@ -32,8 +32,8 @@ export const GroupVideo = (props) => {
 
     useEffect(() => {
         if (enteringUser) {
-            const ref = getRef(enteringUser);
             if (enteringUser === userId) {
+                const ref = getRef(enteringUser);
                 trtcInstance.startLocalAudio();
                 trtcInstance.enableAudioVolumeEvaluation(300);
                 isVideoCall && openLocalVideo(ref);
@@ -85,15 +85,18 @@ export const GroupVideo = (props) => {
     const onUserVideoAvailable = (uid, available) => {
         const ref = getRef(uid);
         const isOpenCamera = available === 1;
+        const isOpenStream = !!ref.current.getElementsByTagName('canvas')[0];
         if (isOpenCamera) {
-            trtcInstance.startRemoteView(uid, ref.current);
-            trtcInstance.setRemoteViewFillMode(uid, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
+            if(!isOpenStream) {
+                trtcInstance.startRemoteView(uid, ref.current);
+                trtcInstance.setRemoteViewFillMode(uid, TRTCVideoFillMode.TRTCVideoFillMode_Fill);
+            }
             ref.current.style.display = 'block';
         } else {
             ref.current.style.display = 'none';
         }
 
-        setUserOrder(uid, isOpenCamera);
+        // setUserOrder(uid, isOpenCamera);
     }
 
     const onUserAudioAvailable = (uid, available) => setUserAudioAvailable(uid, available === 1);

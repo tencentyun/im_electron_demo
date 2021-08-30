@@ -150,9 +150,9 @@ export const GroupMember = (props: {
             <div
               className="group-member--avatar-box"
               key={`${v.group_member_info_face_url}-${index}`}
-              onDoubleClick={(e) => {
-                handleMsgGroupRead(v);
-              }}
+              // onDoubleClick={(e) => {
+              //   handleMsgGroupRead(v);
+              // }}
             >
               <GroupMemberBubble
                 user={v}
@@ -162,7 +162,7 @@ export const GroupMember = (props: {
                       url={v.group_member_info_face_url}
                       isClick = {false}
                       key={ v.group_member_info_face_url }
-                      isPreview={true}
+                      isPreview = {false}
                       nickName={v.group_member_info_nick_name}
                       userID={v.group_member_info_identifier}
                     />
