@@ -13,7 +13,8 @@ const selectPathIPC = () => {
         }).then(saveTo => {
             const setting = {
                 selectpath:saveTo.filePaths[0],
-                screenshot:store.get("settingScreen")
+                screenshot:store.get("settingScreen"),
+                chatpath:store.get("chatSetting")
             }
            !!saveTo.filePaths[0]  && saveFileTest(JSON.stringify(setting))
         });

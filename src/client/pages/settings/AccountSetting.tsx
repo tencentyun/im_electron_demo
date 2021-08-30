@@ -9,13 +9,15 @@ import "./AccountSetting.scss";
 import { clearConversation } from "../../store/actions/conversation";
 import { clearHistory } from "../../store/actions/message";
 import { DOWNLOAD_PATH } from "../../../app/const/const";
+import {Modal } from "tea-component";
+
 import {
   recordShortcut_keydown,
   recordShortcut_keyup,
   registerShortcut,
-  unregisterShortcut
+  unregisterShortcut,
 } from "./ShortcutSetting";
-const { ipcRenderer } = require("electron");
+const { ipcRenderer,ipcMain } = require("electron");
 import Store from "electron-store";
 const store = new Store();
 import { version, description } from "../../../../package.json";
@@ -24,9 +26,16 @@ export const AccountSetting = (): JSX.Element => {
   const dispatch = useDispatch();
   const [pathurl, setPathUrl] = useState("");
   const [msgBother, setMsgBother] = useState(null);
-  const [setting, setSetting] = useState(store.get("setting")?.toString()?.replace(/\\$/,""));
-  const [inputValue, setInputValue] = useState(store.get("settingScreen").toString());
+  const [setting, setSetting] = useState(
+    store.get("setting")?.toString()?.replace(/\\$/, "")
+  );
+  const [inputValue, setInputValue] = useState(
+    store.get("settingScreen").toString()
+  );
   const [preInPutVlue, setPreInputValue] = useState(null);
+  const [chatSetting, setChatsetting] = useState(
+    store.get("chatSetting")?.toString()
+  );
   const setNewsMode = (val) => {
     console.log(val, "val");
     setMsgBother(val);
@@ -41,16 +50,26 @@ export const AccountSetting = (): JSX.Element => {
   };
   const setFocus = () => {
     setPreInputValue(inputValue);
-    unregisterShortcut(inputValue)
+    unregisterShortcut(inputValue);
   };
+
+
   useEffect(() => {
+    ipcRenderer.on('saveSuccess',function(){
+      const yes= Modal.confirm({
+        message: "更换聊天记录存储位置，将在下次登录生效",
+        description: "",
+        okText: "确定",
+        cancelText: "取消",
+      });
+    });
     const initVal =
       window.localStorage.getItem("msgBother") == "true" ? true : false;
     setMsgBother(initVal);
     let sett = setInterval(() => {
-        setSetting(store.get("setting")?.toString()?.replace(/\\$/,""));
+      setSetting(store.get("setting")?.toString()?.replace(/\\$/, ""));
+      setChatsetting(store.get("chatSetting")?.toString());
     }, 500);
-
     return function () {
       clearInterval(sett);
     };
@@ -94,6 +113,17 @@ export const AccountSetting = (): JSX.Element => {
             <span>文件存储</span>
             <Bubble arrowPointAtCenter placement="top" content={setting}>
               <span className="item-val">{setting}</span>
+            </Bubble>
+          </div>
+          <div
+            className="setting-item"
+            onClick={() => {
+              ipcRenderer.send("chatpath");
+            }}
+          >
+            <span>聊天记录存储</span>
+            <Bubble arrowPointAtCenter placement="top" content={chatSetting}>
+              <span className="item-val">{chatSetting}</span>
             </Bubble>
           </div>
           <div className="setting-item">

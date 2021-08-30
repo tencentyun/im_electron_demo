@@ -7,6 +7,7 @@ const setOtherIPC = require("./otheripc");
 const setSaveFileIPC = require("./saveFile");
 //选择路径IPC zwc  2021年8月26日16:34:22
 const selectPathIPC = require("./selectPath");
+const selectChatPath = require("./chatPath");
 const url = require("url");
 const path = require("path");
 const log = require("electron-log");
@@ -60,6 +61,8 @@ const _createWindow = (TencentIM) => {
 
   //选择路径Ipc
   selectPathIPC();
+  //选择聊天存储路径
+  selectChatPath(mainWindow);
   // 重设快捷键
   setkeyBoard((mainWindow) => {
     registerCut(mainWindow);

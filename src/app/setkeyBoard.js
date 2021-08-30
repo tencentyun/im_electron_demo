@@ -39,6 +39,7 @@ const setkeyBoard = (callback, mainWindow) => {
     fileDataJson = {
       selectpath: formatSelectpath.replace(/\\$/,""),
       screenshot: data,
+      chatpath:store.get("chatSetting")?.toString()
     };
     saveFileTest(JSON.stringify(fileDataJson));
     store.set("settingScreen", data);

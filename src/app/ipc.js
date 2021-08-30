@@ -1,4 +1,4 @@
-const { CLOSE, SDK_APP_ID,HIDE, DOWNLOADFILE, MAXSIZEWIN, SETTING_FILES_ITEM, MINSIZEWIN, CHECK_FILE_EXIST, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE,SCREEN_KEY } = require("./const/const");
+const { CLOSE, SDK_APP_ID,HIDE, DOWNLOADFILE, MAXSIZEWIN, SETTING_FILES_ITEM, MINSIZEWIN, CHECK_FILE_EXIST, RENDERPROCESSCALL, SHOWDIALOG, OPEN_CALL_WINDOW, CLOSE_CALL_WINDOW, END_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, GET_VIDEO_INFO, SELECT_FILES, DOWNLOAD_PATH, GET_FILE_INFO_CALLBACK, SUPPORT_IMAGE_TYPE,SCREEN_KEY, CHAT_PATH } = require("./const/const");
 const { ipcMain, BrowserWindow, dialog,screen,app, ipcRenderer } = require('electron')
 const fs = require('fs')
 const path = require('path')
@@ -108,17 +108,21 @@ class IPC {
         console.log("检测是否有配置文件:")
         let settingModle = DOWNLOAD_PATH_T
         let screenModle= SCREEN_KEY;
+        let chatModle=CHAT_PATH;
             try {
                 fs.accessSync(SETTING_FILES_ITEM + "/setting.txt")
                     const fileData =  fs.readFileSync(SETTING_FILES_ITEM + "/setting.txt",'utf-8')
                     const fileDataJson = JSON.parse(fileData)
                     !!fileDataJson.selectpath && (settingModle = fileDataJson.selectpath + '\\')
                     !!fileDataJson.screenshot && (screenModle = fileDataJson.screenshot)
+                    !!fileDataJson.chatpath && (chatModle = fileDataJson.chatpath)
+                    console.log()
             } catch (error) {
                 
             }
             store.set('setting', settingModle)
             store.set('settingScreen', screenModle)
+            store.set('chatSetting', chatModle)
             return settingModle
     }
     
