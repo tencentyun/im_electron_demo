@@ -1,4 +1,4 @@
-import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW, HIDE } from "../../app/const/const";
+import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG,GETNATIVEPATH, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW, HIDE } from "../../app/const/const";
 
 import { ipcRenderer, remote } from 'electron';
 
@@ -50,11 +50,13 @@ const downloadFilesByUrl = (url, name, fileid) => {
         }
     })
 }
-const checkFileExist = (path) => {
-    return new Promise<boolean>((resolve) => {
-        ipcRenderer.invoke('RENDERPROCESSCALL', {
+const checkFileExist = (message_msg_id) => {
+    return new Promise<any>((resolve)=>{
+        ipcRenderer.invoke(RENDERPROCESSCALL, {
             type: CHECK_FILE_EXIST,
-            params: path
+            params: {
+                message_msg_id
+            }
         }).then((result) => {
             // ...
             resolve(result)
@@ -63,8 +65,22 @@ const checkFileExist = (path) => {
         })
     })
 }
-
-const getParamsByKey = (key) => {
+const getNativePath = (message_msg_id) =>{
+    return new Promise<string>((resolve)=>{
+        ipcRenderer.invoke(RENDERPROCESSCALL, {
+            type: GETNATIVEPATH,
+            params: {
+                message_msg_id
+            }
+        }).then((result) => {
+            // ...
+            resolve(result)
+        }).catch(err=>{
+            resolve("")
+        })
+    })
+}
+const getParamsByKey = (key)=>{
     const paramsArr = window.location.search.slice(1).split('&');
     let res = ''
     if (paramsArr.length) {
@@ -165,7 +181,39 @@ const returnFileVla = (val, index) => {
     }
 }
 
+const checkfilepath = (type,file_elem_file_id,file_elem_file_name) => {
+    let filelist = window.localStorage.getItem('File_list') ? JSON.parse(window.localStorage.getItem('File_list')) : '';
+    if(!filelist) return false
+    if(type==0 && filelist){
+        //统计同名数
+        let total = 0
+        for (let i=0;i<filelist.length;i++){ 
+            if(filelist[i].samename == file_elem_file_name) {
+                total = total+1
+            }
+        }
+        //console.log(total)
+        return total
+    }else if(filelist && type==1){
+        //告诉有没有下载过
+        for (let i=0;i<filelist.length;i++){ 
+            if(filelist[i].id == file_elem_file_id) {
+                return i+1
+            }
+        }
+    }else if(filelist && type==2){
+        //换本地文件名
+        for (let i=0;i<filelist.length;i++){ 
+            if(filelist[i].id == file_elem_file_id) {
+                //console.log(filelist[i].name)
+                return filelist[i].name
+            }
+        }
+    }
+}
+
 export {
+    checkfilepath,
     isWin,
     minSizeWin,
     maxSizeWin,
@@ -183,5 +231,6 @@ export {
     formatDate,
     returnFileVla,
     hideWin,
-    getParamsByKey
+    getParamsByKey,
+    getNativePath
 }

@@ -125,10 +125,9 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
   console.log('userinfo', userInfo);
   async function onSubmit(values: IUser) {
     console.log(11111)
-    localStorage.setItem("myhead",imgUrl)
     const formData: submitUserInfoData = {
       json_modify_self_user_profile_param: {
-        user_profile_item_face_url: imgUrl,
+        user_profile_item_face_url: localStorage.getItem("myhead_download"),
         user_profile_item_nick_name: values.nickName,
         user_profile_item_gender: +values.gender
       },
@@ -159,8 +158,9 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
     close()
   }
   const { nickName, faceUrl, gender } = userInfo
+
   return (
-    <Modal visible={isShow} disableCloseIcon={closeMould}  disableEscape={closeMould} caption="编辑个人资料" onClose={close}>
+    <Modal visible={isShow}  disableEscape={closeMould} caption="编辑个人资料" onClose={close}>
       <Modal.Body>
         <FinalForm
           onSubmit={onSubmit}
@@ -187,8 +187,8 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
                         <ImgCropper {...input} isShow={(ages)=> {
                           // 修改个人头像重复修改消失问题
                           setCloseMould(true)
-                          setBtnDisabled(ages)
-                        }} afterUpload={afterUpload}></ImgCropper>
+                          //setBtnDisabled(ages)
+                        }}></ImgCropper>
                       </Form.Item>
                     )}
                   </Field>

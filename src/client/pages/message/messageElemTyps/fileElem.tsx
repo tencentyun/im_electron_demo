@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { checkFileExist, downloadFilesByUrl, showDialog,returnFileVla } from "../../../utils/tools";
+import { checkFileExist, downloadFilesByUrl, showDialog,returnFileVla,checkfilepath, getNativePath } from "../../../utils/tools";
 import { cancelSendMsg } from "../api";
 import { shell } from 'electron'
 import { Icon,Bubble, message as teaMessage } from "tea-component";
 import { ipcRenderer } from "electron";
 import Store from "electron-store";
+import { updateMessages } from "../../../store/actions/message";
 
 const store = new Store()
 export const getFilePath = (fileName) => {
@@ -13,25 +14,33 @@ export const getFilePath = (fileName) => {
 }
 
 const FileElem = (props: any): JSX.Element => {
-    const { message, element, index } = props
-    const { message_conv_id, message_conv_type, message_status, message_msg_id, message_is_from_self } = message
+    const { message, element, index,isshow } = props
+    const { message_conv_id, message_conv_type,  message_msg_id, message_is_from_self} = message
     const { file_elem_file_name, file_elem_file_size, file_elem_file_path, file_elem_url,file_elem_file_id } = element
     const { uploadProgressList } = useSelector((state: State.RootState) => state.historyMessage);
-    const progressKey = `${message_msg_id}_${index}`
-    const uploadProgress = uploadProgressList.get(progressKey);
+    
     const [FileHTML, setFileHTML] = useState(null);
     const [isDownloading,setiSDownloading] = useState(false)
-    const [fileid,setFileID] = useState(message_msg_id)
-    let backgroundStyle = ""
-    let percentage = 0
-
-    if (message_status === 1 && uploadProgress) {
-        const { cur_size, total_size } = uploadProgress
-        percentage = Math.floor((cur_size / total_size) * 100)
-        backgroundStyle = message_status === 1 ? `linear-gradient(to right, #D4FFEB ${percentage}%, white 0%, white 100%)` : ""
-    }
-
+    const [fileid,] = useState(message_msg_id)
+    const [message_status,setmessage_status] = useState(message.message_status)
+    const dispatch = useDispatch()
+    const [backgroundStyle,setbackgroundStyle] = useState("")
+    const [percentage,setpercentage] = useState(0)
+    const [exits,setexits] = useState(false)
+    const progressKey = `${message_msg_id}_${index}`
+    const uploadProgress = uploadProgressList.get(progressKey);
+    useEffect(()=>{
+        if (uploadProgress) {
+            const { cur_size, total_size } = uploadProgress
+            setpercentage(Math.floor((cur_size / total_size) * 100))
+            setbackgroundStyle(message_status === 1 ? `linear-gradient(to right, #D4FFEB ${percentage}%, white 0%, white 100%)` : "")
+            
+        }
+        setmessage_status(message.message_status)
+    },[message])
     const calcuSize = () => {
+        //console.log(file_elem_file_size)
+        getHandleElement()
         return conver(file_elem_file_size)
     }
     const conver = (limit) => {
@@ -62,17 +71,27 @@ const FileElem = (props: any): JSX.Element => {
     }
     const getFileTypeName = () => {
         const match = file_elem_file_name.match(/\.(\w+)$/)
-        return match ? match[1] : "unknow"
-    }
-    const handleOpen = () => {
-        const p = getFilePath(checkfilepath(2))
-        try {
-            shell.openPath(p).catch(err => {
-                shell.showItemInFolder(p)
-            })
-        } catch {
-
+        const arrayList = ['txt','pdf','doc','docx','zip','xlsx','xls','doc','docx','exe','ppt','pptx']
+        if(arrayList.indexOf(match[1])>-1){
+            return match ? match[1]+'-' : "unknow"
+        }else{
+            return match ? match[1] : "unknow"
         }
+    }
+
+    const handleOpen = async () => {
+        let data = await checkFileExist(message_msg_id)
+        if(data){
+            const { path } = data;
+            try {
+                shell.openPath(path).catch(err => {
+                    shell.showItemInFolder(path)
+                })
+            } catch {
+    
+            }
+        }
+        
     }
     const handleCancel = async () => {
         const { data: { json_params, code } } = await cancelSendMsg({
@@ -83,26 +102,35 @@ const FileElem = (props: any): JSX.Element => {
         });
 
         if (code === 0) {
-            // dispatch(updateMessages({
-            //     convId,
-            //     message: JSON.parse(json_params)
-            // }))
+            dispatch(updateMessages({
+                convId: message_conv_id,
+                message: JSON.parse(json_params)
+            }))
         }
     }
-    const getHandleElement = async () => {
-        let exits: boolean = await checkFileExist(getFilePath(checkfilepath(2)))
-        console.log(exits)
-        if (message_status === 1) return <Icon type="dismiss" className="message-view__item--file___close" onClick={handleCancel} />
-        if (message_status === 2) {
-            if (!exits) return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} onClick={savePic}></div>
-                else return <div className="message-view__item--file___open" onClick={handleOpen}></div>
+    const getHandleElement = () => {
+        
+        console.log('当前文件状态：',exits,message_status,percentage,message_msg_id)
+        if (message_status === 1) {
+            console.log("当前状态",message_status)
+            return <Icon type="dismiss" className="message-view__item--file___close" onClick={handleCancel} />
         }
+        else if (message_status === 2) {
+            console.log("当前",message_status)
+            if (exits) {
+                return <div className="message-view__item--file___open" title="打开文件" onClick={handleOpen}></div>
+            }else {
+                return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} title="下载" onClick={savePic}></div>
+            }
+        }
+       
     }
     const getDetailText = () => {
         if (message_status === 1) return <div className="message-view__item--file___content____size">{calcuSize()} 加速上传中 {percentage}%</div>
         if (message_status === 2) return <div className="message-view__item--file___content____size">{calcuSize()}</div>
     }
     const handleProgress = (event,data)=>{
+        
         if(data === 100){
             setiSDownloading(false)
         }
@@ -113,10 +141,9 @@ const FileElem = (props: any): JSX.Element => {
     const removeProgressListener = ()=>{
         ipcRenderer.off(fileid,handleProgress)
     }
-    const downloadPic = (url,file_elem_file_name) => {
+    const downloadPic = (url,file_elem_file_name,file_id) => {
         try {
             setiSDownloading(true)
-            
             downloadFilesByUrl(url,file_elem_file_name,fileid)
         } catch (e) {
             teaMessage.error({
@@ -124,66 +151,44 @@ const FileElem = (props: any): JSX.Element => {
             })
         }
     }
-    const checkfilepath = (type) => {
-        let filelist = window.localStorage.getItem('File_list') ? JSON.parse(window.localStorage.getItem('File_list')) : '';
-        if(!filelist) return false
-        if(type==0 && filelist){
-            //统计同名数
-            let total = 0
-            for (let i=0;i<filelist.length;i++){ 
-                if(filelist[i].name == file_elem_file_name) {
-                    total = total+1
-                }
-            }
-            return total
-        }else if(filelist && type==1){
-            //告诉有没有下载过
-            for (let i=0;i<filelist.length;i++){ 
-                if(filelist[i].id == file_elem_file_id) {
-                    return i+1
-                }
-            }
-        }else if(filelist && type==2){
-            //换本地文件名
-            for (let i=0;i<filelist.length;i++){ 
-                if(filelist[i].id == file_elem_file_id) {
-                    console.log(filelist[i].name)
-                    return filelist[i].name
-                }
-            }
-        }
-    }
+    
+    
     const savePic = () => {
-        console.log('下载地址',file_elem_url)
-        if(file_elem_url){
-            let filelist = []
-            //缓存文件名，给另存为用
-            if(window.localStorage.getItem('File_list')){
-                filelist = JSON.parse(window.localStorage.getItem('File_list'))
-                filelist.push({
-                    url:file_elem_url,
-                    name:(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+checkfilepath(0)+').'+returnFileVla(file_elem_file_name,1),
-                    id:file_elem_file_id
-                })
-                downloadPic(file_elem_url,(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+Number(checkfilepath(0))+').'+returnFileVla(file_elem_file_name,1))
-                window.localStorage.setItem('File_list',JSON.stringify(filelist));
-            }else{
-                filelist = [
-                    {
-                        url:file_elem_url,
-                        name:file_elem_file_name,
-                        id:file_elem_file_id
-                    }
-                ]
-                downloadPic(file_elem_url,file_elem_file_name)
-                window.localStorage.setItem('File_list',JSON.stringify(filelist));
-            }
-        }
+        // console.log('下载地址',file_elem_url)
+        // if(file_elem_url){
+        //     let filelist = []
+        //     //缓存文件名，给另存为用
+        //     if(window.localStorage.getItem('File_list') && window.localStorage.getItem('File_list')!= 'null'){
+        //         filelist = JSON.parse(window.localStorage.getItem('File_list'))
+        //         filelist.push({
+        //             url:file_elem_url,
+        //             name:(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+checkfilepath(0,file_elem_file_id,file_elem_file_name)+').'+returnFileVla(file_elem_file_name,1),
+        //             samename:file_elem_file_name,
+        //             id:file_elem_file_id
+        //         })
+        //         downloadPic(file_elem_url,(returnFileVla(file_elem_file_name,0)||file_elem_file_name)+'('+Number(checkfilepath(0,file_elem_file_id,file_elem_file_name))+').'+returnFileVla(file_elem_file_name,1))
+        //         window.localStorage.setItem('File_list_save',JSON.stringify(filelist));
+        //     }else{
+        //         filelist = [
+        //             {
+        //                 url:file_elem_url,
+        //                 name:file_elem_file_name,
+        //                 samename:file_elem_file_name,
+        //                 id:file_elem_file_id
+        //             }
+        //         ]
+                
+        //         window.localStorage.setItem('File_list_save',JSON.stringify(filelist));
+        //     }
+        // }
+        downloadPic(file_elem_url,file_elem_file_name,message_msg_id)
     }
+
     const setHtml = async () => {
         const html = await getHandleElement()
         setFileHTML(html)
     }
+    
     useEffect(() => {
         setHtml()
     }, [isDownloading])
@@ -195,23 +200,29 @@ const FileElem = (props: any): JSX.Element => {
             removeProgressListener()
         }
     },[fileid])
-    const item = () => {
-        return (
-            <div className="message-view__item--file" style={{ background: backgroundStyle }} onDoubleClick={showFile}>
-                <div className="message-view__item--file___ext">{getFileTypeName()}</div>
-                <div className="message-view__item--file___content">
-                    <div className="message-view__item--file___content____name">
-                    <Bubble content={displayName()}>{displayName()}</Bubble>
-                    </div>
-                    {getDetailText()}
+    useEffect(()=>{
+        check()
+    },[message_msg_id,isDownloading])
+    const check = async ()=>{
+        let ex = await checkFileExist(message_msg_id)
+        setexits(ex)
+    }
+    return (
+        <div className="message-view__item--file" style={{ background: backgroundStyle }} onDoubleClick={showFile}>
+            <div className={`message-view__item--file___ext message-view__item--file___${ getFileTypeName()}`}>{getFileTypeName().substring(getFileTypeName().length-1,getFileTypeName().length) == '-'?'':getFileTypeName()}</div>
+            <div className="message-view__item--file___content">
+                <div className="message-view__item--file___content____name">
+                <Bubble content={displayName()}>{displayName()}</Bubble>
                 </div>
-                <div className="message-view__item--file___handle">
-                    {FileHTML}
-                </div>
+                {getDetailText()}
             </div>
-        )
-    };
-    return item();
+            <div className="message-view__item--file___handle">
+                {
+                    getHandleElement()
+                }
+            </div>
+        </div>
+    )
 }
 
 export default FileElem;

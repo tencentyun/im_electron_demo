@@ -229,8 +229,58 @@
                 height: 18px;
                 margin-left: 10px;
                 margin-top: 35px;
+                margin-right:10px;
                 background-image: url('../../assets/icon/file-message.svg');
                 background-size: 18px 18px;
+                background-repeat: no-repeat;
+            }
+            &___zip- {
+                margin-left: 10px;
+                margin-top: 13px;
+                background-image: url('../../assets/icon/zip.svg');
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            &___xlsx-,&___xls- {
+                margin-left: 10px;
+                margin-top: 13px;
+                background-image: url('../../assets/icon/excel.svg');
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            &___docx-,&___doc- {
+                margin-left: 6px;
+                margin-top: 12px;
+                background-image: url('../../assets/icon/doc.svg');
+                background-size: 46px 46px;
+                background-repeat: no-repeat;
+            }
+            &___ppt-,&___pptx- {
+                margin-left: 10px;
+                margin-top: 13px;
+                background-image: url('../../assets/icon/ppt.svg');
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            &___exe- {
+                margin-left: 10px;
+                margin-top: 13px;
+                background-image: url('../../assets/icon/exe.svg');
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            &___pdf- {
+                margin-left: 10px;
+                margin-top: 13px;
+                background-image: url('../../assets/icon/pdf.svg');
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            &___txt- {
+                margin-left: 10px;
+                margin-top: 13px;
+                background-image: url('../../assets/icon/txt.svg');
+                background-size: 40px 40px;
                 background-repeat: no-repeat;
             }
             &___download {

@@ -1,5 +1,5 @@
 
-const duration = 3 * 60;
+const duration = 1 * 60;
 
 const isInFiveTime = (curTime, baseTime) => curTime - baseTime <= duration;
 

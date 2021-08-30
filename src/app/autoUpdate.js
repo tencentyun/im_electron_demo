@@ -1,17 +1,17 @@
 const { autoUpdater  }  = require("electron-updater");
 const { ipcMain } = require('electron')
-
+import { getParamsByKey } from '../../utils/tools';
 let appWindow = null;
 
 let feedUrl = '';//http://oaim.crbank.com.cn:30003/_download/
-const env = process?.env?.NODE_ENV?.trim()
+const env = getParamsByKey('NODE_ENV');
 //判断系统位数
 let agent = navigator.userAgent.toLowerCase();
 // let isMac = function() {
 //     return /macintosh|mac os x/i.test(navigator.userAgent);
 // }();
 //  const env = 'prod'
-if (env === 'development') {
+if (env === 'development' || env === 'test') {
     if (agent.indexOf("win32") >= 0 || agent.indexOf("wow32") >= 0) {
         feedUrl = 'https://oaim.uat.crbank.com.cn:30003/_download_32/'
     }else if (agent.indexOf("win64") >= 0 || agent.indexOf("wow64") >= 0) {

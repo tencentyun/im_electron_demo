@@ -38,12 +38,12 @@
             }
             .unread {
                 position: absolute;
-                width: 12px;
-                height: 12px;
+                width: 14px;
+                height: 14px;
                 background-color: #FF584C;
                 right: -6px;
-                top: 0;
-                border-radius: 6px;
+                top: -5px;
+                border-radius: 7px;
                 font-size: 10px;
                 transform: scale(10 / 12);
                 transform-origin: left center;
