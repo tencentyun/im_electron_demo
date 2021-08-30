@@ -9,7 +9,7 @@ import "./AccountSetting.scss";
 import { clearConversation } from "../../store/actions/conversation";
 import { clearHistory } from "../../store/actions/message";
 import { DOWNLOAD_PATH } from "../../../app/const/const";
-import {Modal } from "tea-component";
+import { Modal } from "tea-component";
 
 import {
   recordShortcut_keydown,
@@ -17,7 +17,7 @@ import {
   registerShortcut,
   unregisterShortcut,
 } from "./ShortcutSetting";
-const { ipcRenderer,ipcMain } = require("electron");
+const { ipcRenderer, ipcMain } = require("electron");
 import Store from "electron-store";
 const store = new Store();
 import { version, description } from "../../../../package.json";
@@ -53,25 +53,26 @@ export const AccountSetting = (): JSX.Element => {
     unregisterShortcut(inputValue);
   };
 
-
   useEffect(() => {
-    ipcRenderer.on('saveSuccess',function(){
-      const yes= Modal.confirm({
+    const initVal =
+      window.localStorage.getItem("msgBother") == "true" ? true : false;
+    setMsgBother(initVal);
+    ipcRenderer.on("saveSuccess", function () {
+      console.log("yyyyyyyyyy")
+      setChatsetting(store.get("chatSetting")?.toString());
+      Modal.confirm({
         message: "更换聊天记录存储位置，将在下次登录生效",
         description: "",
         okText: "确定",
         cancelText: "取消",
       });
     });
-    const initVal =
-      window.localStorage.getItem("msgBother") == "true" ? true : false;
-    setMsgBother(initVal);
-    let sett = setInterval(() => {
+    ipcRenderer.on("saveFileTest", function () {
       setSetting(store.get("setting")?.toString()?.replace(/\\$/, ""));
-      setChatsetting(store.get("chatSetting")?.toString());
-    }, 500);
+    });
+
     return function () {
-      clearInterval(sett);
+      ipcRenderer.off("saveFileTest", () => {});
     };
   }, []);
 

@@ -11,23 +11,21 @@ import {
 import './group-result.scss';
 
 export const GroupResult = (props) => {
-    const { result, onClose } = props;
+    const { result, onClose,myGroupId } = props;
     const directToMsgPage = useMessageDirect();
 
-    const handleItemClick =async (profile) => {
-        const list = await getJoinedGroupList();
-        if(list){
-            const arr = list
-                if(arr.length){
-                let someUserList =  arr.some(item => item.group_detial_info_owener_identifier == profile.group_detial_info_owener_identifier)
-                someUserList &&  directToMsgPage({
-                    convType: 2,
-                    profile,
-                    beforeDirect: onClose
-                })
-                return true
+    const handleItemClick = (profile) => {
+                if(myGroupId.length){
+                    let someUserList = myGroupId.some(item => item == profile.group_base_info_group_id)
+                    if(someUserList){
+                        directToMsgPage({
+                            convType: 2,
+                            profile,
+                            beforeDirect: onClose
+                        })
+                        return true
+                    }
                 }
-        }
         message.warning({
             content: "您不是群成员无法访问！ ",
         })

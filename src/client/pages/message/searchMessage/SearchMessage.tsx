@@ -168,7 +168,7 @@ export const SearchMessage = (props) => {
                         <ContacterResult result={searchResult.friendsResult} onClose={handleModalClose} />
                     </TabPanel>
                     <TabPanel id="group">
-                        <GroupResult result={searchResult.groupResult} onClose={handleModalClose} />
+                        <GroupResult myGroupId={props.myGroupId} result={searchResult.groupResult} onClose={handleModalClose} />
                     </TabPanel>
                     <TabPanel id="message">
                         <MessageResult result={searchResult.messageResult} keyWords={inputValue} onClose={handleModalClose} />
@@ -177,7 +177,7 @@ export const SearchMessage = (props) => {
                         <ContactResult result={searchResult.contactResult} onClose={handleModalClose} />
                     </TabPanel>
                     <TabPanel id="allgroup">
-                        <GroupAllResult result={searchResult.groupAllResult} onClose={handleModalClose} />
+                        <GroupAllResult myGroupId={props.myGroupId} result={searchResult.groupAllResult} onClose={handleModalClose} />
                     </TabPanel>
                 </Tabs>
             </section>

@@ -60,7 +60,7 @@ const _createWindow = (TencentIM) => {
   setSaveFileIPC();
 
   //选择路径Ipc
-  selectPathIPC();
+  selectPathIPC(mainWindow);
   //选择聊天存储路径
   selectChatPath(mainWindow);
   // 重设快捷键

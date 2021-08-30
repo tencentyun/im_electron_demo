@@ -30,6 +30,7 @@ export const GroupAllResult = (props) => {
                                         key={index}
                                         isShowBtn={true}
                                         btnText= "申请入群"
+                                        myGroupId={props.myGroupId}
                                         faceUrl={FaceUrl}
                                         nickName={groupName}
                                         depName = { groupName }

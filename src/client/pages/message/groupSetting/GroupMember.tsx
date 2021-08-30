@@ -262,6 +262,7 @@ export const GroupMember = (props: {
       </div>
 
       <GroupMemberListDrawer
+        groupId={groupId}
         popupContainer={popupContainer}
         dialogRef={dialogRef}
       />

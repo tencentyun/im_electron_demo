@@ -115,7 +115,7 @@ export const App = () => {
         config_path: elestore.store.chatSetting,
       };
       console.log(eleConfig,"eleConfig ")
-      timRenderInstance.TIMInit(JSON.stringify(eleConfig)).then(async ({ data }) => {
+      timRenderInstance.TIMInit(eleConfig).then(async ({ data }) => {
         if (data === 0) {
           isInited = true;
           console.log("初始化成功");

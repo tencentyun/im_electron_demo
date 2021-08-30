@@ -10,6 +10,7 @@ type Props = {
     userID?:string;
     groupID?:string;
     depName?: string;
+    myGroupId?:Array<string>;
     btnText?:string;
     addOptional?:number;
     isShowBtn?:boolean;
@@ -24,7 +25,7 @@ enum TIMGroupAddOption {
 };
 
 export const ResultItem = (props: Props): JSX.Element => {
-    const { faceUrl,  nickName, lastMsg, onClick,userID,groupID ,depName, btnText, isShowBtn = false, submit, addOptional = -1} = props;
+    const { faceUrl,  nickName, lastMsg, onClick,userID,groupID ,depName, btnText, isShowBtn = false, submit, addOptional = -1, myGroupId} = props;
 
     return (
         <div className='result-content'>
@@ -39,13 +40,21 @@ export const ResultItem = (props: Props): JSX.Element => {
             isShowBtn && 
             <div className='result-right'>
                 <div className='result-right__test'> 
-                   {TIMGroupAddOption[addOptional]}
+                   {TIMGroupAddOption[addOptional] || "未知"}
                 </div>
                 {
-                    addOptional != 0 && 
-                    <Button type="primary" onClick={()=> submit(groupID)}>
-                        {btnText}
-                    </Button>
+                   addOptional > 0  && 
+                       (
+                        myGroupId.some(item => item == groupID) ? 
+
+                        <Button type="pay" >
+                                本群成员
+                        </Button> : 
+                        
+                        <Button type="primary" onClick={()=> submit(groupID)}>
+                            { btnText}
+                        </Button>
+                       )
                 }
             </div>
         }

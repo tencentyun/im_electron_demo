@@ -4,7 +4,7 @@ const Store = require("electron-store");
 const fs = require('fs');
 const path = require("path")
 const store = new Store();
-const selectPathIPC = () => {
+const selectPathIPC = (createWindow) => {
     ipcMain.on("selectpath", function (event, data) {
         dialog.showOpenDialog({
           title: '选择存放文件',
@@ -16,19 +16,21 @@ const selectPathIPC = () => {
                 screenshot:store.get("settingScreen"),
                 chatpath:store.get("chatSetting")
             }
-           !!saveTo.filePaths[0]  && saveFileTest(JSON.stringify(setting))
+           !!saveTo.filePaths[0]  && saveFileTest(JSON.stringify(setting), createWindow)
         });
       });
 }
 
 
-const saveFileTest = (saveTo) => {
+const saveFileTest = (saveTo, createWindow) => {
     mkdirsSync(SETTING_FILES_ITEM)
     fs.writeFile(SETTING_FILES_ITEM + "/setting.txt", saveTo, function(err) {
         if(err) {
             return console.log(err);
         }
         store.set('setting', JSON.parse(saveTo).selectpath)
+        console.log("createWindow", createWindow)
+        createWindow.webContents.send("saveFileTest")
         console.log("The file was saved!");
     });
 }

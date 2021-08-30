@@ -45,7 +45,7 @@
   &--table {
     & .tea-table__body {
       border: 0;
-      overflow-y: overlay !important;
+      overflow-y: hidden !important;
       overflow-x: hidden;
 
       &:hover {
@@ -129,5 +129,25 @@
   }
   .member-list-search{
     padding: 10px 20px 0 20px;
+  }
+}
+
+
+.member-offine{
+  position: relative;
+  &__item{
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  &__offline{
+    background: #adadad;
+  }
+  &__online{
+    background: #09f175;
   }
 }
