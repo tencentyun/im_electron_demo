@@ -23,6 +23,7 @@ const SUPPORT_IMAGE_TYPE = ["png", "jpg", "gif", "PNG", "JPG", "GIF"];
 const SDK_APP_ID = 1400529075; //公有云SDK app id
 const HIDE = "HIDE";
 const SCREEN_KEY = "Ctrl+Shift+X";
+const GETNATIVEPATH = "GETNATIVEPATH"
 module.exports = {
   MINSIZEWIN,
   RENDERPROCESSCALL,
@@ -46,5 +47,6 @@ module.exports = {
   END_CALL_WINDOW,
   SDK_APP_ID,
   HIDE,
-  SCREEN_KEY
+  SCREEN_KEY,
+  GETNATIVEPATH
 };

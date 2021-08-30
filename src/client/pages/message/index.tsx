@@ -107,9 +107,10 @@ export const Message = (): JSX.Element => {
         }else{
             dispatch(replaceRouter(false))
         }
-        indervel = setInterval(()=>{
-            setStatusIndervel(v=>v+1)
-        },1000*5)
+        // 人为增加工作量！
+        // indervel = setInterval(()=>{
+        //     setStatusIndervel(v=>v+1)
+        // },1000*5)
         getUid()
         return () => {
             clearInterval(indervel)

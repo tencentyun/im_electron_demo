@@ -96,7 +96,7 @@ export const GroupVideo = (props) => {
             ref.current.style.display = 'none';
         }
 
-        setUserOrder(uid, isOpenCamera);
+        // setUserOrder(uid, isOpenCamera);
     }
 
     const onUserAudioAvailable = (uid, available) => setUserAudioAvailable(uid, available === 1);

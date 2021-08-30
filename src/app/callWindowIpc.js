@@ -14,6 +14,7 @@ const getSrceenSize = () => {
 class CallWindowIpc {
     callWindow = null;
     imWindow = global.sharedObject.appWindow;
+    readyToShowWindow = false;
 
     constructor() {
         this.mount();
@@ -26,7 +27,7 @@ class CallWindowIpc {
 
     destroy() {
         this.offEventListiner();
-        this.mount();
+        this.addEventListiner();
     }
 
     createWindow() {
@@ -61,6 +62,12 @@ class CallWindowIpc {
                 })
             );
         }
+
+        callWindow.on('ready-to-show', () => {
+            this.readyToShowWindow = true;  
+        });
+
+        this.readyToShowWindow = false;
 
         this.callWindow = callWindow;
     }
@@ -137,9 +144,28 @@ class CallWindowIpc {
                 this.callWindow.setSize(400, 650);
                 this.callWindow.setPosition(Math.floor((screenSize.width - 400) / 2), Math.floor((screenSize.height - 650) / 2));
             }
-            this.callWindow.show();
-            this.callWindow.webContents.send('pass-call-data', params);
-            isDev && this.callWindow.webContents.openDevTools();
+
+            const showWindow = (timer) => {
+                this.callWindow.show();
+                this.callWindow.webContents.send('pass-call-data', params);
+                isDev && this.callWindow.webContents.openDevTools();
+                timer && clearInterval(timer);
+            }
+
+            if(this.readyToShowWindow) {
+                showWindow();
+            } else {
+                const timer = setInterval(() => {
+                    if(this.readyToShowWindow) {
+                        showWindow(timer);
+                    }
+                }, 10);
+
+            }
+        });
+
+        this.callWindow.on('close', () => {
+            this.createWindow();
         });
 
         this.callWindow.on('closed', () => {

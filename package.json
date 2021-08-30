@@ -97,7 +97,7 @@
     "ffprobe": "^1.1.2",
     "file-type": "^16.5.2",
     "fluent-ffmpeg": "^2.1.2",
-    "im_electron_sdk": "^1.2.36",
+    "im_electron_sdk": "^1.2.38",
     "image-size": "^1.0.0",
     "node-fetch": "^2.6.1",
     "node-gyp": "^7.1.2",
