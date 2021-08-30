@@ -60,11 +60,9 @@ export const AccountSetting = (): JSX.Element => {
     ipcRenderer.on("saveSuccess", function () {
       console.log("yyyyyyyyyy")
       setChatsetting(store.get("chatSetting")?.toString());
-      Modal.confirm({
+      Modal.success({
         message: "更换聊天记录存储位置，将在下次登录生效",
         description: "",
-        okText: "确定",
-        cancelText: "取消",
       });
     });
     ipcRenderer.on("saveFileTest", function () {
