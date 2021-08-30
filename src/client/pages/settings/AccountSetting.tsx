@@ -45,16 +45,19 @@ export const AccountSetting = (): JSX.Element => {
   };
   useEffect(() => {
     const initVal =
-      window.localStorage.getItem("msgBother") == "true" ? true : false;
+    window.localStorage.getItem("msgBother") == "true" ? true : false;
     setMsgBother(initVal);
-    let sett = setInterval(() => {
+
+    ipcRenderer.on('saveFileTest',function(){
         setSetting(store.get("setting")?.toString()?.replace(/\\$/,""));
-    }, 500);
+    });
 
     return function () {
-      clearInterval(sett);
+      ipcRenderer.off('saveFileTest',()=>{})
     };
   }, []);
+
+
 
   const logOutHandler = async () => {
     await timRenderInstance.TIMLogout();

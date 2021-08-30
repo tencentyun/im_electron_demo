@@ -59,7 +59,7 @@ const _createWindow = (TencentIM) => {
   setSaveFileIPC();
 
   //选择路径Ipc
-  selectPathIPC();
+  selectPathIPC(mainWindow);
   // 重设快捷键
   setkeyBoard((mainWindow) => {
     registerCut(mainWindow);
