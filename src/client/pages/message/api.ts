@@ -137,7 +137,7 @@ export const getGroupInfoList = async (groupIdList: Array<string>) => {
     return []
   }
   const groupInfoList = JSON.parse(json_param);
-  // console.log('groupInfoList', groupInfoList)
+  console.log('groupInfoList', groupInfoList)
 
   return groupInfoList.map((item) => item.get_groups_info_result_info);
 };
@@ -287,7 +287,7 @@ export const getMsgList = async (convId, convType, lastMsg = null) => {
     params: {
       msg_getmsglist_param_last_msg: lastMsg,
       msg_getmsglist_param_count: HISTORY_MESSAGE_COUNT,
-      msg_getmsglist_param_is_remble: false
+      msg_getmsglist_param_is_remble: true
     },
   });
 
@@ -347,7 +347,7 @@ export const sendForwardMessage = async ({
     params: {
       ...message,
       message_sender: userId,
-      message_is_peer_read: false,
+      message_is_peer_read: true,
     },
     user_data: userData,
   });
