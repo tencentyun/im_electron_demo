@@ -23,7 +23,7 @@ import { ipcRenderer, clipboard, nativeImage } from 'electron';
 import chooseImg from '../../assets/icon/choose.png'
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
-import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer } from './message-input-util';
+import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer, generateTemplateElement } from './message-input-util';
 import MaxLength from 'braft-extensions/dist/max-length'
 
 const options = {
@@ -109,11 +109,23 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [atUserMap, setAtUserMap] = useState({});
     const [isZHCNAndFirstPopup, setIsZHCNAndFirstPopup] = useState(false);
     //@ts-ignore
-    const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
     const videoPicker = React.useRef(null);
     const soundPicker = React.useRef(null);
+
+    const { userId, signature, nickName, faceUrl, role, gender, addPermission } = useSelector((state: State.RootState) => state.userInfo);
+    const userProfile = {
+        ser_profile_role: role,
+        user_profile_face_url: faceUrl,
+        user_profile_nick_name: nickName,
+        user_profile_identifier: userId,
+        user_profile_gender: gender,
+        user_profile_self_signature: signature,
+        user_profile_add_permission: addPermission
+    }
+
+
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
     console.log(editorState)
@@ -134,7 +146,19 @@ export const MessageInput = (props: Props): JSX.Element => {
             }
             const rawData = editorState.toRAW();
             let messageElementArray = getMessageElemArray(rawData, videoInfos);
-            console.log(messageElementArray, "调试内容")
+            console.log(messageElementArray, "调试内容");
+
+            const sendMsgSuccessCallback = ([res, userData]) => {
+                const { code, json_params, desc } = res;
+
+                if (code === 0) {                
+                    dispatch(updateMessages({
+                        convId,
+                        message: JSON.parse(json_params)
+                    }))
+                }
+            };
+
             if (messageElementArray[0] && messageElementArray[0].text_elem_content) {
                 messageElementArray[0].text_elem_content = messageElementArray[0].text_elem_content.substring(0, options.defaultValue)
             }
@@ -151,39 +175,41 @@ export const MessageInput = (props: Props): JSX.Element => {
                     messageElementArray = [obj, ...outerlement]
                 }
 
-                const fetchList = messageElementArray.map((v => {
-                    if (v.elem_type === 0) {
+                messageElementArray.forEach( async v => {
+                    if(v.elem_type === 0) {
                         const atList = getAtList(v.text_elem_content);
-                        return sendMsg({
+                        const { data: messageId } = await sendMsg({
                             convId,
                             convType,
                             messageElementArray: [v],
                             userId,
-                            messageAtArray: atList
+                            messageAtArray: atList,
+                            callback: sendMsgSuccessCallback
                         });
+                        const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+                        dispatch(updateMessages({
+                            convId,
+                            message: templateElement
+                        }));
+                        return
                     }
-                    return sendMsg({
+                    const { data: messageId } = await sendMsg({
                         convId,
                         convType,
                         messageElementArray: [v],
                         userId,
+                        callback: sendMsgSuccessCallback
                     });
-                }));
+
+                    const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+                    dispatch(updateMessages({
+                        convId,
+                        message: templateElement
+                    }));
+                });
 
                 setEditorState(ContentUtils.clear(editorState));
-                const results = await Promise.all(fetchList);
-                console.log(results, 'result========================')
-                for (const res of results) {
-                    console.log(res, '0000000000000000000000')
-                    const { data: { code, json_params, desc } } = res;
-                    if (code === 0) {
-                        dispatch(updateMessages({
-                            convId,
-                            message: JSON.parse(json_params)
-                        }))
-                    }
-                    // setEditorState(ContentUtils.clear(editorState));
-                }
+
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
@@ -192,15 +218,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         setAtUserMap({});
         setVideoInfos([]);
     }
-    // const getData = async () => {
-    //     const response = await getConversionList();
-    //     dispatch(replaceConversaionList(response))
-    //     if (response.length) {
-    //         dispatch(updateCurrentSelectedConversation(response[0]))
-    //     } else {
-    //         dispatch(updateCurrentSelectedConversation(null))
-    //     }
-    // }
+    
     const getAtList = (text: string) => {
         const list = text.match(/@[a-zA-Z0-9_\u4e00-\u9fa5]+/g);
         const atNameList = list ? list.map(v => v.slice(1)) : [];

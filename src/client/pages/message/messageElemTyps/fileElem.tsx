@@ -37,7 +37,7 @@ const FileElem = (props: any): JSX.Element => {
             
         }
         setmessage_status(message.message_status)
-    },[message])
+    },[uploadProgress, message, message_status])
     const calcuSize = () => {
         //console.log(file_elem_file_size)
         getHandleElement()

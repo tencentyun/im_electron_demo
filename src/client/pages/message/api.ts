@@ -8,6 +8,7 @@ type SendMsgParams<T> = {
   messageElementArray?: T[];
   userData?: string;
   userId: string;
+  callback?: Function;
   messageAtArray?: string[];
   message?: State.message
 };
@@ -314,11 +315,12 @@ export const sendMsg = async ({
   messageElementArray,
   userId,
   userData,
+  callback,
   messageAtArray,
 }: SendMsgParams<
   TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg | MergeMsg | CustomMsg
 >): Promise<MsgResponse> => {
-  const res = await timRenderInstance.TIMMsgSendMessage({
+  const res = await timRenderInstance.TIMMsgSendMessageV2({
     conv_id: convId,
     conv_type: convType,
     params: {
@@ -326,8 +328,10 @@ export const sendMsg = async ({
       message_sender: userId,
       message_group_at_user_array: messageAtArray,
     },
+    callback,
     user_data: userData,
   });
+  console.log('================res============', res);
   return res;
 };
 
