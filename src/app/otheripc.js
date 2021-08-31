@@ -7,11 +7,11 @@ function openWindow() {
   }
 }
 function setTaryTitle() {
-//   appTray.setTitle(num === 0 ? "" : `${num}`);
-//   appWindow.flashFrame(true);
-//   if (!hasFlash) {
-//     trayFlash();
-//   }
+  //appTray.setTitle(num === 0 ? "" : `${num}`);
+  appWindow.flashFrame(true);
+  // if (!hasFlash) {
+  //   trayFlash();
+  // }
 }
 const setOtherIPC = (win) => {
     appWindow = win
