@@ -31,7 +31,8 @@ export const AccountSetting = (): JSX.Element => {
   }
 
   useEffect(() => {
-    const initVal = window.localStorage.getItem('msgBother') == 'true' ? true : false
+    console.log(msgBother)
+    const initVal =  !window.localStorage.getItem('msgBother') || window.localStorage.getItem('msgBother') == 'true' ? true : false
     setMsgBother(initVal)
   }, [])
   
@@ -58,7 +59,7 @@ export const AccountSetting = (): JSX.Element => {
           </div>
           <div className="setting-item">
             <span>版本信息</span>
-            <span>V1.0.2</span>
+            <span>V1.0.3</span>
           </div>
           <div className="setting-item">
             <span>版权所有</span>
