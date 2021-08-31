@@ -104,9 +104,10 @@ export const Message = (): JSX.Element => {
         }else{
             dispatch(replaceRouter(false))
         }
-        indervel = setInterval(()=>{
-            setStatusIndervel(v=>v+1)
-        },1000*5)
+        // 人为增加工作量！
+        // indervel = setInterval(()=>{
+        //     setStatusIndervel(v=>v+1)
+        // },1000*5)
         getUid()
         return () => {
             clearInterval(indervel)
@@ -354,7 +355,7 @@ export const Message = (): JSX.Element => {
     if (isLoading) {
         return <Myloader />
     }
-
+    console.log('会话列表',conversationList)
     for (var i=0;i< conversationList.length;i++){
         if(conversationList[i].conv_id === localStorage.getItem("uid") && localStorage.getItem("myhead")){
             conversationList[i].conv_profile.user_profile_face_url = localStorage.getItem("myhead")
@@ -386,7 +387,7 @@ export const Message = (): JSX.Element => {
                                         <div className="conversion-list__item--time-wrapper">
                                             <span className="conversion-list__item--nick-name">{nickName || conv_id}</span>
                                             {
-                                                conv_last_msg && <span className="conversion-list__item--format-time">{timeFormat(conv_last_msg.message_client_time * 1000, false)}</span>
+                                                conv_last_msg && <span className="conversion-list__item--format-time">{timeFormat(conv_last_msg.message_server_time * 1000, false)}</span>
                                             }
                                         </div>
                                         {

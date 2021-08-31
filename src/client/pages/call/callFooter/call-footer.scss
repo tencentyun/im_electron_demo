@@ -21,6 +21,10 @@
             width: 36px;
             height: 36px;
             background: url('../../../assets/icon/call-voice-forbiden.svg');
+            background-repeat: no-repeat;
+            background-size: 76%;
+            text-align: center;
+            background-position:center center;
 
             &.is-active {
                 background: url('../../../assets/icon/call-voice.svg');

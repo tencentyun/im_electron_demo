@@ -1,3 +1,5 @@
+import { getParamsByKey } from "../utils/tools";
+
 //The link of setting contact us page.
 export const PURCHASE_LINK = 'https://buy.cloud.tencent.com/avc';
 export const CONTACT_LINK = 'https://cloud.tencent.com/act/event/connect-service'
@@ -97,7 +99,7 @@ const HUARUN_CONFIG = {
         TIM_BASE_URL: 'https://oaim.uat.crbank.com.cn:30002',
         PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
         TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
-        TRTC_ACCESS_IP:['10.241.131.180'],
+        TRTC_ACCESS_IP:['10.241.131.180','10.241.131.181'],
         EMOJIURL: 'https://oaim.uat.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.uat.crbank.com.cn',
         SERVERr_ADDRESS_PORT: 30001,
@@ -108,7 +110,7 @@ const HUARUN_CONFIG = {
     'prod': {
         TIM_BASE_URL: 'http://oaim.crbank.com.cn:30002',
         TRTC_BASE_URL: 'http://oaim.crbank.com.cn',
-        TRTC_ACCESS_IP:[],
+        TRTC_ACCESS_IP:['57.12.14.18','57.12.14.19'],
         PUBBLIC_ACCOUNTS_URL: 'http://oaim.crbank.com.cn:30002',
         EMOJIURL: 'http://oaim.crbank.com.cn:30003/emoji/',
         SERVERr_ADDRESS_IP: 'oaim.crbank.com.cn',
@@ -130,9 +132,8 @@ type HuaRunConfig = {
     HUA_RUN_SYSTEMID: string
 }
 const getHuaRunConfig = (): HuaRunConfig => {
-    console.log('环境变量', process.env.HUARUN_ENV, process.env.NODE_ENV)
-    // const env = process.env.HUARUN_ENV.trim();
-    const env = "prod"
+    const env = getParamsByKey('HUARUN_ENV');
+    console.log('环境变量',env )
     return HUARUN_CONFIG[env]
 }
 export default getHuaRunConfig();

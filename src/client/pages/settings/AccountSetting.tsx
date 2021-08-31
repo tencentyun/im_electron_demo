@@ -17,7 +17,7 @@ export const AccountSetting = (): JSX.Element => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [pathurl, setPathUrl] = useState('');
-  const [msgBother, setMsgBother] = useState(null)
+  const [msgBother, setMsgBother] = useState(true)
 
   ipcRenderer.on("storagePath", (e, { path }) => {
     console.log("storagePath", path);
@@ -58,7 +58,7 @@ export const AccountSetting = (): JSX.Element => {
           </div>
           <div className="setting-item">
             <span>版本信息</span>
-            <span>{version}</span>
+            <span>V1.0.2</span>
           </div>
           <div className="setting-item">
             <span>版权所有</span>

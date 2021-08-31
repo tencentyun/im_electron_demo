@@ -50,7 +50,7 @@ import {
 } from "tea-component";
 import { custEmojiUpsert } from "../../services/custEmoji";
 import { custEmojiUpsertParams } from "../../services/custEmoji";
-import { showDialog, checkFileExist } from "../../utils/tools";
+import { showDialog, checkFileExist, returnFileVla, checkfilepath } from "../../utils/tools";
 import { addTimeDivider } from "../../utils/addTimeDivider";
 import { HISTORY_MESSAGE_COUNT } from "../../constants";
 import GroupSysElm from "./messageElemTyps/groupSystemElem";
@@ -113,7 +113,7 @@ export const displayDiffMessage = (message, element, index) => {
       resp = <TextElemItem {...res} />;
       break;
     case 1:
-      resp = <PicElemItem {...res} />;
+      resp = <PicElemItem {...res} message={message} />;
       break;
     case 2:
       resp = <VoiceElem {...res} />;
@@ -124,7 +124,10 @@ export const displayDiffMessage = (message, element, index) => {
       break;
     case 4:
       // @ts-ignore
-      resp = <FileElem message={message} element={element} index={index} />;
+      console.log('打印文件状态', element)
+      console.log(checkfilepath(1, element.file_elem_file_id, element.file_elem_file_name))
+      let istrue = checkfilepath(1, element.file_elem_file_id, element.file_elem_file_name)
+      resp = <FileElem message={message} element={element} index={index} isshow={istrue ? true : false} />;
       break;
     case 5:
       resp = <GroupTipsElemItem {...res} />;
@@ -175,6 +178,8 @@ export const MessageView = (props: Props): JSX.Element => {
   const [anchor, setAnchor] = useState("");
   const [percent, setPercent] = useState("0%");
   const [tips, setTips] = useState("");
+  //重新挂载
+  const [messviewreload, setMessView] = useState(false);
   const {
     isShow,
     isCanOpenFileDir,
@@ -186,6 +191,7 @@ export const MessageView = (props: Props): JSX.Element => {
     "messageList---------------------------------------------------------------------",
     messageList
   );
+  console.log(messageList.length)
   useEffect(() => {
     if (!anchor) {
       messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
@@ -194,11 +200,36 @@ export const MessageView = (props: Props): JSX.Element => {
     setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false);
   }, [messageList.length]);
   useEffect(() => {
-    ipcRenderer.on("PERCENTAGE", (e, percentage) => {
-      // console.log(percentage, '进度条。。。。。。。。。。。。。。。。。。。。。')
-      setPercent(percentage);
+    ipcRenderer.on('download_reset_view', (e, percentage) => {
       setTips("下载中");
-    });
+      setPercent(percentage)
+      if (percentage == "100%") {
+        setPercent("0%");
+      }
+    })
+    ipcRenderer.on('download_reset', (e, boolean) => {
+      console.log('查看下载完状态', boolean)
+      if (boolean) {
+        window.localStorage.setItem('File_list', window.localStorage.getItem('File_list_save'))
+        // try {
+        // 想通过自定义消息刷新
+        //   return sendMsg({
+        //     convId,
+        //     convType:99,
+        //     messageElementArray: [],
+        //     userId:window.localStorage.getItem('uid')
+        //   });
+        // } catch (e) {
+        //   message.error({ content: `出错了: ${e.message}` });
+        // }
+      }
+    })
+    ipcRenderer.on('UPLOAD_RESET_MESSAGE_VIEW', (e, boolean) => {
+      if (boolean) {
+        console.log('查看界面刷新', boolean)
+        setMessView(true)
+      }
+    })
     // ipcRenderer.on('UPLOADPROGRESS', (e, percentage) => {
     //     setPercent(percentage)
     //     setTips('上传中')
@@ -208,6 +239,8 @@ export const MessageView = (props: Props): JSX.Element => {
   useEffect(() => {
     if (percent == "100%") {
       setPercent("0%");
+      setSeletedMessage([]);
+      setMultiSelect(false);
     }
   }, [percent]);
 
@@ -215,6 +248,12 @@ export const MessageView = (props: Props): JSX.Element => {
     setSeletedMessage([]);
     setMultiSelect(false);
   }, [convId]);
+
+  useEffect(() => {
+    setSeletedMessage([]);
+    setMultiSelect(false);
+  }, [messviewreload]);
+
   const getNewGroupInfo = () => {
     let newGroupInfo: any = localStorage.getItem("newGroupInfo");
     newGroupInfo = newGroupInfo ? JSON.parse(newGroupInfo) : [];
@@ -330,23 +369,41 @@ export const MessageView = (props: Props): JSX.Element => {
     setSeletedMessage([message]);
   };
 
+  // const checkfilepath = (fileid) => {
+  //   let filelist = window.localStorage.getItem('File_list') ? JSON.parse(window.localStorage.getItem('File_list')) : '';
+  //   if (!filelist) return false
+  //   if (filelist) {
+  //     //换本地文件名
+  //     for (let i = 0; i < filelist.length; i++) {
+  //       if (filelist[i].id == fileid) {
+  //         return filelist[i].name
+  //       }
+  //     }
+  //   }
+  // }
+
   const handleFileSave = async (params) => {
     console.log("文件另存为", params)
-    if(params.message &&  params.message.message_elem_array){
-        const fileElement =  params.message.message_elem_array[0];
-        const fileName = fileElement.file_elem_file_name || fileElement.image_elem_orig_id;
-        const filePath = getFilePath(fileName);
-        const isExist = await checkFileExist(filePath);
-        const index= filePath.lastIndexOf(".");
-        const ext = filePath.substr(index+1);
-        if(!isExist) {
-            message.warning({content: '文件未下载，请先下载'});
-            return;
-        }
-        ipcRenderer.send('fileSave', {
-            url: filePath,
-            type: ext
-        });
+    if (params.message && params.message.message_elem_array) {
+      let fileElement = params.message.message_elem_array[0];
+      const { message_msg_id } = params.message
+      let fileName = fileElement?.file_elem_file_name
+      if (!fileName) {
+        return
+        //fileName = checkfilepath(fileElement.file_elem_file_id);
+      }
+      const filePath = getFilePath(fileName);
+      const isExist = await checkFileExist(message_msg_id);
+      const index = filePath.lastIndexOf(".");
+      const ext = filePath.substr(index + 1);
+      if (!isExist) {
+        message.warning({ content: '文件未下载，请先下载' });
+        return;
+      }
+      ipcRenderer.send('fileSave', {
+        url: filePath,
+        type: ext
+      });
     }
   };
 
@@ -483,12 +540,12 @@ export const MessageView = (props: Props): JSX.Element => {
     switch (id) {
       case "revoke":
         console.log(data)
-        if(data?.message?.message_elem_array[0].elem_type != 5){
+        if (data?.message?.message_elem_array[0].elem_type != 5) {
           handleRevokeMsg(data);
           break;
-        }else if(data?.message?.message_elem_array[0].elem_type == 5){
+        } else if (data?.message?.message_elem_array[0].elem_type == 5) {
           message.warning({
-              content: "公告类型无法撤回消息哦",
+            content: "公告类型无法撤回消息哦",
           })
           break;
         }
@@ -566,7 +623,7 @@ export const MessageView = (props: Props): JSX.Element => {
   };
   const validatelastMessage = (messageList: State.message[]) => {
     let msg: State.message;
-    for (let i = messageList.length - 1; i > -1; i--) {
+    for (let i = messageList.length - 1;i > -1;i--) {
       if (messageList[i].message_msg_id) {
         msg = messageList[i];
         break;
@@ -749,7 +806,7 @@ export const MessageView = (props: Props): JSX.Element => {
         currentUrl = currentNode.currentSrc;
       }
     } else if (elem_type === 4) {
-      // ipcRenderer.send('openfilenow', currentMsgItem)
+      ipcRenderer.send('openfilenow', currentMsgItem)
     } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
       currentUrl = custom_elem_desc;
     }
@@ -784,13 +841,14 @@ export const MessageView = (props: Props): JSX.Element => {
           if (!item) {
             return null;
           }
-          if(item?.message_elem_array&& item?.message_elem_array[0] && item?.message_elem_array[0].elem_type == 0 && item?.message_elem_array[0].text_elem_content.substring(2,9) =='message' && item?.message_elem_array[0].text_elem_content.indexOf('actionType')>-1) {
-            const result_trtc = JSON.parse(JSON.parse(item?.message_elem_array[0].text_elem_content)?.message?.message_elem_array[0].custom_elem_data)
-            //console.log('打印内容2',result_trtc)
-            if(result_trtc.actionType == (2||5)) {
-              return null;
-            }
-          }
+          // if(item?.message_elem_array&& item?.message_elem_array[0] && item?.message_elem_array[0].elem_type == 3 && item?.message_elem_array[0].custom_elem_data && item?.message_elem_array[0].custom_elem_data.indexOf('actionType')>-1 && inviteID) {
+          //   console.log(item?.message_elem_array[0].custom_elem_data)
+          //   const result_trtc = JSON.parse(item?.message_elem_array[0].custom_elem_data)
+          //   console.log('打印内容2',result_trtc)
+          //   if(result_trtc.actionType == (2||4||5)) {
+          //     return null;
+          //   }
+          // }
           if (item.isTimeDivider) {
             return (
               <div key={item.time} className="message-view__item--time-divider">
@@ -833,7 +891,7 @@ export const MessageView = (props: Props): JSX.Element => {
           const elemType = message_elem_array?.[0]?.elem_type; // 取message array的第一个判断消息类型
           const isNotGroupSysAndGroupTipsMessage = ![5, 8].includes(elemType); // 5,8作为群系统消息 不需要多选转发
           return (
-            <React.Fragment key={index}>
+            <React.Fragment key={message_msg_id || index}>
               {message_status === 6 ? (
                 <div className="message-view__item is-revoked">
                   {`${revokedPerson} 撤回了一条消息`}
@@ -853,11 +911,10 @@ export const MessageView = (props: Props): JSX.Element => {
                 </div>
               ) : (
                 <div
-                  key={index}
+                  key={message_msg_id || index}
                   onClick={() => handleSelectMessage(item)}
-                  className={`message-view__item ${
-                    message_is_from_self ? "is-self" : ""
-                  }`}
+                  className={`message-view__item ${message_is_from_self ? "is-self" : ""
+                    }`}
                 >
                   {isMultiSelect &&
                     isNotGroupSysAndGroupTipsMessage &&
@@ -878,7 +935,7 @@ export const MessageView = (props: Props): JSX.Element => {
                           <div className="main-info">
                             <div className="info-item">
                               <Avatar
-                                key={user_profile_face_url}
+                                key={user_profile_identifier}
                                 url={user_profile_face_url}
                                 nickName={user_profile_nick_name}
                                 userID={user_profile_identifier}
@@ -906,7 +963,7 @@ export const MessageView = (props: Props): JSX.Element => {
                       <Avatar
                         url={user_profile_face_url}
                         isClick={false}
-                        key={user_profile_face_url}
+                        key={user_profile_identifier}
                         size="small"
                         nickName={user_profile_nick_name}
                         userID={user_profile_identifier}
@@ -920,7 +977,7 @@ export const MessageView = (props: Props): JSX.Element => {
                       return (
                         <div
                           className="message-view__item--element"
-                          key={index}
+                          key={item.message_conv_id}
                         >
                           {
                             //群里会话列表添加名称  zwc
@@ -939,7 +996,6 @@ export const MessageView = (props: Props): JSX.Element => {
                               elment,
                               messageList
                             )}
-                            key={index}
                             onContextMenu={(e) => {
                               handleContextMenuEvent(e, item);
                             }}
@@ -951,9 +1007,8 @@ export const MessageView = (props: Props): JSX.Element => {
                     })}
                   {shouldShowPerReadIcon ? (
                     <span
-                      className={`message-view__item--element-icon ${
-                        message_is_peer_read ? "is-read" : ""
-                      }`}
+                      className={`message-view__item--element-icon ${message_is_peer_read ? "is-read" : ""
+                        }`}
                     ></span>
                   ) : (
                     isMessageSendFailed && (

@@ -14,6 +14,10 @@ import {
 } from "tea-component";
 import { Form as FinalForm, Field } from "react-final-form";
 import ImgCropper from "../../components/UploadFace";
+import { updateCurrentSelectedConversation } from '../../store/actions/conversation';
+import { useDispatch, useSelector } from 'react-redux';
+import { getConversionList } from '../../pages/message/api';
+import { replaceConversaionList } from '../../store/actions/conversation';
 
 const genderMap = {
   '1': '男',
@@ -88,6 +92,8 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
   const [imgUrl, setImgUrl] = useState('')
   const [btnDisabled, setBtnDisabled] = useState(false)
   const [closeMould, setCloseMould] = useState(false)
+  const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
+  const dispatch = useDispatch();
   const close = () => {
     setVisible(false)
     setCloseMould(false)
@@ -116,13 +122,12 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
     }
     return meta.error ? "error" : "success";
   }
-  console.log('userinfo', userInfo);
+  // console.log('userinfo', userInfo);
   async function onSubmit(values: IUser) {
     console.log(11111)
-    localStorage.setItem("myhead",imgUrl)
     const formData: submitUserInfoData = {
       json_modify_self_user_profile_param: {
-        user_profile_item_face_url: imgUrl,
+        user_profile_item_face_url: localStorage.getItem("myhead_download"),
         user_profile_item_nick_name: values.nickName,
         user_profile_item_gender: +values.gender
       },
@@ -134,6 +139,16 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
       message.success({
         content: '修改成功'
       })
+      const response = await getConversionList();
+        dispatch(replaceConversaionList(response))
+        console.log('头像更新后',response)
+        // if (response.length) {
+        //     if (currentSelectedConversation === null || currentSelectedConversation === undefined) {
+        //         dispatch(updateCurrentSelectedConversation(response[0]))
+        //     }
+        // }else{
+        //   dispatch(updateCurrentSelectedConversation(null))
+        // }  
       onUpdateUserInfo && onUpdateUserInfo()
     } else {
       message.error({
@@ -143,8 +158,9 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
     close()
   }
   const { nickName, faceUrl, gender } = userInfo
+
   return (
-    <Modal visible={isShow} disableCloseIcon={closeMould}  disableEscape={closeMould} caption="编辑个人资料" onClose={close}>
+    <Modal visible={isShow}  disableEscape={closeMould} caption="编辑个人资料" onClose={close}>
       <Modal.Body>
         <FinalForm
           onSubmit={onSubmit}
@@ -171,8 +187,8 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
                         <ImgCropper {...input} isShow={(ages)=> {
                           // 修改个人头像重复修改消失问题
                           setCloseMould(true)
-                          setBtnDisabled(ages)
-                        }} afterUpload={afterUpload}></ImgCropper>
+                          //setBtnDisabled(ages)
+                        }}></ImgCropper>
                       </Form.Item>
                     )}
                   </Field>

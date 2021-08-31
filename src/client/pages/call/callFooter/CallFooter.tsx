@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { debounce } from 'lodash';
+
 
 import './call-footer.scss';
 
@@ -28,9 +30,9 @@ const CallFooter = (props: Props) : JSX.Element => {
     return (
         <div className="call-footer">
             <div className="call-footer__control-btn">
-                <span className={`voice ${isOpenMic ? 'is-active' : '' }`} onClick={handleToggleVoice}></span>
+                <span className={`voice ${isOpenMic ? 'is-active' : '' }`} onClick={debounce(handleToggleVoice, 300)}></span>
                 {
-                    isVideoCall && <span className={`video ${!isOpenCamera ? 'is-active' : '' }`} onClick={handleToggleVideo}></span>
+                    isVideoCall && <span className={`video ${!isOpenCamera ? 'is-active' : '' }`} onClick={debounce(handleToggleVideo, 300)}></span>
                 }
             </div>
             <div className="call-footer__end-btn">

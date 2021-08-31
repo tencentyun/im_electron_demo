@@ -21,6 +21,7 @@ const END_CALL_WINDOW = 'END_CALL_WINDOW'
 const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
 const SDK_APP_ID = 1400529075; //公有云SDK app id
 const HIDE = 'HIDE'
+const GETNATIVEPATH = "GETNATIVEPATH"
 module.exports = {
     MINSIZEWIN,
     RENDERPROCESSCALL,
@@ -42,5 +43,6 @@ module.exports = {
     SUPPORT_IMAGE_TYPE,
     END_CALL_WINDOW,
     SDK_APP_ID,
-    HIDE
+    HIDE,
+    GETNATIVEPATH
 }

@@ -12,15 +12,11 @@ const sizeOf = require('image-size')
 const FileType = require('file-type')
 const os = require('os')
 const log = require('electron-log')
-const getSrceenSize = () => {
-    const display = screen.getPrimaryDisplay();
-
-    return display.size;
-}
-
+const Store = require('electron-store');
+const store = new Store();
 const setPath = () => {
-    const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/win/${os.arch()}/ffprobe.exe`) : path.resolve(process.cwd(), `extraResources/win/${os.arch()}/ffprobe.exe`)
-    const formateFfmpegPath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/win32-${os.arch()}/ffmpeg.exe`) : path.resolve(process.cwd(), `extraResources/win32-${os.arch()}/ffmpeg.exe`)
+    const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}/${os.arch()}/ffprobe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}/${os.arch()}/ffprobe`)
+    const formateFfmpegPath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}-${os.arch()}/ffmpeg`) : path.resolve(process.cwd(), `extraResources/${os.platform()}-${os.arch()}/ffmpeg`)
     log.info(`ffprobePath: ${ffprobePath}`)
     log.info(`formateFfmpegPath: ${formateFfmpegPath}`)
     FFmpeg.setFfprobePath(ffprobePath);
@@ -29,11 +25,7 @@ const setPath = () => {
 
 class IPC {
     win = null;
-    callWindow = null; // 通话窗口
-    imWindowEvent = null; // 聊天窗口
     constructor(win) {
-        const env = process?.env?.NODE_ENV?.trim();
-        const isDev = env === 'development';
         setPath();
         this.mkDownloadDic(); //创建download 文件目录
         this.win = win;
@@ -43,12 +35,19 @@ class IPC {
             switch (type) {
                 case CHECK_FILE_EXIST:
                     return await this.checkFileExist(params);
+                case GETNATIVEPATH:
+                    break
             }
 
         })
         ipcMain.on(RENDERPROCESSCALL, (event, data) => {
             console.log("get message from render process", event.processId, data)
             const { type, params } = data;
+            switch (data) {
+                case 'upload_reset_view':
+                    this.win.webContents.send('UPLOAD_RESET_MESSAGE_VIEW', true)
+                    break;
+            }
             switch (type) {
                 case MINSIZEWIN:
                     this.minsizewin();
@@ -79,128 +78,27 @@ class IPC {
         });
 
 
-        this.createNewWindow(isDev);
-        this.eventListiner(isDev);
     }
-    async checkFileExist(path) {
+    
+    async checkFileExist({message_msg_id}) {
+        const downloadKey = `huarun_download_check_key_${message_msg_id}`
+        const name = store.get(downloadKey)
+        console.log('checkFileExist',downloadKey,name)
+
+        if(!name){
+            return false
+        }
         return new Promise((resolve) => {
-            fs.access(path, (err => {
+            fs.access(name, (err => {
                 if (err) {
                     resolve(false)
                 } else {
-                    resolve(true)
+                    resolve({
+                        path: name
+                    })
                 }
             }))
         })
-    }
-    eventListiner(isDev) {
-        const screenSize = getSrceenSize();
-        // 当作为接收方，接受电话后，更改窗口尺寸。
-        ipcMain.on('accept-call', (event, acceptParams) => {
-            // 向聊天窗口通信
-            const { inviteID, isVoiceCall } = acceptParams;
-            this.imWindowEvent.reply('accept-call-reply', inviteID);
-            const windowWidth = isVoiceCall ? 450 : 800;
-            const windowHeight = isVoiceCall ? 800 : 600;
-
-            const positionX = Math.floor((screenSize.width - windowWidth) / 2);
-            const positionY = Math.floor((screenSize.height - windowHeight) / 2);
-
-            this.callWindow.setSize(windowWidth, windowHeight);
-            this.callWindow.setPosition(positionX, positionY);
-        });
-
-        // 当作为接收方，挂断电话，关闭窗口
-        ipcMain.on('refuse-call', (event, inviteID) => {
-            this.callWindow.close();
-            // 向聊天窗口通信
-            this.imWindowEvent.reply('refuse-call-reply', inviteID);
-        });
-
-        // 当接受方拒绝通话后，调用该方法可关闭窗口，并退出房间
-        ipcMain.on(CLOSE_CALL_WINDOW, () => {
-            this.callWindow.webContents.send('exit-room');
-        });
-        ipcMain.on(END_CALL_WINDOW, () => {
-            this.callWindow.close()
-        })
-        // 远端用户进入
-        ipcMain.on('remote-user-join', (event, userId) => {
-            this.imWindowEvent.reply('remote-user-join-reply', userId)
-        });
-
-        // 远端用户离开
-        ipcMain.on('remote-user-exit', (event, userId) => {
-            this.imWindowEvent.reply('remote-user-exit-reply', userId)
-        });
-
-        // 取消通话邀请
-        ipcMain.on('cancel-call-invite', (event, data) => {
-            this.imWindowEvent.reply('cancel-call-invite-reply', data);
-        });
-
-        // 更新邀请列表(当用户拒绝邀请后，需通知通话窗口)
-        ipcMain.on('update-invite-list', (event, inviteList) => {
-            this.callWindow.webContents.send('update-invite-list', inviteList);
-        });
-
-        ipcMain.on(OPEN_CALL_WINDOW, (event, data) => {
-            this.imWindowEvent = event;
-            const addSdkAppid = {
-                ...data,
-                sdkAppid: "1400529075"
-            }
-            const params = JSON.stringify(addSdkAppid);
-            const { convInfo: { convType }, callType } = data;
-            if (data.windowType === 'notificationWindow') {
-                this.callWindow.setSize(320, 150);
-                this.callWindow.setPosition(screenSize.width - 340, screenSize.height - 200);
-            } else if (convType === 1 && Number(callType) === 1) {
-                this.callWindow.setSize(450, 800);
-                this.callWindow.setPosition(Math.floor((screenSize.width - 450) / 2), Math.floor((screenSize.height - 800) / 2));
-            }
-            this.callWindow.show();
-            this.callWindow.webContents.send('pass-call-data', params);
-            isDev && this.callWindow.webContents.openDevTools();
-            this.callWindow.on('close', () => {
-                event.reply(CALL_WINDOW_CLOSE_REPLY);
-                this.createNewWindow(isDev);
-            })
-        })
-    }
-
-    createNewWindow(isDev) {
-        const callWindow = new BrowserWindow({
-            height: 600,
-            width: 800,
-            show: false,
-            frame: false,
-            resizable: false,
-            webPreferences: {
-                parent: this.win,
-                webSecurity: true,
-                nodeIntegration: true,
-                nodeIntegrationInWorker: true,
-                enableRemoteModule: true,
-                contextIsolation: false,
-            },
-        });
-        callWindow.removeMenu();
-        if (isDev) {
-            callWindow.webContents.openDevTools();
-            callWindow.loadURL(`http://localhost:3000/call.html`);
-        } else {
-            //callWindow.webContents.openDevTools(); //正式生产不需要开启
-            callWindow.loadURL(
-                url.format({
-                    pathname: path.join(__dirname, `../../bundle/call.html`),
-                    protocol: 'file:',
-                    slashes: true
-                })
-            );
-        }
-
-        this.callWindow = callWindow;
     }
     minsizewin() {
         this.win.minimize()
@@ -235,6 +133,8 @@ class IPC {
     downloadFilesByUrl({ url: file_url, name, fileid }) {
         try {
             const downloadDicPath = path.resolve(os.homedir(), 'Download/', 'HuaRunIM/')
+            const downloadKey = `huarun_download_check_key_${fileid}`
+            const originDownloadKey = store.get(downloadKey)
             let file_name
             let file_path
             let file_path_temp
@@ -249,58 +149,98 @@ class IPC {
                 return
             }
             if (!fs.existsSync(file_path)) {
-
-                //创建写入流
-                const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
-                    console.error('error==>', e)
-                }).on('ready', function () {
-                    console.log("开始下载:", file_url);
-                }).on('finish', function () {
-                    try {
-                        //下载完成后重命名文件
-                        fs.renameSync(file_path_temp, file_path);
-                        console.log('文件下载完成:', file_path);
-                    } catch (err) {
-
-                    }
-                });
-                //请求文件
-                fetch(file_url, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/octet-stream' },
-                }).then(res => {
-                    //获取请求头中的文件大小数据
-                    let fsize = res.headers.get("content-length");
-                    //创建进度
-                    let str = progressStream({
-                        length: fsize,
-                        time: 100 /* ms */
-                    });
-                    // 下载进度 
-                    str.on('progress', (progressData) => {
-                        //不换行输出
-                        let percentage = Math.round(progressData.percentage) + '%';
-                        if (fileid) {
-                            try {
-                                this.win.webContents.send(fileid, progressData.percentage)
-                            } catch (err) {
-
-                            }
-                        }
-                        console.log(percentage);
-                    });
-                    res.body.pipe(str).pipe(fileStream);
-                }).catch(e => {
-                    //自定义异常处理
-                    console.log(e);
-                });
+                this.innerDownload(file_path_temp,file_path,file_url,fileid,downloadKey,file_name,true)
             } else {
-                // 已存在
-                console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+                // 相同文件名文件已下载，看看id是否一样
+                if(!originDownloadKey){
+                    //新发的消息，有相同的文件名，这个时候也要下载
+                    const preIndex = Number(store.get(file_name) || '0');
+                    const currentIndex = preIndex + 1
+                    if(currentIndex > 0){
+                        //重新下载
+                        const nameArr = file_name.split('.')
+                        const ext = nameArr.pop()
+                        const names = nameArr.join()
+                        const file_path = path.resolve(downloadDicPath, `${names}_${currentIndex}.${ext}`);
+                        const file_path_temp = `${file_path}.tmp` 
+                        this.innerDownload(file_path_temp,file_path,file_url,fileid,downloadKey,file_name,false)
+                    }else{
+                        console.log('index 计算异常')
+                    }
+                }else {
+                    // 已存在
+                    console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+                }
             }
         } catch (err) {
             console.log('下载文件失败，请稍后重试。', err)
         }
+    }
+    async innerDownload(file_path_temp,file_path,file_url,fileid,downloadKey,file_name,isfirst){
+        let that = this
+        //创建写入流
+        const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
+            console.error('error==>', e)
+        }).on('ready', function () {
+            console.log("开始下载:", file_url);
+        }).on('finish', function () {
+            try {
+                //下载完成后重命名文件
+                fs.renameSync(file_path_temp, file_path);
+                console.log('文件下载完成:', file_path);
+                // that.win.webContents.send('download_reset', true)
+                console.log('发完了')
+            } catch (err) {
+
+            }
+        });
+        //请求文件
+        fetch(file_url, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/octet-stream' },
+        }).then(res => {
+            //获取请求头中的文件大小数据
+            let fsize = res.headers.get("content-length");
+            //创建进度
+            let str = progressStream({
+                length: fsize,
+                time: 100 /* ms */
+            });
+            // 下载进度 
+            str.on('progress', (progressData) => {
+                //不换行输出
+                let percentage = Math.round(progressData.percentage) + '%';
+                
+                console.log(percentage);
+                if(percentage == '100%') {
+                    console.log('下载完了')
+                    //上传下载秒传文件、错误消息、报错等需要刷新界面，信息回调不同步会有很多错误信息，强制刷新视图 // 什么玩意儿！
+                    store.set(downloadKey,file_path)
+                    let index = store.get(file_name);
+                    let nextIndex;
+                    if(index){
+                        nextIndex  = Number(index) + 1
+                    }
+                    if(isfirst){
+                        // 首次下载index设置成0
+                        nextIndex = 0
+                    }
+                    store.set(file_name,index ? `${nextIndex}`:'0')
+                    if (fileid) {
+                        try {
+                            console.log(fileid,percentage)
+                            that.win.webContents.send(fileid, Math.round(progressData.percentage) )
+                        } catch (err) {
+    
+                        }
+                    }
+                }
+            });
+            res.body.pipe(str).pipe(fileStream);
+        }).catch(e => {
+            //自定义异常处理
+            console.log(e);
+        });
     }
     async _getVideoInfo(event, filePath) {
         let videoDuration, videoSize

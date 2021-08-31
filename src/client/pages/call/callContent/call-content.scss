@@ -26,4 +26,13 @@ body {
     &__video {
         flex: 1;
     }
+
+    &__entering-room {
+        position: fixed;
+        top: 36px;
+        background: #000;
+        color: #fff;
+        z-index: 1;
+        text-align: center;
+    }
 }

@@ -137,7 +137,7 @@ export const getGroupInfoList = async (groupIdList: Array<string>) => {
     return []
   }
   const groupInfoList = JSON.parse(json_param);
-  console.log('groupInfoList', groupInfoList)
+  // console.log('groupInfoList', groupInfoList)
 
   return groupInfoList.map((item) => item.get_groups_info_result_info);
 };
@@ -476,7 +476,7 @@ export const searchGroup = async (params: {
   } = await timRenderInstance.TIMGroupSearchGroups({
     searchParams: {
       group_search_params_keyword_list: [params.keyWords],
-      group_search_params_field_list: [2],
+      group_search_params_field_list: [1,2],
     },
   });
   console.log("searchGroup", JSON.parse(json_param || "[]"));
