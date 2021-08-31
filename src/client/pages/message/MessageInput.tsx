@@ -151,43 +151,12 @@ export const MessageInput = (props: Props): JSX.Element => {
                     messageElementArray = [obj, ...outerlement]
                 }
 
-                const fetchList = messageElementArray.map((v => {
-                    if (v.elem_type === 0) {
-                        const atList = getAtList(v.text_elem_content);
-                        return sendMsg({
-                            convId,
-                            convType,
-                            messageElementArray: [v],
-                            userId,
-                            messageAtArray: atList
-                        });
-                    }
-                    return sendMsg({
-                        convId,
-                        convType,
-                        messageElementArray: [v],
-                        userId,
-                    });
-                }));
-
-                setEditorState(ContentUtils.clear(editorState));
-                const results = await Promise.all(fetchList);
-                console.log(results, 'result========================')
-                for (const res of results) {
-                    console.log(res, '0000000000000000000000')
-                    const { data: { code, json_params, desc } } = res;
-                    if (code === 0) {
-                        dispatch(updateMessages({
-                            convId,
-                            message: JSON.parse(json_params)
-                        }))
-                    }
-                    // setEditorState(ContentUtils.clear(editorState));
-                }
+                ipcRenderer.send("temporaryFiles", messageElementArray)
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
         }
+
         // getData()
         setAtUserMap({});
         setVideoInfos([]);
@@ -201,6 +170,52 @@ export const MessageInput = (props: Props): JSX.Element => {
     //         dispatch(updateCurrentSelectedConversation(null))
     //     }
     // }
+
+    //发送消息
+    const handlSendMsg = async (event,{messageElementArray, isDirectory})=> {
+        if(isDirectory){
+            message.warning({
+                content: "文件夹无法上传！",
+            })
+            return  true
+        }
+        const fetchList = messageElementArray.map((v => {
+            if (v.elem_type === 0) {
+                const atList = getAtList(v.text_elem_content);
+                return sendMsg({
+                    convId,
+                    convType,
+                    messageElementArray: [v],
+                    userId,
+                    messageAtArray: atList
+                });
+            }
+            return sendMsg({
+                convId,
+                convType,
+                messageElementArray: [v],
+                userId
+            });
+        }));
+
+        setEditorState(ContentUtils.clear(editorState));
+        const results = await Promise.all(fetchList);
+        console.log(results, 'result========================')
+        for (const res of results) {
+            console.log(res, '0000000000000000000000')
+            const { data: { code, json_params, desc } } = res;
+            if (code === 0) {
+                //清空预上传文件
+                ipcRenderer.send("delectTemporaryFiles")
+                dispatch(updateMessages({
+                    convId,
+                    message: JSON.parse(json_params)
+                }))
+            }
+            // setEditorState(ContentUtils.clear(editorState));
+        }
+    }
+
     const getAtList = (text: string) => {
         const list = text.match(/@[a-zA-Z0-9_\u4e00-\u9fa5]+/g);
         const atNameList = list ? list.map(v => v.slice(1)) : [];
@@ -740,9 +755,10 @@ export const MessageInput = (props: Props): JSX.Element => {
             }
         }
         ipcRenderer.on('screenShotUrl', screenShotUrlListiner);
-
+        ipcRenderer.on('temporaryFilesWeb', handlSendMsg);
         return () => {
             ipcRenderer.off('screenShotUrl', screenShotUrlListiner);
+            ipcRenderer.off('temporaryFilesWeb', ()=>{});
         }
     }, [])
 
