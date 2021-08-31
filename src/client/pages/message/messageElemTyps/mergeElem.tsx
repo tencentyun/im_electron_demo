@@ -7,7 +7,7 @@ import { displayDiffMessage } from "../MessageView";
 import withMemo from "../../../utils/componentWithMemo";
 
 const MergeElem = (props: any): JSX.Element => {
-    const [ showModal, setShowModal ] = useState(false);
+    const [ showModal, setShowModal ] = useState(window.localStorage.getItem('ShowModal')&&JSON.parse(window.localStorage.getItem('ShowModal'))[0] == '1' ? true:false);
     const [ mergedMsg, setMergedMsg ] = useState([]);
     const showMergeDitail = async () => {
         if (props.merge_elem_message_array) {
@@ -15,25 +15,26 @@ const MergeElem = (props: any): JSX.Element => {
         } else {
             console.log(props, 'props')
             const { data: { code, json_params } } = await downloadMergedMsg(props.message);
-            //const json_params_arr = []
-            //json_params_arr.push(1,json_params)
-            //window.localStorage.setItem('ShowModal', JSON.stringify(json_params_arr))
+            const json_params_arr = []
+            json_params_arr.push(1,JSON.parse(json_params))
+            window.localStorage.setItem('ShowModal', JSON.stringify(json_params_arr))
             const mergedMsg = JSON.parse(json_params);
             setMergedMsg(mergedMsg);
         }
         setShowModal(true);
     }
+
     const handleModalClose = () => {
         window.localStorage.setItem('ShowModal', '')
         setShowModal(false);
     }
 
     
-    // useEffect(() => {
-    //     if(window.localStorage.getItem('ShowModal')&&JSON.parse(window.localStorage.getItem('ShowModal'))[0] == '1'){
-    //         setMergedMsg(JSON.parse(window.localStorage.getItem('ShowModal'))[1])
-    //     }
-    //   }, [showModal])
+    useEffect(() => {
+        if(window.localStorage.getItem('ShowModal')&&JSON.parse(window.localStorage.getItem('ShowModal'))[0] == '1'){
+            setMergedMsg(JSON.parse(window.localStorage.getItem('ShowModal'))[1])
+        }
+      }, [showModal])
 
 
     const item = (props) => {
@@ -51,7 +52,7 @@ const MergeElem = (props: any): JSX.Element => {
                     className="message-info-modal"
                     disableEscape
                     visible={
-                        window.localStorage.getItem('ShowModal')&&JSON.parse(window.localStorage.getItem('ShowModal'))[0] == '1' ? true:showModal
+                        showModal
                     }
                     size="85%"
                     onClose={handleModalClose}
