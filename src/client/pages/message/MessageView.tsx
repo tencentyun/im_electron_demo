@@ -447,10 +447,7 @@ const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
         }
       });
     } else if (isCombineSending) {
-      console.warn("forwardMessage", forwardMessage);
-      const {
-        data: { code, json_params },
-      } = await sendMergeMsg({
+      const data = {
         convId: getConvId(convItem),
         convType: getConvType(convItem),
         messageElementArray: [
@@ -464,7 +461,11 @@ const handleForwardPopupSuccess = async (convItemGroup: ConvItem[]) => {
           },
         ],
         userId,
-      });
+      }
+      console.warn("forwardMessage", forwardMessage,data);
+      const {
+        data: { code, json_params },
+      } = await sendMergeMsg(data);
       if (code === 0) {
         dispatch(
           reciMessage({

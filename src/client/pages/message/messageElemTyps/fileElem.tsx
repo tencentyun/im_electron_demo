@@ -110,13 +110,10 @@ const FileElem = (props: any): JSX.Element => {
     }
     const getHandleElement = () => {
         
-        console.log('当前文件状态：',exits,message_status,percentage,message_msg_id)
         if (message_status === 1) {
-            console.log("当前状态",message_status)
             return <Icon type="dismiss" className="message-view__item--file___close" onClick={handleCancel} />
         }
         else if (message_status === 2) {
-            console.log("当前",message_status)
             if (exits) {
                 return <div className="message-view__item--file___open" title="打开文件" onClick={handleOpen}></div>
             }else {
