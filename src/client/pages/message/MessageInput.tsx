@@ -418,30 +418,32 @@ export const MessageInput = (props: Props): JSX.Element => {
         setActiveFeature(featureId);
     }
 
+    const clearAtText = (state) => {
+        const newEditorState = ContentUtils.undo(state);
+        const text = newEditorState.toText();
+        const lastAt = text.lastIndexOf("@");
+        const hasText = text.substring(lastAt).split('@')[1] !== "";
+        if( hasText ) {
+            clearAtText(newEditorState);
+        } else {
+            return newEditorState;
+        }
+    };
+
     const onAtPopupCallback = (userId: string, userName: string) => {
         resetState()
         if (userId) {
             const atText = userName || userId;
-            setAtUserMap(pre => ({ ...pre, [atText]: userId }));
-            // 获取最后的人员
-            // const lastname = editorState.toText().substring(editorState.toText().lastIndexOf("@"))
-            // if(lastname == '@'+userName){
-            //     setEditorState(ContentUtils.insertText(editorState, `${atText} `));
-            // }else{
-            //     console.log(lastname)
-            //     console.log(editorState.toText().indexOf(lastname))
-            //     console.log(editorState.toText().substring(0,editorState.toText().indexOf(lastname)))
-            //     //设置重复姓氏
-            //     setEditorState(ContentUtils.clear(editorState))
-            //     setEditorState(ContentUtils.insertText(editorState.toText().substring(0,editorState.toText().indexOf(lastname)), `${atText} `));
-            // }
-            setEditorState(ContentUtils.insertText(editorState, `${atText} `));
+            setAtUserMap(pre => ({...pre, [atText]: userId}));
+            const justHaveAt = editorState.toText().substring(editorState.toText().lastIndexOf("@")) === "@";
+            if(!justHaveAt) {
+                const newEditorState = clearAtText(editorState);
+                setEditorState(ContentUtils.insertText(newEditorState, `${atText} `));
+            } else {
+                setEditorState(ContentUtils.insertText(editorState, `${atText} `));
+            }
+            
             setAtInput('');
-        }
-        if (userName) {
-            const text = `${userName} `
-            console.log('人员2', editorState)
-            setEditorState(ContentUtils.insertText(editorState, text))
         }
     }
 
@@ -476,39 +478,68 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        const hasImage = editorState.toHTML().includes('image')
-        const hasFile = editorState.toHTML().includes('block-file')
+        // const hasImage = editorState.toHTML().includes('image')
+        // const hasFile = editorState.toHTML().includes('block-file')
+        // if (sendType == '0') {
+        //     // enter发送
+        //     if (e.ctrlKey && e.keyCode === 13) {
+        //         // console.log('换行', '----------------------', editorState)
+        //     } else if (e.keyCode == 13 || e.charCode === 13) {
+        //         e.preventDefault();
+        //         if (hasImage || hasFile) {
+        //             !atPopup && handleSendMsg();
+        //         } else {
+        //             !canSendMsg() && handleSendMsg();
+        //         }
+
+        //     } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+        //         e.preventDefault();
+        //         setAtPopup(true)
+        //     }
+        // } else {
+        //     // Ctrl+enter发送
+        //     if (e.ctrlKey && e.keyCode === 13) {
+        //         e.preventDefault();
+        //         if (hasImage || hasFile) {
+        //             handleSendMsg();
+        //         } else {
+        //             !canSendMsg() && handleSendMsg();
+        //         }
+        //     } else if (e.keyCode == 13 || e.charCode === 13) {
+        //         // console.log('换行', '----------------------', editorState)
+        //     } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+        //         window.localStorage.setItem('inputAt', '1')
+        //         e.preventDefault()
+        //         setAtPopup(true)
+        //     }
+        // }
+
         if (sendType == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 // console.log('换行', '----------------------', editorState)
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
-                if (hasImage || hasFile) {
-                    handleSendMsg();
-                } else {
-                    !canSendMsg() && handleSendMsg();
-                }
-
-            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-                e.preventDefault();
-                setAtPopup(true)
+                !atPopup && handleSendMsg();
             }
         } else {
             // Ctrl+enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 e.preventDefault();
-                if (hasImage || hasFile) {
-                    handleSendMsg();
-                } else {
-                    !canSendMsg() && handleSendMsg();
-                }
+                !atPopup && handleSendMsg();
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 // console.log('换行', '----------------------', editorState)
-            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-                window.localStorage.setItem('inputAt', '1')
-                e.preventDefault()
-                setAtPopup(true)
+            }
+        }
+
+        if(e.keyCode === 38 || e.charCode === 38) {
+            if(atPopup) {
+                e.preventDefault();
+            }
+        }
+        if(e.keyCode === 40 || e.charCode === 40) {
+            if(atPopup) {
+                e.preventDefault();
             }
         }
 
@@ -613,41 +644,29 @@ export const MessageInput = (props: Props): JSX.Element => {
 
 
     const keyBindingFn = (e) => {
-        if (e.key === "@" && e.shiftKey && convType === 2) {
+        if(e.keyCode === 13 || e.charCode === 13) {
+            if(atPopup) {
+                 e.preventDefault();
+                return 'enter';
+            }
+        } else if(e.key === "@" && e.shiftKey && convType === 2) {
             e.preventDefault();
             setAtPopup(true);
             setEditorState(ContentUtils.insertText(editorState, ` @`))
             return '@';
-        } else if (e.key === "Process" && e.shiftKey && convType === 2) {
+        } else if (e.key === "Process" && e.shiftKey && convType === 2){
             e.preventDefault();
             setIsZHCNAndFirstPopup(true);
             setAtPopup(true);
             return 'zh-cn-@';
         }
-        // if (e.keyCode === 13 || e.charCode === 13) {
-        //     // e.preventDefault();
-        //     // if(!atPopup){
-        //     //     handleSendMsg();
-        //     // }
-        //     return 'enter';
-        // } else if (e.key === "@" && e.shiftKey && convType === 2) {
-        //     e.preventDefault();
-        //     setAtPopup(true);
-        //     setEditorState(ContentUtils.insertText(editorState, ` @`))
-        //     return '@';
-        // } else if (e.key === "Process" && e.shiftKey && convType === 2) {
-        //     e.preventDefault();
-        //     setIsZHCNAndFirstPopup(true);
-        //     setAtPopup(true);
-        //     return 'zh-cn-@';
-        // }
     }
 
     const handleKeyCommand = (e) => {
         switch (e) {
-            // case 'enter': {
-            //     return 'not-handled';
-            // }
+            case 'enter': {
+                return 'not-handled';
+            }
             case '@': {
                 return 'not-handled';
             }
