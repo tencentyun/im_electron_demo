@@ -4,6 +4,7 @@ const { description } = require("../../package.json");
 // const appAutoUploader = require('./autoUpdate')
 const initStore = require('./store')
 const registerCut = require('./shortcut')
+const temporaryFiles = require('./uploadingTemporaryFiles')
 const setOtherIPC = require('./otheripc')
 const setSaveFileIPC = require('./saveFile');
 const url = require('url')
@@ -56,6 +57,9 @@ const _createWindow = (TencentIM) => {
         setOtherIPC(mainWindow)
 
     });
+
+    //存储临时文件
+    temporaryFiles(mainWindow)
 
     // 另存为Ipc
     setSaveFileIPC();
