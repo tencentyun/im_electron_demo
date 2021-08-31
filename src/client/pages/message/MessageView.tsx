@@ -171,6 +171,7 @@ export const MessageView = (props: Props): JSX.Element => {
   );
   const [seletedMessage, setSeletedMessage] = useState<State.message[]>([]);
   const [currMenuMessage, setCurrMenuMessage] = useState<State.message>(); // 当前右击菜单消息
+  const [currServerTime, setCurServerTime] = useState(0);
   const [noMore, setNoMore] = useState(
     messageList.length < HISTORY_MESSAGE_COUNT ? true : false
   );
@@ -581,9 +582,11 @@ export const MessageView = (props: Props): JSX.Element => {
   const onIsIncludeImg = (type, content) => {
     return type === 0 && /<img.*?src=[\"|\']?(.*?)[\"|\']?.*?>/.test(content);
   };
-  const handleContextMenuEvent = (e, message: State.message) => {
+  const handleContextMenuEvent = async (e, message: State.message) => {
+    const { data: serverTime } = await timRenderInstance.TIMGetServerTime();
     e.preventDefault();
     setCurrMenuMessage(message);
+    setCurServerTime(serverTime);
     contextMenu.show({
       id: MESSAGE_MENU_ID,
       event: e,
@@ -710,7 +713,7 @@ export const MessageView = (props: Props): JSX.Element => {
       menuData = menuData.filter((item) => item.id !== "addCustEmoji");
     }
     if (
-      new Date().getTime() / 1000 - currMenuMessage.message_client_time > 120 ||
+      currServerTime - currMenuMessage.message_server_time > 120 ||
       !message_is_from_self
     ) {
       // 超时或者不是本人发送消息则过滤撤回按钮
