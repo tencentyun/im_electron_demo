@@ -18,14 +18,20 @@ export const getConvId = (convItem: any): string => {
     }
     else if (convItem.user_profile_identifier) {
         return convItem.user_profile_identifier
-    } 
+    }else if(convItem.friendship_friend_info_get_result_error_code === 0){
+        return convItem.friendship_friend_info_get_result_identifier
+    }else if(convItem.conv_id){
+        return convItem.conv_id
+    }
     else {
         return (convItem as State.FriendProfile).friend_profile_identifier
     }
 }
 export const getConvType = (convItem: any): TIMConvType => {
-    const item = convItem as State.FriendProfile
-    return (item.friend_profile_identifier || convItem.user_profile_identifier || item.friend_profile_user_profile?.user_profile_identifier) ? TIMConvType.kTIMConv_C2C : TIMConvType.kTIMConv_Group
+    if(convItem.conv_type){
+        return convItem.conv_type
+    }
+    return (convItem.friend_profile_identifier || convItem.user_profile_identifier || convItem.friend_profile_user_profile?.user_profile_identifier || convItem.friendship_friend_info_get_result_identifier) ? TIMConvType.kTIMConv_C2C : TIMConvType.kTIMConv_Group
 }
 export const getMergeMessageTitle = (message: State.message): string => {
     const groupTitle: string = "群聊"

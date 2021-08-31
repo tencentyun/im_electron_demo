@@ -84,7 +84,7 @@ export const TIM_BREVIARY_URL_PORT = '30004/oaim';
 const HUARUN_CONFIG = {
     // 开发环境
     'dev': {
-        TIM_BASE_URL: 'http://localhost:3000',
+        TIM_BASE_URL: 'https://oaim.uat.crbank.com.cn:30002',
         PUBBLIC_ACCOUNTS_URL: 'https://oaim.uat.crbank.com.cn:30002',
         TRTC_BASE_URL: 'http://oaim.uat.crbank.com.cn',
         TRTC_ACCESS_IP:[],
