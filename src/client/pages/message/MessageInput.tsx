@@ -231,7 +231,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             });
 
             const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
-            ipcRenderer.send("temporaryFiles", messageElementArray)
+            ipcRenderer.send("delectTemporaryFiles")
             dispatch(updateMessages({
                 convId,
                 message: templateElement
