@@ -164,41 +164,43 @@ export const MessageInput = (props: Props): JSX.Element => {
                 })
                 return  true
             }
-            messageElementArray.forEach( async v => {
-                if(v.elem_type === 0) {
-                    const atList = getAtList(v.text_elem_content);
+            if(messageElementArray?.length){
+                messageElementArray.forEach( async v => {
+                    if(v.elem_type === 0) {
+                        const atList = getAtList(v.text_elem_content);
+                        const { data: messageId } = await sendMsg({
+                            convId,
+                            convType,
+                            messageElementArray: [v],
+                            userId,
+                            messageAtArray: atList,
+                            callback: sendMsgSuccessCallback
+                        });
+                        const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+                        dispatch(updateMessages({
+                            convId,
+                            message: templateElement
+                        }));
+                        return
+                    }
                     const { data: messageId } = await sendMsg({
                         convId,
                         convType,
                         messageElementArray: [v],
                         userId,
-                        messageAtArray: atList,
                         callback: sendMsgSuccessCallback
                     });
+        
                     const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+                    ipcRenderer.send("delectTemporaryFiles")
                     dispatch(updateMessages({
                         convId,
                         message: templateElement
                     }));
-                    return
-                }
-                const { data: messageId } = await sendMsg({
-                    convId,
-                    convType,
-                    messageElementArray: [v],
-                    userId,
-                    callback: sendMsgSuccessCallback
                 });
-    
-                const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
-                ipcRenderer.send("delectTemporaryFiles")
-                dispatch(updateMessages({
-                    convId,
-                    message: templateElement
-                }));
-            });
-    
-            setEditorState(ContentUtils.clear(editorState));
+        
+                setEditorState(ContentUtils.clear(editorState));
+            }
    }
     
     const handleSendMsg = async () => {
@@ -239,7 +241,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                     }
                     messageElementArray = [obj, ...outerlement]
                 }
-
+                
+                
                 ipcRenderer.send("temporaryFiles", messageElementArray)
 
             }
