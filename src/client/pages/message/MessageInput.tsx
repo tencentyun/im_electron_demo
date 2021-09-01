@@ -42,6 +42,37 @@ type Props = {
 const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
+function getDifference(a, b)
+{
+    var i = 0;
+    var j = 0;
+    var result = "";
+
+    while (j < b.length)
+    {
+        if (a[i] != b[j] || i == a.length)
+            result += b[j];
+        else
+            i++;
+        j++;
+    }
+    return result;
+}
+
+const differenceBetweenTwoString = (str1, str2) => {
+    const array1 = str1.split('');
+    const array2 = str2.split('');
+    const baseArray = array1.length > array2.length ? array1 : array2;
+    const compareArray = array1.length > array2.length ? array2 : array1;
+    const difference = [];
+    baseArray.forEach((item, index) => {
+        if(compareArray[index] !== item) {
+            difference.push(item);
+        }
+    });
+
+    return difference.join("");
+}
 const FEATURE_LIST_GROUP = [{
     id: 'face',
     content: '发表情'
@@ -418,15 +449,33 @@ export const MessageInput = (props: Props): JSX.Element => {
         setActiveFeature(featureId);
     }
 
+    const diffMessage = (state) => {
+        const oldText = editorState.toText();
+        const newText = state.toText();
+        if(newText === "") {
+            return {
+                isUnDoExpected: false,
+                differenceText: oldText
+            }
+        }
+        const differenceText = differenceBetweenTwoString(oldText, newText);
+        return {
+            isUnDoExpected:  differenceText === atUserNameInput,
+            differenceText
+        }
+    };
+
     const clearAtText = (state) => {
         const newEditorState = ContentUtils.undo(state);
-        const text = newEditorState.toText();
-        const lastAt = text.lastIndexOf("@");
-        const hasText = text.substring(lastAt).split('@')[1] !== "";
-        if( hasText ) {
+        const { isUnDoExpected,  differenceText} = diffMessage(newEditorState);
+        if(!isUnDoExpected && !differenceText.includes('@') ) {
             clearAtText(newEditorState);
         } else {
-            return newEditorState;
+            return {
+                isUnDoExpected,
+                newEditorState,
+                differenceText
+            }
         }
     };
 
@@ -437,8 +486,16 @@ export const MessageInput = (props: Props): JSX.Element => {
             setAtUserMap(pre => ({...pre, [atText]: userId}));
             const justHaveAt = editorState.toText().substring(editorState.toText().lastIndexOf("@")) === "@";
             if(!justHaveAt) {
-                const newEditorState = clearAtText(editorState);
-                setEditorState(ContentUtils.insertText(newEditorState, `${atText} `));
+                const {
+                    isUnDoExpected,
+                    newEditorState,
+                    differenceText
+                } = clearAtText(editorState);
+                if(isUnDoExpected) {
+                    setEditorState(ContentUtils.insertText(newEditorState, `${atText} `));
+                } else {
+                    setEditorState(ContentUtils.insertText(newEditorState, `@${atText} `));
+                }
             } else {
                 setEditorState(ContentUtils.insertText(editorState, `${atText} `));
             }
