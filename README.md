@@ -11,7 +11,7 @@ npm install
 
 // run 
 npm run start
-``````  
+```
 
 ## How to build app
 ```
