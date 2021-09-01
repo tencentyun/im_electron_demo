@@ -8,6 +8,7 @@ type SendMsgParams<T> = {
   messageElementArray?: T[];
   userData?: string;
   userId: string;
+  callback?: Function;
   messageAtArray?: string[];
   message?: State.message
 };
@@ -137,7 +138,7 @@ export const getGroupInfoList = async (groupIdList: Array<string>) => {
     return []
   }
   const groupInfoList = JSON.parse(json_param);
-  // console.log('groupInfoList', groupInfoList)
+  console.log('groupInfoList', groupInfoList)
 
   return groupInfoList.map((item) => item.get_groups_info_result_info);
 };
@@ -287,7 +288,7 @@ export const getMsgList = async (convId, convType, lastMsg = null) => {
     params: {
       msg_getmsglist_param_last_msg: lastMsg,
       msg_getmsglist_param_count: HISTORY_MESSAGE_COUNT,
-      msg_getmsglist_param_is_remble: false
+      msg_getmsglist_param_is_remble: true
     },
   });
 
@@ -314,11 +315,12 @@ export const sendMsg = async ({
   messageElementArray,
   userId,
   userData,
+  callback,
   messageAtArray,
 }: SendMsgParams<
   TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg | MergeMsg | CustomMsg
 >): Promise<MsgResponse> => {
-  const res = await timRenderInstance.TIMMsgSendMessage({
+  const res = await timRenderInstance.TIMMsgSendMessageV2({
     conv_id: convId,
     conv_type: convType,
     params: {
@@ -326,8 +328,10 @@ export const sendMsg = async ({
       message_sender: userId,
       message_group_at_user_array: messageAtArray,
     },
+    callback,
     user_data: userData,
   });
+  console.log('================res============', res);
   return res;
 };
 
@@ -347,7 +351,7 @@ export const sendForwardMessage = async ({
     params: {
       ...message,
       message_sender: userId,
-      message_is_peer_read: false,
+      message_is_peer_read: true,
     },
     user_data: userData,
   });
