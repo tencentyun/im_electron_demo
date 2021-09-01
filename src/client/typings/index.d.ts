@@ -33,11 +33,15 @@ declare namespace State {
     export type ui = {
         function_tab: functionTab,
         replace_router: boolean,
-        callingStatus: {
+        callingStatus:{
             callingType: number,
             callingId: string,
             inviteeList: Array<string>,
             callType: number
+        },
+        showModalStatus: {
+            isShow: number,
+            showArray: Array<string>
         }
     }
     
