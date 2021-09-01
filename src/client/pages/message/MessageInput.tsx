@@ -148,11 +148,12 @@ export const MessageInput = (props: Props): JSX.Element => {
     const sendMsgSuccessCallback = ([res, userData]) => {
             const { code, json_params, desc } = res;
 
-            if (code === 0) {                
+            if (code === 0) {             
                 dispatch(updateMessages({
                     convId,
                     message: JSON.parse(json_params)
                 }))
+                ipcRenderer.send("delectTemporaryFiles")   
             }
     };
 
@@ -192,7 +193,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                     });
         
                     const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
-                    ipcRenderer.send("delectTemporaryFiles")
                     dispatch(updateMessages({
                         convId,
                         message: templateElement
@@ -214,17 +214,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             const rawData = editorState.toRAW();
             let messageElementArray = getMessageElemArray(rawData, videoInfos);
             console.log(messageElementArray, "调试内容");
-
-            const sendMsgSuccessCallback = ([res, userData]) => {
-                const { code, json_params, desc } = res;
-
-                if (code === 0) {                
-                    dispatch(updateMessages({
-                        convId,
-                        message: JSON.parse(json_params)
-                    }))
-                }
-            };
 
             if (messageElementArray[0] && messageElementArray[0].text_elem_content) {
                 messageElementArray[0].text_elem_content = messageElementArray[0].text_elem_content.substring(0, options.defaultValue)
@@ -502,25 +491,25 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handleSendCustEmojiMessage = async (url) => {
         try {
-
-            const { data: { code, json_params, desc } } = await sendCustomMsg({
+            //修改自定义表情无法发送
+            let VimgFace = {
+                elem_type: 6,
+                // @ts-ignore
+                face_elem_buf: url
+            }
+            const { data: messageId } = await sendCustomMsg({
                 convId,
                 convType,
-                messageElementArray: [{
-                    elem_type: 6,
-                    // @ts-ignore
-                    face_elem_buf: url
-                }],
-                userId
+                messageElementArray: [VimgFace],
+                userId,
+                callback: sendMsgSuccessCallback
             });
-            if (code === 0) {
-                dispatch(reciMessage({
-                    convId,
-                    messages: [JSON.parse(json_params)]
-                }))
-            } else {
-                message.error({ content: `消息发送失败 ${desc}` })
-            }
+            const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, VimgFace) as State.message;
+            dispatch(updateMessages({
+                convId,
+                message: templateElement
+            }));
+
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
         }

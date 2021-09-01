@@ -66,6 +66,7 @@ const mkdirsSync = (dirname) => {
 //删除预存上传文件
 const delDir = (path) => {
 
+try {
     let files = [];
 
     if (fs.existsSync(path)) {
@@ -74,7 +75,7 @@ const delDir = (path) => {
 
         files.forEach((file, index) => {
 
-            let curPath = path + "/" + file;
+            let curPath = path + "\\" + file;
 
             if (fs.statSync(curPath).isDirectory()) {
 
@@ -90,6 +91,10 @@ const delDir = (path) => {
 
         // fs.rmdirSync(path);
     }
+} catch (error) {
+        //兼容SDK有换成情况上传很快的情况
+        console.log("文件夹内不存在相应文件", error)
+}
 
 }
 
