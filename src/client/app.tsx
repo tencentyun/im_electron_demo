@@ -397,16 +397,17 @@ export const App = () => {
         dispatch(setIsLogInAction(false));
     };
     const _handleGroupInfoModify = async (data) => {
-        const response = await getConversionList();
-        dispatch(updateConversationList(response));
-        if (response?.length) {
-            const newConversaionItem = response.find(
-                (v) => v.conv_id === data.group_tips_elem_group_id
-            );
-            if (newConversaionItem) {
-                dispatch(updateCurrentSelectedConversation(newConversaionItem));
-            }
-        }
+        console.log('======data=======', data);
+        // const response = await getConversionList();
+        // dispatch(updateConversationList(response));
+        // if (response?.length) {
+        //     const newConversaionItem = response.find(
+        //         (v) => v.conv_id === data.group_tips_elem_group_id
+        //     );
+        //     if (newConversaionItem) {
+        //         dispatch(updateCurrentSelectedConversation(newConversaionItem));
+        //     }
+        // }
     };
     const handleMessageSendFailed = (convList) => {
         const failedList = convList.reduce((acc, cur) => {
@@ -423,9 +424,9 @@ export const App = () => {
         if (!failedList) return;
         for (const i in failedList) {
             dispatch(
-                reciMessage({
+                updateMessages({
                     convId: i,
-                    messages: failedList[i],
+                    message: failedList[i][0],
                 })
             );
         }
@@ -436,7 +437,7 @@ export const App = () => {
     const _handeMessage = (messages: State.message[]) => {
         // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
         try {
-            getData()
+            // getData()
             handleNotify(messages)
         } catch (error) {
             console.log(error);
@@ -509,7 +510,7 @@ export const App = () => {
             // if (conversationList[0]?.conv_last_msg?.message_status === 1) {
             const elemType = conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
             console.log(elemType)
-            if (elemType === 4 || elemType === 9 || elemType === 3) {
+            if (elemType === 9 || elemType === 3) {
                 dispatch(updateMessages({
                     convId: conversationList[0].conv_id,
                     message: conversationList[0].conv_last_msg

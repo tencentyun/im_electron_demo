@@ -5,35 +5,49 @@ import formateTime from '../../../utils/timeFormat';
 import { downloadMergedMsg } from '../api';
 import { displayDiffMessage } from "../MessageView";
 import withMemo from "../../../utils/componentWithMemo";
+import { changeShowModal } from '../../../store/actions/ui';
+import { useDispatch, useSelector } from 'react-redux';
+
 
 const MergeElem = (props: any): JSX.Element => {
-    const [ showModal, setShowModal ] = useState(false);
+    const dispatch = useDispatch();
+    const [ showModal, setShowModal ] = useState(window.localStorage.getItem('ShowModal')&&JSON.parse(window.localStorage.getItem('ShowModal'))[0] == '1' ? true:false);
     const [ mergedMsg, setMergedMsg ] = useState([]);
+    const { showModalStatus } = useSelector(
+        (state: State.RootState) => state.ui
+    );
     const showMergeDitail = async () => {
         if (props.merge_elem_message_array) {
             setMergedMsg(props.merge_elem_message_array);
         } else {
             console.log(props, 'props')
             const { data: { code, json_params } } = await downloadMergedMsg(props.message);
-            //const json_params_arr = []
-            //json_params_arr.push(1,json_params)
-            //window.localStorage.setItem('ShowModal', JSON.stringify(json_params_arr))
-            const mergedMsg = JSON.parse(json_params);
-            setMergedMsg(mergedMsg);
+            dispatch(changeShowModal({
+                isShow:1,
+                showArray:JSON.parse(json_params)
+            }))
+            console.log(showModalStatus)
+            setMergedMsg(showModalStatus.showArray);
         }
         setShowModal(true);
     }
+
     const handleModalClose = () => {
-        window.localStorage.setItem('ShowModal', '')
+        dispatch(changeShowModal({
+            isShow:0,
+            showArray:[]
+        }))
         setShowModal(false);
     }
 
     
-    // useEffect(() => {
-    //     if(window.localStorage.getItem('ShowModal')&&JSON.parse(window.localStorage.getItem('ShowModal'))[0] == '1'){
-    //         setMergedMsg(JSON.parse(window.localStorage.getItem('ShowModal'))[1])
-    //     }
-    //   }, [showModal])
+    useEffect(() => {
+        console.log(showModalStatus)
+        if(showModalStatus.isShow == 1){
+            setMergedMsg(showModalStatus.showArray)
+            console.log(mergedMsg)
+        }
+      }, [showModal])
 
 
     const item = (props) => {
@@ -51,7 +65,7 @@ const MergeElem = (props: any): JSX.Element => {
                     className="message-info-modal"
                     disableEscape
                     visible={
-                        window.localStorage.getItem('ShowModal')&&JSON.parse(window.localStorage.getItem('ShowModal'))[0] == '1' ? true:showModal
+                        showModal
                     }
                     size="85%"
                     onClose={handleModalClose}
