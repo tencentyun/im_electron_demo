@@ -19,8 +19,23 @@ const setPath = () => {
     const formateFfmpegPath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}-${os.arch()}/ffmpeg`) : path.resolve(process.cwd(), `extraResources/${os.platform()}-${os.arch()}/ffmpeg`)
     log.info(`ffprobePath: ${ffprobePath}`)
     log.info(`formateFfmpegPath: ${formateFfmpegPath}`)
-    FFmpeg.setFfprobePath(ffprobePath);
-    FFmpeg.setFfmpegPath(formateFfmpegPath);
+    const platform = os.platform()
+    let ext = ''
+    switch(platform){
+        case 'darwin':
+            ext = 'dylib';
+            break;
+        case 'linux':
+            ext = 'so';
+            break;
+        case 'win32':
+            ext = 'exe';
+            break;
+    }
+    if(ext){
+        FFmpeg.setFfprobePath(`${ffprobePath}.${ext}`);
+        FFmpeg.setFfmpegPath(`${formateFfmpegPath}.${ext}`);
+    }
 }
 
 class IPC {
@@ -188,6 +203,13 @@ class IPC {
                 //下载完成后重命名文件
                 fs.renameSync(file_path_temp, file_path);
                 console.log('文件下载完成:', file_path);
+                if (fileid) {
+                    try {
+                        that.win.webContents.send(fileid, 100)
+                    } catch (err) {
+
+                    }
+                }
                 // that.win.webContents.send('download_reset', true)
                 console.log('发完了')
             } catch (err) {
@@ -226,14 +248,7 @@ class IPC {
                         nextIndex = 0
                     }
                     store.set(file_name,index ? `${nextIndex}`:'0')
-                    if (fileid) {
-                        try {
-                            console.log(fileid,percentage)
-                            that.win.webContents.send(fileid, Math.round(progressData.percentage) )
-                        } catch (err) {
-    
-                        }
-                    }
+                    
                 }
             });
             res.body.pipe(str).pipe(fileStream);
