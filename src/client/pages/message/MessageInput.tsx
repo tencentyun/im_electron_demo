@@ -199,7 +199,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         }
     };
 
-
     //发送消息
     const handlSendMsg = async (event,{messageElementArray, isDirectory})=> {
         if(isDirectory){
@@ -208,7 +207,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             })
             return  true
         }
-
         messageElementArray.forEach( async v => {
             if(v.elem_type === 0) {
                 const atList = getAtList(v.text_elem_content);
