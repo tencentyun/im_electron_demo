@@ -4,13 +4,19 @@ const { ipcMain } = require("electron");
 const fs = require('fs');
 const path = require('path');
 
-const checkFileIsOpen = (filePath) => {
+const checkFileIsOpen = async (filePath) => {
     try {
-        fs.openSync(filePath, 'r+');
-        return false;
-    } catch(err) {
-        return true;
-    }
+       const fileHandle = await fs.promises.open(filePath, fs.constants.O_RDONLY | 0x10000000);
+       fileHandle.close();
+       return false;
+     } catch (error) {
+       if (error.code === 'EBUSY'){
+         console.log('file is busy');
+         return true;
+       } else {
+         throw error;
+       }
+     }
 }
 
 const temporaryFiles = (mainWindow) => {
@@ -33,15 +39,16 @@ const temporaryFiles = (mainWindow) => {
             }
 
             if (!isDirectory) {
-                data.forEach(element => {
+                data.forEach(async element => {
                     if (element.elem_type === 4) {
                         try {
-                                if(checkFileIsOpen(element.file_elem_file_path)){
-                                //上传文件复制临时文件
-                                console.log("上传文件复制临时文件", TEMPORARY_FILES + '\\' + element.file_elem_file_name)
-                                fs.copyFileSync(element.file_elem_file_path, TEMPORARY_FILES + '\\' + element.file_elem_file_name)
-                                element.file_elem_file_path = TEMPORARY_FILES + '\\' + element.file_elem_file_name
-                            }
+                                const isFileOpen = await checkFileIsOpen(element.file_elem_file_path);
+                                if(isFileOpen) {
+                                    //上传文件复制临时文件
+                                    console.log("上传文件复制临时文件", TEMPORARY_FILES + '\\' + element.file_elem_file_name)
+                                    fs.copyFileSync(element.file_elem_file_path, TEMPORARY_FILES + '\\' + element.file_elem_file_name)
+                                    element.file_elem_file_path = TEMPORARY_FILES + '\\' + element.file_elem_file_name
+                                }
                         } catch (error) {
                             console.log("上传前拷贝报错", error)
                         }
