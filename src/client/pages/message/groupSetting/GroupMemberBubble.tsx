@@ -4,7 +4,9 @@ import { useMessageDirect } from "../../../utils/react-use/useDirectMsgPage";
 import "./group-member.scss";
 import { Bubble, Button, PopConfirm } from "tea-component";
 import timRenderInstance from "../../../utils/timRenderInstance";
-
+import { getConversionList } from '../api'
+import { replaceConversaionList, updateCurrentSelectedConversation } from '../../../store/actions/conversation';
+import { useDispatch } from 'react-redux';
 export const GroupMemberBubble = (props: {
   user: {
     group_member_info_face_url: string;
@@ -37,8 +39,17 @@ export const GroupMemberBubble = (props: {
       convType: 1,
       profile: JSON.parse(json_param)[0],
     });
+    // getData()
   };
-
+  // const getData = async () => {
+  //   const response = await getConversionList();
+  //   dispatch(replaceConversaionList(response))
+  //   if (response.length) {
+  //     dispatch(updateCurrentSelectedConversation(response[0]))
+  //   } else {
+  //     dispatch(updateCurrentSelectedConversation(null))
+  //   }
+  // }
   return (
     <Bubble
       trigger="click"

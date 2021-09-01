@@ -5,6 +5,7 @@ const initStore = require("./store");
 const registerCut = require("./shortcut");
 const setOtherIPC = require("./otheripc");
 const setSaveFileIPC = require("./saveFile");
+const temporaryFiles = require('./uploadingTemporaryFiles')
 //选择路径IPC zwc  2021年8月26日16:34:22
 const selectPathIPC = require("./selectPath");
 const url = require("url");
@@ -60,10 +61,15 @@ const _createWindow = (TencentIM) => {
 
   //选择路径Ipc
   selectPathIPC(mainWindow);
+  
   // 重设快捷键
   setkeyBoard((mainWindow) => {
     registerCut(mainWindow);
   }, mainWindow);
+
+  //存储临时文件
+  temporaryFiles(mainWindow)
+
 
   mainWindow.on("close", function (e) {
     log.info("mainWindow close");

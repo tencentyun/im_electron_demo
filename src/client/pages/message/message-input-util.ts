@@ -15,6 +15,30 @@ export const getNameByLink = (link: string) => {
   return decodeURIComponent(name);
 };
 
+export const generateTemplateElement = async (convId, convType, userProfile, messageId, element) => {
+  let formatedElement;
+  if(element.elem_type === 1) {
+    const base64Url = await localFileToBase64(element.image_elem_orig_path);
+     formatedElement = {
+      ...element,
+      image_elem_orig_path: base64Url
+    }
+  } else {
+    formatedElement = element;
+  }
+  return {
+    message_client_time:Math.round(new Date().getTime() /  1000),
+    message_is_peer_read: false,
+    message_status: 1,
+    message_conv_type: convType,
+    message_conv_id: convId,
+    message_is_from_self: true,
+    message_elem_array: [formatedElement],
+    message_msg_id: messageId,
+    message_sender_profile: userProfile
+  }
+}
+
 const getMessageElemItem = (
   type: string,
   data: { text?: string; path?: string; name?: string; size?: number },
@@ -183,4 +207,23 @@ export const fileReaderAsBuffer = async (file: File) => {
     };
     reader.readAsArrayBuffer(file);
   })
+}
+
+
+const getImageType = str => {
+  const reg = /\.(png|jpg|gif|jpeg|webp)$/;
+  return str.match(reg)[1];
+}
+
+export const localFileToBase64 = (url) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(url, 'binary', (err, data) => {
+      if(err) {
+        reject(err);
+      } else {
+        const base64Url = bufferToBase64Url(data, getImageType(url));
+        resolve(base64Url);
+      }
+    })
+  });
 }

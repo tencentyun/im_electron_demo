@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message, Dropdown, List, Bubble } from 'tea-component';
-import { sendTextMsg, sendImageMsg, sendFileMsg, sendVideoMsg, sendMsg } from './api'
-import { updateMessages,  reciMessage} from '../../store/actions/message'
+import { sendTextMsg, sendImageMsg, sendFileMsg, sendVideoMsg, sendMsg, getConversionList } from './api'
+import { replaceConversaionList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
+import { updateMessages, reciMessage } from '../../store/actions/message'
 import { AtPopup } from './components/atPopup'
 import { EmojiPopup } from './components/emojiPopup'
 import { RecordPopup } from './components/recordPopup';
@@ -22,7 +23,7 @@ import { ipcRenderer, clipboard, nativeImage } from 'electron';
 import chooseImg from '../../assets/icon/choose.png'
 import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
-import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer } from './message-input-util';
+import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer, generateTemplateElement } from './message-input-util';
 import MaxLength from 'braft-extensions/dist/max-length'
 import Store from "electron-store";
 const store = new Store();
@@ -112,88 +113,135 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [atUserMap, setAtUserMap] = useState({});
     const [isZHCNAndFirstPopup, setIsZHCNAndFirstPopup] = useState(false);
     //@ts-ignore
-    const { userId } = useSelector((state: State.RootState) => state.userInfo);
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
     const videoPicker = React.useRef(null);
     const soundPicker = React.useRef(null);
+
+    const { userId, signature, nickName, faceUrl, role, gender, addPermission } = useSelector((state: State.RootState) => state.userInfo);
+    const userProfile = {
+        ser_profile_role: role,
+        user_profile_face_url: faceUrl,
+        user_profile_nick_name: nickName,
+        user_profile_identifier: userId,
+        user_profile_gender: gender,
+        user_profile_self_signature: signature,
+        user_profile_add_permission: addPermission
+    }
+
+
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
     console.log(editorState)
     const [sendType, setSendType] = useState(null); // 0->enter,1->ctrl+enter
     let editorInstance;
 
-     //我的
-     useEffect(() => {
-            reedite(isHandCal)
-     }, [isHandCal])
+    //我的
+    useEffect(() => {
+        reedite(isHandCal)
+    }, [isHandCal])
     const handleSendMsg = async () => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
         try {
-            if(isShutUpAll){
+            if (isShutUpAll) {
                 message.warning({
                     content: "群主已全员禁言，无法发送消息哦",
                 })
             }
             const rawData = editorState.toRAW();
             let messageElementArray = getMessageElemArray(rawData, videoInfos);
-            console.log(messageElementArray,"调试内容")
-            if (messageElementArray[0]&&messageElementArray[0].text_elem_content) {
-                messageElementArray[0].text_elem_content = messageElementArray[0].text_elem_content.substring(0,options.defaultValue)
+            console.log(messageElementArray, "调试内容");
+
+            const sendMsgSuccessCallback = ([res, userData]) => {
+                const { code, json_params, desc } = res;
+
+                if (code === 0) {                
+                    dispatch(updateMessages({
+                        convId,
+                        message: JSON.parse(json_params)
+                    }))
+                }
+            };
+
+            if (messageElementArray[0] && messageElementArray[0].text_elem_content) {
+                messageElementArray[0].text_elem_content = messageElementArray[0].text_elem_content.substring(0, options.defaultValue)
             }
             if (messageElementArray.length) {
 
                 //解决换行多次发送问题  -- zwc
-                let  textElement =  messageElementArray.filter(item => item.elem_type == 0)
-                if(textElement.length > 0)
-                {   
-                    let  outerlement =  messageElementArray.filter(item => item.elem_type != 0)
-                    let  obj:any = {
-                            elem_type : textElement[0].elem_type,
-                            text_elem_content : textElement.map(item => item.text_elem_content).join('\n')
+                let textElement = messageElementArray.filter(item => item.elem_type == 0)
+                if (textElement.length > 0) {
+                    let outerlement = messageElementArray.filter(item => item.elem_type != 0)
+                    let obj: any = {
+                        elem_type: textElement[0].elem_type,
+                        text_elem_content: textElement.map(item => item.text_elem_content).join('\n')
                     }
-                    messageElementArray = [obj,...outerlement]
+                    messageElementArray = [obj, ...outerlement]
                 }
-                
-                const fetchList = messageElementArray.map((v => {
-                    if (v.elem_type === 0) {
-                        const atList = getAtList(v.text_elem_content);
-                        return sendMsg({
-                            convId,
-                            convType,
-                            messageElementArray: [v],
-                            userId,
-                            messageAtArray: atList
-                        });
-                    }
-                    return sendMsg({
-                        convId,
-                        convType,
-                        messageElementArray: [v],
-                        userId,
-                    });
-                }));
 
-                setEditorState(ContentUtils.clear(editorState));
-                const results = await Promise.all(fetchList);
-                console.log(results, 'result========================')
-                for (const res of results) {
-                    console.log(res, '0000000000000000000000')
-                    const { data: { code, json_params, desc } } = res;
-                    if (code === 0) {
-                        dispatch(updateMessages({
-                            convId,
-                            message: JSON.parse(json_params)
-                        }))
-                    }
-                    // setEditorState(ContentUtils.clear(editorState));
-                }
+                ipcRenderer.send("temporaryFiles", messageElementArray)
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
         }
+
+        // getData()
         setAtUserMap({});
         setVideoInfos([]);
+    }
+    // const getData = async () => {
+    //     const response = await getConversionList();
+    //     dispatch(replaceConversaionList(response))
+    //     if (response.length) {
+    //         dispatch(updateCurrentSelectedConversation(response[0]))
+    //     } else {
+    //         dispatch(updateCurrentSelectedConversation(null))
+    //     }
+    // }
+
+    //发送消息
+    const handlSendMsg = async (event,{messageElementArray, isDirectory})=> {
+        if(isDirectory){
+            message.warning({
+                content: "文件夹无法上传！",
+            })
+            return  true
+        }
+        const fetchList = messageElementArray.map((v => {
+            if (v.elem_type === 0) {
+                const atList = getAtList(v.text_elem_content);
+                return sendMsg({
+                    convId,
+                    convType,
+                    messageElementArray: [v],
+                    userId,
+                    messageAtArray: atList
+                });
+            }
+            return sendMsg({
+                convId,
+                convType,
+                messageElementArray: [v],
+                userId
+            });
+        }));
+
+        setEditorState(ContentUtils.clear(editorState));
+        const results = await Promise.all(fetchList);
+        console.log(results, 'result========================')
+        for (const res of results) {
+            console.log(res, '0000000000000000000000')
+            const { data: { code, json_params, desc } } = res;
+            if (code === 0) {
+                //清空预上传文件
+                ipcRenderer.send("delectTemporaryFiles")
+                dispatch(updateMessages({
+                    convId,
+                    message: JSON.parse(json_params)
+                }))
+            }
+            // setEditorState(ContentUtils.clear(editorState));
+        }
     }
 
     const getAtList = (text: string) => {
@@ -204,14 +252,14 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const filePathAdapter = async (file) => {
         let templateFile = file;
-        if(templateFile.path === "") {
+        if (templateFile.path === "") {
             const formatedFile = file instanceof File && await fileReaderAsBuffer(file);
             templateFile = formatedFile;
         }
         return templateFile;
     }
 
-    const setFile = async (file: File | {size: number; type: string; path: string; name: string; fileContent: string}) => {
+    const setFile = async (file: File | { size: number; type: string; path: string; name: string; fileContent: string }) => {
         file = await filePathAdapter(file);
         if (file) {
             const fileSize = file.size;
@@ -220,7 +268,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 message.error({ content: "文件大小异常" })
                 return
             }
-            if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v)) ||  type== "image/jpeg") {
+            if (SUPPORT_IMAGE_TYPE.find(v => type.includes(v)) || type == "image/jpeg") {
                 if (fileSize > 28 * 1024 * 1024) return message.error({ content: "image size can not exceed 28m" })
                 const imgUrl = file instanceof File ? await fileImgToBase64Url(file) : bufferToBase64Url(file.fileContent, type);
                 // @ts-ignore
@@ -413,30 +461,32 @@ export const MessageInput = (props: Props): JSX.Element => {
         setActiveFeature(featureId);
     }
 
+    const clearAtText = (state) => {
+        const newEditorState = ContentUtils.undo(state);
+        const text = newEditorState.toText();
+        const lastAt = text.lastIndexOf("@");
+        const hasText = text.substring(lastAt).split('@')[1] !== "";
+        if( hasText ) {
+            clearAtText(newEditorState);
+        } else {
+            return newEditorState;
+        }
+    };
+
     const onAtPopupCallback = (userId: string, userName: string) => {
         resetState()
         if (userId) {
             const atText = userName || userId;
-            setAtUserMap(pre => ({ ...pre, [atText]: userId }));
-            // 获取最后的人员
-            // const lastname = editorState.toText().substring(editorState.toText().lastIndexOf("@"))
-            // if(lastname == '@'+userName){
-            //     setEditorState(ContentUtils.insertText(editorState, `${atText} `));
-            // }else{
-            //     console.log(lastname)
-            //     console.log(editorState.toText().indexOf(lastname))
-            //     console.log(editorState.toText().substring(0,editorState.toText().indexOf(lastname)))
-            //     //设置重复姓氏
-            //     setEditorState(ContentUtils.clear(editorState))
-            //     setEditorState(ContentUtils.insertText(editorState.toText().substring(0,editorState.toText().indexOf(lastname)), `${atText} `));
-            // }
-            setEditorState(ContentUtils.insertText(editorState, `${atText} `));
+            setAtUserMap(pre => ({...pre, [atText]: userId}));
+            const justHaveAt = editorState.toText().substring(editorState.toText().lastIndexOf("@")) === "@";
+            if(!justHaveAt) {
+                const newEditorState = clearAtText(editorState);
+                setEditorState(ContentUtils.insertText(newEditorState, `${atText} `));
+            } else {
+                setEditorState(ContentUtils.insertText(editorState, `${atText} `));
+            }
+            
             setAtInput('');
-        }
-        if (userName) {
-            const text = `${userName} `
-            console.log('人员2',editorState)
-            setEditorState(ContentUtils.insertText(editorState, text))
         }
     }
 
@@ -471,39 +521,68 @@ export const MessageInput = (props: Props): JSX.Element => {
         ipcRenderer.send('SCREENSHOT')
     }
     const handleOnkeyPress = (e) => {
-        const hasImage = editorState.toHTML().includes('image')
-        const hasFile = editorState.toHTML().includes('block-file')
+        // const hasImage = editorState.toHTML().includes('image')
+        // const hasFile = editorState.toHTML().includes('block-file')
+        // if (sendType == '0') {
+        //     // enter发送
+        //     if (e.ctrlKey && e.keyCode === 13) {
+        //         // console.log('换行', '----------------------', editorState)
+        //     } else if (e.keyCode == 13 || e.charCode === 13) {
+        //         e.preventDefault();
+        //         if (hasImage || hasFile) {
+        //             !atPopup && handleSendMsg();
+        //         } else {
+        //             !canSendMsg() && handleSendMsg();
+        //         }
+
+        //     } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+        //         e.preventDefault();
+        //         setAtPopup(true)
+        //     }
+        // } else {
+        //     // Ctrl+enter发送
+        //     if (e.ctrlKey && e.keyCode === 13) {
+        //         e.preventDefault();
+        //         if (hasImage || hasFile) {
+        //             handleSendMsg();
+        //         } else {
+        //             !canSendMsg() && handleSendMsg();
+        //         }
+        //     } else if (e.keyCode == 13 || e.charCode === 13) {
+        //         // console.log('换行', '----------------------', editorState)
+        //     } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
+        //         window.localStorage.setItem('inputAt', '1')
+        //         e.preventDefault()
+        //         setAtPopup(true)
+        //     }
+        // }
+
         if (sendType == '0') {
             // enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 // console.log('换行', '----------------------', editorState)
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 e.preventDefault();
-                if (hasImage || hasFile) {
-                    handleSendMsg();
-                } else {
-                    !canSendMsg() && handleSendMsg();
-                }
-
-            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-                e.preventDefault();
-                setAtPopup(true)
+                !atPopup && handleSendMsg();
             }
         } else {
             // Ctrl+enter发送
             if (e.ctrlKey && e.keyCode === 13) {
                 e.preventDefault();
-                if (hasImage || hasFile) {
-                    handleSendMsg();
-                } else {
-                    !canSendMsg() && handleSendMsg();
-                }
+                !atPopup && handleSendMsg();
             } else if (e.keyCode == 13 || e.charCode === 13) {
                 // console.log('换行', '----------------------', editorState)
-            } else if ((e.key === "@" || (e.keyCode === 229 && e.code === "Digit2")) && convType === 2) {
-                window.localStorage.setItem('inputAt', '1')
-                e.preventDefault()
-                setAtPopup(true)
+            }
+        }
+
+        if(e.keyCode === 38 || e.charCode === 38) {
+            if(atPopup) {
+                e.preventDefault();
+            }
+        }
+        if(e.keyCode === 40 || e.charCode === 40) {
+            if(atPopup) {
+                e.preventDefault();
             }
         }
 
@@ -608,41 +687,29 @@ export const MessageInput = (props: Props): JSX.Element => {
 
 
     const keyBindingFn = (e) => {
-        if (e.key === "@" && e.shiftKey && convType === 2) {
+        if(e.keyCode === 13 || e.charCode === 13) {
+            if(atPopup) {
+                 e.preventDefault();
+                return 'enter';
+            }
+        } else if(e.key === "@" && e.shiftKey && convType === 2) {
             e.preventDefault();
             setAtPopup(true);
             setEditorState(ContentUtils.insertText(editorState, ` @`))
             return '@';
-        } else if (e.key === "Process" && e.shiftKey && convType === 2) {
+        } else if (e.key === "Process" && e.shiftKey && convType === 2){
             e.preventDefault();
             setIsZHCNAndFirstPopup(true);
             setAtPopup(true);
             return 'zh-cn-@';
         }
-        // if (e.keyCode === 13 || e.charCode === 13) {
-        //     // e.preventDefault();
-        //     // if(!atPopup){
-        //     //     handleSendMsg();
-        //     // }
-        //     return 'enter';
-        // } else if (e.key === "@" && e.shiftKey && convType === 2) {
-        //     e.preventDefault();
-        //     setAtPopup(true);
-        //     setEditorState(ContentUtils.insertText(editorState, ` @`))
-        //     return '@';
-        // } else if (e.key === "Process" && e.shiftKey && convType === 2) {
-        //     e.preventDefault();
-        //     setIsZHCNAndFirstPopup(true);
-        //     setAtPopup(true);
-        //     return 'zh-cn-@';
-        // }
     }
 
     const handleKeyCommand = (e) => {
         switch (e) {
-            // case 'enter': {
-            //     return 'not-handled';
-            // }
+            case 'enter': {
+                return 'not-handled';
+            }
             case '@': {
                 return 'not-handled';
             }
@@ -694,7 +761,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         setShotKeyTip(sendType == '1' ? ' 按Ctrl+Enter键发送消息' : '按Enter键发送消息');
 
         // 自带截图生成的图片
-        const screenShotUrlListiner = (event, {data, url}) => {
+        const screenShotUrlListiner = (event, { data, url }) => {
             console.log(typeof data, data, url, '+++++++++++++++++++')
             if (data.length == 0) {
                 message.error({ content: '已取消截图' })
@@ -735,9 +802,10 @@ export const MessageInput = (props: Props): JSX.Element => {
             }
         }
         ipcRenderer.on('screenShotUrl', screenShotUrlListiner);
-
+        ipcRenderer.on('temporaryFilesWeb', handlSendMsg);
         return () => {
             ipcRenderer.off('screenShotUrl', screenShotUrlListiner);
+            ipcRenderer.off('temporaryFilesWeb', ()=>{});
         }
     }, [])
 

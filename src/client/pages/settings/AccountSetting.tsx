@@ -44,8 +44,7 @@ export const AccountSetting = (): JSX.Element => {
     unregisterShortcut(inputValue)
   };
   useEffect(() => {
-    const initVal =
-    window.localStorage.getItem("msgBother") == "true" ? true : false;
+    const initVal = !window.localStorage.getItem('msgBother') || window.localStorage.getItem('msgBother') == 'true' ? true : false;
     setMsgBother(initVal);
 
     ipcRenderer.on('saveFileTest',function(){
