@@ -204,7 +204,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             })
             return  true
         }
-
         messageElementArray.forEach( async v => {
             if(v.elem_type === 0) {
                 const atList = getAtList(v.text_elem_content);
@@ -232,7 +231,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             });
 
             const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
-            ipcRenderer.send("delectTemporaryFiles")
+            ipcRenderer.send("temporaryFiles", messageElementArray)
             dispatch(updateMessages({
                 convId,
                 message: templateElement

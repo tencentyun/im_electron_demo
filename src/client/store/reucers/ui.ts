@@ -1,4 +1,4 @@
-import { CHANGE_FUNCTION_TYPE, REPLACE_ROUTER, UPDATE_CALLING_STATUS } from "../actions/ui";
+import { CHANGE_FUNCTION_TYPE, REPLACE_ROUTER, UPDATE_CALLING_STATUS, CHANGE_SHOW_MODAL } from "../actions/ui";
 
 const initState = {
     function_tab: "message",
@@ -8,6 +8,10 @@ const initState = {
         callingId: '',
         inviteeList: [],
         callType: 0
+    },
+    showModalStatus:{
+        isShow:0,
+        showArray:[]
     }
 }
 
@@ -29,6 +33,11 @@ const UIReducer = (state = initState, action: { type: any; payload: any }) => {
             return {
                 ...state,
                 callingStatus: payload
+            }
+        case CHANGE_SHOW_MODAL:
+            return {
+                ...state,
+                showModalStatus: payload
             }
         default:
           return state;
