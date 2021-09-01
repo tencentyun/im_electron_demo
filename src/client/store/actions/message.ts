@@ -8,6 +8,7 @@ const UPDATE_MESSAGES = "UPDATE_MESSAGES"
 const UPDATE_MESSAGE_ELEM_PROGRESS = "UPDATE_MESSAGE_ELEM_PROGRESS"
 const SET_CURRENT_REPLY_USER = "SET_CURRENT_REPLY_USER"
 const CLEAR_HISTORY = 'CLEAR_HISTORY'
+const REPLACE_MESSAGE = 'REPLACE_MESSAGE'
 export enum ActionTypeEnum {
     ADD_MESSAGE = "ADD_MESSAGE",
     RECI_MESSAGE = "RECI_MESSAGE",
@@ -18,7 +19,8 @@ export enum ActionTypeEnum {
     UPDATE_MESSAGES = "UPDATE_MESSAGES",
     UPDATE_MESSAGE_ELEM_PROGRESS = "UPDATE_MESSAGE_ELEM_PROGRESS",
     SET_CURRENT_REPLY_USER = "SET_CURRENT_REPLY_USER",
-    CLEAR_HISTORY = 'CLEAR_HISTORY'
+    CLEAR_HISTORY = 'CLEAR_HISTORY',
+    REPLACE_MESSAGE = 'REPLACE_MESSAGE'
 }
 
 export type Action = {
@@ -64,6 +66,12 @@ type DeleteMessagePayload = {
 
 type MarkeMessageAsReadedPayload = {
     convIds: [string]
+}
+
+type ReplaceMessagePayload = {
+    convId: string;
+    messageId: string;
+    message: State.message;
 }
 
 export const getUserStatus = (payload: Payload) : State.actcionType<Payload> => ({
@@ -121,4 +129,9 @@ export const setCurrentReplyUser = (payload: SetCurrentReplyUserPayload): State.
 
 export const clearHistory = () => ({
     type: CLEAR_HISTORY
+})
+
+export const replaceMessage = (payload: ReplaceMessagePayload): State.actcionType<ReplaceMessagePayload> => ({
+    type: REPLACE_MESSAGE,
+    payload
 })
