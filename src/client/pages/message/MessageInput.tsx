@@ -184,7 +184,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                     convId,
                     message: JSON.parse(json_params)
                 }))
-                ipcRenderer.send("delectTemporaryFiles")   
             }
     };
 

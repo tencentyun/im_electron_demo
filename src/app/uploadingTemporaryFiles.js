@@ -36,10 +36,12 @@ const temporaryFiles = (mainWindow) => {
                 data.forEach(element => {
                     if (element.elem_type === 4) {
                         try {
-                            //上传文件复制临时文件
-                            console.log("上传文件复制临时文件", TEMPORARY_FILES + '\\' + element.file_elem_file_name)
-                            let copyFileSync = fs.copyFileSync(element.file_elem_file_path, TEMPORARY_FILES + '\\' + element.file_elem_file_name)
-                            element.file_elem_file_path = TEMPORARY_FILES + '\\' + element.file_elem_file_name
+                                if(checkFileIsOpen(element.file_elem_file_path)){
+                                //上传文件复制临时文件
+                                console.log("上传文件复制临时文件", TEMPORARY_FILES + '\\' + element.file_elem_file_name)
+                                fs.copyFileSync(element.file_elem_file_path, TEMPORARY_FILES + '\\' + element.file_elem_file_name)
+                                element.file_elem_file_path = TEMPORARY_FILES + '\\' + element.file_elem_file_name
+                            }
                         } catch (error) {
                             console.log("上传前拷贝报错", error)
                         }
