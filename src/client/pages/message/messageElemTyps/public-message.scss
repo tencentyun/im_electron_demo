@@ -1,0 +1,43 @@
+.contacter-result {
+    padding-left: 8px;
+    overflow-y: visible;
+    overflow-x: hidden;
+    height: calc(80vh - 125px);
+    box-sizing: border-box;
+
+    &__item {
+        display: flex;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+
+        &--nick-name {
+            margin-left: 8px;
+        }
+
+        &:hover {
+            background-color: #E8F2FF;
+        }
+    }
+
+    &__content {
+        height: 100%;
+    }
+}
+
+.public-message {
+    width:100%;
+    height:auto;
+    min-width:240px;
+    background: #ffffff;
+    &__img {
+        img {
+            width:100%;
+        }
+    }
+    &__text {
+        padding:0px 10px;
+        line-height: 40px;
+    }
+}

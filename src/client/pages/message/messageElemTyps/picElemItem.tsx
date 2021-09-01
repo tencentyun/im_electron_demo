@@ -27,7 +27,7 @@ const PicElemItem = (props: any): JSX.Element => {
     const savePic = () => {
         // 大图、原图、缩略图
         const { image_elem_orig_url ,image_elem_orig_id,} = props;
-        image_elem_orig_url && downloadPic(image_elem_orig_url,image_elem_orig_id,image_elem_orig_id)
+        image_elem_orig_url && downloadPic(image_elem_orig_url,image_elem_orig_id,props.message.message_msg_id)
     }
     useEffect(() => {
         savePic()
