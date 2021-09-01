@@ -99,6 +99,9 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [isDraging, setDraging] = useState(false);
     const [activeFeature, setActiveFeature] = useState('');
     const [shouldShowCallMenu, setShowCallMenu] = useState(false);
+    //解决打开文件无法发送问题
+    const [sendMessageFile, setMessageFile] = useState({messageElementArray:[],isDirectory:false});
+
     const [atPopup, setAtPopup] = useState(false);
     const [isEmojiPopup, setEmojiPopup] = useState(false);
     const [isRecordPopup, setRecordPopup] = useState(false);
@@ -136,6 +139,68 @@ export const MessageInput = (props: Props): JSX.Element => {
     useEffect(() => {
         reedite(isHandCal)
     }, [isHandCal])
+
+    //发送消息
+    useEffect(() => {
+        handlSendMsg(sendMessageFile)
+    }, [sendMessageFile])
+
+    const sendMsgSuccessCallback = ([res, userData]) => {
+            const { code, json_params, desc } = res;
+
+            if (code === 0) {                
+                dispatch(updateMessages({
+                    convId,
+                    message: JSON.parse(json_params)
+                }))
+            }
+    };
+
+    //发送消息
+    const handlSendMsg = async ({messageElementArray, isDirectory})=> {
+            if(isDirectory){
+                message.warning({
+                    content: "文件夹无法上传！",
+                })
+                return  true
+            }
+            messageElementArray.forEach( async v => {
+                if(v.elem_type === 0) {
+                    const atList = getAtList(v.text_elem_content);
+                    const { data: messageId } = await sendMsg({
+                        convId,
+                        convType,
+                        messageElementArray: [v],
+                        userId,
+                        messageAtArray: atList,
+                        callback: sendMsgSuccessCallback
+                    });
+                    const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+                    dispatch(updateMessages({
+                        convId,
+                        message: templateElement
+                    }));
+                    return
+                }
+                const { data: messageId } = await sendMsg({
+                    convId,
+                    convType,
+                    messageElementArray: [v],
+                    userId,
+                    callback: sendMsgSuccessCallback
+                });
+    
+                const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+                ipcRenderer.send("delectTemporaryFiles")
+                dispatch(updateMessages({
+                    convId,
+                    message: templateElement
+                }));
+            });
+    
+            setEditorState(ContentUtils.clear(editorState));
+   }
+    
     const handleSendMsg = async () => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
         try {
@@ -147,6 +212,17 @@ export const MessageInput = (props: Props): JSX.Element => {
             const rawData = editorState.toRAW();
             let messageElementArray = getMessageElemArray(rawData, videoInfos);
             console.log(messageElementArray, "调试内容");
+
+            const sendMsgSuccessCallback = ([res, userData]) => {
+                const { code, json_params, desc } = res;
+
+                if (code === 0) {                
+                    dispatch(updateMessages({
+                        convId,
+                        message: JSON.parse(json_params)
+                    }))
+                }
+            };
 
             if (messageElementArray[0] && messageElementArray[0].text_elem_content) {
                 messageElementArray[0].text_elem_content = messageElementArray[0].text_elem_content.substring(0, options.defaultValue)
@@ -165,82 +241,16 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }
 
                 ipcRenderer.send("temporaryFiles", messageElementArray)
+
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
         }
-
         // getData()
         setAtUserMap({});
         setVideoInfos([]);
     }
-    // const getData = async () => {
-    //     const response = await getConversionList();
-    //     dispatch(replaceConversaionList(response))
-    //     if (response.length) {
-    //         dispatch(updateCurrentSelectedConversation(response[0]))
-    //     } else {
-    //         dispatch(updateCurrentSelectedConversation(null))
-    //     }
-    // }
-
-
-    const sendMsgSuccessCallback = ([res, userData]) => {
-        const { code, json_params, desc } = res;
-
-        if (code === 0) {                
-            dispatch(updateMessages({
-                convId,
-                message: JSON.parse(json_params)
-            }))
-        }
-    };
-
-    //发送消息
-    const handlSendMsg = async (event,{messageElementArray, isDirectory})=> {
-        if(isDirectory){
-            message.warning({
-                content: "文件夹无法上传！",
-            })
-            return  true
-        }
-        messageElementArray.forEach( async v => {
-            if(v.elem_type === 0) {
-                const atList = getAtList(v.text_elem_content);
-                const { data: messageId } = await sendMsg({
-                    convId,
-                    convType,
-                    messageElementArray: [v],
-                    userId,
-                    messageAtArray: atList,
-                    callback: sendMsgSuccessCallback
-                });
-                const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
-                dispatch(updateMessages({
-                    convId,
-                    message: templateElement
-                }));
-                return
-            }
-            const { data: messageId } = await sendMsg({
-                convId,
-                convType,
-                messageElementArray: [v],
-                userId,
-                callback: sendMsgSuccessCallback
-            });
-
-            const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
-            ipcRenderer.send("delectTemporaryFiles")
-            dispatch(updateMessages({
-                convId,
-                message: templateElement
-            }));
-        });
-
-        setEditorState(ContentUtils.clear(editorState));
-    }
-
+    
     const getAtList = (text: string) => {
         const list = text.match(/@[a-zA-Z0-9_\u4e00-\u9fa5]+/g);
         const atNameList = list ? list.map(v => v.slice(1)) : [];
@@ -798,11 +808,17 @@ export const MessageInput = (props: Props): JSX.Element => {
                 return
             }
         }
+
+        
         ipcRenderer.on('screenShotUrl', screenShotUrlListiner);
-        ipcRenderer.on('temporaryFilesWeb', handlSendMsg);
+        ipcRenderer.on('temporaryFilesWeb', (event, data)=>{
+            setMessageFile(data)
+        });
         return () => {
             ipcRenderer.off('screenShotUrl', screenShotUrlListiner);
-            ipcRenderer.off('temporaryFilesWeb', ()=>{});
+            ipcRenderer.off('temporaryFilesWeb', (event, data)=>{
+                setMessageFile(data)
+            });
         }
     }, [])
 
