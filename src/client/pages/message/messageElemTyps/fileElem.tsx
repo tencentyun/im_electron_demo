@@ -101,10 +101,14 @@ const FileElem = (props: any): JSX.Element => {
             user_data: "test"
         });
 
+        const messageData = {
+            ...JSON.parse(json_params),
+            message_status: 3
+        }
         if (code === 0) {
             dispatch(updateMessages({
                 convId: message_conv_id,
-                message: JSON.parse(json_params)
+                message: messageData
             }))
         }
     }

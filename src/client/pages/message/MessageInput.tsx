@@ -25,8 +25,7 @@ import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/co
 import { blockRendererFn, blockExportFn } from './CustomBlock';
 import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer, generateTemplateElement } from './message-input-util';
 import MaxLength from 'braft-extensions/dist/max-length'
-import Store from "electron-store";
-const store = new Store();
+
 const options = {
     defaultValue: 3500, // 指定默认限制数，如不指定则为Infinity(无限)
 };
@@ -43,7 +42,38 @@ type Props = {
 const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF'];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 
-let FEATURE_LIST_GROUP = [{
+function getDifference(a, b)
+{
+    var i = 0;
+    var j = 0;
+    var result = "";
+
+    while (j < b.length)
+    {
+        if (a[i] != b[j] || i == a.length)
+            result += b[j];
+        else
+            i++;
+        j++;
+    }
+    return result;
+}
+
+const differenceBetweenTwoString = (str1, str2) => {
+    const array1 = str1.split('');
+    const array2 = str2.split('');
+    const baseArray = array1.length > array2.length ? array1 : array2;
+    const compareArray = array1.length > array2.length ? array2 : array1;
+    const difference = [];
+    baseArray.forEach((item, index) => {
+        if(compareArray[index] !== item) {
+            difference.push(item);
+        }
+    });
+
+    return difference.join("");
+}
+const FEATURE_LIST_GROUP = [{
     id: 'face',
     content: '发表情'
 },
@@ -70,7 +100,7 @@ let FEATURE_LIST_GROUP = [{
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
 }]
-let FEATURE_LIST_C2C = [{
+const FEATURE_LIST_C2C = [{
     id: 'face',
     content: '发表情'
 }, {
@@ -92,17 +122,17 @@ let FEATURE_LIST_C2C = [{
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
 }]
-
+const FEATURE_LIST = {
+    1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
+}
 export const MessageInput = (props: Props): JSX.Element => {
-    FEATURE_LIST_C2C[5].content =  `截图(${store.get("settingScreen").toString()})`;
-    FEATURE_LIST_GROUP[5].content =`截图(${store.get("settingScreen").toString()})`;
-    const FEATURE_LIST = {
-        1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
-    }
     const { convId, convType, isShutUpAll, handleOpenCallWindow, isHandCal } = props;
     const [isDraging, setDraging] = useState(false);
     const [activeFeature, setActiveFeature] = useState('');
     const [shouldShowCallMenu, setShowCallMenu] = useState(false);
+    //解决打开文件无法发送问题
+    const [sendMessageFile, setMessageFile] = useState({messageElementArray:[],isDirectory:false});
+
     const [atPopup, setAtPopup] = useState(false);
     const [isEmojiPopup, setEmojiPopup] = useState(false);
     const [isRecordPopup, setRecordPopup] = useState(false);
@@ -140,6 +170,69 @@ export const MessageInput = (props: Props): JSX.Element => {
     useEffect(() => {
         reedite(isHandCal)
     }, [isHandCal])
+
+    //发送消息
+    useEffect(() => {
+        handlSendMsg(sendMessageFile)
+    }, [sendMessageFile])
+
+    const sendMsgSuccessCallback = ([res, userData]) => {
+            const { code, json_params, desc } = res;
+
+            if (code === 0) {             
+                dispatch(updateMessages({
+                    convId,
+                    message: JSON.parse(json_params)
+                }))
+            }
+    };
+
+    //发送消息
+    const handlSendMsg = async ({messageElementArray, isDirectory})=> {
+            if(isDirectory){
+                message.warning({
+                    content: "文件夹无法上传！",
+                })
+                return  true
+            }
+            if(messageElementArray?.length){
+                messageElementArray.forEach( async v => {
+                    if(v.elem_type === 0) {
+                        const atList = getAtList(v.text_elem_content);
+                        const { data: messageId } = await sendMsg({
+                            convId,
+                            convType,
+                            messageElementArray: [v],
+                            userId,
+                            messageAtArray: atList,
+                            callback: sendMsgSuccessCallback
+                        });
+                        const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+                        dispatch(updateMessages({
+                            convId,
+                            message: templateElement
+                        }));
+                        return
+                    }
+                    const { data: messageId } = await sendMsg({
+                        convId,
+                        convType,
+                        messageElementArray: [v],
+                        userId,
+                        callback: sendMsgSuccessCallback
+                    });
+        
+                    const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+                    dispatch(updateMessages({
+                        convId,
+                        message: templateElement
+                    }));
+                });
+        
+                setEditorState(ContentUtils.clear(editorState));
+            }
+   }
+    
     const handleSendMsg = async () => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
         try {
@@ -167,83 +260,19 @@ export const MessageInput = (props: Props): JSX.Element => {
                     }
                     messageElementArray = [obj, ...outerlement]
                 }
-
+                
+                
                 ipcRenderer.send("temporaryFiles", messageElementArray)
+
             }
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` });
         }
-
         // getData()
         setAtUserMap({});
         setVideoInfos([]);
     }
-    // const getData = async () => {
-    //     const response = await getConversionList();
-    //     dispatch(replaceConversaionList(response))
-    //     if (response.length) {
-    //         dispatch(updateCurrentSelectedConversation(response[0]))
-    //     } else {
-    //         dispatch(updateCurrentSelectedConversation(null))
-    //     }
-    // }
-
-    const sendMsgSuccessCallback = ([res, userData]) => {
-        const { code, json_params, desc } = res;
-        if (code === 0) {      
-                
-            dispatch(updateMessages({
-                convId,
-                message: JSON.parse(json_params)
-            }))
-        }
-    };
-
-    //发送消息
-    const handlSendMsg = async (event,{messageElementArray, isDirectory})=> {
-        if(isDirectory){
-            message.warning({
-                content: "文件夹无法上传！",
-            })
-            return  true
-        }
-        messageElementArray.forEach( async v => {
-            if(v.elem_type === 0) {
-                const atList = getAtList(v.text_elem_content);
-                const { data: messageId } = await sendMsg({
-                    convId,
-                    convType,
-                    messageElementArray: [v],
-                    userId,
-                    messageAtArray: atList,
-                    callback: sendMsgSuccessCallback
-                });
-                const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
-                dispatch(updateMessages({
-                    convId,
-                    message: templateElement
-                }));
-                return
-            }
-            const { data: messageId } = await sendMsg({
-                convId,
-                convType,
-                messageElementArray: [v],
-                userId,
-                callback: sendMsgSuccessCallback
-            });
-
-            const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
-            ipcRenderer.send("delectTemporaryFiles")      
-            dispatch(updateMessages({
-                convId,
-                message: templateElement
-            }));
-        });
-
-        setEditorState(ContentUtils.clear(editorState));
-    }
-
+    
     const getAtList = (text: string) => {
         const list = text.match(/@[a-zA-Z0-9_\u4e00-\u9fa5]+/g);
         const atNameList = list ? list.map(v => v.slice(1)) : [];
@@ -461,15 +490,33 @@ export const MessageInput = (props: Props): JSX.Element => {
         setActiveFeature(featureId);
     }
 
+    const diffMessage = (state) => {
+        const oldText = editorState.toText();
+        const newText = state.toText();
+        if(newText === "") {
+            return {
+                isUnDoExpected: false,
+                differenceText: oldText
+            }
+        }
+        const differenceText = differenceBetweenTwoString(oldText, newText);
+        return {
+            isUnDoExpected:  differenceText === atUserNameInput,
+            differenceText
+        }
+    };
+
     const clearAtText = (state) => {
         const newEditorState = ContentUtils.undo(state);
-        const text = newEditorState.toText();
-        const lastAt = text.lastIndexOf("@");
-        const hasText = text.substring(lastAt).split('@')[1] !== "";
-        if( hasText ) {
+        const { isUnDoExpected,  differenceText} = diffMessage(newEditorState);
+        if(!isUnDoExpected && !differenceText.includes('@') ) {
             clearAtText(newEditorState);
         } else {
-            return newEditorState;
+            return {
+                isUnDoExpected,
+                newEditorState,
+                differenceText
+            }
         }
     };
 
@@ -480,8 +527,16 @@ export const MessageInput = (props: Props): JSX.Element => {
             setAtUserMap(pre => ({...pre, [atText]: userId}));
             const justHaveAt = editorState.toText().substring(editorState.toText().lastIndexOf("@")) === "@";
             if(!justHaveAt) {
-                const newEditorState = clearAtText(editorState);
-                setEditorState(ContentUtils.insertText(newEditorState, `${atText} `));
+                const {
+                    isUnDoExpected,
+                    newEditorState,
+                    differenceText
+                } = clearAtText(editorState);
+                if(isUnDoExpected) {
+                    setEditorState(ContentUtils.insertText(newEditorState, `${atText} `));
+                } else {
+                    setEditorState(ContentUtils.insertText(newEditorState, `@${atText} `));
+                }
             } else {
                 setEditorState(ContentUtils.insertText(editorState, `${atText} `));
             }
@@ -492,25 +547,25 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const handleSendCustEmojiMessage = async (url) => {
         try {
-
-            const { data: { code, json_params, desc } } = await sendCustomMsg({
+            //修改自定义表情无法发送
+            let VimgFace = {
+                elem_type: 6,
+                // @ts-ignore
+                face_elem_buf: url
+            }
+            const { data: messageId } = await sendCustomMsg({
                 convId,
                 convType,
-                messageElementArray: [{
-                    elem_type: 6,
-                    // @ts-ignore
-                    face_elem_buf: url
-                }],
-                userId
+                messageElementArray: [VimgFace],
+                userId,
+                callback: sendMsgSuccessCallback
             });
-            if (code === 0) {
-                dispatch(reciMessage({
-                    convId,
-                    messages: [JSON.parse(json_params)]
-                }))
-            } else {
-                message.error({ content: `消息发送失败 ${desc}` })
-            }
+            const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, VimgFace) as State.message;
+            dispatch(updateMessages({
+                convId,
+                message: templateElement
+            }));
+
         } catch (e) {
             message.error({ content: `出错了: ${e.message}` })
         }
@@ -801,11 +856,17 @@ export const MessageInput = (props: Props): JSX.Element => {
                 return
             }
         }
+
+        
         ipcRenderer.on('screenShotUrl', screenShotUrlListiner);
-        ipcRenderer.on('temporaryFilesWeb', handlSendMsg);
+        ipcRenderer.on('temporaryFilesWeb', (event, data)=>{
+            setMessageFile(data)
+        });
         return () => {
             ipcRenderer.off('screenShotUrl', screenShotUrlListiner);
-            ipcRenderer.off('temporaryFilesWeb', ()=>{});
+            ipcRenderer.off('temporaryFilesWeb', (event, data)=>{
+                setMessageFile(data)
+            });
         }
     }, [])
 

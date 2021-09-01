@@ -70,7 +70,6 @@ const _createWindow = (TencentIM) => {
   //存储临时文件
   temporaryFiles(mainWindow)
 
-
   mainWindow.on("close", function (e) {
     log.info("mainWindow close");
     TencentIM.destroy();

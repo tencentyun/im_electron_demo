@@ -73,7 +73,7 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
     case ActionTypeEnum.DELETE_MESSAGE: {
       const { convId, messageIdArray } = payload;
       const history = state.historyMessageList.get(convId);
-      const replacedMessageList = history.filter(item => !item.isTimeDivider && !messageIdArray.includes(item.message_msg_id));
+      const replacedMessageList = history.filter(item => !messageIdArray.includes(item.message_msg_id));
       return {
         ...state,
         historyMessageList: state.historyMessageList.set(convId, replacedMessageList)
@@ -126,6 +126,22 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
       return {
         ...state,
         uploadProgressList: state.uploadProgressList.set(`${messageId}_${index}`, {cur_size, total_size})
+      }
+    }
+
+    case ActionTypeEnum.REPLACE_MESSAGE: {
+      const { convId, message, messageId } = payload;
+      const oldMessageList = state.historyMessageList.get(convId) || [];
+      const newMessageList = oldMessageList.map(oldMessage => {
+          if(oldMessage?.message_msg_id && (oldMessage.message_msg_id === messageId)) {
+            return message
+          } else {
+            return oldMessage
+          }
+      });
+      return {
+        ...state,
+        historyMessageList: state.historyMessageList.set(convId, newMessageList)
       }
     }
 
