@@ -152,17 +152,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             let messageElementArray = getMessageElemArray(rawData, videoInfos);
             console.log(messageElementArray, "调试内容");
 
-            const sendMsgSuccessCallback = ([res, userData]) => {
-                const { code, json_params, desc } = res;
-
-                if (code === 0) {                
-                    dispatch(updateMessages({
-                        convId,
-                        message: JSON.parse(json_params)
-                    }))
-                }
-            };
-
             if (messageElementArray[0] && messageElementArray[0].text_elem_content) {
                 messageElementArray[0].text_elem_content = messageElementArray[0].text_elem_content.substring(0, options.defaultValue)
             }
@@ -199,6 +188,18 @@ export const MessageInput = (props: Props): JSX.Element => {
     //     }
     // }
 
+    const sendMsgSuccessCallback = ([res, userData]) => {
+        const { code, json_params, desc } = res;
+        if (code === 0) {      
+                
+            dispatch(updateMessages({
+                convId,
+                message: JSON.parse(json_params)
+            }))
+        }
+    };
+
+
     //发送消息
     const handlSendMsg = async (event,{messageElementArray, isDirectory})=> {
         if(isDirectory){
@@ -207,41 +208,42 @@ export const MessageInput = (props: Props): JSX.Element => {
             })
             return  true
         }
-        const fetchList = messageElementArray.map((v => {
-            if (v.elem_type === 0) {
+
+        messageElementArray.forEach( async v => {
+            if(v.elem_type === 0) {
                 const atList = getAtList(v.text_elem_content);
-                return sendMsg({
+                const { data: messageId } = await sendMsg({
                     convId,
                     convType,
                     messageElementArray: [v],
                     userId,
-                    messageAtArray: atList
+                    messageAtArray: atList,
+                    callback: sendMsgSuccessCallback
                 });
+                const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+                dispatch(updateMessages({
+                    convId,
+                    message: templateElement
+                }));
+                return
             }
-            return sendMsg({
+            const { data: messageId } = await sendMsg({
                 convId,
                 convType,
                 messageElementArray: [v],
-                userId
+                userId,
+                callback: sendMsgSuccessCallback
             });
-        }));
+
+            const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v) as State.message;
+            ipcRenderer.send("delectTemporaryFiles")      
+            dispatch(updateMessages({
+                convId,
+                message: templateElement
+            }));
+        });
 
         setEditorState(ContentUtils.clear(editorState));
-        const results = await Promise.all(fetchList);
-        console.log(results, 'result========================')
-        for (const res of results) {
-            console.log(res, '0000000000000000000000')
-            const { data: { code, json_params, desc } } = res;
-            if (code === 0) {
-                //清空预上传文件
-                ipcRenderer.send("delectTemporaryFiles")
-                dispatch(updateMessages({
-                    convId,
-                    message: JSON.parse(json_params)
-                }))
-            }
-            // setEditorState(ContentUtils.clear(editorState));
-        }
     }
 
     const getAtList = (text: string) => {
