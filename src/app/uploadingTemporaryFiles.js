@@ -2,7 +2,16 @@
 const { TEMPORARY_FILES } = require('./const/const')
 const { ipcMain } = require("electron");
 const fs = require('fs');
-const path = require('path')
+const path = require('path');
+
+const checkFileIsOpen = (filePath) => {
+    try {
+        fs.openSync(filePath, 'r+');
+        return false;
+    } catch(err) {
+        return true;
+    }
+}
 
 const temporaryFiles = (mainWindow) => {
     mkdirsSync(TEMPORARY_FILES)
