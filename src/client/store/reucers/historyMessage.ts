@@ -129,6 +129,22 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
       }
     }
 
+    case ActionTypeEnum.REPLACE_MESSAGE: {
+      const { convId, message, messageId } = payload;
+      const oldMessageList = state.historyMessageList.get(convId) || [];
+      const newMessageList = oldMessageList.map(oldMessage => {
+          if(oldMessage?.message_msg_id && (oldMessage.message_msg_id === messageId)) {
+            return message
+          } else {
+            return oldMessage
+          }
+      });
+      return {
+        ...state,
+        historyMessageList: state.historyMessageList.set(convId, newMessageList)
+      }
+    }
+
     case ActionTypeEnum.SET_CURRENT_REPLY_USER: {
       return {
         ...state,

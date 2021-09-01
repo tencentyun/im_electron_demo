@@ -18,6 +18,7 @@ import {
   reciMessage,
   addMoreMessage,
   updateMessages,
+  replaceMessage,
 } from "../../store/actions/message";
 import { ConvItem, ForwardType } from "./type";
 import {
@@ -187,6 +188,7 @@ export const MessageView = (props: Props): JSX.Element => {
     index: imgPreViewUrlIndex,
     imgs,
   } = useSelector((state: State.RootState) => state.imgViewer);
+
   const directToMsgPage = useMessageDirect();
   console.log(
     "messageList---------------------------------------------------------------------",
@@ -601,25 +603,58 @@ export const MessageView = (props: Props): JSX.Element => {
     });
   };
 
+  // const handleMessageReSend = async (params) => {
+  //   console.log(params);
+  //   const { message_conv_id: conv_id, message_conv_type: conv_type } = params;
+  //   const {
+  //     data: { code, json_params },
+  //   } = await timRenderInstance.TIMMsgSendMessage({
+  //     conv_id,
+  //     conv_type,
+  //     params,
+  //   });
+  //   if (code === 0) {
+  //     dispatch(
+  //       updateMessages({
+  //         convId: conv_id,
+  //         message: JSON.parse(json_params),
+  //       })
+  //     );
+  //   }
+  // };
+
+
+  const sendMsgSuccessCallback = ([res, userData]) => {
+    const { code, json_params, desc } = res;
+
+    if (code === 0) {                
+        dispatch(updateMessages({
+            convId,
+            message: JSON.parse(json_params)
+        }))
+    }
+};
+
+
   const handleMessageReSend = async (params) => {
-    console.log(params);
-    const { message_conv_id: conv_id, message_conv_type: conv_type } = params;
+    const { message_conv_id: conv_id, message_conv_type: conv_type, message_msg_id } = params;
     const {
-      data: { code, json_params },
-    } = await timRenderInstance.TIMMsgSendMessage({
+      data: messageId,
+    } = await timRenderInstance.TIMMsgSendMessageV2({
       conv_id,
       conv_type,
-      params,
+      params: {...params},
+      callback: sendMsgSuccessCallback
     });
-    if (code === 0) {
-      dispatch(
-        updateMessages({
-          convId: conv_id,
-          message: JSON.parse(json_params),
-        })
-      );
-    }
+
+    dispatch(replaceMessage({
+      convId,
+      messageId: message_msg_id,
+      message: {...params, message_status: 1, message_msg_id: messageId}
+    }));
   };
+      
+
   const handleOpenFile = (item) => {
     console.log(item);
     showDialog();
@@ -835,6 +870,7 @@ export const MessageView = (props: Props): JSX.Element => {
     setMultiSelect(false);
     setSeletedMessage([]);
   };
+  console.log('messageList', messageList)
   return (
     <div className="message-view" ref={messageViewRef}>
       {getLoadingStatus()}
