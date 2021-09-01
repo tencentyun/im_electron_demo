@@ -14,7 +14,7 @@ const temporaryFiles = (mainWindow) => {
             //上传文件是否存在文件夹
             for (let index = 0; index < data.length; index++) {
                 const element = data[index];
-                if(element.elem_type === 4){
+                if (element.elem_type === 4) {
                     let FSstatSync = fs.statSync(element.file_elem_file_path)
                     if (FSstatSync.isDirectory()) {
                         isDirectory = true
@@ -66,29 +66,34 @@ const mkdirsSync = (dirname) => {
 //删除预存上传文件
 const delDir = (path) => {
 
-    let files = [];
+    try {
+        let files = [];
 
-    if (fs.existsSync(path)) {
+        if (fs.existsSync(path)) {
 
-        files = fs.readdirSync(path);
+            files = fs.readdirSync(path);
 
-        files.forEach((file, index) => {
+            files.forEach((file, index) => {
 
-            let curPath = path + "/" + file;
+                let curPath = path + "\\" + file;
 
-            if (fs.statSync(curPath).isDirectory()) {
+                if (fs.statSync(curPath).isDirectory()) {
 
-                delDir(curPath); //递归删除文件夹
+                    delDir(curPath); //递归删除文件夹
 
-            } else {
+                } else {
 
-                fs.unlinkSync(curPath); //删除文件
+                    fs.unlinkSync(curPath); //删除文件
 
-            }
+                }
 
-        });
+            });
 
-        // fs.rmdirSync(path);
+            // fs.rmdirSync(path);
+        }
+    } catch (error) {
+        //兼容SDK有换成情况上传很快的情况
+        console.log("文件夹内不存在相应文件", error)
     }
 
 }
