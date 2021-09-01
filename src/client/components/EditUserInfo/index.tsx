@@ -18,8 +18,8 @@ import { updateCurrentSelectedConversation } from '../../store/actions/conversat
 import { useDispatch, useSelector } from 'react-redux';
 import { getConversionList, getMsgList } from '../../pages/message/api';
 import { replaceConversaionList } from '../../store/actions/conversation';
-import { addTimeDivider } from "src/client/utils/addTimeDivider";
-import { addMessage } from "src/client/store/actions/message";
+import { addTimeDivider } from "../../utils/addTimeDivider";
+import { addMessage } from "../../store/actions/message";
 
 const genderMap = {
   '1': '男',
