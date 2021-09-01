@@ -124,8 +124,8 @@ export const displayDiffMessage = (message, element, index) => {
       break;
     case 4:
       // @ts-ignore
-      console.log('打印文件状态', element)
-      console.log(checkfilepath(1, element.file_elem_file_id, element.file_elem_file_name))
+      //console.log('打印文件状态', element)
+      //console.log(checkfilepath(1, element.file_elem_file_id, element.file_elem_file_name))
       let istrue = checkfilepath(1, element.file_elem_file_id, element.file_elem_file_name)
       resp = <FileElem message={message} element={element} index={index} isshow={istrue ? true : false} />;
       break;
