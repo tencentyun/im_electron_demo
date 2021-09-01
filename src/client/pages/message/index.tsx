@@ -170,7 +170,16 @@ export const Message = (): JSX.Element => {
             '12': '[合并消息]',
         }[firstMsg?.elem_type];
         const hasAtMessage = conv_group_at_info_array && conv_group_at_info_array.length;
-        const atDisPlayMessage = hasAtMessage && conv_group_at_info_array.pop().conv_group_at_info_at_type === 1 ? "@我" : "@所有人"
+        let atDisPlayMessage = ""
+        if(hasAtMessage){
+            const lastAt = conv_group_at_info_array[conv_group_at_info_array.length-1]
+            if(lastAt.conv_group_at_info_at_type === 1){
+                atDisPlayMessage = "@我"
+            }else {
+                atDisPlayMessage = "@所有人"
+            }
+        }
+        
         const isRead = message_is_from_self && message_is_peer_read || !message_is_from_self && message_is_read
         return <React.Fragment>
             
