@@ -51,7 +51,12 @@ import {
 } from "tea-component";
 import { custEmojiUpsert } from "../../services/custEmoji";
 import { custEmojiUpsertParams } from "../../services/custEmoji";
-import { showDialog, checkFileExist, returnFileVla, checkfilepath } from "../../utils/tools";
+import {
+  showDialog,
+  checkFileExist,
+  returnFileVla,
+  checkfilepath,
+} from "../../utils/tools";
 import { addTimeDivider } from "../../utils/addTimeDivider";
 import { HISTORY_MESSAGE_COUNT } from "../../constants";
 import GroupSysElm from "./messageElemTyps/groupSystemElem";
@@ -194,7 +199,7 @@ export const MessageView = (props: Props): JSX.Element => {
     "messageList---------------------------------------------------------------------",
     messageList
   );
-  console.log(messageList.length)
+  console.log(messageList.length);
   useEffect(() => {
     if (!anchor) {
       messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
@@ -203,17 +208,20 @@ export const MessageView = (props: Props): JSX.Element => {
     setNoMore(messageList.length < HISTORY_MESSAGE_COUNT ? true : false);
   }, [messageList.length]);
   useEffect(() => {
-    ipcRenderer.on('download_reset_view', (e, percentage) => {
+    ipcRenderer.on("download_reset_view", (e, percentage) => {
       setTips("下载中");
-      setPercent(percentage)
+      setPercent(percentage);
       if (percentage == "100%") {
         setPercent("0%");
       }
-    })
-    ipcRenderer.on('download_reset', (e, boolean) => {
-      console.log('查看下载完状态', boolean)
+    });
+    ipcRenderer.on("download_reset", (e, boolean) => {
+      console.log("查看下载完状态", boolean);
       if (boolean) {
-        window.localStorage.setItem('File_list', window.localStorage.getItem('File_list_save'))
+        window.localStorage.setItem(
+          "File_list",
+          window.localStorage.getItem("File_list_save")
+        );
         // try {
         // 想通过自定义消息刷新
         //   return sendMsg({
@@ -226,13 +234,13 @@ export const MessageView = (props: Props): JSX.Element => {
         //   message.error({ content: `出错了: ${e.message}` });
         // }
       }
-    })
-    ipcRenderer.on('UPLOAD_RESET_MESSAGE_VIEW', (e, boolean) => {
+    });
+    ipcRenderer.on("UPLOAD_RESET_MESSAGE_VIEW", (e, boolean) => {
       if (boolean) {
-        console.log('查看界面刷新', boolean)
-        setMessView(true)
+        console.log("查看界面刷新", boolean);
+        setMessView(true);
       }
-    })
+    });
     // ipcRenderer.on('UPLOADPROGRESS', (e, percentage) => {
     //     setPercent(percentage)
     //     setTips('上传中')
@@ -386,7 +394,7 @@ export const MessageView = (props: Props): JSX.Element => {
   // }
 
   const handleFileSave = async (params) => {
-    console.log("文件另存为", params)
+    console.log("文件另存为", params);
     if (params.message && params.message.message_elem_array) {
       let fileElement = params.message.message_elem_array[0];
       const { message_msg_id } = params.message
@@ -543,14 +551,20 @@ export const MessageView = (props: Props): JSX.Element => {
     const { data } = e.props;
     switch (id) {
       case "revoke":
-        console.log(data)
-        if (data?.message?.message_elem_array[0].elem_type != 5) {
+        console.log(data);
+        if (!isTimeoutFun(currMenuMessage.message_client_time)) {
+          message.warning({
+            content: "发送时间超过2分钟的消息，不能被撤回",
+          });
+
+          break;
+        } else if (data?.message?.message_elem_array[0].elem_type != 5) {
           handleRevokeMsg(data);
           break;
         } else if (data?.message?.message_elem_array[0].elem_type == 5) {
           message.warning({
             content: "公告类型无法撤回消息哦",
-          })
+          });
           break;
         }
         break;
@@ -588,7 +602,7 @@ export const MessageView = (props: Props): JSX.Element => {
   const handleContextMenuEvent = async (e, message: State.message) => {
     const { data: serverTime } = await timRenderInstance.TIMGetServerTime();
     e.preventDefault();
-    setCurrMenuMessage(message);
+    setCurrMenuMessage({ ...message });
     setCurServerTime(serverTime);
     contextMenu.show({
       id: MESSAGE_MENU_ID,
@@ -662,7 +676,7 @@ export const MessageView = (props: Props): JSX.Element => {
   };
   const validatelastMessage = (messageList: State.message[]) => {
     let msg: State.message;
-    for (let i = messageList.length - 1;i > -1;i--) {
+    for (let i = messageList.length - 1; i > -1; i--) {
       if (messageList[i].message_msg_id) {
         msg = messageList[i];
         break;
@@ -698,7 +712,7 @@ export const MessageView = (props: Props): JSX.Element => {
   // 从发送消息时间开始算起，两分钟内可以编辑
   const isTimeoutFun = (time) => {
     const now = new Date();
-    if (now.getTime() / 1000 - time > 2 * 60) {
+    if (now.getTime() / 1000 - time > 60 * 2) {
       return false;
     } else {
       return true;
@@ -731,7 +745,6 @@ export const MessageView = (props: Props): JSX.Element => {
       custom_elem_data = "",
       text_elem_content,
     } = currMenuMessage.message_elem_array[0];
-
     // elemtype:1图片, 3 自定义消息为CUST_EMOJI类型
     const isEmoji =
       elem_type === 1 ||
@@ -761,7 +774,6 @@ export const MessageView = (props: Props): JSX.Element => {
     const menuData = getMenuItemData();
     return menuData.map(({ id, text }) => {
       return (
-
         <Item key={id} onClick={(e) => handlRightClick(e, id)}>
           {text}
         </Item>
@@ -845,7 +857,7 @@ export const MessageView = (props: Props): JSX.Element => {
         currentUrl = currentNode.currentSrc;
       }
     } else if (elem_type === 4) {
-      ipcRenderer.send('openfilenow', currentMsgItem)
+      ipcRenderer.send("openfilenow", currentMsgItem);
     } else if (onIsCustEmoji(elem_type, custom_elem_data)) {
       currentUrl = custom_elem_desc;
     }
@@ -953,8 +965,9 @@ export const MessageView = (props: Props): JSX.Element => {
                 <div
                   key={message_msg_id || index}
                   onClick={() => handleSelectMessage(item)}
-                  className={`message-view__item ${message_is_from_self ? "is-self" : ""
-                    }`}
+                  className={`message-view__item ${
+                    message_is_from_self ? "is-self" : ""
+                  }`}
                 >
                   {isMultiSelect &&
                     isNotGroupSysAndGroupTipsMessage &&

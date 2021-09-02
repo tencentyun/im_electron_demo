@@ -72,10 +72,14 @@ const FileElem = (props: any): JSX.Element => {
     const getFileTypeName = () => {
         const match = file_elem_file_name.match(/\.(\w+)$/)
         const arrayList = ['txt','pdf','doc','docx','zip','xlsx','xls','doc','docx','exe','ppt','pptx']
-        if(arrayList.indexOf(match[1])>-1){
-            return match ? match[1]+'-' : "unknow"
+        if(match){
+            if(arrayList.indexOf(match[1])>-1){
+                return match ? match[1]+'-' : "unknow"
+            }else{
+                return match ? match[1] : "unknow"
+            }
         }else{
-            return match ? match[1] : "unknow"
+            return "unknow"
         }
     }
 
