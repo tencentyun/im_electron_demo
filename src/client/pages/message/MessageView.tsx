@@ -1012,14 +1012,15 @@ export const MessageView = (props: Props): JSX.Element => {
                   </div>
                   <div className="message-view__item--element">
                     <div className="message-view__item--element-header">
-                      {/* {
+                      {
                         //群里会话列表添加名称  zwc
-                        item.message_conv_type === 2 && ( */}
+                        item.message_conv_type === 2 && (
                           <span className="message-view__nick_name">
                             {
                               item.message_sender_profile.user_profile_nick_name || item.message_sender_profile.user_profile_identifier
                             }
-                          </span>
+                          </span>)
+                      }
                       <span className="message-view__item--element__time">{_formatDate(new Date(message_client_time * 1000), 'yyyy-MM-dd hh:mm')}</span>
                     </div>
                   {message_elem_array &&
