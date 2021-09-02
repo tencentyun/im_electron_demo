@@ -9,6 +9,7 @@ const UPDATE_MESSAGE_ELEM_PROGRESS = "UPDATE_MESSAGE_ELEM_PROGRESS"
 const SET_CURRENT_REPLY_USER = "SET_CURRENT_REPLY_USER"
 const CLEAR_HISTORY = 'CLEAR_HISTORY'
 const REPLACE_MESSAGE = 'REPLACE_MESSAGE'
+const UPDATE_FILE_MESSAGE_DOWNLOAD_STATUS = 'UPDATE_FILE_MESSAGE_DOWNLOAD_STATUS';
 export enum ActionTypeEnum {
     ADD_MESSAGE = "ADD_MESSAGE",
     RECI_MESSAGE = "RECI_MESSAGE",
@@ -20,12 +21,13 @@ export enum ActionTypeEnum {
     UPDATE_MESSAGE_ELEM_PROGRESS = "UPDATE_MESSAGE_ELEM_PROGRESS",
     SET_CURRENT_REPLY_USER = "SET_CURRENT_REPLY_USER",
     CLEAR_HISTORY = 'CLEAR_HISTORY',
-    REPLACE_MESSAGE = 'REPLACE_MESSAGE'
+    REPLACE_MESSAGE = 'REPLACE_MESSAGE',
+    UPDATE_FILE_MESSAGE_DOWNLOAD_STATUS = 'UPDATE_FILE_MESSAGE_DOWNLOAD_STATUS'
 }
 
 export type Action = {
     type: ActionTypeEnum,
-    payload: Payload & ReciMessagePayload & UpdateMessagePayload & UpdateMessageElemProgressPayload & UpdateMessagesPayload & DeleteMessagePayload & MarkeMessageAsReadedPayload & SetCurrentReplyUserPayload
+    payload: Payload & ReciMessagePayload & UpdateMessagePayload & UpdateMessageElemProgressPayload & UpdateMessagesPayload & DeleteMessagePayload & MarkeMessageAsReadedPayload & SetCurrentReplyUserPayload & ReplaceMessagePayload & UpdateFileMessageDownloadStatusPayload
 }
 
 type AddMoreMessage = {
@@ -72,6 +74,14 @@ type ReplaceMessagePayload = {
     convId: string;
     messageId: string;
     message: State.message;
+}
+
+type UpdateFileMessageDownloadStatusPayload = {
+    messageId: string;
+    index: number;
+    isDownloading: boolean;
+    downloadPercentage?: number;
+
 }
 
 export const getUserStatus = (payload: Payload) : State.actcionType<Payload> => ({
@@ -135,3 +145,8 @@ export const replaceMessage = (payload: ReplaceMessagePayload): State.actcionTyp
     type: REPLACE_MESSAGE,
     payload
 })
+
+export const updateFileMessageDownloadStatus = (payload: UpdateFileMessageDownloadStatusPayload): State.actcionType<UpdateFileMessageDownloadStatusPayload> => ({
+    type: UPDATE_FILE_MESSAGE_DOWNLOAD_STATUS,
+    payload
+}) 

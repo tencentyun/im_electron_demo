@@ -7,7 +7,7 @@ import { Icon,Bubble, message as teaMessage } from "tea-component";
 import path from 'path';
 import os from 'os'
 import { ipcRenderer } from "electron";
-import { updateMessages } from "../../../store/actions/message";
+import { updateFileMessageDownloadStatus, updateMessages } from "../../../store/actions/message";
 
 export const getFilePath = (fileName) => {
     return path.resolve(os.homedir(), 'Download/', 'HuaRunIM/' + fileName)
@@ -17,10 +17,9 @@ const FileElem = (props: any): JSX.Element => {
     const { message, element, index,isshow } = props
     const { message_conv_id, message_conv_type,  message_msg_id, message_is_from_self} = message
     const { file_elem_file_name, file_elem_file_size, file_elem_file_path, file_elem_url,file_elem_file_id } = element
-    const { uploadProgressList } = useSelector((state: State.RootState) => state.historyMessage);
+    const { uploadProgressList, downloadFileStatusList } = useSelector((state: State.RootState) => state.historyMessage);
     
     const [FileHTML, setFileHTML] = useState(null);
-    const [isDownloading,setiSDownloading] = useState(false)
     const [fileid,] = useState(message_msg_id)
     const [message_status,setmessage_status] = useState(message.message_status)
     const dispatch = useDispatch()
@@ -30,6 +29,9 @@ const FileElem = (props: any): JSX.Element => {
     const [exits,setexits] = useState(false)
     const progressKey = `${message_msg_id}_${index}`
     const uploadProgress = uploadProgressList.get(progressKey);
+    const { isDownloading = false }  = downloadFileStatusList.get(`${message_msg_id}-${index}`) || {};
+
+
     useEffect(()=>{
         if (uploadProgress) {
             const { cur_size, total_size } = uploadProgress
@@ -142,10 +144,12 @@ const FileElem = (props: any): JSX.Element => {
         if (message_status === 2) return <div className="message-view__item--file___content____size">{calcuSize()}</div>
     }
     const handleProgress = (event,data)=>{
-        setDownloadPercentage(data);
-        setbackgroundStyle(data === 100 ? '' : `linear-gradient(to right, #D4FFEB ${data}%, white 0%, white 100%)`);
-        if(data === 100){
-            setiSDownloading(false)
+        const { isFinish, percentage } = data;
+        setDownloadPercentage(percentage);
+        setbackgroundStyle( isFinish? '' : `linear-gradient(to right, #D4FFEB ${percentage}%, white 0%, white 100%)`);
+
+        if(isFinish){
+            dispatch(updateFileMessageDownloadStatus({messageId: message_msg_id, index, isDownloading: false}));
         }
     }
     const addProgessDownLoadListener = ()=>{
@@ -156,7 +160,7 @@ const FileElem = (props: any): JSX.Element => {
     }
     const downloadPic = (url,file_elem_file_name,file_id) => {
         try {
-            setiSDownloading(true)
+            dispatch(updateFileMessageDownloadStatus({messageId: message_msg_id, index, isDownloading: true}));
             downloadFilesByUrl(url,file_elem_file_name,fileid)
         } catch (e) {
             teaMessage.error({
