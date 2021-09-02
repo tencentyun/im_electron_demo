@@ -12,10 +12,14 @@ const _cut = (appWindow) => {
         fs.writeFile(url, pngs, (err) => {
             fs.readFile(url, (err, data) => {
                 console.log(data, 'data............')
-                appWindow.webContents.send("screenShotUrl", {
-                    data,
-                    url,
-                });
+                try {
+                    appWindow.webContents.send("screenShotUrl", {
+                        data,
+                        url,
+                    });
+                }catch (err){
+                    console.log("screenShotUrl error",err)
+                }
             });
         });
     }

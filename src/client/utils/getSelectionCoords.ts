@@ -1,3 +1,5 @@
+const elementContains = (child, parent) => child !== parent && parent.contains(child);
+
 export const getSelectionCoords = (win) => {
     win = win || window;
     var doc = win.document;
@@ -38,8 +40,9 @@ export const getSelectionCoords = (win) => {
                     x = rect.left;
                     y = rect.top;
                     var spanParent = span.parentNode;
-                    spanParent.removeChild(span);
-
+                    if(elementContains(span, spanParent)) {
+                        spanParent.removeChild(span);
+                    }
                     // Glue any broken text nodes back together
                     spanParent.normalize();
                 }
