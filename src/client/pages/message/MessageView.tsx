@@ -125,8 +125,8 @@ export const displayDiffMessage = (message, element, index) => {
       break;
     case 4:
       // @ts-ignore
-      console.log('打印文件状态', element)
-      console.log(checkfilepath(1, element.file_elem_file_id, element.file_elem_file_name))
+      //console.log('打印文件状态', element)
+      //console.log(checkfilepath(1, element.file_elem_file_id, element.file_elem_file_name))
       let istrue = checkfilepath(1, element.file_elem_file_id, element.file_elem_file_name)
       resp = <FileElem message={message} element={element} index={index} isshow={istrue ? true : false} />;
       break;
@@ -390,21 +390,22 @@ export const MessageView = (props: Props): JSX.Element => {
     if (params.message && params.message.message_elem_array) {
       let fileElement = params.message.message_elem_array[0];
       const { message_msg_id } = params.message
-      let fileName = fileElement?.file_elem_file_name
-      if (!fileName) {
-        return
-        //fileName = checkfilepath(fileElement.file_elem_file_id);
-      }
-      const filePath = getFilePath(fileName);
-      const isExist = await checkFileExist(message_msg_id);
-      const index = filePath.lastIndexOf(".");
-      const ext = filePath.substr(index + 1);
-      if (!isExist) {
+      // let fileName = fileElement?.file_elem_file_name
+      // debugger
+      // if (!fileName) {
+      //   return
+      //   //fileName = checkfilepath(fileElement.file_elem_file_id);
+      // }
+      // const filePath = getFilePath(fileName);
+      const { path } = await checkFileExist(message_msg_id);
+      if (!path) {
         message.warning({ content: '文件未下载，请先下载' });
         return;
       }
+      const index = path.lastIndexOf(".");
+      const ext = path.substr(index + 1);
       ipcRenderer.send('fileSave', {
-        url: filePath,
+        url: path,
         type: ext
       });
     }

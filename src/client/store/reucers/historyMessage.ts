@@ -73,7 +73,18 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
     case ActionTypeEnum.DELETE_MESSAGE: {
       const { convId, messageIdArray } = payload;
       const history = state.historyMessageList.get(convId);
-      const replacedMessageList = history.filter(item => !messageIdArray.includes(item.message_msg_id));
+      let deleteMsgTime = 0;
+      const replacedMessageList = history.reduce((acc, item) => {
+        const isDeletedMsg = messageIdArray.includes(item.message_msg_id);
+        if(isDeletedMsg) {
+          deleteMsgTime = item.message_client_time;
+        } else {
+          if(!(item.isTimeDivider && item.time === deleteMsgTime)) {
+            acc.push(item);
+          }
+        }
+        return acc;
+      }, []);
       return {
         ...state,
         historyMessageList: state.historyMessageList.set(convId, replacedMessageList)
