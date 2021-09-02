@@ -49,14 +49,11 @@ export const MessageResult = (props) => {
                     return;
                 }
 
-                const data  = await searchTextMessage({
+                const { msg_search_result_item_array } = await searchTextMessage({
                     keyWords,
                     convType: conv_type,
                     convId: conv_id
                 });
-                
-                console.log("msg_search_result_item_array", data)
-                const msg_search_result_item_array = data.msg_search_result_item_array
 
                 const elementArray = msg_search_result_item_array[0].msg_search_result_item_message_array;
 
@@ -130,7 +127,7 @@ export const MessageResult = (props) => {
                             <div className="message-result__content--message-list-content customize-scroll-style">
                                 {
                                     activedItem?.messageArray?.map((item, index) => {
-                          
+                                        console.log("message_elem_array message_elem_array", item)
                                         const { message_elem_array, message_server_time, message_sender_profile: { user_profile_face_url, user_profile_nick_name, user_profile_identifier } } = item as State.message;
 
                                         return (

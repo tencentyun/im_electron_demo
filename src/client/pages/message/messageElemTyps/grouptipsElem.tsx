@@ -20,7 +20,7 @@ const GroupTipsElemItem = (props: any): JSX.Element => {
         return `将${changeDisplay[group_tips_group_change_info_flag]}修改`
     }
     const inviteInfo = (item) => {
-        return item.group_member_info_identifier;
+        return item.group_member_info_nick_name || item.group_member_info_identifier;
     }
     const tips_6 = () => {
         const { group_tips_elem_op_user_info, group_tips_elem_group_change_info_array } = props;

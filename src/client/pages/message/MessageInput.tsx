@@ -27,6 +27,8 @@ import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteTex
 import MaxLength from 'braft-extensions/dist/max-length'
 import Store from "electron-store";
 const store = new Store();
+import { ChatRecord } from '../../components/chatRecord/chatRecord'
+import { useDialogRef } from "../../utils/react-use/useDialog";
 
 const options = {
     defaultValue: 3500, // 指定默认限制数，如不指定则为Infinity(无限)
@@ -101,6 +103,9 @@ const FEATURE_LIST_GROUP = [{
 {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
+},{
+    id: 'histor',
+    content: '聊天记录'
 }]
 const FEATURE_LIST_C2C = [{
     id: 'face',
@@ -123,6 +128,9 @@ const FEATURE_LIST_C2C = [{
 {
     id: 'screen-shot',
     content: '截图(Ctrl + Shift + X)'
+},{
+    id: 'histor',
+    content: '聊天记录'
 }]
 const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
@@ -137,7 +145,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [shouldShowCallMenu, setShowCallMenu] = useState(false);
     //解决打开文件无法发送问题
     const [sendMessageFile, setMessageFile] = useState({messageElementArray:[],isDirectory:false});
-
+    const dialogRef = useDialogRef();
     const [atPopup, setAtPopup] = useState(false);
     const [isEmojiPopup, setEmojiPopup] = useState(false);
     const [isRecordPopup, setRecordPopup] = useState(false);
@@ -490,6 +498,9 @@ export const MessageInput = (props: Props): JSX.Element => {
             case "screen-shot":
                 handleScreenShot()
                 break;
+            case "histor":
+                handleHistor()
+                break;    
 
         }
         setActiveFeature(featureId);
@@ -580,6 +591,9 @@ export const MessageInput = (props: Props): JSX.Element => {
         clipboard.clear()
         ipcRenderer.send('SCREENSHOT')
     }
+    //聊天记录
+    const handleHistor = () => dialogRef.current.open();
+
     const handleOnkeyPress = (e) => {
         // const hasImage = editorState.toHTML().includes('image')
         // const hasFile = editorState.toHTML().includes('block-file')
@@ -943,7 +957,7 @@ export const MessageInput = (props: Props): JSX.Element => {
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }
+            <ChatRecord dialogRef={dialogRef} conv_type={convType} conv_id={convId}></ChatRecord>
         </div>
     )
-
 }

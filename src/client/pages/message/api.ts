@@ -477,13 +477,14 @@ export const searchTextMessage = async (params: {
 export const searchImgMessage = async (params: {
   convId?: string;
   convType?: number;
+  messageType?: number;
 }): Promise<any> => {
   const {
     data: { json_params },
   } = await timRenderInstance.TIMMsgSearchLocalMessages({
     params: {
       msg_search_param_keyword_array: [],
-      msg_search_param_message_type_array: [1, 2, 9],
+      msg_search_param_message_type_array: [params.messageType],
       msg_search_param_conv_id: params.convId,
       msg_search_param_conv_type: params.convType
     },

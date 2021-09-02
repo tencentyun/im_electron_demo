@@ -2,28 +2,39 @@ const { globalShortcut, clipboard, app, ipcMain } = require("electron");
 const child_process = require("child_process");
 const downloadUrl = app.getPath("downloads");
 const fs = require("fs");
-const Store = require("electron-store");
-const store = new Store();
-const _cut = (appWindow) => {
-  const url = `${downloadUrl}\\${new Date().getTime()}-screenShot.png`;
-  child_process.exec("start C:\\Users\\MiMyMine\\Desktop\\cut.exe", () => {
-    let pngs = clipboard.readImage().toPNG();
-    fs.writeFile(url, pngs, (err) => {
-      fs.readFile(url, (err, data) => {
-        console.log(data, "data............");
-        appWindow.webContents.send("screenShotUrl", {
-          data,
-          url,
-        });
-      });
-    });
-  });
-};
+const path = require("path");
+let isScreen = true;
 
+const _cut = (appWindow) => {
+  if (isScreen) {
+    isScreen = false;
+    const url = `${downloadUrl}\\${new Date().getTime()}-screenShot.png`;
+    child_process.exec(
+        path.join(process.cwd(), "/resources/extraResources", "cut.exe"),
+        () => {
+        let pngs = clipboard.readImage().toPNG();
+        fs.writeFile(url, pngs, (err) => {
+          fs.readFile(url, (err, data) => {
+            console.log(data, "data............");
+            try {
+              appWindow.webContents.send("screenShotUrl", {
+                data,
+                url,
+              });
+              isScreen = true;
+            } catch (err) {
+              console.log("screenShotUrl error", err);
+              isScreen = true;
+            }
+          });
+        });
+      }
+    );
+  }
+};
 // 注册截图快捷键
 const registerCut = (appWindow) => {
-  let key = store.get("settingScreen");
-  globalShortcut.register(key, () => {
+  globalShortcut.register("CommandOrControl+Shift+X", () => {
     clipboard.clear();
     _cut(appWindow);
   });

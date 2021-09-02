@@ -101,7 +101,7 @@ export const SearchMessage = (props) => {
                 const response = await addProfileForConversition(formatedData);
                 return response;
             }
-            Promise.all([addProfileForMessageResult(), groupResult, friendsResult, formatedContact(), searchGroupAllResult]).then(searchResult => {
+            Promise.all([formatedContact(), addProfileForMessageResult(), groupResult, friendsResult,  searchGroupAllResult]).then(searchResult => {
                 const [messageResult, groupResult, friendsResult, contactResult, WebGroupInfo] = searchResult;
                 console.log(searchResult, 9999)
                 setSearchResult({

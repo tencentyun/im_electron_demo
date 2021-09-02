@@ -113,6 +113,13 @@
                     background-image: url('../../assets/icon/screen-shot.svg');
                 }
             }
+            &.histor {
+                background-image: url('../../assets/icon/more.svg');
+
+                &.is-active {
+                    background-image: url('../../assets/icon/more.svg');
+                }
+            }
             &.more {
                 background-image: url('../../assets/icon/more.svg');
                 &.is-active {
