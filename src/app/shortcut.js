@@ -6,31 +6,31 @@ const path = require("path");
 let isScreen = true;
 
 const _cut = (appWindow) => {
-  const url = `${downloadUrl}\\${new Date().getTime()}-screenShot.png`;
-  child_process.exec(path.join(process.cwd(), "/resources/extraResources", "cut.exe"), () => {
-    let pngs = clipboard.readImage().toPNG();
-    fs.writeFile(url, pngs, (err) => {
-      fs.readFile(url, (err, data) => {
-        console.log(data, "data............");
-        appWindow.webContents.send("screenShotUrl", {
-          data,
-          url,
+  if (isScreen) {
+    isScreen = false;
+    const url = `${downloadUrl}\\${new Date().getTime()}-screenShot.png`;
+    child_process.exec("start C:\\Users\\10457\\Desktop\\cut.exe", () => {
+      let pngs = clipboard.readImage().toPNG();
+      fs.writeFile(url, pngs, (err) => {
+        fs.readFile(url, (err, data) => {
+          console.log(data, "data............");
+          appWindow.webContents.send("screenShotUrl", {
+            data,
+            url,
+          });
         });
       });
     });
-  });
+  }
 };
 ipcMain.on("removeScreeen", function () {
-    isScreen=true;
+  isScreen = true;
 });
 // 注册截图快捷键
 const registerCut = (appWindow) => {
   globalShortcut.register("CommandOrControl+Shift+X", () => {
-    if (isScreen) {
-        isScreen=false;
-      clipboard.clear();
-      _cut(appWindow);
-    }
+    clipboard.clear();
+    _cut(appWindow);
   });
   // 接受截图事件
   ipcMain.on("SCREENSHOT", function () {
