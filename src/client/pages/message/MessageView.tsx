@@ -40,7 +40,7 @@ import VideoElem from "./messageElemTyps/videoElem";
 import MergeElem from "./messageElemTyps/mergeElem";
 import { Expression } from "./messageElemTyps/expression";
 import { ForwardPopup } from "./components/forwardPopup";
-import formateTime from "../../utils/timeFormat";
+import formateTime, { _formatDate } from "../../utils/timeFormat";
 import {
   Icon,
   message,
@@ -1010,27 +1010,26 @@ export const MessageView = (props: Props): JSX.Element => {
                       />
                     </Bubble>
                   </div>
+                  <div className="message-view__item--element">
+                    <div className="message-view__item--element-header">
+                      {/* {
+                        //群里会话列表添加名称  zwc
+                        item.message_conv_type === 2 && ( */}
+                          <span className="message-view__nick_name">
+                            {
+                              item.message_sender_profile.user_profile_nick_name || item.message_sender_profile.user_profile_identifier
+                            }
+                          </span>
+                      <span className="message-view__item--element__time">{_formatDate(new Date(message_client_time * 1000), 'yyyy-MM-dd hh:mm')}</span>
+                    </div>
                   {message_elem_array &&
                     message_elem_array.length &&
                     message_elem_array.map((elment, index) => {
                       const { ...res } = elment;
                       return (
-                        <div
-                          className="message-view__item--element"
-                          key={item.message_conv_id}
-                        >
-                          {
-                            //群里会话列表添加名称  zwc
-                            item.message_conv_type === 2 && (
-                              <div className="message-view__nick_name">
-                                {
-                                  item.message_sender_profile
-                                    .user_profile_nick_name
-                                }
-                              </div>
-                            )
-                          }
                           <div
+                            key={index}
+                            className="message-view__item--element-content"
                             onClick={handleImgMsgClick.bind(
                               this,
                               elment,
@@ -1041,24 +1040,26 @@ export const MessageView = (props: Props): JSX.Element => {
                             }}
                           >
                             {displayDiffMessage(item, elment, index)}
+                            {shouldShowPerReadIcon ? (
+                                <span
+                                  className={`message-view__item--element-icon ${message_is_peer_read ? "is-read" : ""
+                                    }`}
+                                ></span>
+                              ) : (
+                                isMessageSendFailed && (
+                                  <Icon
+                                    className="message-view__item--element-icon-error"
+                                    type="error"
+                                    onClick={() => handleMessageReSend(item)}
+                                  />
+                                )
+                              )}
                           </div>
-                        </div>
+                        // </div>
                       );
                     })}
-                  {shouldShowPerReadIcon ? (
-                    <span
-                      className={`message-view__item--element-icon ${message_is_peer_read ? "is-read" : ""
-                        }`}
-                    ></span>
-                  ) : (
-                    isMessageSendFailed && (
-                      <Icon
-                        className="message-view__item--element-icon-error"
-                        type="error"
-                        onClick={() => handleMessageReSend(item)}
-                      />
-                    )
-                  )}
+                  </div>
+                  
                 </div>
               )}
               <div className="message-view__item--blank"></div>
