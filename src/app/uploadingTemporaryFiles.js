@@ -57,10 +57,14 @@ const temporaryFiles = (mainWindow) => {
             }
         }
 
-        mainWindow.webContents.send('temporaryFilesWeb', {
-            messageElementArray: data,
-            isDirectory: isDirectory
-        })
+        try {
+            mainWindow.webContents.send('temporaryFilesWeb', {
+                messageElementArray: data,
+                isDirectory: isDirectory
+            })
+        }catch(err){
+            console.log('temporaryFilesWeb error',err)
+        }
     });
 
     //删除临时上传文件

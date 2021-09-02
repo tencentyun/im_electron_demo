@@ -9,23 +9,29 @@ const _cut = (appWindow) => {
   if (isScreen) {
     isScreen = false;
     const url = `${downloadUrl}\\${new Date().getTime()}-screenShot.png`;
-    child_process.exec("start C:\\Users\\10457\\Desktop\\cut.exe", () => {
-      let pngs = clipboard.readImage().toPNG();
-      fs.writeFile(url, pngs, (err) => {
-        fs.readFile(url, (err, data) => {
-          console.log(data, "data............");
-          appWindow.webContents.send("screenShotUrl", {
-            data,
-            url,
+    child_process.exec(
+        path.join(process.cwd(), "/resources/extraResources", "cut.exe"),
+        () => {
+        let pngs = clipboard.readImage().toPNG();
+        fs.writeFile(url, pngs, (err) => {
+          fs.readFile(url, (err, data) => {
+            console.log(data, "data............");
+            try {
+              appWindow.webContents.send("screenShotUrl", {
+                data,
+                url,
+              });
+              isScreen = true;
+            } catch (err) {
+              console.log("screenShotUrl error", err);
+              isScreen = true;
+            }
           });
         });
-      });
-    });
+      }
+    );
   }
 };
-ipcMain.on("removeScreeen", function () {
-  isScreen = true;
-});
 // 注册截图快捷键
 const registerCut = (appWindow) => {
   globalShortcut.register("CommandOrControl+Shift+X", () => {

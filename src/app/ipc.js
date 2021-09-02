@@ -60,7 +60,11 @@ class IPC {
             const { type, params } = data;
             switch (data) {
                 case 'upload_reset_view':
-                    this.win.webContents.send('UPLOAD_RESET_MESSAGE_VIEW', true)
+                    try{
+                        this.win.webContents.send('UPLOAD_RESET_MESSAGE_VIEW', true)
+                    }catch(err){
+                        console.log('UPLOAD_RESET_MESSAGE_VIEW',err)
+                    }
                     break;
             }
             switch (type) {
@@ -207,7 +211,7 @@ class IPC {
                     try {
                         that.win.webContents.send(fileid, 100)
                     } catch (err) {
-
+                        console.log(fileid,"download faild",err)
                     }
                 }
                 // that.win.webContents.send('download_reset', true)
