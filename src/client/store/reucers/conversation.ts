@@ -1,4 +1,4 @@
-import { REPLACE_CONV_LIST, SET_UNREAD_COUNT, UPDATE_CONVERSATIONLIST, UPDATE_CURRENT_SELECTED_CONVERSATION, MARK_CONV_LAST_MSG_IS_READED, CLEAR_CONVERSATION } from '../actions/conversation';
+import { REPLACE_CONV_LIST, SET_UNREAD_COUNT, UPDATE_CONVERSATIONLIST, UPDATE_CURRENT_SELECTED_CONVERSATION, MARK_CONV_LAST_MSG_IS_READED, CLEAR_CONVERSATION, DELETE_CONVERSATION } from '../actions/conversation';
 
 const initState = {
     unreadCount: 0,
@@ -69,6 +69,14 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
                 ...state,
                 currentSelectedConversation: action.payload
             }
+        case DELETE_CONVERSATION:
+            const newConversationList = [...state.conversationList].filter((item)=>{
+                return item.conv_id!=payload
+            })
+            return {
+                ...state,
+                conversationList: newConversationList
+            };
         case REPLACE_CONV_LIST:
             return {
                 ...state,

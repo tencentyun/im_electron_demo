@@ -144,7 +144,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       }
     };
 
-    if (props.conv_unread_num > 0) {
+    if (props.conv_unread_num > 0 && messageId) {
       handleMsgReaded();
     }
   };

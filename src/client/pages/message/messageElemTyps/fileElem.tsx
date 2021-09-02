@@ -26,6 +26,7 @@ const FileElem = (props: any): JSX.Element => {
     const dispatch = useDispatch()
     const [backgroundStyle,setbackgroundStyle] = useState("")
     const [percentage,setpercentage] = useState(0)
+    const [downloadPercentage, setDownloadPercentage] = useState(0);
     const [exits,setexits] = useState(false)
     const progressKey = `${message_msg_id}_${index}`
     const uploadProgress = uploadProgressList.get(progressKey);
@@ -38,6 +39,7 @@ const FileElem = (props: any): JSX.Element => {
         }
         setmessage_status(message.message_status)
     },[uploadProgress, message, message_status])
+
     const calcuSize = () => {
         //console.log(file_elem_file_size)
         getHandleElement()
@@ -125,7 +127,12 @@ const FileElem = (props: any): JSX.Element => {
             if (exits) {
                 return <div className="message-view__item--file___open" title="打开文件" onClick={handleOpen}></div>
             }else {
-                return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} title="下载" onClick={savePic}></div>
+                return ( 
+                    <>
+                        {isDownloading && <span>{downloadPercentage}%</span>}
+                        <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} title="下载" onClick={savePic}></div>
+                    </>
+                )
             }
         }
        
@@ -135,7 +142,8 @@ const FileElem = (props: any): JSX.Element => {
         if (message_status === 2) return <div className="message-view__item--file___content____size">{calcuSize()}</div>
     }
     const handleProgress = (event,data)=>{
-        
+        setDownloadPercentage(data);
+        setbackgroundStyle(data === 100 ? '' : `linear-gradient(to right, #D4FFEB ${data}%, white 0%, white 100%)`);
         if(data === 100){
             setiSDownloading(false)
         }
@@ -213,7 +221,7 @@ const FileElem = (props: any): JSX.Element => {
         setexits(ex)
     }
     return (
-        <div className="message-view__item--file" style={{ background: backgroundStyle }} onDoubleClick={showFile}>
+        <div className="message-view__item--file file" style={{ background: backgroundStyle }} onDoubleClick={showFile}>
             <div className={`message-view__item--file___ext message-view__item--file___${ getFileTypeName()}`}>{getFileTypeName().substring(getFileTypeName().length-1,getFileTypeName().length) == '-'?'':getFileTypeName()}</div>
             <div className="message-view__item--file___content">
                 <div className="message-view__item--file___content____name">
