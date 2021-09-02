@@ -236,7 +236,7 @@ class IPC {
             str.on('progress', (progressData) => {
                 //不换行输出
                 let percentage = Math.round(progressData.percentage) + '%';
-                
+                that.win.webContents.send(fileid, Math.round(progressData.percentage));
                 console.log(percentage);
                 if(percentage == '100%') {
                     console.log('下载完了')
