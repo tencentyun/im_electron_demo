@@ -39,7 +39,7 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
     }
     case ActionTypeEnum.RECI_MESSAGE: {
       const history = state.historyMessageList.get(payload.convId);
-      const baseTime = getBaseTime(history);
+      const baseTime = getBaseTime(history);6997671209969350000
       const timeDividerResult = addTimeDivider(payload.messages, baseTime).reverse();
        
       const ret = {
@@ -52,7 +52,7 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
     case ActionTypeEnum.MARKE_MESSAGE_AS_REVOKED: {
       const { convId, messageId } = payload;
       const history = state.historyMessageList.get(convId);
-      const replacedMessageList = history.map(item => {
+      const replacedMessageList = history?.map(item => {
         if(!item || !item.message_msg_id){
           return item
         }
