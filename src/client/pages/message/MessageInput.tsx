@@ -25,6 +25,8 @@ import { GET_VIDEO_INFO, RENDERPROCESSCALL, SELECT_FILES } from '../../../app/co
 import { blockRendererFn, blockExportFn } from './CustomBlock';
 import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer, generateTemplateElement } from './message-input-util';
 import MaxLength from 'braft-extensions/dist/max-length'
+import Store from "electron-store";
+const store = new Store();
 
 const options = {
     defaultValue: 3500, // 指定默认限制数，如不指定则为Infinity(无限)
@@ -126,6 +128,9 @@ const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
 export const MessageInput = (props: Props): JSX.Element => {
+    FEATURE_LIST_C2C[5].content =  `截图(${store.get("settingScreen").toString()})`;
+    FEATURE_LIST_GROUP[5].content =`截图(${store.get("settingScreen").toString()})`;
+
     const { convId, convType, isShutUpAll, handleOpenCallWindow, isHandCal } = props;
     const [isDraging, setDraging] = useState(false);
     const [activeFeature, setActiveFeature] = useState('');
