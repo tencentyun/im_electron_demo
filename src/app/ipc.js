@@ -13,6 +13,8 @@ const FileType = require('file-type')
 const os = require('os')
 const log = require('electron-log')
 const Store = require('electron-store');
+const { getFileTypeName } = require("./utils");
+
 const store = new Store();
 const setPath = () => {
     const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}/${os.arch()}/ffprobe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}/${os.arch()}/ffprobe`)
@@ -353,7 +355,7 @@ class IPC {
         })
         const size = fs.statSync(filePath).size;
         const name = path.parse(filePath).base;
-        const type = name.split('.')[1];
+        const type = getFileTypeName(name);
 
         const data = {
             path: filePath,
