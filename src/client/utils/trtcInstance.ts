@@ -8,8 +8,8 @@ const getInstance = (): TRTCCloud => {
         // etc, 示例 config
         let envConfig = {};
         envConfig['trtc_env'] = {
-          'access_ip': [], //10.241.131.180
-          'anycast_domain': SERVERr_ADDRESS_IP,
+          'access_ip': TRTC_ACCESS_IP, //10.241.131.180
+          'anycast_domain': "",
           'access_host': "",
           'access_public_key': '035D3DD10EAFE2E68942158562BB3C4266B7DCA2D3ACD7407184CE4E5F633DAFA4'
         }
