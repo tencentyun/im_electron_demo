@@ -25,11 +25,13 @@ import {
     updateConversationList,
     markConvLastMsgIsReaded,
     updateCurrentSelectedConversation,
-    replaceConversaionList
+    replaceConversaionList,
+    deleteConversion
 } from "./store/actions/conversation";
 import {
     addProfileForConversition,
     getConversionList,
+    TIMConvDelete,
 } from "./pages/message/api";
 import {
     reciMessage,
@@ -196,15 +198,7 @@ export const App = () => {
             });
         }
     };
-    const getData = async () => {
-        const response = await getConversionList();
-        dispatch(replaceConversaionList(response))
-        if (response.length) {
-            dispatch(updateCurrentSelectedConversation(response[0]))
-        } else {
-            dispatch(updateCurrentSelectedConversation(null))
-        }
-    }
+    
     let showApp = true;
     const handleNotify = (messages) => {
         const msgBother = window.localStorage.getItem('msgBother') || false
@@ -434,6 +428,13 @@ export const App = () => {
     const _handleUnreadChange = (unreadCount) => {
         dispatch(setUnreadCount(unreadCount));
     };
+    const updateConversation = async () => {
+        const response = await getConversionList();
+        dispatch(replaceConversaionList(response));
+        if (response.length) {
+          dispatch(updateCurrentSelectedConversation(response[0]));
+        }
+    };
     const _handeMessage = (messages: State.message[]) => {
         // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
         try {
@@ -448,7 +449,23 @@ export const App = () => {
                 obj[messages[i].message_conv_id] = [];
             }
             obj[messages[i].message_conv_id].push(messages[i]);
+            // 处理被踢出群
+            try{
+                const { message_elem_array,message_conv_id,message_conv_type } = messages[i]
+                for(let j = 0;j<message_elem_array.length;j++){
+                    const { elem_type,group_report_elem_report_type } = message_elem_array[j]
+                    if(elem_type === 8 && [4,5,8].includes(group_report_elem_report_type)){
+                        // 删除会话
+                        TIMConvDelete(message_conv_id, message_conv_type).then(data=>{
+                            updateConversation()
+                        })
+                    }
+                }
+            }catch(err){
+
+            }
         }
+
         for (const i in obj) {
             dispatch(
                 reciMessage({
