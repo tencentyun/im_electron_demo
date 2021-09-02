@@ -268,10 +268,8 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
 
   useEffect(() => {
-    setTimeout(() => {
       setMessageRead(lastMessageId);
-    }, 500)
-  }, [lastMessageId]);
+  }, [props.conv_unread_num]);
 
   useEffect(() => {
     const getMessageList = async () => {
