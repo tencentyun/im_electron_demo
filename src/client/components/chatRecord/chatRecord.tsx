@@ -5,6 +5,7 @@ import { EmptyResult } from '../../pages/message/searchMessage/EmptyResult';
 import { searchImgMessage } from '../../pages/message/api'
 import PicElemItem from "../../pages/message/messageElemTyps/picElemItem";
 import VideoElem from "../../pages/message/messageElemTyps/videoElem";
+import VoiceElem from "../../pages/message/messageElemTyps/voiceElem";
 import './chatRecord.scss'
 import { formatDate } from '../../utils/tools'
 
@@ -72,8 +73,17 @@ export const ChatRecord = (props) => {
                 </div>
 
                 break;
+            case 2:
+                resp = <VoiceElem {...res} />;
+                break;
             case 9:
-                resp = <VideoElem message={message} {...res} />;
+                resp =
+                    <div className='message-item' style={{ width: '350px' }}>
+                        <VideoElem message={message} {...res} />;
+                        <div className='meeeage-time'>
+                            {formatDate(message.message_server_time * 1000)}
+                        </div>
+                    </div>
                 break;
         }
         return resp;
@@ -82,7 +92,7 @@ export const ChatRecord = (props) => {
     const htmlRest = (imgListRest) => {
         return (
             imgListRest.msg_search_result_item_array ?
-                imgListRest.msg_search_result_item_array[0].msg_search_result_item_message_array.length ? <div style={{display:'flex',flexWrap:'wrap'}}>
+                imgListRest.msg_search_result_item_array[0].msg_search_result_item_message_array.length ? <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                     {
                         imgListRest.msg_search_result_item_array[0].msg_search_result_item_message_array.map((item, index) =>
                             displayDiffMessage(item, item.message_elem_array[0], index)

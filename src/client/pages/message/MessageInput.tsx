@@ -175,7 +175,6 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const dispatch = useDispatch();
     const placeHolderText = isShutUpAll ? '已全员禁言' : '请输入消息';
-    console.log(editorState)
     const [sendType, setSendType] = useState(null); // 0->enter,1->ctrl+enter
     let editorInstance;
 
@@ -679,7 +678,6 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     //重新编辑
     const reedite = (data) => {
-        console.log(data[0], editorState)
         setEditorState(ContentUtils.insertText(editorState, data[0]))
     }
     const handleRecordPopupCallback = (path) => {

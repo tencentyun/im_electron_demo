@@ -102,7 +102,7 @@ export const SearchMessage = (props) => {
                 return response;
             }
             Promise.all([formatedContact(), addProfileForMessageResult(), groupResult, friendsResult,  searchGroupAllResult]).then(searchResult => {
-                const [messageResult, groupResult, friendsResult, contactResult, WebGroupInfo] = searchResult;
+                const [contactResult, messageResult, groupResult, friendsResult,  WebGroupInfo] = searchResult;
                 console.log(searchResult, 9999)
                 setSearchResult({
                     messageResult,

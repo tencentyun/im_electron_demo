@@ -42,7 +42,7 @@ const AccoutsItem:FC<listType> =  ({list,callBack}): JSX.Element => {
                     <div className={`accouts-item ${filterDataIndex == index ? 'active' : "" }`} key={index} onClick={ ()=>{handleItemClick(item,index)}}>
                     <div className='avent'>
                         {
-                            item.headurl ?  <img src={item.headurl} alt="" /> : item.username
+                            item.headurl ?  <img src={item.headurl} alt="" /> : item.username ? item.username.substring(item.username.length-2,item.username.length):''
                         }
                     </div>
                     <div className=''>

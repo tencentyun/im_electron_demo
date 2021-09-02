@@ -230,7 +230,7 @@ class IPC {
                 console.log('文件下载完成:', file_path);
                 if (fileid) {
                     try {
-                        that.win.webContents.send(fileid, 100)
+                        that.win.webContents.send(fileid, {isFinish: true, percentage: 100});
                     } catch (err) {
                         console.log(fileid,"download faild",err)
                     }
@@ -257,7 +257,7 @@ class IPC {
             str.on('progress', (progressData) => {
                 //不换行输出
                 let percentage = Math.round(progressData.percentage) + '%';
-                
+                that.win.webContents.send(fileid, {percentage: Math.round(progressData.percentage)});
                 console.log(percentage);
                 if(percentage == '100%') {
                     console.log('下载完了')

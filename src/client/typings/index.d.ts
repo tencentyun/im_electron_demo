@@ -72,6 +72,7 @@ declare namespace State {
     export type historyMessage = {
         historyMessageList:Map<string, Array<message>>
         uploadProgressList:Map<string, any>
+        downloadFileStatusList: Map<string, {isDownloading: boolean, downPercentage: number}>
         currentReplyUser: userProfile
     }
     export type conversation = {

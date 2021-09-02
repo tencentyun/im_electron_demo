@@ -4,6 +4,7 @@ import { addTimeDivider } from "../../utils/addTimeDivider";
 const initState = {
   historyMessageList: new Map(),
   uploadProgressList: new Map(),
+  downloadFileStatusList: new Map(),
   currentReplyUser: null
 }
 const deduplicationMessages = (oldMessages:State.message[],messages:State.message[])=>{
@@ -52,7 +53,7 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
     case ActionTypeEnum.MARKE_MESSAGE_AS_REVOKED: {
       const { convId, messageId } = payload;
       const history = state.historyMessageList.get(convId);
-      const replacedMessageList = history.map(item => {
+      const replacedMessageList = history?.map(item => {
         if(!item || !item.message_msg_id){
           return item
         }
@@ -146,6 +147,14 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
       }
     }
 
+    case ActionTypeEnum.UPDATE_FILE_MESSAGE_DOWNLOAD_STATUS: {
+      const { messageId, index, isDownloading, downloadPercentage } = payload;
+      return {
+        ...state,
+        downloadFileStatusList: state.downloadFileStatusList.set(`${messageId}-${index}`, {isDownloading, downloadPercentage})
+      }
+    }
+
     case ActionTypeEnum.SET_CURRENT_REPLY_USER: {
       return {
         ...state,
@@ -156,6 +165,7 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
       return {
         historyMessageList: new Map(),
         uploadProgressList: new Map(),
+        downloadFileStatusList: new Map(),
         currentReplyUser: null
       }
     default:

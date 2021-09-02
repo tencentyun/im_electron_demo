@@ -195,11 +195,6 @@ export const MessageView = (props: Props): JSX.Element => {
   } = useSelector((state: State.RootState) => state.imgViewer);
 
   const directToMsgPage = useMessageDirect();
-  console.log(
-    "messageList---------------------------------------------------------------------",
-    messageList
-  );
-  console.log(messageList.length);
   useEffect(() => {
     if (!anchor) {
       messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
@@ -883,7 +878,6 @@ export const MessageView = (props: Props): JSX.Element => {
     setMultiSelect(false);
     setSeletedMessage([]);
   };
-  console.log('messageList', messageList)
   return (
     <div className="message-view" ref={messageViewRef}>
       {getLoadingStatus()}
@@ -943,7 +937,7 @@ export const MessageView = (props: Props): JSX.Element => {
           const elemType = message_elem_array?.[0]?.elem_type; // 取message array的第一个判断消息类型
           const isNotGroupSysAndGroupTipsMessage = ![5, 8].includes(elemType); // 5,8作为群系统消息 不需要多选转发
           return (
-            <React.Fragment key={message_msg_id || index}>
+            <React.Fragment key={`${message_msg_id}-${index}`}>
               {message_status === 6 ? (
                 <div className="message-view__item is-revoked">
                   {`${revokedPerson} 撤回了一条消息`}
@@ -963,7 +957,7 @@ export const MessageView = (props: Props): JSX.Element => {
                 </div>
               ) : (
                 <div
-                  key={message_msg_id || index}
+                  key={`${message_msg_id}-${index}`}
                   onClick={() => handleSelectMessage(item)}
                   className={`message-view__item ${
                     message_is_from_self ? "is-self" : ""

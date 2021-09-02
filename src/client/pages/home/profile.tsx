@@ -56,7 +56,6 @@ export const Profile = (): JSX.Element => {
         history.replace('/')
     }
 }, [])
-  console.log('useSelector((state: State.RootState) => state.userInfo)', useSelector((state: State.RootState) => state.userInfo));
   const directToMsgPage = useMessageDirect();
 
   const handleMsgReaded = async () => {
