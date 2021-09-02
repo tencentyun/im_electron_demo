@@ -1,4 +1,4 @@
-const _formatDate = function (date, fmt) {
+export const _formatDate = function (date, fmt) {
     const o = {
             "M+": date.getMonth() + 1, //月份
             "d+": date.getDate(), //日

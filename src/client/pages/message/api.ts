@@ -462,7 +462,28 @@ export const searchTextMessage = async (params: {
   } = await timRenderInstance.TIMMsgSearchLocalMessages({
     params: {
       msg_search_param_keyword_array: [params.keyWords],
-      msg_search_param_message_type_array: [0, 1, 4, 9],
+      msg_search_param_message_type_array: [0, 4],
+      msg_search_param_conv_id: params.convId,
+      msg_search_param_conv_type: params.convType
+    },
+    user_data: "123",
+  });
+
+  return JSON.parse(json_params);
+};
+
+
+//搜索视频语音与图片
+export const searchImgMessage = async (params: {
+  convId?: string;
+  convType?: number;
+}): Promise<any> => {
+  const {
+    data: { json_params },
+  } = await timRenderInstance.TIMMsgSearchLocalMessages({
+    params: {
+      msg_search_param_keyword_array: [],
+      msg_search_param_message_type_array: [1, 2, 9],
       msg_search_param_conv_id: params.convId,
       msg_search_param_conv_type: params.convType
     },

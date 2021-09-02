@@ -70,11 +70,22 @@
             cursor: pointer;
         }
 
+        &--element__time {
+            font-size: 12px;
+            font-weight: 400;
+            color: #bbb;
+            line-height: 20px;
+            user-select: none;
+        }
+
         &.is-self {
             flex-direction: row-reverse;
             display: flex;
             .message-view__nick_name{
-                text-align: right;
+                // text-align: right;
+                margin-right: 0px;
+                margin-left: 8px;
+
             }
             .face-url {
                 margin-right: 0;
@@ -86,12 +97,36 @@
                 border-radius: 8px 2px 8px 8px;
 
             }
+
+            .message-view__item--element__time {
+                text-align: right;
+
+            }
+        }
+
+        &--element-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        &--element-content {
+            display: flex;
+        }
+
+        &.is-self &--element-content {
+            flex-direction: row-reverse;
+        }
+
+        &.is-self &--element-header {
+            flex-direction: row-reverse;
         }
 
         &--element {
             max-width: 80%;
             .message-view__nick_name{
                 color: #666;
+                margin-right: 8px;
             }
         }
 
