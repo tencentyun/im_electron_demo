@@ -78,6 +78,7 @@ type ReplaceMessagePayload = {
 
 type UpdateFileMessageDownloadStatusPayload = {
     messageId: string;
+    index: number;
     isDownloading: boolean;
     downloadPercentage?: number;
 

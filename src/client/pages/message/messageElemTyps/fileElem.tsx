@@ -20,7 +20,6 @@ const FileElem = (props: any): JSX.Element => {
     const { uploadProgressList, downloadFileStatusList } = useSelector((state: State.RootState) => state.historyMessage);
     
     const [FileHTML, setFileHTML] = useState(null);
-    // const [isDownloading,setiSDownloading] = useState(false)
     const [fileid,] = useState(message_msg_id)
     const [message_status,setmessage_status] = useState(message.message_status)
     const dispatch = useDispatch()
@@ -30,9 +29,8 @@ const FileElem = (props: any): JSX.Element => {
     const [exits,setexits] = useState(false)
     const progressKey = `${message_msg_id}_${index}`
     const uploadProgress = uploadProgressList.get(progressKey);
-    const { isDownloading = false }  = downloadFileStatusList.get(message_msg_id) || {};
+    const { isDownloading = false }  = downloadFileStatusList.get(`${message_msg_id}-${index}`) || {};
 
-    console.log('downloadFileStatusList', downloadFileStatusList);
 
     useEffect(()=>{
         if (uploadProgress) {
@@ -151,7 +149,7 @@ const FileElem = (props: any): JSX.Element => {
         setbackgroundStyle( isFinish? '' : `linear-gradient(to right, #D4FFEB ${percentage}%, white 0%, white 100%)`);
 
         if(isFinish){
-            dispatch(updateFileMessageDownloadStatus({messageId: message_msg_id, isDownloading: false}));
+            dispatch(updateFileMessageDownloadStatus({messageId: message_msg_id, index, isDownloading: false}));
         }
     }
     const addProgessDownLoadListener = ()=>{
@@ -162,7 +160,7 @@ const FileElem = (props: any): JSX.Element => {
     }
     const downloadPic = (url,file_elem_file_name,file_id) => {
         try {
-            dispatch(updateFileMessageDownloadStatus({messageId: message_msg_id, isDownloading: true}));
+            dispatch(updateFileMessageDownloadStatus({messageId: message_msg_id, index, isDownloading: true}));
             downloadFilesByUrl(url,file_elem_file_name,fileid)
         } catch (e) {
             teaMessage.error({

@@ -148,10 +148,10 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
     }
 
     case ActionTypeEnum.UPDATE_FILE_MESSAGE_DOWNLOAD_STATUS: {
-      const { messageId, isDownloading, downloadPercentage } = payload;
+      const { messageId, index, isDownloading, downloadPercentage } = payload;
       return {
         ...state,
-        downloadFileStatusList: state.downloadFileStatusList.set(`${messageId}`, {isDownloading, downloadPercentage})
+        downloadFileStatusList: state.downloadFileStatusList.set(`${messageId}-${index}`, {isDownloading, downloadPercentage})
       }
     }
 
