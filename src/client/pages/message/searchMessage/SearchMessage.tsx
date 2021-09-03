@@ -124,7 +124,7 @@ export const SearchMessage = (props) => {
         },
         {
             id: 'contact',
-            label: `通讯录(${contactResult.length})`
+            label: `组织架构(${contactResult.length})`
         }];
 
         return tabList;
@@ -134,7 +134,7 @@ export const SearchMessage = (props) => {
         <div className="search-message">
             <section className="search-message__input-area">
                 <Icon className="search-message__input-area--icon" type="search" />
-                <Input className="search-message__input-area--input" type="search" placeholder="查找消息等" onChange={handleInoputOnchange} />
+                <Input className="search-message__input-area--input" type="search" autoFocus placeholder="查找消息等" onChange={handleInoputOnchange} />
                 <Icon className="search-message__input-area--icon-close" type="close" onClick={handleModalClose} />
             </section>
             <section className="search-message__tab">

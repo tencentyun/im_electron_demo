@@ -1,7 +1,7 @@
 
 const { app, BrowserWindow, ipcMain } = require('electron')
 const { description } = require("../../package.json");
-// const appAutoUploader = require('./autoUpdate')
+const appAutoUploader = require('./autoUpdate')
 const initStore = require('./store')
 const registerCut = require('./shortcut')
 const temporaryFiles = require('./uploadingTemporaryFiles')
@@ -45,7 +45,7 @@ const _createWindow = (TencentIM) => {
 
 
         // 设置自定升级检测
-        // appAutoUploader(mainWindow)
+        appAutoUploader(mainWindow)
 
         // 设置stroe监听
         initStore()

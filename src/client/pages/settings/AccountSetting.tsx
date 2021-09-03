@@ -59,7 +59,7 @@ export const AccountSetting = (): JSX.Element => {
           </div>
           <div className="setting-item">
             <span>版本信息</span>
-            <span>V1.0.3</span>
+            <span>V{version}</span>
           </div>
           <div className="setting-item">
             <span>版权所有</span>
