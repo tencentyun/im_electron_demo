@@ -237,6 +237,9 @@ export const MessageInput = (props: Props): JSX.Element => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
         try {
             if(isAnalysizeVideo) {
+                message.warning({
+                    content: "视频解析中, 无法发送!"
+                });
                 return;
             }
             if (isShutUpAll) {
