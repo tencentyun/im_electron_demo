@@ -103,11 +103,11 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
         messageList[i].message_status === 2
       ) {
         // 不能是群系统通知
-        const { elem_type } = messageList[i].message_elem_array[0] || {};
-        if (elem_type != 5 && elem_type != 8) {
+        // const { elem_type } = messageList[i].message_elem_array[0] || {};
+        // if (elem_type != 5 && elem_type != 8) {
           msg = messageList[i];
           break;
-        }
+        // }
       }
     }
     return msg;
