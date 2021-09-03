@@ -124,7 +124,7 @@ export const SearchMessage = (props) => {
         },
         {
             id: 'contact',
-            label: `通讯录(${contactResult.length})`
+            label: `组织架构(${contactResult.length})`
         }];
 
         return tabList;
