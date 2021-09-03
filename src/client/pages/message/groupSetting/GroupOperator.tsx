@@ -12,7 +12,7 @@ import { getConversionList, TIMConvDelete } from "../api";
 import "./group-operator.scss";
 import {
   TransferGroupDialog,
-  TRansferGroupRecordsType,
+  GroupMemberListDrawerRecordsType,
 } from "./TransferGroupDialog";
 
 export const GroupOperator = (props: {
@@ -35,7 +35,7 @@ export const GroupOperator = (props: {
 
   const dispatch = useDispatch();
 
-  const transferDialogRef = useDialogRef<TRansferGroupRecordsType>();
+  const transferDialogRef = useDialogRef<GroupMemberListDrawerRecordsType>();
 
   const isOwner = groupOwner === userId;
 

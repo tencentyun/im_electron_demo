@@ -107,6 +107,10 @@ export const LoginContent = (): JSX.Element => {
         setUserID(val.toLocaleUpperCase())
     }
     const handleLoginClick = async () => {
+        //消息免打扰，默认设置true
+        if(!window.localStorage.getItem('msgBother')){
+            window.localStorage.setItem('msgBother', "true")
+        }
         getEncrptPwd({
             Pwd: password
         }).then(async getEncrptPwdRes => {

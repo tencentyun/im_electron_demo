@@ -13,6 +13,8 @@ const FileType = require('file-type')
 const os = require('os')
 const log = require('electron-log')
 const Store = require('electron-store');
+const { getFileTypeName } = require("./utils");
+
 const store = new Store();
 const setPath = () => {
     const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}/${os.arch()}/ffprobe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}/${os.arch()}/ffprobe`)
@@ -60,7 +62,11 @@ class IPC {
             const { type, params } = data;
             switch (data) {
                 case 'upload_reset_view':
-                    this.win.webContents.send('UPLOAD_RESET_MESSAGE_VIEW', true)
+                    try{
+                        this.win.webContents.send('UPLOAD_RESET_MESSAGE_VIEW', true)
+                    }catch(err){
+                        console.log('UPLOAD_RESET_MESSAGE_VIEW',err)
+                    }
                     break;
             }
             switch (type) {
@@ -205,9 +211,9 @@ class IPC {
                 console.log('文件下载完成:', file_path);
                 if (fileid) {
                     try {
-                        that.win.webContents.send(fileid, 100)
+                        that.win.webContents.send(fileid, {isFinish: true, percentage: 100});
                     } catch (err) {
-
+                        console.log(fileid,"download faild",err)
                     }
                 }
                 // that.win.webContents.send('download_reset', true)
@@ -232,7 +238,7 @@ class IPC {
             str.on('progress', (progressData) => {
                 //不换行输出
                 let percentage = Math.round(progressData.percentage) + '%';
-                
+                that.win.webContents.send(fileid, {percentage: Math.round(progressData.percentage)});
                 console.log(percentage);
                 if(percentage == '100%') {
                     console.log('下载完了')
@@ -328,7 +334,7 @@ class IPC {
         })
         const size = fs.statSync(filePath).size;
         const name = path.parse(filePath).base;
-        const type = name.split('.')[1];
+        const type = getFileTypeName(name);
 
         const data = {
             path: filePath,

@@ -127,14 +127,20 @@ export const Message = (): JSX.Element => {
     }, [currentSelectedConversation]);
 
     useEffect(()=>{
-        if(currentSelectedConversation !=null && (conversationList.filter(item => item.conv_id == currentSelectedConversation.conv_id).length <= 0)){
-            dispatch(updateCurrentSelectedConversation(conversationList[0]))
+        if(currentSelectedConversation !== null){
+            if((conversationList.filter(item => item.conv_id == currentSelectedConversation.conv_id).length <= 0)) {
+                dispatch(updateCurrentSelectedConversation(conversationList[0]));
+            } else {
+                const currentSelectedConvId = currentSelectedConversation.conv_id;
+                const currentSelectedConvsation = conversationList.find(item => item.conv_id === currentSelectedConvId);
+                dispatch(updateCurrentSelectedConversation(currentSelectedConvsation));
+            }
         }else{
-            if(currentSelectedConversation===null && conversationList.length > 0){
+            if(currentSelectedConversation === null && conversationList.length > 0){
                 dispatch(updateCurrentSelectedConversation(conversationList[0]))
             }
         }
-    },[conversationList.length])
+    },[conversationList])
 
 
     const handleConvListClick = convInfo => {

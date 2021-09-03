@@ -90,7 +90,7 @@ if (!gotTheLock) {
 
   app.on('window-all-closed', () => {
     log.info('window-all-closed')
-    if (process.platform !== "darwin") app.quit();
+    if (process.platform !== "darwin") app.exit();
   });
 
 

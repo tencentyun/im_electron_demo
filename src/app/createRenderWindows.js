@@ -1,5 +1,5 @@
 
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const { description } = require("../../package.json");
 // const appAutoUploader = require('./autoUpdate')
 const initStore = require('./store')
@@ -67,7 +67,7 @@ const _createWindow = (TencentIM) => {
     mainWindow.on("close", function (e) {
         log.info('mainWindow close')
         TencentIM.destroy()
-        app.quit()
+        app.exit()
     });
     // 通知渲染进程窗口是否可见
     mainWindow.on("blur", function () {
@@ -88,6 +88,9 @@ const _createWindow = (TencentIM) => {
             // windows
             _sendMessageToRender(mainWindow,'mainProcessMessage',false)
         }
+    })
+    mainWindow.on("closed", function(){
+        ipcMain.removeAllListeners()
     })
     // 通知渲染进程窗口是否可见 end
 
