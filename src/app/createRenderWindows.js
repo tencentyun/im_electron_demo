@@ -67,7 +67,7 @@ const _createWindow = (TencentIM) => {
     mainWindow.on("close", function (e) {
         log.info('mainWindow close')
         TencentIM.destroy()
-        app.quit()
+        app.exit()
     });
     // 通知渲染进程窗口是否可见
     mainWindow.on("blur", function () {
