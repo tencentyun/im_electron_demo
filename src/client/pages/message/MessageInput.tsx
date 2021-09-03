@@ -785,6 +785,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     }
 
     useEffect(() => {
+        setAnalysizeVideoInfoStatus(false);
         const listener = (event, params) => {
             console.log(event)
             console.log(params)
