@@ -8,8 +8,9 @@ import { ContacterResult } from './ContacterResult';
 import { MessageResult } from './MessageResult';
 
 import './search-message.scss';
-import { getstAffPrefix } from '../../../utils/orgin';
+import { getstAffPrefix, filterArray } from '../../../utils/orgin';
 import { ContactResult } from './ContactResult';
+
 
 export const SearchMessage = (props) => {
     const [inputValue, setInputValue] = useState("");
@@ -83,8 +84,12 @@ export const SearchMessage = (props) => {
             }
             Promise.all([formatedContact(),addProfileForMessageResult(), groupResult, friendsResult]).then(searchResult => {
                 console.log(searchResult)
-                const [contactResult,messageResult, groupResult, friendsResult] = searchResult;
+                let [contactResult,messageResult, groupResult, friendsResult] = searchResult;
                 console.log(friendsResult,9999)
+                console.log(contactResult,9999)
+                friendsResult = filterArray(friendsResult,1)
+                contactResult = filterArray(contactResult,2)
+                console.log(friendsResult)
                 setSearchResult({
                     messageResult,
                     groupResult,
