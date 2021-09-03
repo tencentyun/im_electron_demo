@@ -155,6 +155,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [atUserNameInput, setAtInput] = useState('');
     const [atUserMap, setAtUserMap] = useState({});
     const [isZHCNAndFirstPopup, setIsZHCNAndFirstPopup] = useState(false);
+    const [isAnalysizeVideo, setAnalysizeVideoInfoStatus ] = useState(false);
     //@ts-ignore
     const filePicker = React.useRef(null);
     const imagePicker = React.useRef(null);
@@ -248,6 +249,12 @@ export const MessageInput = (props: Props): JSX.Element => {
     const handleSendMsg = async () => {
         // console.log(editorState.toText().trim() == '', typeof editorState.toText())
         try {
+            if(isAnalysizeVideo) {
+                message.warning({
+                    content: "视频解析中, 无法发送!"
+                });
+                return;
+            }
             if (isShutUpAll) {
                 message.warning({
                     content: "群主已全员禁言，无法发送消息哦",
@@ -320,7 +327,8 @@ export const MessageInput = (props: Props): JSX.Element => {
                     type: GET_VIDEO_INFO,
                     // @ts-ignore
                     params: { path: file.path }
-                })
+                });
+                setAnalysizeVideoInfoStatus(true);
                 // @ts-ignore
                 setEditorState(preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, { name: file.name, path: file.path, size: file.size }));
             } else {
@@ -806,12 +814,16 @@ export const MessageInput = (props: Props): JSX.Element => {
                     break;
                 }
                 case 'GET_VIDEO_INFO': {
+                    setAnalysizeVideoInfoStatus(false);
                     setVideoInfos(pre => [...pre, data]);
                     break;
                 }
             }
         }
         const errorConsole = (event, data) => {
+            message.error({content: '视频解析出错，请重试!'});
+            setEditorState(ContentUtils.clear(editorState));
+            setAnalysizeVideoInfoStatus(false);
             console.error('==========main process error===========', data);
         }
 
@@ -937,7 +949,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 />
             </div>
             <div className="message-input__button-area">
-                <Button type="primary" onClick={handleSendMsg} disabled={editorState.toText() === ''}>发送</Button>
+                <Button type="primary" onClick={handleSendMsg} disabled={editorState.toText() === '' || isAnalysizeVideo}>发送</Button>
             </div>
             <Dropdown
                 clickClose={true}

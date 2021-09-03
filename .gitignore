@@ -90,4 +90,8 @@ package-lock.json
 # Electron-Forge
 out/ 
 package-lock.json
+<<<<<<< HEAD
 .history
+=======
+.history
+>>>>>>> aa3e308dc511e972f08c248bcd0f7c954ead9efd

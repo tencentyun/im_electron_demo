@@ -74,7 +74,13 @@ export const ChatRecord = (props) => {
 
                 break;
             case 2:
-                resp = <VoiceElem {...res} />;
+                resp =
+                    <div className='message-item'>
+                        <VoiceElem {...res} />;
+                        <div className='meeeage-time'>
+                            {formatDate(message.message_server_time * 1000)}
+                        </div>
+                    </div>
                 break;
             case 9:
                 resp =

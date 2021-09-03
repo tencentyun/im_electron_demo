@@ -1,8 +1,10 @@
 .search-message {
     &__input-area {
         display: flex;
-        padding: 20px;
-        border-bottom: 1px solid #eee;
+        margin: 10px;
+        padding: 0px 10px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
         align-items: center;.tea-tabs__tabitem
 
         &--icon {
@@ -11,7 +13,8 @@
 
         &--input {
             flex: 1;
-            height: 22px;
+            height: 40px;
+            font-size: 16px;
             border:none;
             background: none;
         }
