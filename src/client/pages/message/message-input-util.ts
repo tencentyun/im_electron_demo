@@ -28,6 +28,7 @@ export const generateTemplateElement = async (convId, convType, userProfile, mes
   }
   return {
     message_client_time:Math.round(new Date().getTime() /  1000),
+    message_server_time:Math.round(new Date().getTime() /  1000),
     message_is_peer_read: false,
     message_status: 1,
     message_conv_type: convType,
