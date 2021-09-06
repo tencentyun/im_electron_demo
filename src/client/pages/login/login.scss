@@ -8,7 +8,10 @@
 .login {
     padding: toRem(103) toRem(80);
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
+    width: 100%;
+    align-items: center;
+    height: 100%;
 
     &--context {
         box-shadow: 0px 1px 16px 0px rgba(0, 50, 150, 0.08);

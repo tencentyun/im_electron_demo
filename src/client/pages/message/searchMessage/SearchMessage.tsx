@@ -8,9 +8,10 @@ import { ContacterResult } from './ContacterResult';
 import { MessageResult } from './MessageResult';
 import { GroupAllResult } from './GroupAllResult';
 import './search-message.scss';
-import { getstAffPrefix, getFuzzy} from '../../../utils/orgin';
+import { getstAffPrefix, getFuzzy, filterArray} from '../../../utils/orgin';
 import { ContactResult } from './ContactResult';
 import { resolve } from 'dns';
+
 
 export const SearchMessage = (props) => {
     const [inputValue, setInputValue] = useState("");
@@ -102,8 +103,9 @@ export const SearchMessage = (props) => {
                 return response;
             }
             Promise.all([formatedContact(), addProfileForMessageResult(), groupResult, friendsResult,  searchGroupAllResult]).then(searchResult => {
-                const [contactResult, messageResult, groupResult, friendsResult,  WebGroupInfo] = searchResult;
-                console.log(searchResult, 9999)
+                let [contactResult, messageResult, groupResult, friendsResult,  WebGroupInfo] = searchResult;
+                friendsResult = filterArray(friendsResult,1)
+                contactResult = filterArray(contactResult,2)
                 setSearchResult({
                     messageResult,
                     groupResult,
@@ -145,7 +147,7 @@ export const SearchMessage = (props) => {
         },
         {
             id: 'contact',
-            label: `通讯录(${contactResult.length})`
+            label: `组织架构(${contactResult.length})`
         },
         {
             id: 'allgroup',

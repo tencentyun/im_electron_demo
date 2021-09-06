@@ -7,6 +7,7 @@ const registerCut = require("./shortcut");
 const setOtherIPC = require("./otheripc");
 const setSaveFileIPC = require("./saveFile");
 const temporaryFiles = require('./uploadingTemporaryFiles')
+const redbawViews = require('./redbawViews')
 //选择路径IPC zwc  2021年8月26日16:34:22
 const selectPathIPC = require("./selectPath");
 const url = require("url");
@@ -71,6 +72,9 @@ const _createWindow = (TencentIM) => {
   //存储临时文件
   temporaryFiles(mainWindow)
 
+  //刷新视图
+  redbawViews(mainWindow)
+  
   mainWindow.on("close", function (e) {
     log.info("mainWindow close");
     TencentIM.destroy();

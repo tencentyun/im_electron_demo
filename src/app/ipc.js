@@ -25,19 +25,17 @@ const setPath = () => {
     let ext = ''
     switch(platform){
         case 'darwin':
-            ext = 'dylib';
+            ext = '';
             break;
         case 'linux':
-            ext = 'so';
+            ext = '.so';
             break;
         case 'win32':
-            ext = 'exe';
+            ext = '.exe';
             break;
     }
-    if(ext){
-        FFmpeg.setFfprobePath(`${ffprobePath}.${ext}`);
-        FFmpeg.setFfmpegPath(`${formateFfmpegPath}.${ext}`);
-    }
+    FFmpeg.setFfprobePath(`${ffprobePath}${ext}`);
+    FFmpeg.setFfmpegPath(`${formateFfmpegPath}${ext}`);
 }
 
 let  DOWNLOAD_PATH_T = DOWNLOAD_PATH

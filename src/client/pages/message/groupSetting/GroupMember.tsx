@@ -22,6 +22,7 @@ import { GroupMemberBubble } from "./GroupMemberBubble";
 import { getLoginUserID, getGroupMemberList, getAllGroupMemberList, modifyGroupMemberInfo} from '../api';
 import useAsyncRetryFunc from "../../../utils/react-use/useAsyncRetryFunc";
 import { GroupInfoCustemString } from '../../../typings/interface'
+import { ipcRenderer } from "electron";
 export const GroupMember = (props: {
   onRefresh: () => Promise<any>;
   userIdentity: number;
@@ -59,6 +60,10 @@ export const GroupMember = (props: {
 
   useEffect(() => {
     getAllMemberList();
+    ipcRenderer.on('updataCluster', getAllMemberList)
+    return function(){
+      ipcRenderer.off('updataCluster',getAllMemberList)
+    }
   }, []);
 
   const addMemberDialogRef = useDialogRef<AddMemberRecordsType>();

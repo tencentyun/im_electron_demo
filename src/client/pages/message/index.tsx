@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { replaceConversaionList, updateCurrentSelectedConversation } from '../../store/actions/conversation';
 import { getUserType } from '../../store/actions/userTypeList';
 import { Avatar } from '../../components/avatar/avatar';
+import { Badge } from 'antd'
 
 import { SearchBox } from '../../components/searchBox/SearchBox';
 import { getConversionList, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage, TIMMsgSetC2CReceiveMessageOpt, TIMMsgSetGroupReceiveMessageOpt } from './api';
@@ -30,6 +31,7 @@ import { getLoginUserID } from './api';
 
 // 未决消息通知
 import Tozhi from '../../assets/icon/tozhi.png'
+import search from '../../assets/icon/search.png'
 import { ModelInform }   from '../../components/modelInform/modelInform'
 let indervel = null
 
@@ -64,6 +66,7 @@ const convMenuItem = [
 
 export const Message = (): JSX.Element => {
     const [isLoading, setLoadingStatus ] = useState(false);
+    const [unreadNum, setunreadNum ] = useState(null);
     const [statusIndervel, setStatusIndervel ] = useState(1);
     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
     const { replace_router } = useSelector((state:State.RootState)=>state.ui)
@@ -385,13 +388,19 @@ export const Message = (): JSX.Element => {
         <div className="message-content">
             <div className={`${ isonline ? 'online' : 'outline'}`} style={{position: 'fixed',left:'10px',bottom:'10px',width:'8px',height:'8px',borderRadius:'4px'}}></div>
             <div className="message-list" style={{userSelect: 'none'}}>
-                <div className="search-wrap" onClick={handleSearchBoxClick}><SearchBox /></div>
-                {/* 群聊未决消息  */}
-                <div className='message-group-chat' onClick={handleGroupInform}>
-                    <img src={Tozhi} alt=""/>
-                    <div className="__test">验证消息</div>
+                <div style={{display:'flex',borderBottom:"1px solid #f2f2f2"}}>
+                                    <div title="搜索全部" className="message-group-chat" onClick={handleSearchBoxClick}>
+                                         <img src={search} alt="搜索全部"/>
+                                    </div>
+                                    {/* 群聊未决消息  */}
+                                    <div title="群未决通知" className='message-group-chat' onClick={handleGroupInform}>
+                                    <Badge count={unreadNum} overflowCount={99} size="small">
+                                                <img src={Tozhi} alt="" style={{width:'26px',height:"26px"}}/>
+                                    </Badge>
+                                    </div>
+                                    {/* 群聊未决消息  */}
                 </div>
-                {/* 群聊未决消息  */}
+
                 <div className="conversion-list">
                     {
                         currentSelectedConversation === null ? <EmptyResult contentText="暂无会话" /> :  conversationList.map((item) => {
@@ -446,7 +455,7 @@ export const Message = (): JSX.Element => {
 
             </div>
             <SearchMessageModal dialogRef={dialogRef} />
-            <ModelInform dialogRef={groupListRef}></ModelInform>
+            <ModelInform dialogRef={groupListRef} callback={(data)=>setunreadNum(data)}></ModelInform>
             {
                 currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : <div className="empty"><EmptyResult contentText="暂无历史消息" /></div>
             }

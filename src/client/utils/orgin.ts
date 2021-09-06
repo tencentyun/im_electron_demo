@@ -139,6 +139,36 @@ const isLead = ()=> {
         return false
     }
 }
+//是否行领导数据过滤
+const filterisLead = (val)=> {
+    if(Lead.indexOf(val) !== -1){
+        return true
+    }else{
+        return false
+    }
+}
+
+//行领导过滤
+const filterArray = (array,type)=> {
+    if(isLead) {
+        let newarray = []
+        for (let i = 0;i < array.length;i++) {
+            if(type == 1){
+                if(!filterisLead(array[i].friendship_friend_info_get_result_identifier)){
+                    newarray.push(array[i])
+                }
+            }else if(type == 2){
+                if(!filterisLead(array[i].conv_profile.user_profile_identifier)){
+                    newarray.push(array[i])
+                }
+            }
+        }
+        return newarray
+    }else{
+        return array
+    }
+}
+
 // 格式化数据
 const assemblyData = (data, childrenNode, itemChildren, labelNode, restLabel) => {
     let result = []
@@ -188,6 +218,8 @@ const reportError = (data)=>{
     })
 }
 export {
+    filterArray,
+    filterisLead,
     getAlldepartment,
     filterGetDepartment,
     getDepartment,

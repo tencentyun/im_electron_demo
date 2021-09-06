@@ -5,6 +5,7 @@ import { EditIcon } from "./EditIcon";
 import "./group-name-card.scss";
 import { ConfirmDialog, ConfirmDialogRecordsType } from "./ConfirmDialog";
 import { useDialogRef } from "../../../utils/react-use/useDialog";
+import { ipcRenderer } from "electron";
 
 export const GroupNameCard = (props: {
   nameCard: string;
@@ -27,6 +28,9 @@ export const GroupNameCard = (props: {
         group_modify_member_info_name_card: input,
       },
     });
+
+    //刷新群设置成员信息
+    ipcRenderer.send('onRedbawViews', 0)
   };
 
   useEffect(() => {
