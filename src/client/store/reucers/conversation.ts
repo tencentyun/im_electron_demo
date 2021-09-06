@@ -23,7 +23,7 @@ const sortByPindAndTime = (conversationList: Array<State.conversationItem>): Arr
         }
         //conv_is_pinned 都为false
         else if (!pre.conv_is_pinned && !next.conv_is_pinned) {
-            if(next.conv_last_msg &&  pre.conv_last_msg){
+            if(next.conv_last_msg && pre.conv_last_msg){
                 return pre.conv_last_msg.message_server_time < next.conv_last_msg.message_server_time ? 1 : -1;
             }
             return 1;
