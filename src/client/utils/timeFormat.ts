@@ -111,8 +111,11 @@ export const formateCallTime = (time) => {
         const minutes = Math.floor(time / 60);
         const hour = Math.floor(minutes / 60);
         const seconds = time % 60;
+        if(hour > 0) {
+                return `${addZeroForTime(hour)} : ${addZeroForTime(minutes)}:  ${addZeroForTime(seconds)}`;
+        }
 
-        return `${addZeroForTime(hour)} : ${addZeroForTime(minutes)} : ${addZeroForTime(seconds)}`;
+        return `${addZeroForTime(minutes)}:  ${addZeroForTime(seconds)}`;
 };
 
 export default _getTimeStringAutoShort2;
