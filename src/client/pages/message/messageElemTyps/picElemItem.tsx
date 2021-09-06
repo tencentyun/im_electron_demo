@@ -5,7 +5,6 @@ import withMemo from "../../../utils/componentWithMemo";
 import path from 'path'
 import os from 'os'
 const PicElemItem = (props: any): JSX.Element => {
-    console.log("图片资源",props)
     const showPic = () => {
         try {
             const imageName = props.image_elem_orig_id
