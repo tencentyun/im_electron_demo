@@ -370,7 +370,6 @@ export const Message = (): JSX.Element => {
     if (isLoading) {
         return <Myloader />
     }
-    console.log('会话列表',conversationList)
     for (var i=0;i< conversationList.length;i++){
         if(conversationList[i].conv_id === localStorage.getItem("uid") && localStorage.getItem("myhead")){
             conversationList[i].conv_profile.user_profile_face_url = localStorage.getItem("myhead")
@@ -406,7 +405,7 @@ export const Message = (): JSX.Element => {
                                             }
                                         </div>
                                         {
-                                            conv_last_msg ? <div className="conversion-list__item--last-message">{getLastMsgInfo(conv_last_msg,conv_type,conv_group_at_info_array)}</div> : null
+                                            conv_last_msg && conv_last_msg.message_elem_array ? <div className="conversion-list__item--last-message">{getLastMsgInfo(conv_last_msg,conv_type,conv_group_at_info_array)}</div> : null
                                         }
                                     </div>
                                     <span className="pinned-tag"></span>

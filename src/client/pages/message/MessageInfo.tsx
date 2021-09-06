@@ -272,6 +272,12 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   }, [props.conv_unread_num,lastMessageId]);
 
   useEffect(() => {
+    const getCurrentUserInfo = async ()=>{
+      if(conv_type === 1){
+        const userInfo = await getUserInfoList([conv_id])
+        console.log(userInfo,'8888')
+      }
+    }
     const getMessageList = async () => {
       const messageResponse = await getMsgList(conv_id, conv_type);
       const addTimeDividerResponse = addTimeDivider(messageResponse.reverse());
@@ -279,9 +285,11 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
         convId: conv_id,
         messages: addTimeDividerResponse.reverse(),
       };
+      console.log(conv_id,payload)
       dispatch(addMessage(payload));
     };
     if (conv_id) {
+      getCurrentUserInfo();
       getMessageList();
     }
   }, [conv_id]);

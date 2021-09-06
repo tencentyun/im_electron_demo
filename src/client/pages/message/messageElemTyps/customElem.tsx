@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import withMemo from "../../../utils/componentWithMemo";
+import { formateCallTime } from "../../../utils/timeFormat";
 import './public-message.scss';
 import { Modal } from 'tea-component';
 
@@ -71,7 +72,7 @@ const CustomElem = (props: any): JSX.Element => {
               case 1:
                 const { call_end } = parsedData;
                 if(call_end>=0){
-                  return <span>通话结束，通话时长{call_end}s</span>
+                  return <span>通话结束，通话时长{formateCallTime(call_end)}s</span>
                 }
                 return <span>{data.inviter}邀请{
                   data.inviteeList.map((item,index)=>{

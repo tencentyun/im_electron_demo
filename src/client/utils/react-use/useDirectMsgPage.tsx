@@ -31,7 +31,11 @@ export const useMessageDirect = () => {
             conv_recv_opt: 0,
             conv_type: convType,
             conv_unread_num: 0,
-            conv_group_at_info_array: []
+            conv_group_at_info_array: [],
+            // @ts-ignore
+            conv_last_msg: {
+                message_server_time: Math.floor(new Date().getTime() / 1000)
+            }
         }
 
         // 切换function_atb

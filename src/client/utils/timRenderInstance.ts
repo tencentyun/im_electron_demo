@@ -27,6 +27,8 @@ const getInstance = ():TimRender => {
         });
         timRenderInstance = proxedInstance;
     }
+    // @ts-ignore
+    window.timRender = renderInstance;
     return timRenderInstance;
 }
 
