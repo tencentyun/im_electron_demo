@@ -145,7 +145,7 @@ const _createWindow = (TencentIM) => {
       url.format({
         pathname: path.join(
           __dirname,
-          `../../bundle/index.html?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`
+          `../../bundle/index.html`
         ),
         protocol: "file:",
         slashes: true,

@@ -56,7 +56,7 @@ class CallWindowIpc {
             //callWindow.webContents.openDevTools(); //正式生产不需要开启
             callWindow.loadURL(
                 url.format({
-                    pathname: path.join(__dirname, `../../bundle/call.html?NODE_ENV=${NODE_ENV}&HUARUN_ENV=${HUARUN_ENV}`),
+                    pathname: path.join(__dirname, `../../bundle/call.html`),
                     protocol: 'file:',
                     slashes: true
                 })
