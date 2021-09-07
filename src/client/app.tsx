@@ -55,6 +55,12 @@ let joinedUserList = [];
 // @ts-ignore
 window.closeCallWindow = closeCallWindow;
 
+const HomeWithErrorBoundary = (props) => {
+    return <ErrorBoundary>
+        <Home {...props}/>
+    </ErrorBoundary>
+}
+
 export const App = () => {
     const dispatch = useDispatch();
     const history = useHistory();
@@ -702,7 +708,7 @@ export const App = () => {
         <div id="app-container">
             {/* <ToolsBar></ToolsBar> */}
             <Switch>
-                <Route path="/home" component={Home}></Route>
+                <Route path="/home" component={HomeWithErrorBoundary}></Route>
                 <Route path="/" component={Login} />
             </Switch>
         </div>
@@ -712,9 +718,7 @@ export const App = () => {
 ReactDOM.render(
     <Provider store={store}>
         <Router>
-            <ErrorBoundary>
-                <App />
-            </ErrorBoundary>
+            <App />
         </Router>
     </Provider>,
     document.getElementById("root")
