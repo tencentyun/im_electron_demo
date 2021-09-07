@@ -25,11 +25,14 @@ import {
   updateConversationList,
   markConvLastMsgIsReaded,
   updateCurrentSelectedConversation,
+  replaceConversaionList,
+  deleteConversion,
 } from "./store/actions/conversation";
 import { initGroupInfor } from "./store/actions/section";
 import {
   addProfileForConversition,
   getConversionList,
+  TIMConvDelete,
 } from "./pages/message/api";
 import {
   reciMessage,
@@ -55,10 +58,10 @@ import { updateCallingStatus } from "./store/actions/ui";
 import { ipcRenderer } from "electron";
 import { reportError } from "./utils/orgin";
 import getHuaRunConfig from "./constants";
-// 引入 electron-store
+// eslint-disable-next-line import/no-unresolved
+// 引入 electron-store
 import eleStore from "electron-store";
 const elestore = new eleStore();
-// eslint-disable-next-line import/no-unresolved
 let isInited = false;
 let joinedUserList = [];
 
@@ -114,7 +117,7 @@ export const App = () => {
       let eleConfig = {
         config_path: elestore.store.chatSetting,
       };
-      console.log(eleConfig,"eleConfig ")
+      console.log(eleConfig, "eleConfig ");
       timRenderInstance.TIMInit(eleConfig).then(async ({ data }) => {
         if (data === 0) {
           isInited = true;
@@ -214,13 +217,16 @@ export const App = () => {
       });
     }
   };
+
   let showApp = true;
   const handleNotify = (messages) => {
     const msgBother = window.localStorage.getItem("msgBother") || false;
+    const msgBother_close =
+      window.localStorage.getItem("msgBother_close") || false;
     console.log(showApp, "[[[[[[[[[[[[[[[", msgBother);
     console.log(messages);
     // 客户端没有展示在最顶层或者设置了消息提示免打扰，就不接收消息通知
-    if (showApp || msgBother == "false") {
+    if (showApp || msgBother == "false" || msgBother_close == "true") {
       return;
     }
     console.log(
@@ -451,7 +457,6 @@ export const App = () => {
 
   let initNumber = 0;
   const _handleGroupInfoModify = async (data) => {
-    debugger;
     const response = await getConversionList();
     dispatch(updateConversationList(response));
     if (response?.length) {
@@ -465,6 +470,20 @@ export const App = () => {
           5 && dispatch(initGroupInfor(initNumber++));
       }
     }
+    console.log("======data=======", data);
+
+    //新需求可以加上，但是这里面不要去处理会话的逻辑了
+
+    // const response = await getConversionList();
+    // dispatch(updateConversationList(response));
+    // if (response?.length) {
+    //     const newConversaionItem = response.find(
+    //         (v) => v.conv_id === data.group_tips_elem_group_id
+    //     );
+    //     if (newConversaionItem) {
+    //         dispatch(updateCurrentSelectedConversation(newConversaionItem));
+    //     }
+    // }
   };
   const handleMessageSendFailed = (convList) => {
     const failedList = convList.reduce((acc, cur) => {
@@ -483,9 +502,9 @@ export const App = () => {
     if (!failedList) return;
     for (const i in failedList) {
       dispatch(
-        reciMessage({
+        updateMessages({
           convId: i,
-          messages: failedList[i],
+          message: failedList[i][0],
         })
       );
     }
@@ -493,9 +512,17 @@ export const App = () => {
   const _handleUnreadChange = (unreadCount) => {
     dispatch(setUnreadCount(unreadCount));
   };
+  const updateConversation = async () => {
+    const response = await getConversionList();
+    dispatch(replaceConversaionList(response));
+    if (response.length) {
+      dispatch(updateCurrentSelectedConversation(response[0]));
+    }
+  };
   const _handeMessage = (messages: State.message[]) => {
     // 收到新消息，如果正在聊天，更新历史记录，并设置已读，其他情况没必要处理
     try {
+      // getData()
       handleNotify(messages);
     } catch (error) {
       console.log(error);
@@ -506,7 +533,26 @@ export const App = () => {
         obj[messages[i].message_conv_id] = [];
       }
       obj[messages[i].message_conv_id].push(messages[i]);
+      // 处理被踢出群
+      try {
+        const { message_elem_array, message_conv_id, message_conv_type } =
+          messages[i];
+        for (let j = 0; j < message_elem_array.length; j++) {
+          const { elem_type, group_report_elem_report_type } =
+            message_elem_array[j];
+          if (
+            elem_type === 8 &&
+            [4, 5, 8].includes(group_report_elem_report_type)
+          ) {
+            // 删除会话
+            TIMConvDelete(message_conv_id, message_conv_type).then((data) => {
+              updateConversation();
+            });
+          }
+        }
+      } catch (err) {}
     }
+
     for (const i in obj) {
       dispatch(
         reciMessage({
@@ -569,7 +615,7 @@ export const App = () => {
       const elemType =
         conversationList[0].conv_last_msg?.message_elem_array?.[0]?.elem_type;
       console.log(elemType);
-      if (elemType === 4 || elemType === 9 || elemType === 3) {
+      if (elemType === 9 || elemType === 3) {
         dispatch(
           updateMessages({
             convId: conversationList[0].conv_id,
@@ -766,6 +812,15 @@ export const App = () => {
     });
   }, []);
   useEffect(() => {
+    //电脑锁屏
+    ipcRenderer.on("mainProcessLockScreen", (event, data) => {
+      console.log(data);
+      if (data) {
+        window.localStorage.setItem("msgBother_close", "true");
+      } else {
+        window.localStorage.setItem("msgBother_close", "false");
+      }
+    });
     return () => {
       ipcRenderer.removeListener("mainProcessMessage", ipcRendererLister);
       removeReport();

@@ -37,7 +37,7 @@ enum TIMGroupPendencyHandleResult {
 
 export const ModelInform = (props) => {
 
-    const { dialogRef } = props;
+    const { dialogRef, callback } = props;
     const [visible, setShowState] = useDialog(dialogRef, {});
     const [pendency, setPendency] = useState<any>([])
     const onClose = () => setShowState(false);
@@ -51,12 +51,17 @@ export const ModelInform = (props) => {
     const pendencyList = async () => {
         const { group_pendency_result_pendency_array, group_pendency_result_next_start_time, group_pendency_result_unread_num} = await getPendencyList()
         setPendency(group_pendency_result_pendency_array)
-        console.log("useEffect", pendency, group_pendency_result_next_start_time, group_pendency_result_unread_num)
-    }
+        callback(group_pendency_result_unread_num)
+    }   
+    useEffect(() => {
+        pendencyList();
+    },[])
 
     useEffect(() => {
-        visible && pendencyReaded()
-        pendencyList()
+        visible && function (){ 
+            pendencyReaded();
+            pendencyList();
+        }()
     }, [visible])
     return (
         <Modal

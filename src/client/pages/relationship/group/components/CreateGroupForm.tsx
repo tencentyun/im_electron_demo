@@ -4,6 +4,7 @@ import { Form as FinalForm, Field } from "react-final-form";
 import { getStatus } from "../../../../utils/getStatus";
 import { GroupTypeSelect } from "./GroupTypeSelect";
 import  ImgCropper  from "../../../../components/UploadFace";
+import { EarchSelect } from '../../../../components/searchSelect/searchSelect'
 //import qunioc from '../../../../assets/icon/qunioc.png'
 
 import "./create-group-form.scss";
@@ -30,7 +31,7 @@ export interface FormValue {
   groupPression:string;
   groupInvited:string;
   outGroupInvitation:string;
-  groupMember?: any;
+  groupMember?: Array<createGroupMemberParams>;
   groupType: string;
   groupAvatarUrl: string;
 }
@@ -48,10 +49,10 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
 
   const getGroupMember = (userId) => {
     if (userId) {
-      return [{
+      return userId.map(item=>({
         group_member_info_member_role: 2,
-        group_member_info_identifier: userId,
-      }]
+        group_member_info_identifier: item.value,
+      }))
     }
     return null
   }
@@ -63,7 +64,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
     let { groupMember, ...params } = formValue
     try {
       // 如有添加管理员
-      const groupMangeMember = getGroupMember(groupMember)
+      const groupMangeMember:Array<createGroupMemberParams> = getGroupMember(groupMember)
       await onSubmit({ ...params, groupMember: groupMangeMember, groupAvatarUrl });
       onSuccess?.();
     } catch (error) {
@@ -85,6 +86,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
         groupType: "0",
         joinGroupMode: "2",
         outGroupInvitation: '2',
+        groupMember:[],
         groupPression:"0",
         groupInvitation:"0"
       }}
@@ -164,18 +166,18 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
                 name="groupMember"
                 disabled={submitting}
               >
-                {({ input, meta }) => (
-                  <Form.Item
-                    label="设置管理员"
-                  >
-                    <Input
-                      {...input}
-                      placeholder="请输入管理员UID"
-                      size="full"
-                      disabled={submitting}
-                    />
-                  </Form.Item>
-                )}
+                {({ input, meta }) =>
+                   (
+                    <Form.Item
+                      label="设置管理员"
+                    >
+                      <EarchSelect 
+                       {...input}
+                      disabled={submitting}>
+                      </EarchSelect>
+                    </Form.Item>
+                  )
+                }
               </Field>
 
               {groupType === "0" && (

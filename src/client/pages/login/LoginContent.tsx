@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { ipcRenderer } from 'electron';
 
 import { Input, Button, message } from "tea-component";
 import { SDKAPPID, SECRETKEY } from '../../constants';
@@ -73,7 +74,6 @@ export const LoginContent = (): JSX.Element => {
 
         document.addEventListener('DOMContentLoaded', () => {
         console.log("自动更新2")
-        const { ipcRenderer } = require('electron');
         ipcRenderer.on('message', (event, { message, data }) => {
             console.log("自动更新进入")
             console.log(message, data);
@@ -107,6 +107,10 @@ export const LoginContent = (): JSX.Element => {
         setUserID(val.toLocaleUpperCase())
     }
     const handleLoginClick = async () => {
+        //消息免打扰，默认设置true
+        if(!window.localStorage.getItem('msgBother')){
+            window.localStorage.setItem('msgBother', "true")
+        }
         getEncrptPwd({
             Pwd: password
         }).then(async getEncrptPwdRes => {
@@ -149,6 +153,7 @@ export const LoginContent = (): JSX.Element => {
             }
             window.localStorage.setItem('uid', USERLOGIN)
             window.localStorage.setItem('usersig', Encypt)
+            ipcRenderer.send("delectTemporaryFiles")
             //获取部门
             filterGetDepartment({
                 DepId: "root_1"

@@ -13,14 +13,29 @@ const FileType = require('file-type')
 const os = require('os')
 const log = require('electron-log')
 const Store = require('electron-store');
+const { getFileTypeName } = require("./utils");
+
 const store = new Store();
 const setPath = () => {
     const ffprobePath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}/${os.arch()}/ffprobe`) : path.resolve(process.cwd(), `extraResources/${os.platform()}/${os.arch()}/ffprobe`)
     const formateFfmpegPath = app.isPackaged ? path.resolve(process.resourcesPath, `extraResources/${os.platform()}-${os.arch()}/ffmpeg`) : path.resolve(process.cwd(), `extraResources/${os.platform()}-${os.arch()}/ffmpeg`)
     log.info(`ffprobePath: ${ffprobePath}`)
     log.info(`formateFfmpegPath: ${formateFfmpegPath}`)
-    FFmpeg.setFfprobePath(ffprobePath);
-    FFmpeg.setFfmpegPath(formateFfmpegPath);
+    const platform = os.platform()
+    let ext = ''
+    switch(platform){
+        case 'darwin':
+            ext = '';
+            break;
+        case 'linux':
+            ext = '.so';
+            break;
+        case 'win32':
+            ext = '.exe';
+            break;
+    }
+    FFmpeg.setFfprobePath(`${ffprobePath}${ext}`);
+    FFmpeg.setFfmpegPath(`${formateFfmpegPath}${ext}`);
 }
 
 let  DOWNLOAD_PATH_T = DOWNLOAD_PATH
@@ -48,7 +63,11 @@ class IPC {
             const { type, params } = data;
             switch (data) {
                 case 'upload_reset_view':
-                    this.win.webContents.send('UPLOAD_RESET_MESSAGE_VIEW', true)
+                    try{
+                        this.win.webContents.send('UPLOAD_RESET_MESSAGE_VIEW', true)
+                    }catch(err){
+                        console.log('UPLOAD_RESET_MESSAGE_VIEW',err)
+                    }
                     break;
             }
             switch (type) {
@@ -213,6 +232,13 @@ class IPC {
                 //下载完成后重命名文件
                 fs.renameSync(file_path_temp, file_path);
                 console.log('文件下载完成:', file_path);
+                if (fileid) {
+                    try {
+                        that.win.webContents.send(fileid, {isFinish: true, percentage: 100});
+                    } catch (err) {
+                        console.log(fileid,"download faild",err)
+                    }
+                }
                 // that.win.webContents.send('download_reset', true)
                 console.log('发完了')
             } catch (err) {
@@ -235,7 +261,11 @@ class IPC {
             str.on('progress', (progressData) => {
                 //不换行输出
                 let percentage = Math.round(progressData.percentage) + '%';
-                
+                try {
+                    that.win.webContents.send(fileid, {percentage: Math.round(progressData.percentage)});
+                } catch (error) {
+                    console.log(error)
+                }
                 console.log(percentage);
                 if(percentage == '100%') {
                     console.log('下载完了')
@@ -251,14 +281,7 @@ class IPC {
                         nextIndex = 0
                     }
                     store.set(file_name,index ? `${nextIndex}`:'0')
-                    if (fileid) {
-                        try {
-                            console.log(fileid,percentage)
-                            that.win.webContents.send(fileid, Math.round(progressData.percentage) )
-                        } catch (err) {
-    
-                        }
-                    }
+                    
                 }
             });
             res.body.pipe(str).pipe(fileStream);
@@ -338,7 +361,7 @@ class IPC {
         })
         const size = fs.statSync(filePath).size;
         const name = path.parse(filePath).base;
-        const type = name.split('.')[1];
+        const type = getFileTypeName(name);
 
         const data = {
             path: filePath,

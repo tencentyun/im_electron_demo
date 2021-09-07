@@ -6,7 +6,7 @@ import { shell } from 'electron'
 import { Icon,Bubble, message as teaMessage } from "tea-component";
 import { ipcRenderer } from "electron";
 import Store from "electron-store";
-import { updateMessages } from "../../../store/actions/message";
+import { updateFileMessageDownloadStatus, updateMessages } from "../../../store/actions/message";
 
 const store = new Store()
 export const getFilePath = (fileName) => {
@@ -17,18 +17,21 @@ const FileElem = (props: any): JSX.Element => {
     const { message, element, index,isshow } = props
     const { message_conv_id, message_conv_type,  message_msg_id, message_is_from_self} = message
     const { file_elem_file_name, file_elem_file_size, file_elem_file_path, file_elem_url,file_elem_file_id } = element
-    const { uploadProgressList } = useSelector((state: State.RootState) => state.historyMessage);
+    const { uploadProgressList, downloadFileStatusList } = useSelector((state: State.RootState) => state.historyMessage);
     
     const [FileHTML, setFileHTML] = useState(null);
-    const [isDownloading,setiSDownloading] = useState(false)
     const [fileid,] = useState(message_msg_id)
     const [message_status,setmessage_status] = useState(message.message_status)
     const dispatch = useDispatch()
     const [backgroundStyle,setbackgroundStyle] = useState("")
     const [percentage,setpercentage] = useState(0)
+    const [downloadPercentage, setDownloadPercentage] = useState(0);
     const [exits,setexits] = useState(false)
     const progressKey = `${message_msg_id}_${index}`
     const uploadProgress = uploadProgressList.get(progressKey);
+    const { isDownloading = false }  = downloadFileStatusList.get(`${message_msg_id}-${index}`) || {};
+
+
     useEffect(()=>{
         if (uploadProgress) {
             const { cur_size, total_size } = uploadProgress
@@ -37,7 +40,8 @@ const FileElem = (props: any): JSX.Element => {
             
         }
         setmessage_status(message.message_status)
-    },[message])
+    },[uploadProgress, message, message_status])
+
     const calcuSize = () => {
         //console.log(file_elem_file_size)
         getHandleElement()
@@ -72,10 +76,14 @@ const FileElem = (props: any): JSX.Element => {
     const getFileTypeName = () => {
         const match = file_elem_file_name.match(/\.(\w+)$/)
         const arrayList = ['txt','pdf','doc','docx','zip','xlsx','xls','doc','docx','exe','ppt','pptx']
-        if(arrayList.indexOf(match[1])>-1){
-            return match ? match[1]+'-' : "unknow"
+        if(match){
+            if(arrayList.indexOf(match[1])>-1){
+                return match ? match[1]+'-' : "unknow"
+            }else{
+                return match ? match[1] : "unknow"
+            }
         }else{
-            return match ? match[1] : "unknow"
+            return "unknow"
         }
     }
 
@@ -101,26 +109,32 @@ const FileElem = (props: any): JSX.Element => {
             user_data: "test"
         });
 
+        const messageData = {
+            ...JSON.parse(json_params),
+            message_status: 3
+        }
         if (code === 0) {
             dispatch(updateMessages({
                 convId: message_conv_id,
-                message: JSON.parse(json_params)
+                message: messageData
             }))
         }
     }
     const getHandleElement = () => {
         
-        console.log('当前文件状态：',exits,message_status,percentage,message_msg_id)
         if (message_status === 1) {
-            console.log("当前状态",message_status)
             return <Icon type="dismiss" className="message-view__item--file___close" onClick={handleCancel} />
         }
         else if (message_status === 2) {
-            console.log("当前",message_status)
             if (exits) {
                 return <div className="message-view__item--file___open" title="打开文件" onClick={handleOpen}></div>
             }else {
-                return <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} title="下载" onClick={savePic}></div>
+                return ( 
+                    <>
+                        {isDownloading && <span>{downloadPercentage}%</span>}
+                        <div className={`message-view__item--file___download${isDownloading ?' downloading' :''}`} title="下载" onClick={savePic}></div>
+                    </>
+                )
             }
         }
        
@@ -130,9 +144,12 @@ const FileElem = (props: any): JSX.Element => {
         if (message_status === 2) return <div className="message-view__item--file___content____size">{calcuSize()}</div>
     }
     const handleProgress = (event,data)=>{
-        
-        if(data === 100){
-            setiSDownloading(false)
+        const { isFinish, percentage } = data;
+        setDownloadPercentage(percentage);
+        setbackgroundStyle( isFinish? '' : `linear-gradient(to right, #D4FFEB ${percentage}%, white 0%, white 100%)`);
+
+        if(isFinish){
+            dispatch(updateFileMessageDownloadStatus({messageId: message_msg_id, index, isDownloading: false}));
         }
     }
     const addProgessDownLoadListener = ()=>{
@@ -143,7 +160,7 @@ const FileElem = (props: any): JSX.Element => {
     }
     const downloadPic = (url,file_elem_file_name,file_id) => {
         try {
-            setiSDownloading(true)
+            dispatch(updateFileMessageDownloadStatus({messageId: message_msg_id, index, isDownloading: true}));
             downloadFilesByUrl(url,file_elem_file_name,fileid)
         } catch (e) {
             teaMessage.error({
@@ -208,7 +225,7 @@ const FileElem = (props: any): JSX.Element => {
         setexits(ex)
     }
     return (
-        <div className="message-view__item--file" style={{ background: backgroundStyle }} onDoubleClick={showFile}>
+        <div className="message-view__item--file file" style={{ background: backgroundStyle }} onDoubleClick={showFile}>
             <div className={`message-view__item--file___ext message-view__item--file___${ getFileTypeName()}`}>{getFileTypeName().substring(getFileTypeName().length-1,getFileTypeName().length) == '-'?'':getFileTypeName()}</div>
             <div className="message-view__item--file___content">
                 <div className="message-view__item--file___content____name">

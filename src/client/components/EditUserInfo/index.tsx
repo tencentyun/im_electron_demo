@@ -16,8 +16,10 @@ import { Form as FinalForm, Field } from "react-final-form";
 import ImgCropper from "../../components/UploadFace";
 import { updateCurrentSelectedConversation } from '../../store/actions/conversation';
 import { useDispatch, useSelector } from 'react-redux';
-import { getConversionList } from '../../pages/message/api';
+import { getConversionList, getMsgList } from '../../pages/message/api';
 import { replaceConversaionList } from '../../store/actions/conversation';
+import { addTimeDivider } from "../../utils/addTimeDivider";
+import { addMessage } from "../../store/actions/message";
 
 const genderMap = {
   '1': '男',
@@ -122,9 +124,8 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
     }
     return meta.error ? "error" : "success";
   }
-  console.log('userinfo', userInfo);
+  // console.log('userinfo', userInfo);
   async function onSubmit(values: IUser) {
-    console.log(11111)
     const formData: submitUserInfoData = {
       json_modify_self_user_profile_param: {
         user_profile_item_face_url: localStorage.getItem("myhead_download"),
@@ -136,20 +137,25 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
     console.log('formData', formData)
     const { data: { code } } = await timRenderInstance.TIMProfileModifySelfUserProfile(formData)
     if (code === 0) {
-      message.success({
-        content: '修改成功'
-      })
-      const response = await getConversionList();
-        dispatch(replaceConversaionList(response))
-        console.log('头像更新后',response)
-        // if (response.length) {
-        //     if (currentSelectedConversation === null || currentSelectedConversation === undefined) {
-        //         dispatch(updateCurrentSelectedConversation(response[0]))
-        //     }
-        // }else{
-        //   dispatch(updateCurrentSelectedConversation(null))
-        // }  
-      onUpdateUserInfo && onUpdateUserInfo()
+      const response = await getConversionList();
+      
+      response.forEach(async (conversation, key) => {
+        if(conversation.conv_id === currentSelectedConversation.conv_id) {
+          const messageResponse = await getMsgList(conversation.conv_id, conversation.conv_type);
+          const addTimeDividerResponse = addTimeDivider(messageResponse.reverse());
+          const payload = {
+            convId: conversation.conv_id,
+            messages: addTimeDividerResponse.reverse(), 
+          };
+          dispatch(addMessage(payload));
+          dispatch(updateCurrentSelectedConversation(conversation));
+        }
+      });
+
+      dispatch(replaceConversaionList(response));
+      message.success({ content: '修改成功' })
+      console.log('头像更新后',response)
+      onUpdateUserInfo && onUpdateUserInfo()
     } else {
       message.error({
         content: '修改失败'

@@ -15,6 +15,7 @@ const SELECT_FILES = "SELECT_FILES";
 const SELECT_FILES_CALLBACK = "SELECT_FILES_CALLBACK";
 const DOWNLOAD_PATH = path.resolve(os.homedir(), "Download/", "HuaRunIM/");
 const SETTING_FILES_ITEM = path.resolve(os.homedir(), "Download/", "Setting/");
+const TEMPORARY_FILES = path.resolve(os.homedir(), 'Download/','Temporary/');
 const GET_VIDEO_INFO_CALLBACK = "GET_VIDEO_INFO_CALLBACK";
 const CHECK_FILE_EXIST = "CHECK_FILE_EXIST";
 const GET_FILE_INFO_CALLBACK = "GET_FILE_INFO_CALLBACK";
@@ -52,4 +53,5 @@ module.exports = {
   SCREEN_KEY,
   GETNATIVEPATH,
   CHAT_PATH,
+  TEMPORARY_FILES
 };

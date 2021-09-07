@@ -8,9 +8,10 @@ import { ContacterResult } from './ContacterResult';
 import { MessageResult } from './MessageResult';
 import { GroupAllResult } from './GroupAllResult';
 import './search-message.scss';
-import { getstAffPrefix, getFuzzy} from '../../../utils/orgin';
+import { getstAffPrefix, getFuzzy, filterArray} from '../../../utils/orgin';
 import { ContactResult } from './ContactResult';
 import { resolve } from 'dns';
+
 
 export const SearchMessage = (props) => {
     const [inputValue, setInputValue] = useState("");
@@ -101,9 +102,10 @@ export const SearchMessage = (props) => {
                 const response = await addProfileForConversition(formatedData);
                 return response;
             }
-            Promise.all([addProfileForMessageResult(), groupResult, friendsResult, formatedContact(), searchGroupAllResult]).then(searchResult => {
-                const [messageResult, groupResult, friendsResult, contactResult, WebGroupInfo] = searchResult;
-                console.log(searchResult, 9999)
+            Promise.all([formatedContact(), addProfileForMessageResult(), groupResult, friendsResult,  searchGroupAllResult]).then(searchResult => {
+                let [contactResult, messageResult, groupResult, friendsResult,  WebGroupInfo] = searchResult;
+                friendsResult = filterArray(friendsResult,1)
+                contactResult = filterArray(contactResult,2)
                 setSearchResult({
                     messageResult,
                     groupResult,
@@ -145,7 +147,7 @@ export const SearchMessage = (props) => {
         },
         {
             id: 'contact',
-            label: `通讯录(${contactResult.length})`
+            label: `组织架构(${contactResult.length})`
         },
         {
             id: 'allgroup',
@@ -159,7 +161,7 @@ export const SearchMessage = (props) => {
         <div className="search-message">
             <section className="search-message__input-area">
                 <Icon className="search-message__input-area--icon" type="search" />
-                <Input className="search-message__input-area--input" type="search" placeholder="查找消息等" onChange={handleInoputOnchange} />
+                <Input className="search-message__input-area--input" type="search" autoFocus placeholder="查找消息等" onChange={handleInoputOnchange} />
                 <Icon className="search-message__input-area--icon-close" type="close" onClick={handleModalClose} />
             </section>
             <section className="search-message__tab">

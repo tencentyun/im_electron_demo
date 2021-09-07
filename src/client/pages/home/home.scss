@@ -38,16 +38,16 @@
             }
             .unread {
                 position: absolute;
-                width: 14px;
-                height: 14px;
+                width: 16px;
+                height: 16px;
                 background-color: #FF584C;
                 right: -6px;
                 top: -5px;
-                border-radius: 7px;
+                border-radius: 8px;
                 font-size: 10px;
                 transform: scale(10 / 12);
                 transform-origin: left center;
-                line-height: 12px;
+                line-height: 14px;
                 text-align: center;
                 color: #fff;
             }

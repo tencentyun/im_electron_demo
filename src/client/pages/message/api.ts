@@ -8,6 +8,7 @@ type SendMsgParams<T> = {
   messageElementArray?: T[];
   userData?: string;
   userId: string;
+  callback?: Function;
   messageAtArray?: string[];
   message?: State.message
 };
@@ -314,11 +315,12 @@ export const sendMsg = async ({
   messageElementArray,
   userId,
   userData,
+  callback,
   messageAtArray,
 }: SendMsgParams<
   TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg | MergeMsg | CustomMsg
 >): Promise<MsgResponse> => {
-  const res = await timRenderInstance.TIMMsgSendMessage({
+  const res = await timRenderInstance.TIMMsgSendMessageV2({
     conv_id: convId,
     conv_type: convType,
     params: {
@@ -326,8 +328,10 @@ export const sendMsg = async ({
       message_sender: userId,
       message_group_at_user_array: messageAtArray,
     },
+    callback,
     user_data: userData,
   });
+  console.log('================res============', res);
   return res;
 };
 
@@ -347,7 +351,7 @@ export const sendForwardMessage = async ({
     params: {
       ...message,
       message_sender: userId,
-      message_is_peer_read: false,
+      message_is_peer_read: true,
     },
     user_data: userData,
   });
@@ -458,7 +462,29 @@ export const searchTextMessage = async (params: {
   } = await timRenderInstance.TIMMsgSearchLocalMessages({
     params: {
       msg_search_param_keyword_array: [params.keyWords],
-      msg_search_param_message_type_array: [0, 1, 4, 9],
+      msg_search_param_message_type_array: [0, 4],
+      msg_search_param_conv_id: params.convId,
+      msg_search_param_conv_type: params.convType
+    },
+    user_data: "123",
+  });
+
+  return JSON.parse(json_params);
+};
+
+
+//搜索视频语音与图片
+export const searchImgMessage = async (params: {
+  convId?: string;
+  convType?: number;
+  messageType?: number;
+}): Promise<any> => {
+  const {
+    data: { json_params },
+  } = await timRenderInstance.TIMMsgSearchLocalMessages({
+    params: {
+      msg_search_param_keyword_array: [],
+      msg_search_param_message_type_array: [params.messageType],
       msg_search_param_conv_id: params.convId,
       msg_search_param_conv_type: params.convType
     },

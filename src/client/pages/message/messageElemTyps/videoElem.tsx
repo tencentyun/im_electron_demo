@@ -10,7 +10,7 @@ const VideoElem = (props: any): JSX.Element => {
             <div className="message-view__item--text text right-menu-item" >
                 {
                     // <video style={{height: props.video_elem_image_height * autoRate, maxWidth: '100%'}} webkit-playsInline x-webkit-airplay="allow" playsInline preload="metadata" controls poster={props.video_elem_image_url} width={props.video_elem_image_width} height={props.video_elem_image_height}>
-                    <video style={{height: '300px', width:'300px', maxWidth: '100%'}} webkit-playsInline x-webkit-airplay="allow" playsInline preload="metadata" controls poster={props.video_elem_image_url} width={props.video_elem_image_width} height={props.video_elem_image_height}>
+                    <video style={{height: '300px', width:'300px', maxWidth: '100%'}} x-webkit-airplay="allow" playsInline preload="metadata" controls poster={props.video_elem_image_url} width={props.video_elem_image_width} height={props.video_elem_image_height}>
                         <source src={props.video_elem_video_url}  />
                     </video>
                 }

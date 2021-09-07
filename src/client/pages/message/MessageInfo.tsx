@@ -54,7 +54,6 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     group_detial_info_add_option: addOption
   } = conv_profile;
 
-  console.log(conv_profile, '------------------')
   const groupMemberSelectorRef = useRef(null)
   const popupContainer = document.getElementById("messageInfo");
   // const isShutUpAll = conv_type === 2 && conv_profile.group_detial_info_is_shutup_all && conv_profile.group_detial_info_owener_identifier != localStorage.getItem('uid');
@@ -107,11 +106,11 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
         messageList[i].message_status === 2
       ) {
         // 不能是群系统通知
-        const { elem_type } = messageList[i].message_elem_array[0] || {};
-        if (elem_type != 5 && elem_type != 8) {
+        // const { elem_type } = messageList[i].message_elem_array[0] || {};
+        // if (elem_type != 5 && elem_type != 8) {
           msg = messageList[i];
           break;
-        }
+        // }
       }
     }
     return msg;
@@ -148,7 +147,7 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
       }
     };
 
-    if (props.conv_unread_num > 0) {
+    if (props.conv_unread_num > 0 && messageId) {
       handleMsgReaded();
     }
   };
@@ -280,12 +279,16 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
 
 
   useEffect(() => {
-    setTimeout(() => {
       setMessageRead(lastMessageId);
-    }, 500)
-  }, [lastMessageId]);
+  }, [props.conv_unread_num,lastMessageId]);
 
   useEffect(() => {
+    const getCurrentUserInfo = async ()=>{
+      if(conv_type === 1){
+        const userInfo = await getUserInfoList([conv_id])
+        console.log(userInfo,'8888')
+      }
+    }
     const getMessageList = async () => {
       const messageResponse = await getMsgList(conv_id, conv_type);
       const addTimeDividerResponse = addTimeDivider(messageResponse.reverse());
@@ -293,9 +296,11 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
         convId: conv_id,
         messages: addTimeDividerResponse.reverse(),
       };
+      console.log(conv_id,payload)
       dispatch(addMessage(payload));
     };
     if (conv_id) {
+      getCurrentUserInfo();
       getMessageList();
     }
   }, [conv_id]);

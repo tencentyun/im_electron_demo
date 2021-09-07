@@ -33,11 +33,15 @@ declare namespace State {
     export type ui = {
         function_tab: functionTab,
         replace_router: boolean,
-        callingStatus: {
+        callingStatus:{
             callingType: number,
             callingId: string,
             inviteeList: Array<string>,
             callType: number
+        },
+        showModalStatus: {
+            isShow: number,
+            showArray: Array<string>
         }
     }
     
@@ -68,6 +72,7 @@ declare namespace State {
     export type historyMessage = {
         historyMessageList:Map<string, Array<message>>
         uploadProgressList:Map<string, any>
+        downloadFileStatusList: Map<string, {isDownloading: boolean, downPercentage: number}>
         currentReplyUser: userProfile
     }
     export type conversation = {

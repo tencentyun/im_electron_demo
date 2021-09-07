@@ -164,13 +164,21 @@ class CallWindowIpc {
             }
         });
 
-        this.callWindow.on('close', () => {
-            this.createWindow();
+        this.callWindow.on('close', (event) => {
+            try {
+                this.createWindow()
+            } catch(err) {
+                console.log(err);
+            }
         });
 
         this.callWindow.on('closed', () => {
-            this.imWindow.webContents.send(CALL_WINDOW_CLOSE_REPLY);
-            this.destroy();
+            try {
+                this.imWindow?.webContents.send(CALL_WINDOW_CLOSE_REPLY);
+                this.destroy();
+            } catch (err) {
+                console.log(err);
+            }
         });
     }
 

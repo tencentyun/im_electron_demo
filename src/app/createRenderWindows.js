@@ -1,10 +1,13 @@
-const { app, BrowserWindow } = require("electron");
+
+const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron')
 const { description } = require("../../package.json");
 // const appAutoUploader = require('./autoUpdate')
 const initStore = require("./store");
 const registerCut = require("./shortcut");
 const setOtherIPC = require("./otheripc");
 const setSaveFileIPC = require("./saveFile");
+const temporaryFiles = require('./uploadingTemporaryFiles')
+const redbawViews = require('./redbawViews')
 //选择路径IPC zwc  2021年8月26日16:34:22
 const selectPathIPC = require("./selectPath");
 const selectChatPath = require("./chatPath");
@@ -13,11 +16,24 @@ const path = require("path");
 const log = require("electron-log");
 const setkeyBoard = require("./setkeyBoard");
 
-const _sendMessageToRender = (win, key, data) => {
-  try {
-    win?.webContents?.send(key, data);
-  } catch (err) {}
-};
+const _sendLockScreen = (win,key,boolean)=>{
+  console.log(key)
+  console.log(boolean)
+  try{
+      win?.webContents?.send(key,boolean)
+  }catch(err){
+
+  }
+}
+
+const _sendMessageToRender = (win,key,data)=>{
+  try{
+      win?.webContents?.send(key,data)
+  }catch(err){
+
+  }
+}
+
 const _createWindow = (TencentIM) => {
   log.info("create window");
   const mainWindow = new BrowserWindow({
@@ -63,15 +79,22 @@ const _createWindow = (TencentIM) => {
   selectPathIPC(mainWindow);
   //选择聊天存储路径
   selectChatPath(mainWindow);
+  
   // 重设快捷键
   setkeyBoard((mainWindow) => {
     registerCut(mainWindow);
   }, mainWindow);
 
+  //存储临时文件
+  temporaryFiles(mainWindow)
+
+  //刷新视图
+  redbawViews(mainWindow)
+  
   mainWindow.on("close", function (e) {
     log.info("mainWindow close");
     TencentIM.destroy();
-    app.quit();
+    app.exit();
   });
   // 通知渲染进程窗口是否可见
   mainWindow.on("blur", function () {
@@ -93,6 +116,21 @@ const _createWindow = (TencentIM) => {
       _sendMessageToRender(mainWindow, "mainProcessMessage", false);
     }
   });
+
+  //锁屏触发
+  powerMonitor.on('lock-screen', (event) => {
+    console.log('锁屏',event)
+    _sendLockScreen(mainWindow,'mainProcessLockScreen',true)
+  })
+    //屏幕解锁
+  powerMonitor.on('unlock-screen', (event) => {
+      console.log('解锁',event)
+      _sendLockScreen(mainWindow,'mainProcessLockScreen',false)
+  })
+
+  mainWindow.on("closed", function(){
+    ipcMain.removeAllListeners()
+  })
   // 通知渲染进程窗口是否可见 end
 
   // 加载url

@@ -6,7 +6,7 @@ export const changeToolsTab = (payload: string) : State.actcionType<string> => (
   payload
 })
 
-export const changeDrawersVisible = (payload: boolean) : State.actcionType<string> => ({
+export const changeDrawersVisible = (payload: boolean) : State.actcionType<boolean> => ({
   type: CHANGE_DRAWER_VISIBLE,
   payload
 })

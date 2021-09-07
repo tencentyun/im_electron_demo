@@ -15,18 +15,17 @@ import { searchFriends, searchGroup } from "../api"
 import { debounce } from 'lodash';
 import './forwardPopup.scss'
 import { useSelector } from 'react-redux';
-
 interface ForwardPopupProps {
     onSuccess: Function 
     onClose: Function
 }
 const getId = (item) => {
     if(!item) return false
-    return item.user_profile_identifier || item.friend_profile_identifier || item.group_detial_info_group_id
+    return item.conv_id ? item.conv_id : (item.user_profile_identifier || item.friend_profile_identifier || item.group_detial_info_group_id || item.friendship_friend_info_get_result_identifier)
 }
 const getType = (item) => {
     if(!item) return false
-    return (item.user_profile_identifier || item.friend_profile_identifier || item.user_profile_identifier) ? 1 : 2
+    return item.conv_type ? item.conv_type : (item.user_profile_identifier || item.friend_profile_identifier || item.user_profile_identifier||item.friendship_friend_info_get_result_identifier) ? 1 : 2
 }
 
 export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX.Element => {
@@ -36,14 +35,12 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
     const [groupList, setGroupList] = useState([])
     const [selectedList, setSelectedList] = useState([])
     const [search, setSearch] = useState("")
-     const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
-     console.log('conversationList', conversationList)
+    const { conversationList, currentSelectedConversation } = useSelector((state: State.RootState) => state.conversation);
 
-    const defaultConversationList = conversationList.map(item => {
-        const {conv_id,conv_type} = item
-        return {...item.conv_profile,conv_id,conv_type}
-    } )
-    console.log('defaultConversationList', defaultConversationList, conversationList);
+    const defaultConversationList = useState(conversationList.filter(item => {
+        const {conv_id,conv_type,conv_profile} = item
+        return conv_id.includes(search) || conv_profile?.group_base_info_group_id?.includes(search) || conv_profile?.group_base_info_group_name?.includes(search) || conv_profile?.user_profile_identifier?.includes(search) || conv_profile?.user_profile_nick_name?.includes(search)
+    } ))
         
     const getUserList = async () => {
         const userList = await searchFriends({ keyWords: search })
@@ -55,15 +52,19 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
     }
     useEffect(() => {
         if(search.trim() !== "") {
-            getUserList()
-            setTimeout(() => {
+            debounce(()=>{
+                getUserList()
                 getGroupList()
-            }, 0) 
+            },300)()
         }
     }, [search])
     const setValue = (value) => {
         setSearch(value);
     }
+    useEffect(()=>{
+        // 清空selectList
+        setSelectedList([])
+    },[search])
     const handleInoputOnchange = debounce(setValue, 300);
     useEffect(() => {
         document.addEventListener('click', handlePopupClick);
@@ -94,6 +95,7 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
         const list = selectedList.filter(v => getId(v) !== conv_id)
         setSelectedList(list)
     }
+    console.log(defaultConversationList,123,userList,groupList)
     return (
         <div ref={refPopup} >
             <Modal className="forward-popup" visible={visible} caption="转发" onClose={() => onClose()}>
@@ -106,7 +108,7 @@ export const ForwardPopup: FC<ForwardPopupProps> = ({ onSuccess, onClose }): JSX
                         </div>
                         <div className="forward-popup__search-list__list customize-scroll-style">
                             {
-                               (!search) &&  defaultConversationList.map((v,k) =>  <UserItem
+                               (!search) &&  defaultConversationList[0].map((v,k) =>  <UserItem
                                         key={k}
                                         onItemClick={handleItemClick}
                                         onRemove={handleItemClose}
@@ -180,8 +182,24 @@ interface UserItemProps {
 export const UserItem: FC<UserItemProps> = ({ onItemClick, onRemove, seleted, item, hasCloseIcon, hasSelectedIcon }): JSX.Element => {
     const conv_type = getType(item)
     const conv_id = getId(item)
-    const name = item.group_detial_info_group_name || item.friend_profile_user_profile?.user_profile_nick_name || item.user_profile_nick_name
-    const url = item.friend_profile_user_profile?.user_profile_face_url || ""
+    let name
+    let url
+    if(item.conv_profile){
+        const { user_profile_face_url,user_profile_identifier,user_profile_nick_name,group_base_info_face_url,group_detial_info_group_name,group_detial_info_owener_identifier } = item.conv_profile
+        name = user_profile_identifier||user_profile_nick_name||group_detial_info_group_name||group_detial_info_owener_identifier
+        url = user_profile_face_url || group_base_info_face_url || ""
+    }else {
+        if(item.friendship_friend_info_get_result_error_code === 0){
+            // 搜出来的好友
+            name = item.friendship_friend_info_get_result_field_info?.friend_profile_user_profile?.user_profile_nick_name|| item.friendship_friend_info_get_result_field_info?.friend_profile_user_profile?.user_profile_identifier
+            url =  item.friendship_friend_info_get_result_field_info?.friend_profile_user_profile.user_profile_face_url
+        }else{
+            name = item.group_detial_info_group_name || item.friend_profile_user_profile?.user_profile_nick_name || item.user_profile_nick_name || item.conv_profile?.group_detial_info_group_name
+            url = item.friend_profile_user_profile?.user_profile_face_url || "";
+        }
+        
+    }
+    
     const typeName = conv_type === 1 ? "[好友] " : "[群] "
     return (
         <div onClick={() => onItemClick(conv_id, conv_type, item)} className="user-item" >
