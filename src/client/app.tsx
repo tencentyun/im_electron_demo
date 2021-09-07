@@ -47,6 +47,7 @@ import { updateCallingStatus } from "./store/actions/ui";
 import { ipcRenderer } from "electron";
 import { reportError } from "./utils/orgin";
 import getHuaRunConfig from "./constants";
+import ErrorBoundary from "./components/ErrorBoundary";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 let joinedUserList = [];
@@ -711,7 +712,9 @@ export const App = () => {
 ReactDOM.render(
     <Provider store={store}>
         <Router>
-            <App />
+            <ErrorBoundary>
+                <App />
+            </ErrorBoundary>
         </Router>
     </Provider>,
     document.getElementById("root")
