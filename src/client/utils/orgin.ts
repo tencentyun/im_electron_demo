@@ -109,7 +109,7 @@ const getAccountsAdd = (foucs, id) => {
     })
 }
 
-//筛选前缀模糊查询职员列表
+//筛选行领导模糊查询职员列表
 const filterGetStAffPrefix = (data, callback, userId) => {
     getstAffPrefix(data).then(res => {
         let { ActionStatus, ErrorCode, ErrorInfo, StaffInfoList } = res.data

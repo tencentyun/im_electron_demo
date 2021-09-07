@@ -61,9 +61,18 @@ const GroupTipsElemItem = (props: any): JSX.Element => {
         }
         return res
     }
-    const tips_4 = () => {
-        const { group_tips_elem_op_user_info } = props;
 
+    const tips_5 = ()=> {
+        const { group_tips_elem_changed_group_memberinfo_array} = props;
+        let res= []
+        for(let i=0;i<group_tips_elem_changed_group_memberinfo_array.length;i++){
+            res.push(`${group_tips_elem_changed_group_memberinfo_array[i].group_member_info_nick_name || group_tips_elem_changed_group_memberinfo_array[i].group_member_info_identifier}被取消管理员身份`)
+        }
+        return res
+    }
+
+    const tips_4 = () => {
+        const { group_tips_elem_op_user_info} = props;
         return [`${group_tips_elem_op_user_info.user_profile_nick_name || group_tips_elem_op_user_info.user_profile_identifier}退出群聊`]
     }
     const getChangeType = () => {
@@ -93,6 +102,7 @@ const GroupTipsElemItem = (props: any): JSX.Element => {
                 res = tips_4()
                 break;
             case 5:
+                res = tips_5()
                 break;
             case 6:
                 res = tips_6()
