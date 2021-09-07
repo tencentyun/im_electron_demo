@@ -1,5 +1,5 @@
 
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron')
 const { description } = require("../../package.json");
 // const appAutoUploader = require('./autoUpdate')
 const initStore = require("./store");
@@ -15,11 +15,24 @@ const path = require("path");
 const log = require("electron-log");
 const setkeyBoard = require("./setkeyBoard");
 
-const _sendMessageToRender = (win, key, data) => {
-  try {
-    win?.webContents?.send(key, data);
-  } catch (err) {}
-};
+const _sendLockScreen = (win,key,boolean)=>{
+  console.log(key)
+  console.log(boolean)
+  try{
+      win?.webContents?.send(key,boolean)
+  }catch(err){
+
+  }
+}
+
+const _sendMessageToRender = (win,key,data)=>{
+  try{
+      win?.webContents?.send(key,data)
+  }catch(err){
+
+  }
+}
+
 const _createWindow = (TencentIM) => {
   log.info("create window");
   const mainWindow = new BrowserWindow({
@@ -100,6 +113,17 @@ const _createWindow = (TencentIM) => {
       _sendMessageToRender(mainWindow, "mainProcessMessage", false);
     }
   });
+
+  //锁屏触发
+  powerMonitor.on('lock-screen', (event) => {
+    console.log('锁屏',event)
+    _sendLockScreen(mainWindow,'mainProcessLockScreen',true)
+  })
+    //屏幕解锁
+  powerMonitor.on('unlock-screen', (event) => {
+      console.log('解锁',event)
+      _sendLockScreen(mainWindow,'mainProcessLockScreen',false)
+  })
 
   mainWindow.on("closed", function(){
     ipcMain.removeAllListeners()

@@ -5,7 +5,6 @@ import withMemo from "../../../utils/componentWithMemo";
 import Store from "electron-store";
 const store = new Store()
 const PicElemItem = (props: any): JSX.Element => {
-    console.log("图片资源",props)
     const showPic = () => {
         try {
             const imageName = props.image_elem_orig_id

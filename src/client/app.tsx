@@ -206,10 +206,11 @@ export const App = () => {
     let showApp = true;
     const handleNotify = (messages) => {
         const msgBother = window.localStorage.getItem('msgBother') || false
+        const msgBother_close = window.localStorage.getItem('msgBother_close') || false
         console.log(showApp, '[[[[[[[[[[[[[[[', msgBother)
         console.log(messages)
         // 客户端没有展示在最顶层或者设置了消息提示免打扰，就不接收消息通知
-        if (showApp || msgBother == 'false') {
+        if (showApp || msgBother == 'false' || msgBother_close == 'true') {
             return;
         }
         console.log(messages[0].message_elem_array[0], '通知消息------------------------------------', messages)
@@ -703,6 +704,15 @@ export const App = () => {
         });
     }, []);
     useEffect(() => {
+        //电脑锁屏
+        ipcRenderer.on('mainProcessLockScreen', (event, data)=> {
+            console.log(data);
+            if(data){
+                window.localStorage.setItem('msgBother_close','true')
+            }else{
+                window.localStorage.setItem('msgBother_close','false')
+            }
+        })
         return () => {
             ipcRenderer.removeListener("mainProcessMessage", ipcRendererLister);
             removeReport()
