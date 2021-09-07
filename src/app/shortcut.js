@@ -4,13 +4,15 @@ const downloadUrl = app.getPath("downloads");
 const fs = require("fs");
 const path = require("path");
 let isScreen = true;
+const Store = require("electron-store");
+const store = new Store();
 
 const _cut = (appWindow) => {
   if (isScreen) {
     isScreen = false;
     const url = `${downloadUrl}\\${new Date().getTime()}-screenShot.png`;
-    child_process.exec(
-        path.join(process.cwd(), "/resources/extraResources", "cut.exe"),
+    //path.join(process.cwd(), "/resources/extraResources", "cut.exe")
+    child_process.exec("start C:\\Users\\MiMyMine\\Desktop\\cut.exe",
         () => {
         let pngs = clipboard.readImage().toPNG();
         fs.writeFile(url, pngs, (err) => {
@@ -34,7 +36,8 @@ const _cut = (appWindow) => {
 };
 // 注册截图快捷键
 const registerCut = (appWindow) => {
-  globalShortcut.register("CommandOrControl+Shift+X", () => {
+  let key = store.get("settingScreen");
+  globalShortcut.register(key, () => {
     clipboard.clear();
     _cut(appWindow);
   });
