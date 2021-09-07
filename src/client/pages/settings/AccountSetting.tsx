@@ -60,7 +60,7 @@ export const AccountSetting = (): JSX.Element => {
       console.log("yyyyyyyyyy")
       setChatsetting(store.get("chatSetting")?.toString());
       Modal.success({
-        message: "更换聊天记录存储位置，将在下次登录生效",
+        message: "更换聊天记录存储位置，将在下次启动生效",
         description: "",
       });
     });
