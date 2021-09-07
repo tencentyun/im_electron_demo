@@ -57,7 +57,6 @@ export const AccountSetting = (): JSX.Element => {
     const initVal = !window.localStorage.getItem('msgBother') || window.localStorage.getItem('msgBother') == 'true' ? true : false;
     setMsgBother(initVal);
     ipcRenderer.on("saveSuccess", function () {
-      console.log("yyyyyyyyyy")
       setChatsetting(store.get("chatSetting")?.toString());
       Modal.success({
         message: "更换聊天记录存储位置，将在下次启动生效",
