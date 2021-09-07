@@ -1,7 +1,14 @@
 import React, { Component } from "react";
 import { Button } from "tea-component";
+import { withRouter }  from 'react-router-dom';
+import { connect } from "react-redux";
 
 import timRenderInstance from "../../utils/timRenderInstance";
+import { reportError } from "../../utils/orgin";
+import { setIsLogInAction, userLogout } from "../../store/actions/login";
+import { clearConversation } from '../../store/actions/conversation'
+import { clearHistory } from '../../store/actions/message';
+import { _formatDate } from '../../utils/timeFormat';
 
 import './index.scss';
 
@@ -23,17 +30,29 @@ class ErrorBoundary extends Component {
         error: error,
         errorInfo: errorInfo
       });
+      // 错误上报
+      reportError({
+          errorText:  JSON.stringify({
+              error: error,
+              errorInfo: errorInfo.componentStack,
+              time: _formatDate(new Date().getTime(), 'yyyy-MM-dd hh:mm:ss')
+          }),
+          //@ts-ignore
+          userId: this.props.userId
+      });
       // You can also log error messages to an error reporting service here
     }
 
     handleClick = async () => {
-        this.setState(pre => ({
-            ...pre,
-            loading: true
-        }));
         await timRenderInstance.TIMLogout();
-        window.localStorage.clear();
-        window.location.reload();
+        // @ts-ignore
+        const {dispatch, history } = this.props;
+        dispatch(userLogout());
+        window.localStorage.clear()
+        history.replace('/login');
+        dispatch(setIsLogInAction(false));
+        dispatch(clearConversation());
+        dispatch(clearHistory());
     }
     
     render() {
@@ -58,4 +77,10 @@ class ErrorBoundary extends Component {
     }  
   }
 
-export default ErrorBoundary;
+const mapStateToProps = state => {
+    return {
+        userId: state.userInfo.userId
+    }
+}
+
+export default connect(mapStateToProps, null)(withRouter(ErrorBoundary));
