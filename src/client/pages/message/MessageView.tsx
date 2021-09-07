@@ -941,7 +941,6 @@ export const MessageView = (props: Props): JSX.Element => {
             ) > -1;
           const elemType = message_elem_array?.[0]?.elem_type; // 取message array的第一个判断消息类型
           const isNotGroupSysAndGroupTipsMessage = ![5, 8].includes(elemType); // 5,8作为群系统消息 不需要多选转发
-          console.log(message_group_at_user_array,'message_group_at_user_array') 
           return (
             <React.Fragment key={`${message_msg_id}-${index}`}>
               {message_status === 6 ? (
