@@ -139,6 +139,12 @@ export const LoginContent = (): JSX.Element => {
             }else{
                 USERLOGIN = userID
             }
+            if(!USERLOGIN){
+                message.error({
+                    content:`获取用户名异常。`
+                })
+                return
+            }
             const { userSig } = genTestUserSig(USERLOGIN.toUpperCase(), SDKAPPID, SECRETKEY)
             const params: loginParam = {
                 userID: USERLOGIN.toUpperCase(),
