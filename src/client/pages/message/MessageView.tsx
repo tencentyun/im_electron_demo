@@ -132,8 +132,7 @@ export const displayDiffMessage = (message, element, index) => {
       // @ts-ignore
       //console.log('打印文件状态', element)
       //console.log(checkfilepath(1, element.file_elem_file_id, element.file_elem_file_name))
-      let istrue = checkfilepath(1, element.file_elem_file_id, element.file_elem_file_name)
-      resp = <FileElem message={message} element={element} index={index} isshow={istrue ? true : false} />;
+      resp = <FileElem message={message} element={element} index={index} />;
       break;
     case 5:
       resp = <GroupTipsElemItem {...res} />;
@@ -195,6 +194,11 @@ export const MessageView = (props: Props): JSX.Element => {
   } = useSelector((state: State.RootState) => state.imgViewer);
 
   const directToMsgPage = useMessageDirect();
+  console.log(
+    "messageList---------------------------------------------------------------------",
+    messageList
+  );
+  console.log(messageList.length);
   useEffect(() => {
     if (!anchor) {
       messageViewRef?.current?.firstChild?.scrollIntoViewIfNeeded();
@@ -844,7 +848,6 @@ export const MessageView = (props: Props): JSX.Element => {
       custom_elem_desc,
       file_elem_url,
     } = currentMsgItem;
-    console.log(77777);
     if (elem_type === 0) {
       // const res = matchUrl([{ content: text_elem_content }])
       const currentNode = event.target as HTMLImageElement;
@@ -914,6 +917,8 @@ export const MessageView = (props: Props): JSX.Element => {
             message_conv_id,
             message_sender,
             message_client_time,
+            //@ts-ignore
+            message_group_at_user_array,
           } = item;
           const {
             user_profile_face_url,
@@ -936,6 +941,7 @@ export const MessageView = (props: Props): JSX.Element => {
             ) > -1;
           const elemType = message_elem_array?.[0]?.elem_type; // 取message array的第一个判断消息类型
           const isNotGroupSysAndGroupTipsMessage = ![5, 8].includes(elemType); // 5,8作为群系统消息 不需要多选转发
+          console.log(message_group_at_user_array,'message_group_at_user_array') 
           return (
             <React.Fragment key={`${message_msg_id}-${index}`}>
               {message_status === 6 ? (
@@ -1030,10 +1036,9 @@ export const MessageView = (props: Props): JSX.Element => {
                       }
                       <span className="message-view__item--element__time">{_formatDate(new Date(message_client_time * 1000), 'yyyy-MM-dd hh:mm')}</span>
                     </div>
-                  {message_elem_array &&
-                    message_elem_array.length &&
+                  {
+                    (message_elem_array && message_elem_array.length ) ?
                     message_elem_array.map((elment, index) => {
-                      const { ...res } = elment;
                       return (
                           <div
                             key={index}
@@ -1065,7 +1070,18 @@ export const MessageView = (props: Props): JSX.Element => {
                           </div>
                         // </div>
                       );
-                    })}
+                    }): 
+                      (message_group_at_user_array&&message_group_at_user_array.length) ? <span className="message-view__item--text text right-menu-item">
+                        {
+                          message_group_at_user_array.map((item)=>{
+                            if(item === '__kImSDK_MesssageAtALL__'){
+                              return "@所有人"
+                            }
+                          })
+                        }
+                      </span> :  null
+                    }
+                    
                   </div>
                   
                 </div>
