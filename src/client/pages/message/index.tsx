@@ -208,7 +208,7 @@ export const Message = (): JSX.Element => {
     }
 
     const getDisplayUnread = (count) => {
-        return count > 9 ? '···' : count
+        return count > 99 ? '···' : count
     }
 
     const filterMenu = (data)=>{

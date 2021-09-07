@@ -551,7 +551,7 @@ export const MessageView = (props: Props): JSX.Element => {
     switch (id) {
       case "revoke":
         console.log(data);
-        if (!isTimeoutFun(currMenuMessage.message_server_time)) {
+        if (!isTimeoutFun(currMenuMessage.message_client_time)) {
           message.warning({
             content: "发送时间超过2分钟的消息，不能被撤回",
           });
@@ -783,7 +783,7 @@ export const MessageView = (props: Props): JSX.Element => {
   const reeditShowText = (item) => {
     return (
       item.message_is_from_self &&
-      isTimeoutFun(item.message_server_time) &&
+      isTimeoutFun(item.message_client_time) &&
       item.message_elem_array[0].elem_type === 0 &&
       item.message_elem_array[0].text_elem_content.indexOf("<img src=") === -1
     );
@@ -919,7 +919,6 @@ export const MessageView = (props: Props): JSX.Element => {
             message_client_time,
             //@ts-ignore
             message_group_at_user_array,
-            message_server_time,
           } = item;
           const {
             user_profile_face_url,
@@ -942,7 +941,6 @@ export const MessageView = (props: Props): JSX.Element => {
             ) > -1;
           const elemType = message_elem_array?.[0]?.elem_type; // 取message array的第一个判断消息类型
           const isNotGroupSysAndGroupTipsMessage = ![5, 8].includes(elemType); // 5,8作为群系统消息 不需要多选转发
-          console.log(message_group_at_user_array,'message_group_at_user_array') 
           return (
             <React.Fragment key={`${message_msg_id}-${index}`}>
               {message_status === 6 ? (
@@ -1035,7 +1033,7 @@ export const MessageView = (props: Props): JSX.Element => {
                             }
                           </span>)
                       }
-                      <span className="message-view__item--element__time">{_formatDate(new Date(message_server_time * 1000), 'yyyy-MM-dd hh:mm')}</span>
+                      <span className="message-view__item--element__time">{_formatDate(new Date(message_client_time * 1000), 'yyyy-MM-dd hh:mm')}</span>
                     </div>
                   {
                     (message_elem_array && message_elem_array.length ) ?

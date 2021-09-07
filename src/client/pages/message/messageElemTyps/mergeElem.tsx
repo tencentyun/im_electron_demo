@@ -78,10 +78,10 @@ const MergeElem = (props: any): JSX.Element => {
                                     mergedMsg.length > 0 && mergedMsg.reverse().map((item: State.message, index) => {
                                         const previousMessage = mergedMsg[index - 1];
                                         const previousMessageSender = previousMessage?.message_sender_profile?.user_profile_identifier;
-                                        const { message_sender_profile, message_elem_array, message_server_time } = item;
+                                        const { message_sender_profile, message_elem_array, message_client_time } = item;
                                         const { user_profile_face_url, user_profile_nick_name, user_profile_identifier } = message_sender_profile;
                                         const shouldShowAvatar = previousMessageSender !== user_profile_identifier;
-                                        const displayText = `${user_profile_nick_name || user_profile_identifier} ${formateTime(message_server_time * 1000, true)}`;
+                                        const displayText = `${user_profile_nick_name || user_profile_identifier} ${formateTime(message_client_time * 1000, true)}`;
 
                                         return (
                                             <div key={index} className="merge-message-item">

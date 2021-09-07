@@ -50,12 +50,19 @@ import { updateCallingStatus } from "./store/actions/ui";
 import { ipcRenderer } from "electron";
 import { reportError } from "./utils/orgin";
 import getHuaRunConfig from "./constants";
+import ErrorBoundary from "./components/ErrorBoundary";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 let joinedUserList = [];
 
 // @ts-ignore
 window.closeCallWindow = closeCallWindow;
+
+const HomeWithErrorBoundary = (props) => {
+    return <ErrorBoundary>
+        <Home {...props}/>
+    </ErrorBoundary>
+}
 
 export const App = () => {
     const dispatch = useDispatch();
@@ -722,7 +729,7 @@ export const App = () => {
         <div id="app-container">
             {/* <ToolsBar></ToolsBar> */}
             <Switch>
-                <Route path="/home" component={Home}></Route>
+                <Route path="/home" component={HomeWithErrorBoundary}></Route>
                 <Route path="/" component={Login} />
             </Switch>
         </div>
