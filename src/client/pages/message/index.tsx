@@ -401,7 +401,7 @@ export const Message = (): JSX.Element => {
                                         <div className="conversion-list__item--time-wrapper">
                                             <span className="conversion-list__item--nick-name">{nickName || conv_id}</span>
                                             {
-                                                conv_last_msg && <span className="conversion-list__item--format-time">{timeFormat(conv_last_msg.message_server_time * 1000, false)}</span>
+                                                conv_last_msg && <span className="conversion-list__item--format-time">{timeFormat((conv_last_msg.message_server_time === 0 ? conv_last_msg.message_client_time : conv_last_msg.message_server_time) * 1000, false)}</span>
                                             }
                                         </div>
                                         {
