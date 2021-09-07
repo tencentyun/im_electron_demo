@@ -15,7 +15,7 @@ const GroupTipsElemItem = (props: any): JSX.Element => {
         // kTIMGroupTipChangeFlag_Owner,        // 修改群所有者
         // kTIMGroupTipChangeFlag_Custom,       // 修改群自定义信息
         // kTIMGroupTipChangeFlag_Attribute,    // 群属性变更 (新增)
-        const changeDisplay = ['未知', '群名称', '群简介', '群公告', '群头像', '群主', '群自定义信息', '群属性']
+        const changeDisplay = ['群禁言', '群名称', '群简介', '群公告', '群头像', '群主', '群自定义信息', '群属性']
         const { group_tips_group_change_info_flag, group_tips_group_change_info_value } = item;
         return `将${changeDisplay[group_tips_group_change_info_flag]}修改`
     }
@@ -88,6 +88,7 @@ const GroupTipsElemItem = (props: any): JSX.Element => {
             // kTIMGroupTip_GroupInfoChange,   // 群信息修改提示 6
             // kTIMGroupTip_MemberInfoChange,  // 群成员信息修改提示 7
             case 0:
+                
                 break;
             case 1:
                 res = tips_1()
