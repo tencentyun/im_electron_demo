@@ -9,13 +9,15 @@ import "./AccountSetting.scss";
 import { clearConversation } from "../../store/actions/conversation";
 import { clearHistory } from "../../store/actions/message";
 import { DOWNLOAD_PATH } from "../../../app/const/const";
+import { Modal } from "tea-component";
+
 import {
   recordShortcut_keydown,
   recordShortcut_keyup,
   registerShortcut,
-  unregisterShortcut
+  unregisterShortcut,
 } from "./ShortcutSetting";
-const { ipcRenderer } = require("electron");
+const { ipcRenderer, ipcMain } = require("electron");
 import Store from "electron-store";
 const store = new Store();
 import { version, description } from "../../../../package.json";
@@ -24,9 +26,16 @@ export const AccountSetting = (): JSX.Element => {
   const dispatch = useDispatch();
   const [pathurl, setPathUrl] = useState("");
   const [msgBother, setMsgBother] = useState(null);
-  const [setting, setSetting] = useState(store.get("setting")?.toString()?.replace(/\\$/,""));
-  const [inputValue, setInputValue] = useState(store.get("settingScreen").toString());
+  const [setting, setSetting] = useState(
+    store.get("setting")?.toString()?.replace(/\\$/, "")
+  );
+  const [inputValue, setInputValue] = useState(
+    store.get("settingScreen")?.toString()
+  );
   const [preInPutVlue, setPreInputValue] = useState(null);
+  const [chatSetting, setChatsetting] = useState(
+    store.get("chatSetting")?.toString()
+  );
   const setNewsMode = (val) => {
     console.log(val, "val");
     setMsgBother(val);
@@ -37,26 +46,47 @@ export const AccountSetting = (): JSX.Element => {
     setInputValue(recordShortcut_keydown(e));
   };
   const setBlur = () => {
+    console.log(
+      "preInPutVlue:",
+      preInPutVlue,
+      "inputValue:",
+      inputValue,
+      "失焦事件"
+    );
+    if (!inputValue) {
+      setInputValue(preInPutVlue);
+    }
     registerShortcut(preInPutVlue, inputValue);
   };
   const setFocus = () => {
-    setPreInputValue(inputValue);
-    unregisterShortcut(inputValue)
+    console.log(inputValue, "聚焦解绑事件");
+    if (inputValue) {
+      setPreInputValue(inputValue);
+      unregisterShortcut(inputValue);
+    }
   };
   useEffect(() => {
-    const initVal = !window.localStorage.getItem('msgBother') || window.localStorage.getItem('msgBother') == 'true' ? true : false;
+    const initVal =
+      !window.localStorage.getItem("msgBother") ||
+      window.localStorage.getItem("msgBother") == "true"
+        ? true
+        : false;
     setMsgBother(initVal);
-
-    ipcRenderer.on('saveFileTest',function(){
-        setSetting(store.get("setting")?.toString()?.replace(/\\$/,""));
+    ipcRenderer.on("saveSuccess", function () {
+      setChatsetting(store.get("chatSetting")?.toString());
+      Modal.success({
+        message: "更换聊天记录存储位置，将在下次启动生效",
+        description: "",
+      });
+    });
+    ipcRenderer.on("saveFileTest", function () {
+      setSetting(store.get("setting")?.toString()?.replace(/\\$/, ""));
     });
 
     return function () {
-      ipcRenderer.off('saveFileTest',()=>{})
+      ipcRenderer.off("saveFileTest", () => {});
     };
   }, []);
-
-
 
   const logOutHandler = async () => {
     await timRenderInstance.TIMLogout();
@@ -96,6 +126,17 @@ export const AccountSetting = (): JSX.Element => {
             <span>文件存储</span>
             <Bubble arrowPointAtCenter placement="top" content={setting}>
               <span className="item-val">{setting}</span>
+            </Bubble>
+          </div>
+          <div
+            className="setting-item"
+            onClick={() => {
+              ipcRenderer.send("chatpath");
+            }}
+          >
+            <span>聊天记录存储</span>
+            <Bubble arrowPointAtCenter placement="top" content={chatSetting}>
+              <span className="item-val">{chatSetting}</span>
             </Bubble>
           </div>
           <div className="setting-item">
