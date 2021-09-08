@@ -133,6 +133,7 @@ type HuaRunConfig = {
 }
 const getHuaRunConfig = (): HuaRunConfig => {
     const env = getParamsByKey('HUARUN_ENV');
+    // const env = 'test';
     console.log('环境变量',env )
     return HUARUN_CONFIG[env]
 }

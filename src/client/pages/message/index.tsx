@@ -388,9 +388,10 @@ export const Message = (): JSX.Element => {
             <div className={`${ isonline ? 'online' : 'outline'}`} style={{position: 'fixed',left:'10px',bottom:'10px',width:'8px',height:'8px',borderRadius:'4px'}}></div>
             <div className="message-list" style={{userSelect: 'none'}}>
                 <div style={{display:'flex',borderBottom:"1px solid #f2f2f2"}}>
-                                    <div title="搜索全部" className="message-group-chat" onClick={handleSearchBoxClick}>
+                                    {/* <div title="搜索全部" className="message-group-chat" onClick={handleSearchBoxClick}>
                                          <img src={search} alt="搜索全部"/>
-                                    </div>
+                                    </div> */}
+                                    <div className="search-wrap" onClick={handleSearchBoxClick}><SearchBox /></div>
                                     {/* 群聊未决消息  */}
                                     <div title="群未决通知" className='message-group-chat' onClick={handleGroupInform}>
                                     <Badge count={unreadNum} overflowCount={99} size="small">

@@ -22,18 +22,18 @@ export const GroupAllMute = (props: {
     (state: State.RootState) => state.conversation
   );
 
-  const updateConversation = async () => {
-    const response = await getConversionList();
-    dispatch(updateConversationList(response));
-    if (response.length) {
-      const currentConversationItem = response.find(
-        (v) => v.conv_id === currentSelectedConversation.conv_id
-      );
-      if (currentConversationItem) {
-        dispatch(updateCurrentSelectedConversation(currentConversationItem));
-      }
-    }
-  };
+  // const updateConversation = async () => {
+  //   const response = await getConversionList();
+  //   dispatch(updateConversationList(response));
+  //   if (response.length) {
+  //     const currentConversationItem = response.find(
+  //       (v) => v.conv_id === currentSelectedConversation.conv_id
+  //     );
+  //     if (currentConversationItem) {
+  //       dispatch(updateCurrentSelectedConversation(currentConversationItem));
+  //     }
+  //   }
+  // };
 
   const handleChange = async (value: boolean) => {
     try {
@@ -42,7 +42,7 @@ export const GroupAllMute = (props: {
         modifyParams: { group_modify_info_param_is_shutup_all: value },
       });
       message.success({ content: value ? "全体禁言" : "取消全体禁言" });
-      await updateConversation();
+      // await updateConversation();
       await onRefresh();
     } catch (e) {
       console.log(e);
