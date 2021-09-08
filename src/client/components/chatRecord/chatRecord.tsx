@@ -30,25 +30,26 @@ export const ChatRecord = (props) => {
     });
     const onClose = () => setShowState(false);
 
-    const groupResult = searchImgMessage({
-        messageType: 1,
-        convType: conv_type,
-        convId: conv_id
-    });
-
-    const friendsResult = searchImgMessage({
-        messageType: 2,
-        convType: conv_type,
-        convId: conv_id
-    });
-
-    const searchGroupAllResult = searchImgMessage({
-        messageType: 9,
-        convType: conv_type,
-        convId: conv_id
-    });
 
     const searchImgVideo = async () => {
+        const groupResult = searchImgMessage({
+            messageType: 1,
+            convType: conv_type,
+            convId: conv_id
+        });
+    
+        const friendsResult = searchImgMessage({
+            messageType: 2,
+            convType: conv_type,
+            convId: conv_id
+        });
+    
+        const searchGroupAllResult = searchImgMessage({
+            messageType: 9,
+            convType: conv_type,
+            convId: conv_id
+        });
+
         Promise.all([groupResult, friendsResult, searchGroupAllResult]).then(searchResult => {
             const [messageResult, groupResult, friendsResult] = searchResult;
             setSearchResult({

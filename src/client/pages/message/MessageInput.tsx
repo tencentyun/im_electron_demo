@@ -39,6 +39,7 @@ type Props = {
     convId: string,
     convType: number,
     isShutUpAll: boolean,
+    handleHistorProp?:Function,
     isHandCal?: Array<string | number>,
     handleOpenCallWindow: (callType: string, convType: number, windowType: string) => void;
 }
@@ -135,17 +136,28 @@ const FEATURE_LIST_C2C = [{
 const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
-export const MessageInput = (props: Props): JSX.Element => {
+//修改状态
+export const MessageInput = (props: Props): JSX.Element =>{
+    const dialogRef = useDialogRef();
+    const handleHistor = () => dialogRef.current.open();
+    return(
+        <>
+            <MessageInputOriginal {...props} handleHistorProp={handleHistor}></MessageInputOriginal>
+            <ChatRecord dialogRef={dialogRef} conv_type={props.convType} conv_id={props.convId}></ChatRecord>
+        </>
+    )
+}
+
+export const MessageInputOriginal = (props: Props): JSX.Element => {
     FEATURE_LIST_C2C[5].content =  `截图(${store.get("settingScreen").toString()})`;
     FEATURE_LIST_GROUP[5].content =`截图(${store.get("settingScreen").toString()})`;
 
-    const { convId, convType, isShutUpAll, handleOpenCallWindow, isHandCal } = props;
+    const { convId, convType, isShutUpAll, handleOpenCallWindow, isHandCal, handleHistorProp } = props;
     const [isDraging, setDraging] = useState(false);
     const [activeFeature, setActiveFeature] = useState('');
     const [shouldShowCallMenu, setShowCallMenu] = useState(false);
     //解决打开文件无法发送问题
     const [sendMessageFile, setMessageFile] = useState({messageElementArray:[],isDirectory:false});
-    const dialogRef = useDialogRef();
     const [atPopup, setAtPopup] = useState(false);
     const [isEmojiPopup, setEmojiPopup] = useState(false);
     const [isRecordPopup, setRecordPopup] = useState(false);
@@ -506,7 +518,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 handleScreenShot()
                 break;
             case "histor":
-                handleHistor()
+                handleHistorProp()
                 break;    
 
         }
@@ -598,8 +610,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         clipboard.clear()
         ipcRenderer.send('SCREENSHOT')
     }
-    //聊天记录
-    const handleHistor = () => dialogRef.current.open();
+  
 
     const handleOnkeyPress = (e) => {
         // const hasImage = editorState.toHTML().includes('image')
@@ -902,7 +913,6 @@ export const MessageInput = (props: Props): JSX.Element => {
 
     const shutUpStyle = isShutUpAll ? 'disabled-style' : '';
     const dragEnterStyle = isDraging ? 'draging-style' : '';
-
     return (
         <div className={`message-input ${shutUpStyle} ${dragEnterStyle}`} onDrop={handleDropFile} onDragLeaveCapture={handleDragLeave} onDragOver={handleDragEnter} >
             {
@@ -968,7 +978,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             {
                 isRecordPopup && <RecordPopup onSend={handleRecordPopupCallback} onCancel={() => setRecordPopup(false)} />
             }
-            <ChatRecord dialogRef={dialogRef} conv_type={convType} conv_id={convId}></ChatRecord>
         </div>
     )
 }
