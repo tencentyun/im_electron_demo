@@ -29,9 +29,6 @@ import {
     deleteConversion
 } from "./store/actions/conversation";
 import {
-    initGroupInfor
-} from "./store/actions/section";
-import {
     addProfileForConversition,
     getConversionList,
     TIMConvDelete,
@@ -435,7 +432,9 @@ export const App = () => {
             if (newConversaionItem) {
                 dispatch(updateCurrentSelectedConversation(newConversaionItem));
                 //修改群身份触发群聊详情更新
-                newConversaionItem?.conv_last_msg?.message_elem_array[0]?.elem_type == 5 &&  dispatch(initGroupInfor(initNumber++))
+                if(newConversaionItem?.conv_last_msg?.message_elem_array[0]?.elem_type == 5){
+                    ipcRenderer.send('onRedbawViews', 0)
+                }
             }
         }
         console.log('======data=======', data);

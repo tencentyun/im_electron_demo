@@ -89,7 +89,7 @@ export const GroupMember = (props: {
   }
 
 
-  const [canInviteMember, setCanInviteMember] = useState(groupType == 1 || ([0, 1, 2].includes(groupType) && (returnsCustomValue('group_invitation', groupCustom) == '1' || (returnsCustomValue('group_invitation', groupCustom) == '0' && [2, 3].includes(mygroupInfor.group_member_info_member_role)))))
+  const [canInviteMember, setCanInviteMember] = useState(groupType == 1 || ([0, 1, 2].includes(groupType) && (returnsCustomValue('group_invitation', groupCustom) == '1' || (returnsCustomValue('group_invitation', groupCustom) == '0' && [2, 3].includes(mygroupInfor?.group_member_info_member_role)))))
    //自定义字段更新 刷新页面
    useEffect(() => {
       setCanInviteMember(groupType == 1 || ([0, 1, 2].includes(groupType) && (returnsCustomValue('group_invitation', currentSelectedConversation?.conv_profile?.group_detial_info_custom_info) == '1' || (returnsCustomValue('group_invitation', currentSelectedConversation?.conv_profile?.group_detial_info_custom_info) == '0' && [2, 3].includes(mygroupInfor?.group_member_info_member_role)))))

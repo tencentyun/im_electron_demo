@@ -73,7 +73,7 @@ export const GroupProfileDrawer = (props: {
   const { mygroupInfor } = useSelector(
     (state: State.RootState) => state.section
   );
-  const isOwen = [2, 3].includes(mygroupInfor.group_member_info_member_role)
+  const isOwen = [2, 3].includes(mygroupInfor?.group_member_info_member_role)
   const _groupInforCustom = (type_key) => {
     return group_detial_info_custom_info?.filter(item => item.group_info_custom_string_info_key == type_key)[0]
   }

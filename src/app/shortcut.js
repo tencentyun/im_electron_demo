@@ -12,7 +12,7 @@ const _cut = (appWindow) => {
     isScreen = false;
     const url = `${downloadUrl}\\${new Date().getTime()}-screenShot.png`;
     //path.join(process.cwd(), "/resources/extraResources", "cut.exe")
-    child_process.exec("start C:\\Users\\10457\\Desktop\\cut.exe",
+    child_process.exec("start C:\\Users\\MiMyMine\\Desktop\\cut.exe",
         () => {
         let pngs = clipboard.readImage().toPNG();
         fs.writeFile(url, pngs, (err) => {

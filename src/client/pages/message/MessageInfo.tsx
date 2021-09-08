@@ -36,6 +36,7 @@ import{
 } from '../../store/actions/section'
 import { GroupToolsDrawer } from "./GroupToolsDeawer";
 import { GroupToolBar } from "./GroupToolBar";
+import { ipcRenderer } from "electron";
 
 type Info = {
   faceUrl: string;
@@ -159,14 +160,19 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const canInviteMember = conv_type === 2 && [0, 1, 2].includes(groupType);
   const canCreateDiscussion = conv_type === 1
   // 设置群信息相关
-  const handleClick = async (id: string) => {
-   let  { group_get_memeber_info_list_result_info_array } = await   getGroupMemberList({
+
+  const UpdataGroupNumber = async ()=> {
+    let  { group_get_memeber_info_list_result_info_array } = await   getGroupMemberList({
       groupId:conv_id,
       userIds: userId.length ?  [userId] : [],
       nextSeq: 0,
     })
-    dispatch(changeToolsTab(id))
     dispatch(setMyGroupInformation(group_get_memeber_info_list_result_info_array[0]))
+  }
+
+  const handleClick = async (id: string) => {
+    dispatch(changeToolsTab(id))
+    id == "setting"  && UpdataGroupNumber()
   };
 
   const handleShow = () => dispatch(changeDrawersVisible(true));
@@ -252,6 +258,12 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     });
   }
 
+  useEffect(() => {
+    ipcRenderer.on('updataCluster', UpdataGroupNumber)
+    return function(){
+      ipcRenderer.off('updataCluster',UpdataGroupNumber)
+    }
+  },[])
 
   useEffect(() => {
     const { callType, convType } = callInfo
