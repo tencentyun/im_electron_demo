@@ -16,16 +16,16 @@ const saveFileTest = (saveTo) => {
     }
   });
 };
-const  mkdirsSync = (dirname)=> {
+const mkdirsSync = (dirname) => {
   if (fs.existsSync(dirname)) {
-      return true;
+    return true;
   } else {
-      if (mkdirsSync(path.dirname(dirname))) {
-          fs.mkdirSync(dirname);
-          return true;
-      }
+    if (mkdirsSync(path.dirname(dirname))) {
+      fs.mkdirSync(dirname);
+      return true;
+    }
   }
-}
+};
 /**
  * 调起注册事件
  * @param {*} callback  回调函数
@@ -35,15 +35,17 @@ const  mkdirsSync = (dirname)=> {
 const setkeyBoard = (callback, mainWindow) => {
   // 示例  callback(value,"CommandOrControl+Shift+D");
   ipcMain.on("SHORTCUT.REGISTER", function (event, data) {
-    let formatSelectpath = store.get("setting")
+    let formatSelectpath = store.get("setting");
     fileDataJson = {
-      selectpath: formatSelectpath.replace(/\\$/,""),
+      selectpath: formatSelectpath.replace(/\\$/, ""),
       screenshot: data,
-      chatpath:store.get("chatSetting")?.toString()
+      chatpath: store.get("chatSetting")?.toString(),
     };
     saveFileTest(JSON.stringify(fileDataJson));
     store.set("settingScreen", data);
-    callback(mainWindow);
+    if (data !== "无") {
+      callback(mainWindow);
+    }
   });
   ipcMain.on("SHORTCUT.UNREGISTER", function (event, data) {
     globalShortcut.unregister(data);

@@ -12,7 +12,7 @@ const _cut = (appWindow) => {
     isScreen = false;
     const url = `${downloadUrl}\\${new Date().getTime()}-screenShot.png`;
     //path.join(process.cwd(), "/resources/extraResources", "cut.exe")
-    child_process.exec("start C:\\Users\\MiMyMine\\Desktop\\cut.exe",
+    child_process.exec("start C:\\Users\\10457\\Desktop\\cut.exe",
         () => {
         let pngs = clipboard.readImage().toPNG();
         fs.writeFile(url, pngs, (err) => {
@@ -37,10 +37,14 @@ const _cut = (appWindow) => {
 // 注册截图快捷键
 const registerCut = (appWindow) => {
   let key = store.get("settingScreen");
-  globalShortcut.register(key, () => {
-    clipboard.clear();
-    _cut(appWindow);
-  });
+  console.log("key===",key)
+  if(key !=="无"&&key !==null){
+    globalShortcut.register(key, () => {
+      clipboard.clear();
+      _cut(appWindow);
+    });
+  }
+
   // 接受截图事件
   ipcMain.on("SCREENSHOT", function () {
     //news 是自定义的命令 ，只要与页面发过来的命令名字统一就可以

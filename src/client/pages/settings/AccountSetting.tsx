@@ -46,15 +46,24 @@ export const AccountSetting = (): JSX.Element => {
     setInputValue(recordShortcut_keydown(e));
   };
   const setBlur = () => {
+    if(!inputValue){
+      setInputValue('无');
+    }
     registerShortcut(preInPutVlue, inputValue);
   };
   const setFocus = () => {
-    setPreInputValue(inputValue);
-    unregisterShortcut(inputValue);
+    if (inputValue&&inputValue!=='无') {
+      setPreInputValue(inputValue);
+      unregisterShortcut(inputValue);
+    }
   };
 
   useEffect(() => {
-    const initVal = !window.localStorage.getItem('msgBother') || window.localStorage.getItem('msgBother') == 'true' ? true : false;
+    const initVal =
+      !window.localStorage.getItem("msgBother") ||
+      window.localStorage.getItem("msgBother") == "true"
+        ? true
+        : false;
     setMsgBother(initVal);
     ipcRenderer.on("saveSuccess", function () {
       setChatsetting(store.get("chatSetting")?.toString());
