@@ -30,7 +30,7 @@ export const AccountSetting = (): JSX.Element => {
     store.get("setting")?.toString()?.replace(/\\$/, "")
   );
   const [inputValue, setInputValue] = useState(
-    store.get("settingScreen").toString()
+    store.get("settingScreen")?.toString()
   );
   const [preInPutVlue, setPreInputValue] = useState(null);
   const [chatSetting, setChatsetting] = useState(
@@ -46,18 +46,25 @@ export const AccountSetting = (): JSX.Element => {
     setInputValue(recordShortcut_keydown(e));
   };
   const setBlur = () => {
-    if(!inputValue){
-      setInputValue('无');
+    console.log(
+      "preInPutVlue:",
+      preInPutVlue,
+      "inputValue:",
+      inputValue,
+      "失焦事件"
+    );
+    if (!inputValue) {
+      setInputValue(preInPutVlue);
     }
     registerShortcut(preInPutVlue, inputValue);
   };
   const setFocus = () => {
-    if (inputValue&&inputValue!=='无') {
+    console.log(inputValue, "聚焦解绑事件");
+    if (inputValue) {
       setPreInputValue(inputValue);
       unregisterShortcut(inputValue);
     }
   };
-
   useEffect(() => {
     const initVal =
       !window.localStorage.getItem("msgBother") ||

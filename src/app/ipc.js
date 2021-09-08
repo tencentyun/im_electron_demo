@@ -182,10 +182,8 @@ class IPC {
       !!fileDataJson.chatpath && (chatModle = fileDataJson.chatpath);
       console.log();
     } catch (error) {}
-    if (screenModle === "无") {
-      store.set("settingScreen", "无");
-    }
     store.set("setting", settingModle);
+    store.set("settingScreen", screenModle);
     store.set("chatSetting", chatModle);
     return settingModle;
   }

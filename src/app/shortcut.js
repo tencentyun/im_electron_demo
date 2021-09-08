@@ -38,12 +38,10 @@ const _cut = (appWindow) => {
 const registerCut = (appWindow) => {
   let key = store.get("settingScreen");
   console.log("key===",key)
-  if(key !=="无"&&key !==null){
     globalShortcut.register(key, () => {
       clipboard.clear();
       _cut(appWindow);
     });
-  }
 
   // 接受截图事件
   ipcMain.on("SCREENSHOT", function () {

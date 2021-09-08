@@ -51,6 +51,9 @@ import { ipcRenderer } from "electron";
 import { reportError } from "./utils/orgin";
 import getHuaRunConfig from "./constants";
 import ErrorBoundary from "./components/ErrorBoundary";
+// 引入 electron-store
+import eleStore from "electron-store";
+const elestore = new eleStore();
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 let joinedUserList = [];
@@ -112,7 +115,11 @@ export const App = () => {
                 },
             });
             console.log("私有化", privite);
-            timRenderInstance.TIMInit().then(async ({ data }) => {
+            let eleConfig = {
+                      config_path: elestore.store.chatSetting,
+                    };
+                    console.log(eleConfig,"eleConfig ")
+            timRenderInstance.TIMInit(eleConfig).then(async ({ data }) => {
                 if (data === 0) {
                     isInited = true;
                     console.log("初始化成功");

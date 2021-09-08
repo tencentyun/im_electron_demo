@@ -40,7 +40,7 @@ function clearData() {
   returnStr = null;
   newArrList = [];
   arrList = [];
-  oldKey="";
+  oldKey = "";
 }
 /**
  *
@@ -76,14 +76,14 @@ function setStr(hasMK, key) {
  */
 export const recordShortcut_keydown = (e) => {
   let key: string = String(e.key);
-  console.log(key,"触发的key")
+  console.log(key, "触发的key");
   if (oldKey === key) {
     return returnStr;
   }
   switch (toLowerCase(key)) {
     case "backspace":
       clearData();
-      return "无";
+      return "Ctrl+Shift+X";
 
     default:
       let hasMK: boolean = list.indexOf(key) > -1;
@@ -112,12 +112,12 @@ export const recordShortcut_keyup = (e) => {
 export const registerShortcut = (preValue, value) => {
   console.log(preValue, value, "=====设置");
   clipboard.clear();
-  if (!value) {
+  if (value) {
+    ipcRenderer.send("SHORTCUT.REGISTER", value); //注册新快捷键
+  } else {
     ipcRenderer.send("SHORTCUT.REGISTER", preValue); //注册新快捷键
     clearData();
-    return false;
   }
-  ipcRenderer.send("SHORTCUT.REGISTER", value); //注册新快捷键
 };
 /**
  * 解绑快捷键

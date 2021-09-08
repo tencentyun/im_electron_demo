@@ -43,9 +43,7 @@ const setkeyBoard = (callback, mainWindow) => {
     };
     saveFileTest(JSON.stringify(fileDataJson));
     store.set("settingScreen", data);
-    if (data !== "无") {
       callback(mainWindow);
-    }
   });
   ipcMain.on("SHORTCUT.UNREGISTER", function (event, data) {
     globalShortcut.unregister(data);
