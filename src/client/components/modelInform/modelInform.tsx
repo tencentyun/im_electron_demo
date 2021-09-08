@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { ipcRenderer } from "electron";
 import { Modal, Button } from 'tea-component';
 import { useDialog } from "../../utils/react-use/useDialog";
 import { EmptyResult } from '../../pages/message/searchMessage/EmptyResult';
@@ -55,6 +56,10 @@ export const ModelInform = (props) => {
     }   
     useEffect(() => {
         pendencyList();
+        ipcRenderer.on('updataGroupUnsettled', pendencyList)
+        return function(){
+          ipcRenderer.off('updataGroupUnsettled',pendencyList)
+        }
     },[])
 
     useEffect(() => {

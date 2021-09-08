@@ -45,6 +45,7 @@ import {
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
 import { openCallWindow, closeCallWindow, remoteUserExit, remoteUserJoin, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite, updateInviteList } from "./utils/callWindowTools";
+import { openReminderWindow } from './utils/reminderWindoTools'
 import { updateCallingStatus } from "./store/actions/ui";
 // import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from "./constants";
 import { ipcRenderer } from "electron";
@@ -216,6 +217,19 @@ export const App = () => {
         const msgBother_close = window.localStorage.getItem('msgBother_close') || false
         console.log(showApp, '[[[[[[[[[[[[[[[', msgBother)
         console.log(messages)
+        //申请入群提示
+        if(messages[0].message_elem_array[0].elem_type == 8 && messages[0].message_elem_array[0].group_report_elem_report_type == 1 && msgBother_close == 'false'){
+            let {group_report_elem_group_id,group_report_elem_group_name,...parmss} = messages[0].message_elem_array[0]
+            openReminderWindow({
+                group_report_elem_group_id,
+                group_report_elem_group_name,
+                user_profile_identifier:parmss.group_report_elem_op_user_info.user_profile_identifier,
+                user_profile_nick_name:parmss.group_report_elem_op_user_info.user_profile_nick_name
+            })
+            //刷新群未决消息
+            ipcRenderer.send('onRedbawViews', 2)
+            return
+        }
         // 客户端没有展示在最顶层或者设置了消息提示免打扰，就不接收消息通知
         if (showApp || msgBother == 'false' || msgBother_close == 'true') {
             return;
@@ -405,7 +419,6 @@ export const App = () => {
     
     let initNumber = 0
     const _handleGroupInfoModify = async (data) => {
-        debugger
         const response = await getConversionList();
         dispatch(updateConversationList(response));
         if (response?.length) {

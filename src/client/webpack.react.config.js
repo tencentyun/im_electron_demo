@@ -15,7 +15,8 @@ module.exports = {
   },
   entry: {
     main: './app.tsx',
-    call: './call.tsx'
+    call: './call.tsx',
+    reminder:"./reminder.tsx"
   },
   target: 'electron-renderer',
   devtool: 'source-map',
@@ -121,6 +122,11 @@ module.exports = {
       chunks: ['call'],
       template: 'call.html',
       filename: 'call.html'
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ['reminder'],
+      template: 'reminder.html',
+      filename: 'reminder.html'
     })
   ],
   node: {

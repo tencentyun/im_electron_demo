@@ -11,11 +11,12 @@ const setAppTray = require('./traySetting')
 const { productName,version,author } = require('../../package.json')
 const IPC = require('./ipc');
 const CallWindowIpc = require('./callWindowIpc');
-
+const ReminderWindowIpc = require('./reminderWindowIpc')
 const log = require('electron-log');
 
 let ipc = null;
 let callWindowIpc = null;
+let reminderWindowIpc = null
 crashReporter.start({
   productName: `${productName}_${version}`,
   companyName: author.name,
@@ -65,7 +66,7 @@ if (!gotTheLock) {
     // 设置ipc通信
     if (!ipc) ipc = new IPC(global.sharedObject.appWindow);
     if (!callWindowIpc) callWindowIpc =  new CallWindowIpc();
-
+    if(!reminderWindowIpc) reminderWindowIpc =  new ReminderWindowIpc();
 
     app.on('activate', function () {
       log.info('app activate')
