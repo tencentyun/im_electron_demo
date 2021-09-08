@@ -48,6 +48,7 @@ import { ipcRenderer } from "electron";
 import { reportError } from "./utils/orgin";
 import getHuaRunConfig from "./constants";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { message } from "tea-component";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 let joinedUserList = [];
@@ -199,6 +200,9 @@ export const App = () => {
                             case "TIMOnTimeout":
                                 _onTimeout(data)
                                 break;
+                            case "TIMSetNetworkStatusListenerCallback":
+                                _networkChange(data)
+                                break;
                         }
                     });
                 }
@@ -207,6 +211,25 @@ export const App = () => {
     };
     
     let showApp = true;
+    const _networkChange = (data)=>{
+        const [[netStatus]] = data;
+        switch(netStatus){
+            case 0:
+                break;
+            case 1:
+                message.error({
+                    content: "连接中断，正在重连，请稍候"
+                })
+                break;
+            case 2:
+                break;
+            case 3:
+                message.error({
+                    content: "连接失败，请检查网络"
+                })
+                break;
+        }
+    }
     const handleNotify = (messages) => {
         const msgBother = window.localStorage.getItem('msgBother') || false
         const msgBother_close = window.localStorage.getItem('msgBother_close') || false
