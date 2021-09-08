@@ -149,8 +149,8 @@ export const MessageInput = (props: Props): JSX.Element =>{
 }
 
 export const MessageInputOriginal = (props: Props): JSX.Element => {
-    FEATURE_LIST_C2C[5].content =  `截图(${store.get("settingScreen").toString()})`;
-    FEATURE_LIST_GROUP[5].content =`截图(${store.get("settingScreen").toString()})`;
+    FEATURE_LIST_C2C[5].content =  `截图(${store.get("settingScreen")?.toString()})`;
+    FEATURE_LIST_GROUP[5].content =`截图(${store.get("settingScreen")?.toString()})`;
 
     const { convId, convType, isShutUpAll, handleOpenCallWindow, isHandCal, handleHistorProp } = props;
     const [isDraging, setDraging] = useState(false);
