@@ -20,7 +20,7 @@ export const Search : FC<TreeDynamic> = ({ callback,onClear,handleCallback,filte
     const 	searchRectData = (nameText) =>{
                 clearTimeout(settime)
                 settime = setTimeout(async ()=>{
-                const { data } =  await	getstAffPrefix({ Math:nameText,Limit:100 })
+                const { data } =  await	getstAffPrefix({ Match:nameText,Limit:100 })
                 let { ActionStatus, ErrorCode, ErrorInfo,StaffInfoList } = data
                 if(ActionStatus == 'OK' && ErrorCode === 0){
                     callback && ((StaffInfoList.length > 0) && callback(StaffInfoList[0]))
@@ -37,7 +37,7 @@ export const Search : FC<TreeDynamic> = ({ callback,onClear,handleCallback,filte
             clearTimeout(settime)
             if(nameText.trim() == "") onClear && onClear()
                 settime = setTimeout(async ()=>{
-                    filterGetStAffPrefix({ Math:nameText,Limit:100 },(filterLoda)=>{
+                    filterGetStAffPrefix({ Match:nameText,Limit:100 },(filterLoda)=>{
                         callback && ((filterLoda.length > 0) && callback(filterLoda[0],filterText))
                         setFilterDataIndex(0)
                         setFilterData(filterLoda)
