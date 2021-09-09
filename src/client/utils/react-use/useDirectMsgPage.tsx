@@ -39,7 +39,6 @@ export const useMessageDirect = () => {
         }
 
         // 切换function_atb
-
         dispatch(changeFunctionTab('message'))
         if(hasConversation) {
             dispatch(updateCurrentSelectedConversation(matchedConversation));

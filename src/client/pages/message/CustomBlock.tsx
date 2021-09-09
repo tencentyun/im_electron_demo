@@ -58,14 +58,15 @@ export const BlockImageComponent = (props: { blockProps: any; block: any }) => {
 
 // 声明blockRendererFn
 export const blockRendererFn = (block, { editor, editorState }) => {
-  if (block.getType() === "atomic") {
+  const key = block.getEntityAt(0);
+  if (block.getType() === "atomic" && key !== null) {
     const entity = editorState
       .getCurrentContent()
-      .getEntity(block.getEntityAt(0));
+      .getEntity(key);
 
     const blockData = editorState
       .getCurrentContent()
-      .getEntity(block.getEntityAt(0))
+      .getEntity(key)
       .getData();
 
     if (entity.getType() === "block-video") {

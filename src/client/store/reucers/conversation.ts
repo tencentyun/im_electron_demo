@@ -14,17 +14,22 @@ const initState = {
 //     })
 // }
 
+const getTime = (item) => {
+    const { message_server_time, message_client_time } = item;
+    return message_server_time === 0 ? message_client_time : message_server_time;
+}
+
 
 const sortByPindAndTime = (conversationList: Array<State.conversationItem>): Array<State.conversationItem> => {
     return conversationList.sort((pre, next) => {
         //conv_is_pinned 都为true
         if (pre.conv_is_pinned && next.conv_is_pinned) {
-            return next.conv_last_msg.message_server_time - pre.conv_last_msg.message_server_time
+            return getTime(next.conv_last_msg) - getTime(pre.conv_last_msg);
         }
         //conv_is_pinned 都为false
         else if (!pre.conv_is_pinned && !next.conv_is_pinned) {
             if(next.conv_last_msg && pre.conv_last_msg){
-                return pre.conv_last_msg.message_server_time < next.conv_last_msg.message_server_time ? 1 : -1;
+                return getTime(pre.conv_last_msg) < getTime(next.conv_last_msg) ? 1 : -1;
             }
             return 1;
         }
