@@ -18,7 +18,11 @@ const MergeElem = (props: any): JSX.Element => {
     );
     const showMergeDitail = async () => {
         if (props.merge_elem_message_array) {
-            setMergedMsg(props.merge_elem_message_array);
+            try{
+                setMergedMsg(props.merge_elem_message_array.sort((a,b)=>{return b.message_server_time-a.message_server_time}));
+            }catch(err){
+                
+            }
         } else {
             console.log(props, 'props')
             const { data: { code, json_params } } = await downloadMergedMsg(props.message);
@@ -27,7 +31,12 @@ const MergeElem = (props: any): JSX.Element => {
                 showArray:JSON.parse(json_params)
             }))
             console.log(showModalStatus)
-            setMergedMsg(showModalStatus.showArray);
+            try{
+                //@ts-ignore
+                setMergedMsg(showModalStatus.showArray.sort((a,b)=>{return b.message_server_time-a.message_server_time}));
+            }catch(err){
+
+            }
         }
         setShowModal(true);
     }
@@ -75,7 +84,7 @@ const MergeElem = (props: any): JSX.Element => {
                             <header className="merge-mesage-header">{props.merge_elem_title}</header>
                             <div className="merge-message-content customize-scroll-style">
                                 {
-                                    mergedMsg.length > 0 && mergedMsg.reverse().map((item: State.message, index) => {
+                                    mergedMsg.length > 0 && mergedMsg.map((item: State.message, index) => {
                                         const previousMessage = mergedMsg[index - 1];
                                         const previousMessageSender = previousMessage?.message_sender_profile?.user_profile_identifier;
                                         const { message_sender_profile, message_elem_array, message_client_time } = item;
