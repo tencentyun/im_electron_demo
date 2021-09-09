@@ -39,13 +39,13 @@ export const useMessageDirect = () => {
         }
 
         // 切换function_atb
-
         dispatch(changeFunctionTab('message'))
         if(hasConversation) {
             dispatch(updateCurrentSelectedConversation(matchedConversation));
         } else {
-            dispatch(updateConversationList([emptyConv]));
             dispatch(updateCurrentSelectedConversation(emptyConv));
+            dispatch(updateConversationList([emptyConv]));
+
         }
         beforeDirect && beforeDirect();
         const isMessagePage = pathname.includes('/home/message')
