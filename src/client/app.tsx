@@ -222,7 +222,7 @@ export const App = () => {
         console.log(showApp, '[[[[[[[[[[[[[[[', msgBother)
         console.log(messages)
         //申请入群提示
-        if(messages[0].message_elem_array[0].elem_type == 8 && messages[0].message_elem_array[0].group_report_elem_report_type == 1 && msgBother_close == 'false'){
+        if(messages[0].message_elem_array[0].elem_type == 8 && messages[0].message_elem_array[0].group_report_elem_report_type == 1 && !msgBother_close){
             let {group_report_elem_group_id,group_report_elem_group_name,...parmss} = messages[0].message_elem_array[0]
             openReminderWindow({
                 group_report_elem_group_id,

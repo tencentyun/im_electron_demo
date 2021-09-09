@@ -43,8 +43,8 @@ export const deleteGroup = async (groupId: string): Promise<any> => {
 };
 
 //2021年8月24日09:57:46   zwc   申请入群
-export const joinGroup = async (groupId: string): Promise<any> => {
-  const { data } = await timRenderInstance.TIMGroupJoin({ groupId });
+export const joinGroup = async (groupId: string, helloMsg : Array<string>): Promise<any> => {
+  const { data } = await timRenderInstance.TIMGroupJoin({ groupId,helloMsg:helloMsg.join("&&&") });
   console.log("data", data);
   const { code, desc } = data;
   if (code === 0) {

@@ -270,6 +270,7 @@ export const GroupMember = (props: {
         groupId={groupId}
         popupContainer={popupContainer}
         dialogRef={dialogRef}
+        isGroupOwner
       />
       <DeleteGroupMemberDialog
         dialogRef={deleteMemberDialogRef}
