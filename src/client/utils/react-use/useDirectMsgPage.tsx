@@ -44,8 +44,8 @@ export const useMessageDirect = () => {
         if(hasConversation) {
             dispatch(updateCurrentSelectedConversation(matchedConversation));
         } else {
-            dispatch(updateConversationList([emptyConv]));
             dispatch(updateCurrentSelectedConversation(emptyConv));
+            dispatch(updateConversationList([emptyConv]));
         }
         beforeDirect && beforeDirect();
         const isMessagePage = pathname.includes('/home/message')
