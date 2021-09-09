@@ -93,7 +93,7 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
         case REPLACE_CONV_LIST:
             return {
                 ...state,
-                conversationList: action.payload
+                conversationList: sortByPindAndTime(action.payload)
             }
 
         case MARK_CONV_LAST_MSG_IS_READED:
