@@ -14,6 +14,7 @@ import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
 import './message-input.scss';
 import { convertBase64UrlToBlob } from "../../utils/tools";
+import timRenderInstance from "../../utils/timRenderInstance";
 import { SDKAPPID } from '../../constants/index'
 import { setPathToLS } from '../../utils/messageUtils';
 import { sendCustomMsg } from '../message/api'
@@ -558,15 +559,27 @@ export const MessageInput = (props: Props): JSX.Element => {
             let VimgFace = {
                 elem_type: 6,
                 // @ts-ignore
+                face_elem_index:9999,
                 face_elem_buf: url
             }
-            const { data: messageId } = await sendCustomMsg({
-                convId,
-                convType,
-                messageElementArray: [VimgFace],
-                userId,
-                callback: sendMsgSuccessCallback
+            debugger
+            const { data: messageId,} = await timRenderInstance.TIMMsgSendMessageV2({
+            conv_id:convId,
+            conv_type:convType,
+            params: {
+                message_elem_array: [VimgFace],
+                message_sender: userId,
+                message_group_at_user_array: [VimgFace],
+            },
+            callback: sendMsgSuccessCallback
             });
+            // const { data: messageId } = await sendCustomMsg({
+            //     convId,
+            //     convType,
+            //     messageElementArray: [VimgFace],
+            //     userId,
+            //     callback: sendMsgSuccessCallback
+            // });
             const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, VimgFace) as State.message;
             dispatch(updateMessages({
                 convId,
@@ -656,7 +669,6 @@ export const MessageInput = (props: Props): JSX.Element => {
         resetState()
         if (type === 'CUST_EMOJI') {
             // 发送自定义表情
-            console.log(768678)
             handleSendCustEmojiMessage(id)
         } else {
             if (id) {
