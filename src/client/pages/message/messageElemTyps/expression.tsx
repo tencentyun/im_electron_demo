@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 
 export const Expression = (props: any): JSX.Element => {
-    console.log(props)
+    //console.log(props)
     const item = (props) => {
         return (
                 <div className="message-view__item--voice" >

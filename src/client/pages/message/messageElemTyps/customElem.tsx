@@ -25,7 +25,7 @@ const CustomElem = (props: any): JSX.Element => {
         );
       }
       //解析公众号推送
-      else if (custom_elem_desc == '公众号推送') {
+      else if (custom_elem_desc == '公众号推送' && data.Img) {
         return (
           <>
             <div>
@@ -53,6 +53,13 @@ const CustomElem = (props: any): JSX.Element => {
                   </Modal.Body>
                 </Modal>
               </div>
+          </>
+        );
+      }
+      else if (custom_elem_desc == '公众号推送' && !data.Img) {
+        return (
+          <>
+            <div dangerouslySetInnerHTML={{__html:data.Content.toString()}}></div>
           </>
         );
       }
