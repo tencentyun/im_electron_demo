@@ -160,6 +160,12 @@
       margin-left: 0;
       margin-right: 8px;
     }
+    &--hidden-over {
+      display: none;
+    }
+    &--margin-auto {
+      margin:auto;
+    }
     &--blank {
       width: 40%;
     }
