@@ -116,7 +116,7 @@ export const GroupMemberListDrawer = (props: {
         },
       });
       setGroupNickName(record, card, true);
-      ipcRenderer.send('onRedbawViews', 0)
+      ipcRenderer.send('onRedbawViews', 0 , groupId)
       setTanleLoading(false)
     }
 
@@ -164,7 +164,7 @@ export const GroupMemberListDrawer = (props: {
       },
     });
     setGroupNickName(record, card)
-    ipcRenderer.send('onRedbawViews', 0)
+    ipcRenderer.send('onRedbawViews', 0, groupId)
     setTanleLoading(false)
   };
 

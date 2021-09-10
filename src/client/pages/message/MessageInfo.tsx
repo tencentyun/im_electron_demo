@@ -189,14 +189,18 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
    }, [currentSelectedConversation?.conv_profile?.group_detial_info_custom_info]);
 
   // 设置群信息相关
-  const UpdataGroupNumber = async (callback?)=> {
+  const UpdataGroupNumber = async (event?, groupId?)=> {
+    let  conv_id_copy = groupId || conv_id
+    if(Object.prototype.toString.call(event) == '[object Function]'){
+      conv_id_copy =  conv_id
+    }
     let  { group_get_memeber_info_list_result_info_array } = await   getGroupMemberList({
-      groupId:conv_id,
+      groupId:conv_id_copy,
       userIds: userId.length ?  [userId] : [],
       nextSeq: 0,
     })
     dispatch(setMyGroupInformation(group_get_memeber_info_list_result_info_array[0]))
-     Object.prototype.toString.call(callback) == "[object Function]"  && callback(group_get_memeber_info_list_result_info_array[0])
+     Object.prototype.toString.call(event) == "[object Function]"  &&  event(group_get_memeber_info_list_result_info_array[0])
   }
 
   const handleClick = async (id: string) => {

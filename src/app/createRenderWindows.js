@@ -135,8 +135,6 @@ const _createWindow = (TencentIM) => {
 
   // 加载url
   const { NODE_ENV, HUARUN_ENV } = process.env;
-  // const  NODE_ENV = 'development' , HUARUN_ENV = "test"
-  // const  NODE_ENV = 'production' , HUARUN_ENV = "prod"
   console.log("当前环境:", NODE_ENV);
   if (NODE_ENV === "development") {
     mainWindow.loadURL(

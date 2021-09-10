@@ -48,9 +48,10 @@ export const GroupMember = (props: {
   const { mygroupInfor } = useSelector(
     (state: State.RootState) => state.section
   );
-  const getAllMemberList = async () => {
+  const getAllMemberList = async (event?, groupIdObj?) => {
+    let groupIdCopy = groupIdObj || groupId
     const res = await getAllGroupMemberList({
-      groupId,
+      groupId:groupIdCopy,
       seq: 0,
       resultArray: []
     });

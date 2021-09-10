@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-
 import { Input, Button, message } from "tea-component";
 import { SDKAPPID, SECRETKEY } from '../../constants';
 import timRenderInstance from '../../utils/timRenderInstance';

@@ -456,7 +456,7 @@ export const App = () => {
                 dispatch(updateCurrentSelectedConversation(newConversaionItem));
                 //修改群身份触发群聊详情更新
                 if(newConversaionItem?.conv_last_msg?.message_elem_array[0]?.elem_type == 5){
-                    ipcRenderer.send('onRedbawViews', 0)
+                    ipcRenderer.send('onRedbawViews', 0, newConversaionItem.conv_id)
                 }
             }
         }
