@@ -1,3 +1,4 @@
+import { orderBy } from 'lodash';
 import { REPLACE_CONV_LIST, SET_UNREAD_COUNT, UPDATE_CONVERSATIONLIST, UPDATE_CURRENT_SELECTED_CONVERSATION, MARK_CONV_LAST_MSG_IS_READED, CLEAR_CONVERSATION, DELETE_CONVERSATION } from '../actions/conversation';
 
 const initState = {
@@ -21,23 +22,30 @@ const getTime = (item) => {
 
 
 const sortByPindAndTime = (conversationList: Array<State.conversationItem>): Array<State.conversationItem> => {
-    return conversationList.sort((pre, next) => {
-        //conv_is_pinned 都为true
-        if (pre.conv_is_pinned && next.conv_is_pinned) {
-            return getTime(next.conv_last_msg) - getTime(pre.conv_last_msg);
-        }
-        //conv_is_pinned 都为false
-        else if (!pre.conv_is_pinned && !next.conv_is_pinned) {
-            if(next.conv_last_msg && pre.conv_last_msg){
-                return getTime(pre.conv_last_msg) < getTime(next.conv_last_msg) ? 1 : -1;
-            }
-            return 1;
-        }
-        //conv_is_pinned 不同时为true
-        // else {
-        //     return pre.conv_is_pinned > next.conv_is_pinned ? -1 : 1;
-        // }
-    })
+    const pinnedConversation = conversationList.filter(item => item.conv_is_pinned);
+    const normalConversation = conversationList.filter(item => !item.conv_is_pinned);
+    const sortPined = pinnedConversation.sort((pre, next) => getTime(next.conv_last_msg) - getTime(pre.conv_last_msg));
+    const sortNormal = normalConversation.sort((pre, next) => getTime(next.conv_last_msg) - getTime(pre.conv_last_msg));
+    return [...sortPined, ...sortNormal];
+
+
+    // return conversationList.sort((pre, next) => {
+    //     //conv_is_pinned 都为true
+    //     if (pre.conv_is_pinned && next.conv_is_pinned) {
+    //         return getTime(next.conv_last_msg) - getTime(pre.conv_last_msg);
+    //     }
+    //     //conv_is_pinned 都为false
+    //     else if (!pre.conv_is_pinned && !next.conv_is_pinned) {
+    //         if(next.conv_last_msg && pre.conv_last_msg) {
+    //             return getTime(pre.conv_last_msg) < getTime(next.conv_last_msg) ? 1 : -1;
+    //         }
+    //         return 1;
+    //     }
+    //     //conv_is_pinned 不同时为true
+    //     // else {
+    //     //     return pre.conv_is_pinned > next.conv_is_pinned ? -1 : 1;
+    //     // }
+    // })
 }
 const conversationReducer = (state = initState, action: { type: any; payload: any }) => {
     switch (action.type) {
@@ -49,8 +57,8 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
         case UPDATE_CONVERSATIONLIST: {
             // 会话按是否置顶、时间排序
             // eslint-disable-next-line no-case-declarations
-            const listCopy = [...state.conversationList]
-            for (let i = 0;i < action.payload.length;i++) {
+            const listCopy = [...state.conversationList];
+            for (let i = 0; i < action.payload.length; i++) {
                 const { conv_id } = action.payload[i];
                 const conv_index = listCopy.findIndex((item) => { return item.conv_id === conv_id })
                 if (conv_index > -1) {
@@ -85,7 +93,7 @@ const conversationReducer = (state = initState, action: { type: any; payload: an
         case REPLACE_CONV_LIST:
             return {
                 ...state,
-                conversationList: action.payload
+                conversationList: sortByPindAndTime(action.payload)
             }
 
         case MARK_CONV_LAST_MSG_IS_READED:

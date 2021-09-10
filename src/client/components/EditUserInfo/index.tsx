@@ -140,7 +140,7 @@ export const UserInfo: FC<UserInfo> = ({ visible, onChange, onClose, userInfo, o
       const response = await getConversionList();
       
       response.forEach(async (conversation, key) => {
-        if(conversation.conv_id === currentSelectedConversation.conv_id) {
+        if(conversation.conv_id === currentSelectedConversation?.conv_id) {
           const messageResponse = await getMsgList(conversation.conv_id, conversation.conv_type);
           const addTimeDividerResponse = addTimeDivider(messageResponse.reverse());
           const payload = {

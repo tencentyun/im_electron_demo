@@ -435,8 +435,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const forwardMessage = seletedMessage.map((item) => ({
       ...item,
       message_is_forward_message: true,
-    }));
-    console.warn("forwardMessage", forwardMessage);
+    })).sort((a,b)=>{return a.message_server_time - b.message_server_time});
     convItemGroup.forEach(async (convItem, k) => {
       if (isDivideSending) {
         forwardMessage.forEach(async (message) => {
