@@ -84,7 +84,7 @@ export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {
       initialValuesEqual={() => true}
       initialValues={{
         groupType: "0",
-        joinGroupMode: "2",
+        joinGroupMode: "1",
         outGroupInvitation: '2',
         groupMember:[],
         groupPression:"0",

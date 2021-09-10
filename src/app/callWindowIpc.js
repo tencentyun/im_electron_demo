@@ -33,6 +33,8 @@ class CallWindowIpc {
     createWindow() {
         this.callWindow = null;
         const { NODE_ENV, HUARUN_ENV } = process.env;
+        // const  NODE_ENV = 'development' , HUARUN_ENV = "test"
+        // const  NODE_ENV = 'production' , HUARUN_ENV = "prod"
         const isDev = NODE_ENV?.trim() === 'development';
         const callWindow = new BrowserWindow({
             height: 600,
@@ -74,6 +76,8 @@ class CallWindowIpc {
 
     addEventListiner() {
         const { NODE_ENV } = process.env;
+        // const  NODE_ENV = 'development' 
+        // const  NODE_ENV = 'production' 
         const isDev = NODE_ENV?.trim() === 'development';
         const screenSize = getSrceenSize();
         // 当作为接收方，接受电话后，更改窗口尺寸。

@@ -32,6 +32,8 @@ class ReminderWindowIpc {
     createWindow(){
         this.reminderWindow = null;
         const { NODE_ENV, HUARUN_ENV } = process.env;
+        // const  NODE_ENV = 'development' , HUARUN_ENV = "test"
+        // const  NODE_ENV = 'production' , HUARUN_ENV = "prod"
         const isDev = NODE_ENV?.trim() === 'development';
         const remindWindow = new BrowserWindow({
             height: 150,
