@@ -562,7 +562,6 @@ export const MessageInput = (props: Props): JSX.Element => {
                 face_elem_index:9999,
                 face_elem_buf: url
             }
-            debugger
             const { data: messageId,} = await timRenderInstance.TIMMsgSendMessageV2({
             conv_id:convId,
             conv_type:convType,
