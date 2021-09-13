@@ -63,7 +63,7 @@ const DebounceSelect = <
 const  fetchUserList =  async(username: string): Promise<UserValue[]> =>{
   console.log('fetching user', username);
   return new Promise((resolve) => {
-    filterGetStAffPrefix({ Prefix:username,Limit:100 },(filterLoda)=>{
+    filterGetStAffPrefix({ Match:username,Limit:100 },(filterLoda)=>{
         resolve(filterLoda.map((item) => ({
             label: `${item.Uname} - ${item.DepName == "" ? "" : item.DepName.match(/[^\/]+/)[0]}`,
             value: item.Uid,

@@ -195,8 +195,11 @@ export default function initListeners(callback: InitListenersCallback) {
     * > 只要用户处于登录状态，ImSDK内部会进行断网重连，用户无需关心。
     */
     timRenderInstance.TIMSetNetworkStatusListenerCallback({
-        callback: () => {
-
+        callback: (...args) => {
+            callback({
+                type: 'TIMSetNetworkStatusListenerCallback',
+                data: args
+            })
         }
     })
 

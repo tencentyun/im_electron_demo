@@ -43,8 +43,8 @@ export const deleteGroup = async (groupId: string): Promise<any> => {
 };
 
 //2021年8月24日09:57:46   zwc   申请入群
-export const joinGroup = async (groupId: string): Promise<any> => {
-  const { data } = await timRenderInstance.TIMGroupJoin({ groupId });
+export const joinGroup = async (groupId: string, helloMsg : Array<string>): Promise<any> => {
+  const { data } = await timRenderInstance.TIMGroupJoin({ groupId,helloMsg:helloMsg.join("&&&") });
   console.log("data", data);
   const { code, desc } = data;
   if (code === 0) {
@@ -69,7 +69,7 @@ export const getPendencyList = async (limited: number = 0, time:number = 0): Pro
 
 //2021年8月24日09:57:46   zwc   未决消息已读
 export const pendencyReaded = async (): Promise<any> => {
-  const { data } = await timRenderInstance.TIMGroupReportPendencyReaded({
+  let data = await timRenderInstance.TIMGroupReportPendencyReaded({
     timeStamp:parseInt(new Date().getTime() / 1000 + '')
   });
   console.log("data", data);

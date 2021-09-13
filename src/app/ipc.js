@@ -179,8 +179,9 @@ class IPC {
       !!fileDataJson.selectpath &&
         (settingModle = fileDataJson.selectpath + "\\");
       !!fileDataJson.screenshot && (screenModle = fileDataJson.screenshot);
-      !!fileDataJson.chatpath && (chatModle = fileDataJson.chatpath);
-      console.log();
+      !!fileDataJson.chatpath &&
+        fs.existsSync(fileDataJson.chatpath) &&
+        (chatModle = fileDataJson.chatpath);
     } catch (error) {}
     store.set("setting", settingModle);
     store.set("settingScreen", screenModle);

@@ -82,7 +82,8 @@ export const Message = (): JSX.Element => {
     const getData = async () => { 
         const response = await getConversionList();
         setLoadingStatus(false);
-        dispatch(replaceConversaionList(response))
+        dispatch(replaceConversaionList(response));
+        console.log('===========response', response);
         if (response.length) {
             if (currentSelectedConversation === null || currentSelectedConversation === undefined) {
                 dispatch(updateCurrentSelectedConversation(response[0]))
@@ -140,10 +141,6 @@ export const Message = (): JSX.Element => {
                 const currentSelectedConvId = currentSelectedConversation.conv_id;
                 const currentSelectedConvsation = conversationList.find(item => item.conv_id === currentSelectedConvId);
                 dispatch(updateCurrentSelectedConversation(currentSelectedConvsation));
-            }
-        }else{
-            if(currentSelectedConversation === null && conversationList.length > 0){
-                dispatch(updateCurrentSelectedConversation(conversationList[0]))
             }
         }
     },[conversationList])
@@ -311,7 +308,7 @@ export const Message = (): JSX.Element => {
             if (code === 0) {
                 // 删除会话后聊天框内容和qq一样转移成对话列表里的上一个或下一个人
                 const index = conversationList.findIndex(i => i.conv_id === conv_id)
-                if (conversationList.length > 1 && currentSelectedConversation.conv_id === conv_id) {
+                if (conversationList.length > 1 && currentSelectedConversation?.conv_id === conv_id) {
                     const fandIndex = index === conversationList.length - 1 ? index - 1 : index + 1
                     dispatch(updateCurrentSelectedConversation(conversationList[fandIndex]))
                 }
@@ -378,6 +375,7 @@ export const Message = (): JSX.Element => {
     if (isLoading) {
         return <Myloader />
     }
+    console.log('==========conversationList===========', conversationList);
     for (var i=0;i< conversationList.length;i++){
         if(conversationList[i].conv_id === localStorage.getItem("uid") && localStorage.getItem("myhead")){
             conversationList[i].conv_profile.user_profile_face_url = localStorage.getItem("myhead")
@@ -403,13 +401,13 @@ export const Message = (): JSX.Element => {
 
                 <div className="conversion-list">
                     {
-                        currentSelectedConversation === null ? <EmptyResult contentText="暂无会话" /> :  conversationList.map((item) => {
+                        conversationList.length === 0 ? <EmptyResult contentText="暂无会话" /> : conversationList.map((item) => {
                             const { conv_profile, conv_id, conv_last_msg, conv_unread_num,conv_type,conv_is_pinned, conv_group_at_info_array,conv_recv_opt } = item;
                             const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                             const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
                             return (
                                 conv_id ?
-                                <div ref={setRef(conv_id)} className={`conversion-list__item ${conv_id === currentSelectedConversation.conv_id ? 'is-active' : ''} ${conv_is_pinned ? 'is-pinned' : ''}`} key={conv_id} onClick={() => handleConvListClick(item)} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
+                                <div ref={setRef(conv_id)} className={`conversion-list__item ${conv_id === currentSelectedConversation?.conv_id ? 'is-active' : ''} ${conv_is_pinned ? 'is-pinned' : ''}`} key={conv_id} onClick={() => handleConvListClick(item)} onContextMenu={(e) => { handleContextMenuEvent(e, item) }}>
                                     <div className="conversion-list__item--profile">
                                         {
                                             conv_unread_num > 0 ? <div className="conversion-list__item--profile___unread">
@@ -422,7 +420,7 @@ export const Message = (): JSX.Element => {
                                         <div className="conversion-list__item--time-wrapper">
                                             <span className="conversion-list__item--nick-name">{nickName || conv_id}</span>
                                             {
-                                                conv_last_msg && <span className="conversion-list__item--format-time">{timeFormat(conv_last_msg.message_server_time * 1000, false)}</span>
+                                                conv_last_msg && <span className="conversion-list__item--format-time">{timeFormat((conv_last_msg.message_server_time === 0 ? conv_last_msg.message_client_time : conv_last_msg.message_server_time) * 1000, false)}</span>
                                             }
                                         </div>
                                         {
@@ -457,7 +455,7 @@ export const Message = (): JSX.Element => {
             <SearchMessageModal dialogRef={dialogRef} />
             <ModelInform dialogRef={groupListRef} callback={(data)=>setunreadNum(data)}></ModelInform>
             {
-                currentSelectedConversation && currentSelectedConversation.conv_id ? <MessageInfo {...currentSelectedConversation} /> : <div className="empty"><EmptyResult contentText="暂无历史消息" /></div>
+                currentSelectedConversation && currentSelectedConversation?.conv_id ? <MessageInfo {...currentSelectedConversation} /> : <div className="empty"><EmptyResult contentText="暂无历史消息" /></div>
             }
             {/* {
                 currentSelectedConversation && currentSelectedConversation.conv_type === 2 ? <GroupToolBar conversationInfo={currentSelectedConversation} /> : <></>

@@ -1,0 +1,81 @@
+.notification {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    padding-bottom: 0;
+    position: relative;
+    .notification__close{
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        img{
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+    }
+    &__title {
+        border-bottom: 1px solid #ccc;
+        display: inline-block;
+        vertical-align: middle;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        span{
+            font-size: 14px;
+        }
+        &--nick-name {
+            display: inline-block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #735FED;
+        }
+        &--text {
+            display: inline-block;
+            font-size: 14px;
+            margin-bottom: 10px;
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+        &--bule{
+            color:#735FED;
+        }
+    }
+    &__avatar {
+        width: 30px;
+        height: 30px;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+    &__btn {
+        margin-top: 15px;
+        align-self: flex-end;
+        display: flex;
+
+        &--refuse, &--apply  {
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: none;
+            cursor: pointer;
+        }
+
+        &--refuse {
+            background-image: url('../../../assets/icon/refuse.png');
+            background-size: 70%;
+            background-color: #f35f5f;
+        }
+
+        &--apply {
+            background-image: url('../../../assets/icon/accept.png');
+            background-size: 60%;
+            background-color: #0ac160;
+            margin-right: 20px;
+        }
+    }
+}
+
+

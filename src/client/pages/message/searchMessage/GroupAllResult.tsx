@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from "react-redux";
 import { EmptyResult } from './EmptyResult';
 import { ResultItem } from './ResultItem';
 import './contacter-result.scss';
@@ -6,11 +7,14 @@ import './contacter-result.scss';
 import { joinGroup } from '../../relationship/group/api'
 import { message } from 'tea-component'
 
+
+
+
 export const GroupAllResult = (props) => {
     const { result, onClose } = props;
-
-    const handleDirect = async (groupID) => {
-      await joinGroup(groupID)
+    const { nickName, userId } = useSelector((state: State.RootState) => state.userInfo);
+    const handleDirect = async (groupID, groupName,nickName, text) => {
+      await joinGroup(groupID,[groupName,nickName, text])
       message.success({
         content: "申请入群成功",
       })
@@ -36,7 +40,7 @@ export const GroupAllResult = (props) => {
                                         depName = { groupName }
                                         groupID = { groupID }
                                         addOptional = { add_optional }
-                                        submit={(data)=> { handleDirect(data) }}
+                                        submit={(groupID, groupName, text)=> { handleDirect(groupID, groupName, nickName, text) }}
                                     />
                                 )
                             }

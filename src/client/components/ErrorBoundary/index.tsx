@@ -35,7 +35,7 @@ class ErrorBoundary extends Component {
           errorText:  JSON.stringify({
               error: error,
               errorInfo: errorInfo.componentStack,
-              time: _formatDate(new Date().getTime(), 'yyyy-MM-dd hh:mm:ss')
+              time: _formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
           }),
           //@ts-ignore
           userId: this.props.userId
@@ -65,7 +65,7 @@ class ErrorBoundary extends Component {
                 </div>
                 <div className="error-boundary__content--text">
                     <h3>系统开了点小差!</h3>
-                    <h4>系统除了点错, 请重新登录</h4>
+                    <h4>系统出了点错, 日志已上报，请重新登录</h4>
                     <Button type="primary" loading={this.state.loading} disabled={this.state.loading} onClick={this.handleClick}>返回登录</Button>
                 </div>
                 

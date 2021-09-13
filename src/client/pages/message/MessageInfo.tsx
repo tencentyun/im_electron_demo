@@ -24,7 +24,7 @@ import { addTimeDivider } from "../../utils/addTimeDivider";
 import { generateRoomID } from "../../utils/tools";
 import { openCallWindow } from '../../utils/callWindowTools';
 
-
+import { GroupInfoCustemString } from '../../typings/interface'
 import { useDialogRef } from "../../utils/react-use/useDialog";
 import BraftEditor, { EditorState } from 'braft-editor'
 import {
@@ -36,6 +36,7 @@ import{
 } from '../../store/actions/section'
 import { GroupToolsDrawer } from "./GroupToolsDeawer";
 import { GroupToolBar } from "./GroupToolBar";
+import { ipcRenderer } from "electron";
 
 type Info = {
   faceUrl: string;
@@ -155,18 +156,56 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
   const { faceUrl, nickName } = getDisplayConvInfo();
   const dispatch = useDispatch();
 
+  // 修改外部添加
+  const { mygroupInfor } = useSelector(
+    (state: State.RootState) => state.section
+  );
+  const { currentSelectedConversation } = useSelector(
+    (state: State.RootState) => state.conversation
+  );
+  //2021年8月18日09:13:11  返回群资料自定义字段值  zwc
+  const returnsCustomValue = (type_key: string, groupCustomMayn: Array<GroupInfoCustemString>): string => {
+      if (groupCustomMayn && groupCustomMayn.length) {
+        return groupCustomMayn.filter(item => item.group_info_custom_string_info_key == type_key)[0].group_info_custom_string_info_value
+      } else {
+        return ""
+      }
+  }
   // 可拉人进群条件为 当前选中聊天类型为群且群类型不为直播群且当前群没有设置禁止加入
-  const canInviteMember = conv_type === 2 && [0, 1, 2].includes(groupType);
+  const [canInviteMember, setCanInviteMember] = useState(groupType == 1 || ([0, 1, 2].includes(groupType) && (returnsCustomValue('group_invitation', conv_profile?.group_detial_info_custom_info) == '1' || (returnsCustomValue('group_invitation', conv_profile?.group_detial_info_custom_info) == '0' && [2, 3].includes(mygroupInfor?.group_member_info_member_role)))))
+  // const canInviteMember = conv_type === 2 && [0, 1, 2].includes(groupType);
   const canCreateDiscussion = conv_type === 1
+  //是群组就执行权限
+  useEffect(()=>{
+    if(conv_type == 2){
+      UpdataGroupNumber((data)=>{
+        setCanInviteMember(groupType == 1 || ([0, 1, 2].includes(groupType) && (returnsCustomValue('group_invitation', currentSelectedConversation?.conv_profile?.group_detial_info_custom_info) == '1' || (returnsCustomValue('group_invitation', currentSelectedConversation?.conv_profile?.group_detial_info_custom_info) == '0' && [2, 3].includes(data?.group_member_info_member_role)))))
+      })
+    }
+  },[conv_type])
+   //自定义字段更新 刷新页面
+   useEffect(()=> {
+      setCanInviteMember(groupType == 1 || ([0, 1, 2].includes(groupType) && (returnsCustomValue('group_invitation', currentSelectedConversation?.conv_profile?.group_detial_info_custom_info) == '1' || (returnsCustomValue('group_invitation', currentSelectedConversation?.conv_profile?.group_detial_info_custom_info) == '0' && [2, 3].includes(mygroupInfor?.group_member_info_member_role)))))
+   }, [currentSelectedConversation?.conv_profile?.group_detial_info_custom_info]);
+
   // 设置群信息相关
-  const handleClick = async (id: string) => {
-   let  { group_get_memeber_info_list_result_info_array } = await   getGroupMemberList({
-      groupId:conv_id,
+  const UpdataGroupNumber = async (event?, groupId?)=> {
+    let  conv_id_copy = groupId || conv_id
+    if(Object.prototype.toString.call(event) == '[object Function]'){
+      conv_id_copy =  conv_id
+    }
+    let  { group_get_memeber_info_list_result_info_array } = await   getGroupMemberList({
+      groupId:conv_id_copy,
       userIds: userId.length ?  [userId] : [],
       nextSeq: 0,
     })
-    dispatch(changeToolsTab(id))
     dispatch(setMyGroupInformation(group_get_memeber_info_list_result_info_array[0]))
+     Object.prototype.toString.call(event) == "[object Function]"  &&  event(group_get_memeber_info_list_result_info_array[0])
+  }
+
+  const handleClick = async (id: string) => {
+    dispatch(changeToolsTab(id))
+    id == "setting"  && UpdataGroupNumber()
   };
 
   const handleShow = () => dispatch(changeDrawersVisible(true));
@@ -252,6 +291,12 @@ export const MessageInfo = (props: State.conversationItem): JSX.Element => {
     });
   }
 
+  useEffect(() => {
+    ipcRenderer.on('updataCluster', UpdataGroupNumber)
+    return function(){
+      ipcRenderer.off('updataCluster',UpdataGroupNumber)
+    }
+  },[])
 
   useEffect(() => {
     const { callType, convType } = callInfo

@@ -1,6 +1,7 @@
 import { DialogRef, useDialog } from "../../../utils/react-use/useDialog";
 import { Avatar } from "../../../components/avatar/avatar";
-import { Drawer, H3, Table, Input, Modal } from "tea-component";
+import { ipcRenderer } from "electron";
+import { Drawer, H3, Table, Input, Modal, Button, PopConfirm } from "tea-component";
 import { Spin } from 'antd';
 import { isWin } from "../../../utils/tools";
 import React, { useState, useEffect, useRef } from "react";
@@ -27,13 +28,14 @@ export type userTypeData = {
 export const GroupMemberListDrawer = (props: {
   onSuccess?: () => void;
   groupId?: string;
+  isGroupOwner?:boolean;
   popupContainer?: HTMLElement;
   dialogRef: DialogRef<GroupMemberListDrawerRecordsType>;
 }): JSX.Element => {
   let settime: any;
   const height = window.innerHeight - 27 - (isWin() ? 30 : 0);
-  const { dialogRef, popupContainer, groupId } = props;
- 
+   //是否是群主
+  const { dialogRef, popupContainer, groupId, isGroupOwner } = props;
   const [userGroupType, setUserGroupType] = useState([]);
   const [isShowInput, setIsShowInput] = useState("")
   const [input, setInput] = useState("");
@@ -101,12 +103,29 @@ export const GroupMemberListDrawer = (props: {
     console.log("更改成员群昵称", data)
   }
 
+    //解除群管理
+    const removingAdministrato = async (record, card) => {
+      let groupId = record.group_member_info_group_id,
+      userId = record.group_member_info_identifier
+      setTanleLoading(true)
+      await modifyGroupMemberInfo({
+        groupId,
+        userId,
+        modifyGroupMemberParams: {
+          group_modify_member_info_member_role: 1,
+        },
+      });
+      setGroupNickName(record, card, true);
+      ipcRenderer.send('onRedbawViews', 0 , groupId)
+      setTanleLoading(false)
+    }
+
   //更改后更新列表数据
-  const setGroupNickName = (data, card) => {
+  const setGroupNickName = (data, card, isRole = false) => {
     for (let i = 0; i < meberListFormate.length; i++) {
       let elment = meberListFormate[i]
       if (data.group_member_info_identifier == elment.group_member_info_identifier) {
-        elment.group_member_info_name_card = card
+        isRole ? elment.group_member_info_member_role = 1  : elment.group_member_info_name_card = card
         break;
       }
     }
@@ -145,6 +164,7 @@ export const GroupMemberListDrawer = (props: {
       },
     });
     setGroupNickName(record, card)
+    ipcRenderer.send('onRedbawViews', 0, groupId)
     setTanleLoading(false)
   };
 
@@ -207,7 +227,38 @@ export const GroupMemberListDrawer = (props: {
                     {record.group_member_info_name_card || "暂无"}
                   </span>
               }
-
+              {
+                isGroupOwner && record.group_member_info_member_role == 2 &&  <PopConfirm
+                title="确定要解除管理员身份？"
+                message="解除后，该成员将变为普通成员。"
+                footer={close => (
+                  <>
+                    <Button
+                      type="link"
+                      onClick={() => {
+                        close();
+                        //解除管理员  2021年8月20日14:15:27   zwc
+                        removingAdministrato(record,record.group_member_info_name_card)
+                      }}
+                    >
+                      解除
+            </Button>
+                    <Button
+                      type="text"
+                      onClick={() => {
+                        close();
+                        console.log("已取消");
+                      }}
+                    >
+                      取消
+            </Button>
+                  </>
+                )}
+                placement="top-start"
+              >
+                <Button icon="not" title="解除管理员" />
+              </PopConfirm>
+              }
             </div>
             {shouldShowTitle && (
               <span className="member-list-drawer--item__owner">{isOwner ? '群主' : '管理员'}</span>

@@ -29,9 +29,6 @@ import {
     deleteConversion
 } from "./store/actions/conversation";
 import {
-    initGroupInfor
-} from "./store/actions/section";
-import {
     addProfileForConversition,
     getConversionList,
     TIMConvDelete,
@@ -45,6 +42,7 @@ import {
 } from "./store/actions/message";
 import { setIsLogInAction, userLogout } from "./store/actions/login";
 import { openCallWindow, closeCallWindow, remoteUserExit, remoteUserJoin, acceptCallListiner, refuseCallListiner, callWindowCloseListiner, cancelCallInvite, updateInviteList } from "./utils/callWindowTools";
+import { openReminderWindow } from './utils/reminderWindoTools'
 import { updateCallingStatus } from "./store/actions/ui";
 // import { SERVERr_ADDRESS_IP, SERVERr_ADDRESS_PORT } from "./constants";
 import { ipcRenderer } from "electron";
@@ -54,6 +52,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 // 引入 electron-store
 import eleStore from "electron-store";
 const elestore = new eleStore();
+import { message } from "tea-component";
 // eslint-disable-next-line import/no-unresolved
 let isInited = false;
 let joinedUserList = [];
@@ -210,6 +209,9 @@ export const App = () => {
                             case "TIMOnTimeout":
                                 _onTimeout(data)
                                 break;
+                            case "TIMSetNetworkStatusListenerCallback":
+                                _networkChange(data)
+                                break;
                         }
                     });
                 }
@@ -218,11 +220,43 @@ export const App = () => {
     };
     
     let showApp = true;
+    const _networkChange = (data)=>{
+        const [[netStatus]] = data;
+        switch(netStatus){
+            case 0:
+                break;
+            case 1:
+                message.error({
+                    content: "连接中断，正在重连，请稍候"
+                })
+                break;
+            case 2:
+                break;
+            case 3:
+                message.error({
+                    content: "连接失败，请检查网络"
+                })
+                break;
+        }
+    }
     const handleNotify = (messages) => {
         const msgBother = window.localStorage.getItem('msgBother') || false
         const msgBother_close = window.localStorage.getItem('msgBother_close') || false
         console.log(showApp, '[[[[[[[[[[[[[[[', msgBother)
         console.log(messages)
+        //申请入群提示
+        if(messages[0].message_elem_array[0].elem_type == 8 && messages[0].message_elem_array[0].group_report_elem_report_type == 1 && !msgBother_close){
+            let {group_report_elem_group_id,group_report_elem_group_name,...parmss} = messages[0].message_elem_array[0]
+            openReminderWindow({
+                group_report_elem_group_id,
+                group_report_elem_group_name,
+                user_profile_identifier:parmss.group_report_elem_op_user_info.user_profile_identifier,
+                user_profile_nick_name:parmss.group_report_elem_op_user_info.user_profile_nick_name
+            })
+            //刷新群未决消息
+            ipcRenderer.send('onRedbawViews', 2)
+            return
+        }
         // 客户端没有展示在最顶层或者设置了消息提示免打扰，就不接收消息通知
         if (showApp || msgBother == 'false' || msgBother_close == 'true') {
             return;
@@ -412,7 +446,6 @@ export const App = () => {
     
     let initNumber = 0
     const _handleGroupInfoModify = async (data) => {
-        debugger
         const response = await getConversionList();
         dispatch(updateConversationList(response));
         if (response?.length) {
@@ -422,7 +455,9 @@ export const App = () => {
             if (newConversaionItem) {
                 dispatch(updateCurrentSelectedConversation(newConversaionItem));
                 //修改群身份触发群聊详情更新
-                newConversaionItem?.conv_last_msg?.message_elem_array[0]?.elem_type == 5 &&  dispatch(initGroupInfor(initNumber++))
+                if(newConversaionItem?.conv_last_msg?.message_elem_array[0]?.elem_type == 5){
+                    ipcRenderer.send('onRedbawViews', 0, newConversaionItem.conv_id)
+                }
             }
         }
         console.log('======data=======', data);

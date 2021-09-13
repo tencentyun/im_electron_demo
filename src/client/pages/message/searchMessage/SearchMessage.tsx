@@ -25,7 +25,7 @@ export const SearchMessage = (props) => {
     const searchContact = (inputValue):any => {
        return new Promise<any>((resolve) => {
             getstAffPrefix({
-                Prefix: inputValue,
+                Match: inputValue,
                 Limit: 100
             }).then(data => {
                 if(data && data.data && data.data.StaffInfoList){

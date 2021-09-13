@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { ipcRenderer } from "electron";
 import { Modal, Button } from 'tea-component';
 import { useDialog } from "../../utils/react-use/useDialog";
 import { EmptyResult } from '../../pages/message/searchMessage/EmptyResult';
@@ -41,6 +42,7 @@ export const ModelInform = (props) => {
     const [visible, setShowState] = useDialog(dialogRef, {});
     const [pendency, setPendency] = useState<any>([])
     const onClose = () => setShowState(false);
+    console.log("penddata_______", pendency)
     const procePend = async (data, pend: boolean) => {
         data.group_pendency_key = ""
         data.group_pendency_authentication = ""
@@ -55,11 +57,16 @@ export const ModelInform = (props) => {
     }   
     useEffect(() => {
         pendencyList();
+        ipcRenderer.on('updataGroupUnsettled', pendencyList)
+        return function(){
+          ipcRenderer.off('updataGroupUnsettled',pendencyList)
+        }
     },[])
 
     useEffect(() => {
         visible && function (){ 
-            pendencyReaded();
+            //有崩溃现象，开发环境可开启
+            // pendencyReaded();
             pendencyList();
         }()
     }, [visible])
@@ -79,13 +86,14 @@ export const ModelInform = (props) => {
                     pendency.length ? <div className='pendency-main'>
                         {
                             pendency.map(item => {
+                                let group_pendency_apply_invite_msg = item.group_pendency_apply_invite_msg?.split('&&&')
                                 return (<div className='pendency-item'>
                                     <div className='pendency-item__item'>
                                         {formatDate(item.group_pendency_add_time)}
                                     </div>
-                                    请求者<span className='pendency-item__span'>{item.group_pendency_form_identifier}</span>{TIMGroupPendencyType[item.group_pendency_pendency_type]}<span className='pendency-item__span'>{item.group_pendency_group_id}</span>群组
+                                    请求者<span className='pendency-item__span'>{group_pendency_apply_invite_msg[1] || item.group_pendency_form_identifier }</span>{TIMGroupPendencyType[item.group_pendency_pendency_type]}<span className='pendency-item__span'>{group_pendency_apply_invite_msg[0]?.trim() || item.group_pendency_group_id }</span>群组
                                     <div style={{ marginBottom: '10px' }}>
-                                        加入原因：{item.group_pendency_apply_invite_msg.trim() || "暂无"}
+                                        加入原因：{group_pendency_apply_invite_msg[2] || "暂无"}
                                     </div>
                                     <div>
                                         <Tag color={item.group_pendency_handled == 0 ? "#f50" : '#87d068'}>{TIMGroupPendencyHandle[item.group_pendency_handled]}</Tag>

@@ -435,8 +435,7 @@ export const MessageView = (props: Props): JSX.Element => {
     const forwardMessage = seletedMessage.map((item) => ({
       ...item,
       message_is_forward_message: true,
-    }));
-    console.warn("forwardMessage", forwardMessage);
+    })).sort((a,b)=>{return Number(a.message_seq) - Number(b.message_seq)});
     convItemGroup.forEach(async (convItem, k) => {
       if (isDivideSending) {
         forwardMessage.forEach(async (message) => {
@@ -978,7 +977,7 @@ export const MessageView = (props: Props): JSX.Element => {
                     ) : (
                       <i className="message-view__item--icon-normal"></i>
                     ))}
-                  <div className="message-view__item--avatar face-url">
+                  <div className={`message-view__item--avatar face-url ${message_elem_array[0]?.custom_elem_desc ? 'message-view__item--hidden-over' : ''}`}>
                     <Bubble
                       placement={"right-start"}
                       trigger="click"
@@ -1022,8 +1021,8 @@ export const MessageView = (props: Props): JSX.Element => {
                       />
                     </Bubble>
                   </div>
-                  <div className="message-view__item--element">
-                    <div className="message-view__item--element-header">
+                  <div className={`message-view__item--elemen ${message_elem_array[0]?.custom_elem_desc ? 'message-view__item--margin-auto' : ''}`}>
+                    <div className={`message-view__item--element-header ${message_elem_array[0]?.custom_elem_desc ? 'message-view__item--hidden-over' : ''}`}>
                       {
                         //群里会话列表添加名称  zwc
                         item.message_conv_type === 2 && (

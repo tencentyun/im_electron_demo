@@ -73,7 +73,7 @@ export const GroupProfileDrawer = (props: {
   const { mygroupInfor } = useSelector(
     (state: State.RootState) => state.section
   );
-  const isOwen = [2, 3].includes(mygroupInfor.group_member_info_member_role)
+  const isOwen = [2, 3].includes(mygroupInfor?.group_member_info_member_role)
   const _groupInforCustom = (type_key) => {
     return group_detial_info_custom_info?.filter(item => item.group_info_custom_string_info_key == type_key)[0]
   }
@@ -110,16 +110,19 @@ export const GroupProfileDrawer = (props: {
             group_info_custom_string_info_value: groupPression
           }, {
             group_info_custom_string_info_key: "group_invitation",
-            group_info_custom_string_info_value: (joinGroupMode == 0 ? outGroupInvitation  :  groupInvitation)
+            group_info_custom_string_info_value: groupInvitation
+            // group_info_custom_string_info_value: (joinGroupMode == 0 ? outGroupInvitation  :  groupInvitation)
           }]
         }),
-        ...(_retrunCustomField("group_invitation") != (joinGroupMode == 0 ? outGroupInvitation  : groupInvitation) && {
+        // ...(_retrunCustomField("group_invitation") != (joinGroupMode == 0 ? outGroupInvitation  : groupInvitation) && {
+          ...(_retrunCustomField("group_invitation") != groupInvitation && {
           group_modify_info_param_custom_info: [{
             group_info_custom_string_info_key: "group_permission",
             group_info_custom_string_info_value: groupPression
           }, {
             group_info_custom_string_info_key: "group_invitation",
-            group_info_custom_string_info_value: (joinGroupMode == 0 ? outGroupInvitation  :  groupInvitation)
+            group_info_custom_string_info_value: groupInvitation
+            // group_info_custom_string_info_value: (joinGroupMode == 0 ? outGroupInvitation  :  groupInvitation)
           }]
         }),
         ...(group_detial_info_is_shutup_all != muteFlag && { group_modify_info_param_is_shutup_all: muteFlag })
@@ -277,29 +280,29 @@ export const GroupProfileDrawer = (props: {
                         )}
                       </Field>
                       {
-                        joinGroupMode == 0 ? <Field
-                          name="outGroupInvitation"
-                          disabled={submitting}
-                          validateOnBlur
-                          validateFields={[]}
-                          validate={(value) => validateOldValue(value, "邀请入群")}
-                        >
-                          {({ input, meta }) => (
-                            <Form.Item
-                              required
-                              label="邀请入群"
-                              status={getStatus(meta, validating)}
-                              message={
-                                getStatus(meta, validating) === "error" && meta.error
-                              }
-                            >
-                              <RadioGroup {...input}>
-                                <Radio name="2">不可邀请</Radio>
-                              </RadioGroup>
-                            </Form.Item>
-                          )
-                          }
-                        </Field> :
+                        // joinGroupMode == 0 ? <Field
+                        //   name="outGroupInvitation"
+                        //   disabled={submitting}
+                        //   validateOnBlur
+                        //   validateFields={[]}
+                        //   validate={(value) => validateOldValue(value, "邀请入群")}
+                        // >
+                        //   {({ input, meta }) => (
+                        //     <Form.Item
+                        //       required
+                        //       label="邀请入群"
+                        //       status={getStatus(meta, validating)}
+                        //       message={
+                        //         getStatus(meta, validating) === "error" && meta.error
+                        //       }
+                        //     >
+                        //       <RadioGroup {...input}>
+                        //         <Radio name="2">不可邀请</Radio>
+                        //       </RadioGroup>
+                        //     </Form.Item>
+                        //   )
+                        //   }
+                        // </Field> :
                           <Field
                             name="groupInvitation"
                             disabled={submitting}

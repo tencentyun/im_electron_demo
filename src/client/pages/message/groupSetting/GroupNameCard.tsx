@@ -30,7 +30,7 @@ export const GroupNameCard = (props: {
     });
 
     //刷新群设置成员信息
-    ipcRenderer.send('onRedbawViews', 0)
+    ipcRenderer.send('onRedbawViews', 0, groupId)
   };
 
   useEffect(() => {
