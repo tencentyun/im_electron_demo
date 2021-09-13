@@ -45,9 +45,9 @@
   &--table {
     & .tea-table__body {
       border: 0;
-      overflow-y: hidden !important;
+      // overflow-y: hidden !important;
       overflow-x: hidden;
-
+      height: 75vh !important;
       &:hover {
         &::-webkit-scrollbar {
           width: 8px;
