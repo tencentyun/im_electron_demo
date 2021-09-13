@@ -38,7 +38,8 @@ export const GroupSetting = (props: {
         // 群组信息
         getGroupInfoList([groupId])
       ])
-  }, []);
+  }, [canEdit]);
+
   const memberList = value ? value[0]?.group_get_memeber_info_list_result_info_array || [] : [];
   const currentUserSetting: any = memberList?.[0] || {};
   const groupDetail: Partial<State.conversationItem['conv_profile']> = value ? value[1][0] || conversationInfo.conv_profile || {} : {};
