@@ -19,7 +19,7 @@ const MergeElem = (props: any): JSX.Element => {
     const showMergeDitail = async () => {
         if (props.merge_elem_message_array) {
             try{
-                setMergedMsg(props.merge_elem_message_array.sort((a,b)=>{return b.message_server_time-a.message_server_time}));
+                setMergedMsg(props.merge_elem_message_array.sort((a,b)=>{return Number(a.message_seq)-Number(b.message_seq)}));
             }catch(err){
                 
             }
@@ -33,7 +33,7 @@ const MergeElem = (props: any): JSX.Element => {
             console.log(showModalStatus)
             try{
                 //@ts-ignore
-                setMergedMsg(showModalStatus.showArray.sort((a,b)=>{return b.message_server_time-a.message_server_time}));
+                setMergedMsg(showModalStatus.showArray.sort((a,b)=>{return Number(a.message_seq)-Number(b.message_seq)}));
             }catch(err){
 
             }
@@ -53,7 +53,8 @@ const MergeElem = (props: any): JSX.Element => {
     useEffect(() => {
         console.log(showModalStatus)
         if(showModalStatus.isShow == 1){
-            setMergedMsg(showModalStatus.showArray)
+            //@ts-ignore
+            setMergedMsg(showModalStatus.showArray.sort((a,b)=>{return Number(a.message_seq)-Number(b.message_seq)}))
             console.log(mergedMsg)
         }
       }, [showModal])
