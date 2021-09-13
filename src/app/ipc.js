@@ -182,6 +182,7 @@ class IPC {
       !!fileDataJson.chatpath &&
         fs.existsSync(fileDataJson.chatpath) &&
         (chatModle = fileDataJson.chatpath);
+        
     } catch (error) {}
     store.set("setting", settingModle);
     store.set("settingScreen", screenModle);
