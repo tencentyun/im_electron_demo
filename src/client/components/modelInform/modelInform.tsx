@@ -66,7 +66,7 @@ export const ModelInform = (props) => {
     useEffect(() => {
         visible && function (){ 
             //有崩溃现象，开发环境可开启
-            pendencyReaded();
+            // pendencyReaded();
             pendencyList();
         }()
     }, [visible])
