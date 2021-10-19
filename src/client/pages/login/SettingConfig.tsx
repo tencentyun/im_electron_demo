@@ -13,6 +13,7 @@ import {
 
 import { updateSettingConfig } from '../../store/actions/config';
 import { DEFAULT_SETTING_CONFIG } from '../../constants';
+import { isWin } from '../../utils/tools';
 
 // eslint-disable-next-line
 import { Form as FinalForm, Field } from "react-final-form";
@@ -83,9 +84,11 @@ export const SettingConfig = () => {
 
     const handleOpenSettingModal = () => setShowModal(true);
 
+    const topStyle = isWin ? '35px' : '10px';
+
     return (
         <div>
-            <Icon style={{position: 'fixed', right: '10px', top: '10px', zIndex: 10000}} type="setting" size="l" onClick={handleOpenSettingModal} />
+            <Icon style={{position: 'fixed', right: '10px', top: topStyle , zIndex: 10000}} type="setting" size="l" onClick={handleOpenSettingModal} />
             <Modal onClose={()=>{setShowModal(false)}}  visible={showModal} >
                 <Modal.Body>
                     <div className="example-stage">
