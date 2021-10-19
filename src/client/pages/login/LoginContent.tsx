@@ -27,6 +27,7 @@ export const LoginContent = (): JSX.Element => {
     const autoLoginFromStore = store.get('autoLogin');
     const [smsLoginUserId, setsmsLoginUserId] = useState(store.get('sms_relogin_token') ? JSON.parse(store.get('sms_relogin_token') as any).userId : "")
     const [smsLoginToken, setsmsLoginToken] = useState(store.get('sms_relogin_token') ? JSON.parse(store.get('sms_relogin_token') as any).token : "")
+    const [smsLoginTel, setsmsLoginTel] = useState(store.get('sms_relogin_token') ? JSON.parse(store.get('sms_relogin_token') as any).tel : "")
     const dispatch = useDispatch();
     const history = useHistory();
     const { userId, userSig, sdkappId } = useSettingConfig();
@@ -80,7 +81,7 @@ export const LoginContent = (): JSX.Element => {
         const { errorCode, errorMessage, data } = response.data;
 
         if (errorCode === 0) {
-            const { userId, sdkAppId, sdkUserSig, token } = data;
+            const { userId, sdkAppId, sdkUserSig, token, phone:tel } = data;
 
             dispatch(updateSettingConfig(
                 {
@@ -92,7 +93,7 @@ export const LoginContent = (): JSX.Element => {
             // 主进程重新初始化IM
             ipcRenderer.invoke("re-create-main-instance", sdkAppId).then(() => {
                 // 登录到im
-                smsLoginIM(userId, sdkUserSig, sdkAppId, token)
+                smsLoginIM(userId, sdkUserSig, sdkAppId, token,tel)
             })
         } else {
             message.error({
@@ -108,7 +109,7 @@ export const LoginContent = (): JSX.Element => {
         });
         const { errorCode, errorMessage, data } = response.data;
         if (errorCode === 0) {
-            const { userId, sdkAppId, sdkUserSig, token } = data;
+            const { userId, sdkAppId, sdkUserSig, token, phone:tel } = data;
             dispatch(updateSettingConfig(
                 {
                     sdkappId: sdkAppId,
@@ -119,7 +120,7 @@ export const LoginContent = (): JSX.Element => {
             // 主进程重新初始化IM
             ipcRenderer.invoke("re-create-main-instance", sdkAppId).then(() => {
                 // 登录到im
-                smsLoginIM(userId, sdkUserSig, sdkAppId, token)
+                smsLoginIM(userId, sdkUserSig, sdkAppId, token,tel)
             })
         } else {
             message.error({
@@ -128,7 +129,7 @@ export const LoginContent = (): JSX.Element => {
         }
 
     }
-    const smsLoginIM = async (userId, sdkUserSig, sdkAppId, token) => {
+    const smsLoginIM = async (userId, sdkUserSig, sdkAppId, token,tel) => {
         const params: loginParam = {
             userID: userId,
             userSig: sdkUserSig
@@ -147,7 +148,8 @@ export const LoginContent = (): JSX.Element => {
             store.set('autoLogin', isAutoLogin);
             store.set('sms_relogin_token', JSON.stringify({
                 token,
-                userId
+                userId,
+                tel
             }));
             dispatch(setIsLogInAction(true));
             dispatch(setUserInfo({
@@ -200,11 +202,7 @@ export const LoginContent = (): JSX.Element => {
     const startCountDown = () => {
         const newCount = count - 1;
         const timmer = setTimeout(() => {
-            if (newCount === 0) {
-                setcount(60)
-                setsessionId("")
-            }
-            console.log(newCount)
+            
             setcount(newCount)
             clearTimeout(timmer)
         }, 1000)
@@ -212,6 +210,10 @@ export const LoginContent = (): JSX.Element => {
     useEffect(() => {
         if (sessionId && count < 60) {
             startCountDown()
+        }
+        if(count === 0){
+            setcount(60)
+            setsessionId("")
         }
     }, [count])
     const captchaCallback = async (data) => {
@@ -269,6 +271,7 @@ export const LoginContent = (): JSX.Element => {
         store.delete("sms_relogin_token")
         setsmsLoginUserId("")
         setsmsLoginToken("")
+        setsmsLoginTel("")
     }
     useEffect(() => {
         window.requestIdleCallback(() => {
@@ -287,7 +290,7 @@ export const LoginContent = (): JSX.Element => {
                     {
                         smsLoginToken && smsLoginUserId ? (
                             <div className="captche-row">
-                                <Input className="login--input" value={smsLoginUserId} disabled={true} key="relogin" />
+                                <Input className="login--input" value={`${smsLoginTel?smsLoginTel:smsLoginUserId}`} disabled={true} key="relogin" />
                                 <Button className="cap-btn" type="weak" onClick={resetConfig}>重置</Button>
                             </div>
                         ) : (
