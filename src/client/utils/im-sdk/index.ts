@@ -267,7 +267,7 @@ const _onInvited = (data) => {
         const { data: { code, json_param } } = data;
         if (code === 0) {
             const inviteListWithInfo = JSON.parse(json_param);
-            const inviterInfo = inviteListWithInfo.filter(item => item.user_profile_identifier === inviter);
+            const inviterInfo = inviteListWithInfo.find(item => item.user_profile_identifier === inviter);
             dispatch(updateCallingStatus({
                 callingId: groupID ? groupID : inviter, //
                 callingType: groupID ? 2 : 1,
