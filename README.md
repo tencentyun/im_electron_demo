@@ -24,6 +24,7 @@ npm run build:windows
 ## 常见问题
 - 1: 安装开发环境问题，`gypgyp ERR!ERR`, 参考[](https://stackoverflow.com/questions/57879150/how-can-i-solve-error-gypgyp-errerr-find-vsfind-vs-msvs-version-not-set-from-c).
 - 2: Mac 端执行`npm run start` 会出现白屏，原因是渲染进程的代码还没有build完成，主进程打开的3000端口为空页面，当渲染进程代码build 完成重新刷新窗口后即可解决问题。或者执行`cd src/client && npm run dev:react`, `npm run dev:electron`, 分开启动渲染进程和主进程。
+- 3: Macos 签名公证参考[](https://xingzx.org/blog/electron-builder-macos)
 
 ## 文档链接
 - [IM Electron SDK 文档](https://comm.qq.com/toc-electron-sdk-doc/index.html)

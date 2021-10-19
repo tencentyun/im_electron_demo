@@ -27,8 +27,10 @@
     ],
     "appId": "im-electron-demo",
     "mac": {
+      "gatekeeperAssess": false,
       "hardenedRuntime": true,
       "entitlements": "./signing/entitlements.mac.plist",
+      "entitlementsInherit": "./signing/entitlements.mac.plist",
       "extendInfo": {
            "NSMicrophoneUsageDescription": "Please give us access to your microphone",
            "NSCameraUsageDescription": "Allow your conversational partners to see you in a Grape Call. You can turn off your video anytime during a call."
@@ -57,9 +59,6 @@
           ]
         }
       ]
-    },
-    "dmg": {
-      "sign": false
     },
     "win": {
       "icon": "./icon/im_electron_logo.png",
