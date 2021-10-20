@@ -165,6 +165,8 @@ export const LoginContent = (): JSX.Element => {
             setsessionId("")
             history.replace('/home/message');
         }
+        // @ts-ignore
+        window.aegis.report("tim_login_sms")
     }
     const handleLoginClick = async () => {
         const params: loginParam = {
@@ -197,6 +199,8 @@ export const LoginContent = (): JSX.Element => {
             dispatch(changeFunctionTab('message'));
             history.replace('/home/message');
         }
+        // @ts-ignore
+        window.aegis.report("tim_login_secret")
     }
 
     const startCountDown = () => {

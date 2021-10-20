@@ -36,6 +36,8 @@ export const App = () => {
     useEffect(() => {
         callWindowLisitiner();
         ipcRenderer.on('updateHistoryMessage', updateHistoryMessageToStore)
+        // @ts-ignore
+        window.aegis.report("init")
     }, []);
     
     useEffect(() => {
