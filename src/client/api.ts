@@ -898,6 +898,7 @@ export const userVerifyByPicture = (data) => {
 }
 
 export const loginSms = (data)=>{
+  data.tag = 'im';
   return axios({
     url: `${APASSSERVERBASE}/auth_users/user_login_code`,
     method:'post',
