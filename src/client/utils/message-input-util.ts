@@ -227,3 +227,17 @@ export const localFileToBase64 = (url) => {
     })
   });
 }
+
+export const getFileByPath = async (filePath) => {
+  const size = fs.statSync(filePath).size;
+  const name = path.parse(filePath).base;
+  const type = name.split('.')[1];
+  const fileContent = await fs.readFileSync(filePath);
+  return {
+    path: filePath,
+    size,
+    name,
+    type,
+    fileContent
+  }
+}

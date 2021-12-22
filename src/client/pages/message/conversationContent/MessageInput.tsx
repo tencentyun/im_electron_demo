@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message } from 'tea-component';
-import {  sendMsg, getGroupMemberList } from '../../../api'
+import {  sendMsg, getGroupMemberList, setConvDraft, deleteConvDraft } from '../../../api'
 import { updateMessages } from '../../../store/actions/message'
 import { AtPopup } from '../components/atPopup'
 import { EmojiPopup } from '../components/emojiPopup'
@@ -14,13 +14,18 @@ import '../scss/message-input.scss';
 import { ipcRenderer, remote } from 'electron';
 import { SUPPORT_IMAGE_TYPE } from '../../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
-import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer, generateTemplateElement } from '../../../utils/message-input-util';
+import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer, generateTemplateElement, getFileByPath } from '../../../utils/message-input-util';
 import { SUPPORT_VIDEO_TYPE,getVideoInfo, selectImageMessage, selectFileMessage, selectVideoMessage } from '../../../utils/tools';
   
 type Props = {
     convId: string,
     convType: number,
     isShutUpAll: boolean,
+    draftMsg: {
+        draft_edit_time : number,
+        draft_msg : State.message,
+        draft_user_define : String
+    },
     handleOpenCallWindow: (callType: string,convType:number,windowType:string) => void;
 }
 
@@ -39,7 +44,15 @@ const differenceBetweenTwoString = (str1, str2) => {
     return difference.join("");
 }
 
+function usePrevious<T>(value): T {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+}
 
+let shouldInsertDraftMsg = false;
 
 const FEATURE_LIST_GROUP = [{
     id: 'face',
@@ -78,8 +91,10 @@ const FEATURE_LIST_C2C = [{
 const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
+
+let editorStateCatch;
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType, isShutUpAll, handleOpenCallWindow } = props;
+    const { convId, convType, isShutUpAll, handleOpenCallWindow, draftMsg } = props;
     const [ isDraging, setDraging] = useState(false);
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ shouldShowCallMenu, setShowCallMenu] = useState(false);
@@ -93,6 +108,7 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ isZHCNAndFirstPopup, setIsZHCNAndFirstPopup]  = useState(false);
     const [isAnalysizeVideo, setAnalysizeVideoInfoStatus ] = useState(false);
     const [ groupSenderProfile, setGroupSenderProfile ] = useState();
+    editorStateCatch = editorState;
 
     const { userId, signature, nickName, faceUrl, role, gender, addPermission } = useSelector((state: State.RootState) => state.userInfo);
     const userProfile = {
@@ -123,7 +139,6 @@ export const MessageInput = (props: Props): JSX.Element => {
 
             const sendMsgSuccessCallback = ([res, userData]) => {
                 const { code, json_params, desc } = res;
-
                 if (code === 0) {                
                     dispatch(updateMessages({
                         convId,
@@ -142,6 +157,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                             messageElementArray: [v],
                             userId,
                             messageAtArray: atList,
+                            cloudCustomData: "fffffff",
                             callback: sendMsgSuccessCallback
                         });
                         const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v, groupSenderProfile) as State.message;
@@ -197,7 +213,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             const fileSize = file.size;
             const type = file.type;
             const size = file.size;
-            console.log('file',file)
             if(size === 0){
                 message.error({content: "文件大小异常"})
                 return
@@ -210,7 +225,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 if(fileSize > 100 * 1024 * 1024) return message.error({content: "video size can not exceed 100m"})
                 getVideoInfo(file.path)
                 setAnalysizeVideoInfoStatus(true);
-                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
+                setEditorState( preEditorState =>  ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
             } else {
                 if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
                 setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
@@ -467,8 +482,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     useEffect(() => {
         // setGroupSenderProfile(undefined);
         // convType === 2 && getGroupSenderProfile();
-        setEditorState(ContentUtils.clear(editorState))
         setAnalysizeVideoInfoStatus(false);
+        shouldInsertDraftMsg = true;
         const listener = (event, params) => {
             const { triggerType, data } = params;
             switch(triggerType) {
@@ -490,13 +505,62 @@ export const MessageInput = (props: Props): JSX.Element => {
             console.error('==========main process error===========', data);
         }
 
-        ipcRenderer.on('main-process-error', errorConsole)
-        ipcRenderer.on("GET_FILE_INFO_CALLBACK", listener)
+        ipcRenderer.on('main-process-error', errorConsole);
+        ipcRenderer.on("GET_FILE_INFO_CALLBACK", listener);
         return () => {
+            const rawData = editorStateCatch?.toRAW();
+            if(rawData) {
+                const messageElementArray = getMessageElemArray(rawData, videoInfos);
+                if(messageElementArray.length !== 0) {
+                    setConvDraft({
+                        convId,
+                        convType,
+                        draftParam: {
+                            "draft_edit_time" : new Date().getSeconds(),
+                            "draft_msg" : {
+                                "message_elem_array" : messageElementArray
+                            },
+                            "draft_user_define" : "this is userdefine"
+                        }
+                    });
+                }
+                setEditorState(ContentUtils.clear(editorState));
+            }
             ipcRenderer.off("GET_FILE_INFO_CALLBACK", listener)
             ipcRenderer.off('main-process-error', errorConsole)
         }
-    }, [convId, convType])
+    }, [convId, convType]);
+
+    useEffect(() => {
+        const insertDraftMsg = async () => {
+            const { draft_msg } = draftMsg;
+            const messageElementArray = draft_msg.message_elem_array;
+            for(let i = 0; i < messageElementArray.length; i ++) {
+                const messageItem = messageElementArray[i];
+                switch(messageItem.elem_type) {
+                    // 文本消息
+                    case 0:
+                        setEditorState(prevEditorState => ContentUtils.insertText(prevEditorState, messageItem.text_elem_content));
+                        break;
+                    default:
+                        const filePath = messageItem.video_elem_video_path || messageItem.file_elem_file_path || messageItem.image_elem_orig_path;
+                        const file = await getFileByPath(filePath);
+                        await setFile(file as any);
+                        break;
+                }
+            }
+        };
+
+        const elemArray = getMessageElemArray(editorState.toRAW(), videoInfos);
+        if(elemArray.length == 0 && shouldInsertDraftMsg) {
+            draftMsg && insertDraftMsg();
+            draftMsg && deleteConvDraft({
+                convId,
+                convType
+            });
+        }
+        shouldInsertDraftMsg = false;
+    }, [editorState]);
 
     const shutUpStyle = isShutUpAll ? 'disabled-style' : '';
     const dragEnterStyle = isDraging ? 'draging-style' : '';

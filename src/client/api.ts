@@ -9,7 +9,8 @@ type SendMsgParams<T> = {
   userId: string;
   messageAtArray?: string[];
   message?: State.message,
-  callback?: Function
+  callback?: Function,
+  cloudCustomData?: String
 };
 
 export type TextMsg = {
@@ -301,6 +302,7 @@ export const sendMsg = async ({
   userData,
   messageAtArray,
   callback,
+  cloudCustomData,
 }: SendMsgParams<
   TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg | MergeMsg | CustomMsg
 >): Promise<MsgResponse> => {
@@ -311,12 +313,68 @@ export const sendMsg = async ({
       message_elem_array: messageElementArray,
       message_sender: userId,
       message_group_at_user_array: messageAtArray,
+      message_cloud_custom_str: cloudCustomData
     },
     callback,
     user_data: userData,
   });
   return res;
 };
+
+export const sendReferenceMessage = async ({
+  convId,
+  convType,
+  messageElementArray,
+  userId,
+  userData,
+  messageAtArray,
+  callback,
+  cloudCustomData,
+}: SendMsgParams<
+  TextMsg | FaceMsg | FileMsg | ImageMsg | SoundMsg | VideoMsg | MergeMsg | CustomMsg
+>): Promise<MsgResponse> => {
+  const res = await timRenderInstance.TIMMsgSendMessageV2({
+    conv_id: convId,
+    conv_type: convType,
+    params: {
+      message_elem_array: messageElementArray,
+      message_sender: userId,
+      message_group_at_user_array: messageAtArray,
+      message_cloud_custom_str: cloudCustomData,
+    },
+    callback,
+    user_data: userData,
+  });
+  return res;
+};
+
+export const setConvDraft = async ({
+  convId,
+  convType,
+  draftParam,
+} : {
+  convId: String,
+  convType: number,
+  draftParam: any
+}) => {
+ const res = await timRenderInstance.TIMConvSetDraft({
+  convId,
+  convType,
+  draftParam
+ });
+ return res;
+}
+
+export const deleteConvDraft =async ({
+  convId,
+  convType
+}) => {
+  const res = await timRenderInstance.TIMConvCancelDraft({
+    convId,
+    convType
+  });
+  return res;
+}
 
 export const sendForwardMessage = async ({
   convId,

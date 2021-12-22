@@ -58,10 +58,10 @@ const RIGHT_CLICK_MENU_LIST = [{
     id: 'transimit',
     text: '转发'
 },
-// {
-//     id: 'reply',
-//     text: '回复'
-// },
+{
+    id: 'reply',
+    text: '回复'
+},
 {
     id: 'multiSelect',
     text: '多选'

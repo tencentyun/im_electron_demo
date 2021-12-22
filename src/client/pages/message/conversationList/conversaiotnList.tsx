@@ -99,6 +99,40 @@ export const ConversationList = (): JSX.Element => {
             <span className="text">{message_status === 6 ? revokeMsg : displayLastMsg}</span>
         </React.Fragment>;
     }
+
+    const getDraftMsg = (draftMsg : {
+        draft_msg: State.message;
+        draft_user_define: String;
+        draft_edit_time: number;
+    }) => {
+        const getMsg = (message) => {
+            const displayTextMsg = message && message.text_elem_content;
+            const displayLastMsg = {
+                '0': displayTextMsg,
+                '1': '[图片]',
+                '2': '[声音]',
+                '3': '[自定义消息]',
+                '4': '[文件消息]',
+                '5': '[群组系统消息]',
+                '6': '[表情消息]',
+                '7': '[位置消息]',
+                '8': '[群组系统通知]',
+                '9': '[视频消息]',
+                '10': '[关系]',
+                '11': '[资料]',
+                '12': '[合并消息]',
+            }[message.elem_type];
+            return displayLastMsg;
+        }
+        
+        const displayedText = draftMsg.draft_msg.message_elem_array.map(item => getMsg(item)).join("");
+        
+        return <React.Fragment>
+            <span className="at-msg">[草稿]&nbsp;</span>
+            <span className="text">{displayedText}</span>
+        </React.Fragment>;
+    };
+
     const handleClickMenuItem = (e, id) => {
         const { data } = e.props;
         switch (id) {
@@ -254,7 +288,7 @@ export const ConversationList = (): JSX.Element => {
             <EmptyResult isEmpty={conversationList.length === 0} contentText="暂无会话">
                 {
                     conversationList.map((item) => {
-                        const { conv_profile, conv_id, conv_last_msg, conv_unread_num, conv_type, conv_is_pinned, conv_group_at_info_array, conv_recv_opt } = item;
+                        const { conv_profile, conv_id, conv_last_msg, conv_unread_num, conv_type, conv_is_pinned, conv_group_at_info_array, conv_recv_opt, conv_is_has_draft, conv_draft } = item;
                         const faceUrl = conv_profile.user_profile_face_url ?? conv_profile.group_detial_info_face_url;
                         const nickName = conv_profile.user_profile_nick_name ?? conv_profile.group_detial_info_group_name;
                         return (
@@ -274,7 +308,7 @@ export const ConversationList = (): JSX.Element => {
                                         }
                                     </div>
                                     {
-                                        conv_last_msg && conv_last_msg.message_elem_array ? <div className="conversion-list__item--last-message">{getLastMsgInfo(conv_last_msg, conv_type, conv_group_at_info_array)}</div> : null
+                                         (conv_last_msg && conv_last_msg.message_elem_array || conv_is_has_draft)  ? <div className="conversion-list__item--last-message">{conv_is_has_draft ? getDraftMsg(conv_draft) : getLastMsgInfo(conv_last_msg, conv_type, conv_group_at_info_array)}</div> : null
                                     }
                                 </div>
                                 <span className="pinned-tag"></span>

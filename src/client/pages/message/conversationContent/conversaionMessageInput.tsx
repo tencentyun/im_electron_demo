@@ -17,7 +17,7 @@ type Info = {
 
 export const ConversationMessageInput = (props: { currentSelectedConversation }): JSX.Element => {
     const { currentSelectedConversation } = props;
-    const { conv_id: convId,  conv_type:convType, conv_profile:convProfile } = currentSelectedConversation;
+    const { conv_id: convId,  conv_type:convType, conv_profile:convProfile, conv_draft: draftMsg } = currentSelectedConversation;
     const { callingStatus: { callingId, callingType } } = useSelector(
         (state: State.RootState) => state.ui
     );
@@ -152,6 +152,7 @@ export const ConversationMessageInput = (props: { currentSelectedConversation })
                 convId={convId}
                 convType={convType}
                 isShutUpAll={isShutUpAll}
+                draftMsg = {draftMsg}
                 handleOpenCallWindow={handleOpenCallWindow}
             />
             <GroupMemberSelector dialogRef={groupMemberSelectorRef}
