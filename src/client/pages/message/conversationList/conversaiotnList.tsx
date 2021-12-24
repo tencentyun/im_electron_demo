@@ -125,7 +125,7 @@ export const ConversationList = (): JSX.Element => {
             return displayLastMsg;
         }
         
-        const displayedText = draftMsg.draft_msg.message_elem_array.map(item => getMsg(item)).join("");
+        const displayedText = draftMsg.draft_msg?.message_elem_array.map(item => getMsg(item)).join("");
         
         return <React.Fragment>
             <span className="at-msg">[草稿]&nbsp;</span>
@@ -332,7 +332,6 @@ export const ConversationList = (): JSX.Element => {
                         return <Item key={id} onClick={(e) => { handleClickMenuItem(e, id) }}>{text}</Item>
                     })
                 }
-
             </Menu>
         </div>
     )

@@ -12,6 +12,10 @@ const getRef = <T>(key: string) : React.RefObject<T> | undefined  => {
     return map.get(key) as React.RefObject<T>;
 };
 
- const useDynamicRef = <T>() : [(key: string) =>  React.RefObject<T>, (key: string) =>  React.RefObject<T>] => [setRef, getRef];
+const clearRef = () => {
+    map.clear();
+}
+
+ const useDynamicRef = <T>() : [(key: string) =>  React.RefObject<T>, (key: string) =>  React.RefObject<T>, () => void] => [setRef, getRef, clearRef];
  
  export default useDynamicRef

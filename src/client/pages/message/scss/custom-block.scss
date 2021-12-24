@@ -76,3 +76,13 @@
     max-height: 70px;
   }
 }
+
+.block-reply-msg {
+  border-left: 3px solid #ccc;
+  padding-left: 10px;
+  color: #666;
+  &--name {
+    font-size: 14px;
+    font-weight: 400;
+  }
+}

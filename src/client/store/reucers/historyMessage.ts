@@ -4,7 +4,8 @@ import { addTimeDivider } from "../../utils/addTimeDivider";
 const initState = {
   historyMessageList: new Map(),
   uploadProgressList: new Map(),
-  currentReplyUser: null
+  currentReplyUser: null,
+  currentReplyMsg: null,
 }
 const deduplicationMessages = (oldMessages:State.message[],messages:State.message[])=>{
   for(let i = 0;i<messages.length;i++){
@@ -147,8 +148,15 @@ const messageReducer = (state = initState, action: Action): State.historyMessage
       return {
         historyMessageList: new Map(),
         uploadProgressList: new Map(),
-        currentReplyUser: null
+        currentReplyUser: null,
+        currentReplyMsg: null
       }
+    case ActionTypeEnum.SET_CURRENT_REPLY_MSG: {
+      return {
+        ...state,
+        currentReplyMsg: payload.message
+      }
+    }
     default:
       return state;
   }

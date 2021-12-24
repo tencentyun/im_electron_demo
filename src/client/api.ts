@@ -264,7 +264,7 @@ export const TIMMsgSetGroupReceiveMessageOpt = async (group_id, opt) => {
   });
 };
 
-export const getMsgList = async (convId, convType, lastMsg = null) => {
+export const getMsgList = async (convId, convType, lastMsg = null, isForward = false, count = HISTORY_MESSAGE_COUNT) => {
   const {
     data: { json_params },
   } = await timRenderInstance.TIMMsgGetMsgList({
@@ -272,8 +272,9 @@ export const getMsgList = async (convId, convType, lastMsg = null) => {
     conv_type: convType,
     params: {
       msg_getmsglist_param_last_msg: lastMsg,
-      msg_getmsglist_param_count: HISTORY_MESSAGE_COUNT,
-      msg_getmsglist_param_is_remble: true
+      msg_getmsglist_param_count: count,
+      msg_getmsglist_param_is_remble: true,
+      msg_getmsglist_param_is_forward: isForward,
     },
   });
 
@@ -970,4 +971,19 @@ export const reloginSms = (data)=>{
     method:'post',
     data: data
   })
+}
+
+export const findMsg = async ({
+  msgIdArray
+}) => {
+  const res = await timRenderInstance.TIMMsgFindMessages({
+    json_message_id_array: msgIdArray,
+    hide_tips: true
+  });
+  const { code, desc, json_params } = res.data;
+  if (code === 0) {
+    const result = JSON.parse(json_params);
+    return result;
+  }
+  throw new Error(desc);
 }

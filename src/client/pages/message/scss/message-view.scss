@@ -73,12 +73,21 @@
                 margin-right: 0;
                 margin-left: 8px;
             }
-
-            .text {
+            .message-view__item--element {
                 background: #CCE0FE;
                 border-radius: 8px 2px 8px 8px;
-
             }
+        }
+
+        &--element {
+            display: inline-block;
+            padding: 12px;
+            font-size: 14px;
+            border-radius: 2px 8px 8px 8px;
+            background: #ECEEF2;
+            vertical-align: middle;
+            word-wrap: normal;
+            word-break: break-all;
         }
 
         &.is-self &--message-header {
@@ -208,15 +217,15 @@
             word-break: break-all;
         }
         &--text {
-            display: inline-block;
-            max-width: 200px;
-            padding: 12px;
-            font-size: 14px;
-            border-radius: 2px 8px 8px 8px;
-            background: #ECEEF2;
-            vertical-align: middle;
-            word-wrap: normal;
-            word-break: break-all;
+            // display: inline-block;
+            // max-width: 200px;
+            // padding: 12px;
+            // font-size: 14px;
+            // border-radius: 2px 8px 8px 8px;
+            // background: #ECEEF2;
+            // vertical-align: middle;
+            // word-wrap: normal;
+            // word-break: break-all;
             span {
                 display: inline-block;
                 vertical-align: middle;
@@ -385,6 +394,42 @@
     &__message {
         flex: 1;
     }
+}
+
+.reply-msg-content {
+    border-left: 3px solid #ccc;
+    padding-left: 10px;
+    color: #666;
+    margin-bottom: 10px;
+    position: relative;
+    &__sender {
+        font-size: 14px;
+        font-weight: 400;
+    }
+
+    &__mask {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+}
+@keyframes fade {
+    from {
+        opacity: 1.0;
+    }
+    50% {
+        opacity: 0.3;
+    }
+    to {
+        opacity: 1.0;
+    }
+}
+
+.shrink-style {
+    background: #FFE7BA!important;
+    animation: fade 500ms infinite;
 }
 
 .forward-type-popup {
