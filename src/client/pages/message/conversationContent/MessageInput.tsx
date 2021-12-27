@@ -200,10 +200,11 @@ export const MessageInput = (props: Props): JSX.Element => {
                 return displayContent;
             }
 
-            if(messageElementArray.length > 0) {
+            if(replyMsgList.length > 0) {
                 // 回复消息
                 if(currenctReplyMsg != null && messageElementArray.length > 1) {
-                    const textMsgIncluded = messageElementArray.find(item => item.elem_type === 0); // 第一条文本消息
+                    const textMsgIncluded = replyMsgList.find(item => item.elem_type === 0); // 第一条文本消息
+                    const textIndex = replyMsgList.findIndex(item => item.elem_type === 0);
                     const repliedMsg = textMsgIncluded || replyMsgList[0]; // 第一条文本消息或者其他消息的第一条
                     const replyMsgContent = JSON.stringify({
                         messageReply: {
@@ -248,7 +249,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                         })); 
                     }
 
-                    const normalMsgList = replyMsgList.splice(1);
+                    const normalMsgList = textIndex !== -1 ? replyMsgList.filter((item, index) => index !== textIndex) : replyMsgList.splice(1);
                     for(let i = 0; i < normalMsgList.length; i ++) {
                         sendNormalMsgCallback(normalMsgList[i]); 
                     }
@@ -589,7 +590,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                         convId,
                         convType,
                         draftParam: {
-                            "draft_edit_time" : new Date().getSeconds(),
+                            "draft_edit_time" : Math.floor(new Date().getTime() / 1000),
                             "draft_msg" : {
                                 "message_elem_array" : messageElementArray
                             }, 

@@ -18,8 +18,8 @@ const getTime = (item) => {
 const sortByPindAndTime = (conversationList: Array<State.conversationItem>): Array<State.conversationItem> => {
     const pinnedConversation = conversationList.filter(item => item.conv_is_pinned);
     const normalConversation = conversationList.filter(item => !item.conv_is_pinned);
-    const sortPined = pinnedConversation.sort((pre, next) => getTime(next.conv_last_msg) - getTime(pre.conv_last_msg));
-    const sortNormal = normalConversation.sort((pre, next) => getTime(next.conv_last_msg) - getTime(pre.conv_last_msg));
+    const sortPined = pinnedConversation.sort((pre, next) => (next.conv_is_has_draft ? next.conv_draft.draft_edit_time : getTime(next.conv_last_msg))  - (pre.conv_is_has_draft ? pre.conv_draft.draft_edit_time : getTime(pre.conv_last_msg)));
+    const sortNormal = normalConversation.sort((pre, next) => (next.conv_is_has_draft ? next.conv_draft.draft_edit_time : getTime(next.conv_last_msg))  - (pre.conv_is_has_draft ? pre.conv_draft.draft_edit_time : getTime(pre.conv_last_msg)));
     return [...sortPined, ...sortNormal];
 }
 

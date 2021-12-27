@@ -87,7 +87,7 @@ const ReplyElem = (props: any) : JSX.Element => {
     return <div className='reply-msg-content' >
         <div className='reply-msg-content__sender'>{messageReply.messageSender}:</div>
         <div className='reply-msg-content__content'>{messageDetail ? displayDiffMessage(messageDetail, messageDetail.message_elem_array[0], 0) :  messageReply.messageAbstract}</div>
-        <div className='reply-msg-content__mask' onDoubleClick={hanldeItemClick}></div> 
+        <div className='reply-msg-content__mask' onClick={hanldeItemClick}></div> 
     </div>
     
 }
