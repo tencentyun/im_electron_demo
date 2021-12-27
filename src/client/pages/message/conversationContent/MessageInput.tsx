@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, message } from 'tea-component';
-import {  sendMsg, getGroupMemberList } from '../../../api'
-import { updateMessages } from '../../../store/actions/message'
+import {  sendMsg, getGroupMemberList, setConvDraft, deleteConvDraft } from '../../../api'
+import { setCurrentReplyUser, setReplyMsg, updateMessages } from '../../../store/actions/message'
 import { AtPopup } from '../components/atPopup'
 import { EmojiPopup } from '../components/emojiPopup'
 import { RecordPopup } from '../components/recordPopup';
@@ -14,13 +14,18 @@ import '../scss/message-input.scss';
 import { ipcRenderer, remote } from 'electron';
 import { SUPPORT_IMAGE_TYPE } from '../../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
-import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer, generateTemplateElement } from '../../../utils/message-input-util';
+import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer, generateTemplateElement, getFileByPath } from '../../../utils/message-input-util';
 import { SUPPORT_VIDEO_TYPE,getVideoInfo, selectImageMessage, selectFileMessage, selectVideoMessage } from '../../../utils/tools';
   
 type Props = {
     convId: string,
     convType: number,
     isShutUpAll: boolean,
+    draftMsg: {
+        draft_edit_time : number,
+        draft_msg : State.message,
+        draft_user_define : string
+    },
     handleOpenCallWindow: (callType: string,convType:number,windowType:string) => void;
 }
 
@@ -39,8 +44,7 @@ const differenceBetweenTwoString = (str1, str2) => {
     return difference.join("");
 }
 
-
-
+let shouldInsertDraftMsg = false;
 const FEATURE_LIST_GROUP = [{
     id: 'face',
     title: '表情'
@@ -78,8 +82,11 @@ const FEATURE_LIST_C2C = [{
 const FEATURE_LIST = {
     1: FEATURE_LIST_C2C, 2: FEATURE_LIST_GROUP
 }
+
+let editorStateCatch;
+let currenctReplyMsgCatch;
 export const MessageInput = (props: Props): JSX.Element => {
-    const { convId, convType, isShutUpAll, handleOpenCallWindow } = props;
+    const { convId, convType, isShutUpAll, handleOpenCallWindow, draftMsg } = props;
     const [ isDraging, setDraging] = useState(false);
     const [ activeFeature, setActiveFeature ] = useState('');
     const [ shouldShowCallMenu, setShowCallMenu] = useState(false);
@@ -93,6 +100,9 @@ export const MessageInput = (props: Props): JSX.Element => {
     const [ isZHCNAndFirstPopup, setIsZHCNAndFirstPopup]  = useState(false);
     const [isAnalysizeVideo, setAnalysizeVideoInfoStatus ] = useState(false);
     const [ groupSenderProfile, setGroupSenderProfile ] = useState();
+    const currenctReplyMsg = useSelector((state: State.RootState) => state.historyMessage.currentReplyMsg);
+    editorStateCatch = editorState;
+    currenctReplyMsgCatch = currenctReplyMsg;
 
     const { userId, signature, nickName, faceUrl, role, gender, addPermission } = useSelector((state: State.RootState) => state.userInfo);
     const userProfile = {
@@ -123,7 +133,6 @@ export const MessageInput = (props: Props): JSX.Element => {
 
             const sendMsgSuccessCallback = ([res, userData]) => {
                 const { code, json_params, desc } = res;
-
                 if (code === 0) {                
                     dispatch(updateMessages({
                         convId,
@@ -132,40 +141,120 @@ export const MessageInput = (props: Props): JSX.Element => {
                 }
             };
 
-            if(messageElementArray.length) {
-                messageElementArray.map( async v => {
-                    if(v.elem_type === 0) {
-                        const atList = getAtList(v.text_elem_content);
-                        const { data: messageId } = await sendMsg({
-                            convId,
-                            convType,
-                            messageElementArray: [v],
-                            userId,
-                            messageAtArray: atList,
-                            callback: sendMsgSuccessCallback
-                        });
-                        const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v, groupSenderProfile) as State.message;
-                        dispatch(updateMessages({
-                            convId,
-                            message: templateElement
-                        }));
-                        return
-                    }
+            const sendNormalMsgCallback = async v => {
+                if(v.elem_type === 0) {
+                    const atList = getAtList(v.text_elem_content);
                     const { data: messageId } = await sendMsg({
                         convId,
                         convType,
                         messageElementArray: [v],
                         userId,
+                        messageAtArray: atList,
                         callback: sendMsgSuccessCallback
                     });
-
                     const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v, groupSenderProfile) as State.message;
                     dispatch(updateMessages({
                         convId,
                         message: templateElement
                     }));
+                    return
+                }
+                const { data: messageId } = await sendMsg({
+                    convId,
+                    convType,
+                    messageElementArray: [v],
+                    userId,
+                    callback: sendMsgSuccessCallback
                 });
 
+                const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, v, groupSenderProfile) as State.message;
+                dispatch(updateMessages({
+                    convId,
+                    message: templateElement
+                }));
+            }
+
+            const replyMsgList = messageElementArray.filter(item => item.elem_type !== 999);
+            if(replyMsgList.length < 1) {
+                return message.error({ content: `请输入消息内容` });
+            }
+
+            const getAbstractMsgText = message => {
+                const displayTextMsg = message && message.text_elem_content;
+                const displayFileMsg = message && message.file_elem_file_name;
+                const displayContent = {
+                        '0': displayTextMsg,
+                        '1': '[图片]',
+                        '2': '[声音]',
+                        '3': '[自定义消息]',
+                        '4': `[${displayFileMsg}]`,
+                        '5': '[群组系统消息]',
+                        '6': '[表情]',
+                        '7': '[位置]',
+                        '8': '[群组系统通知]',
+                        '9': '[视频]',
+                        '10': '[关系]',
+                        '11': '[资料]',
+                        '12': '[合并消息]',
+                }[message.elem_type];
+                return displayContent;
+            }
+
+            if(messageElementArray.length > 0) {
+                // 回复消息
+                if(currenctReplyMsg != null && messageElementArray.length > 1) {
+                    const textMsgIncluded = messageElementArray.find(item => item.elem_type === 0); // 第一条文本消息
+                    const repliedMsg = textMsgIncluded || replyMsgList[0]; // 第一条文本消息或者其他消息的第一条
+                    const replyMsgContent = JSON.stringify({
+                        messageReply: {
+                            "messageID": currenctReplyMsg.message_msg_id,
+                            "messageAbstract": getAbstractMsgText(currenctReplyMsg.message_elem_array[0]),
+                            "messageSender": currenctReplyMsg.message_sender_profile.user_profile_nick_name || currenctReplyMsg.message_sender_profile.user_profile_identifier,
+                            "messageType": currenctReplyMsg.message_elem_array[0].elem_type,
+                            "version": "1",
+                        }
+                    });
+                    const { elem_type } = repliedMsg;
+                    if (elem_type === 0) {
+                        const atList = getAtList(repliedMsg.text_elem_content);
+                        const { data: messageId } = await sendMsg({
+                            convId,
+                            convType,
+                            messageElementArray: [repliedMsg],
+                            userId,
+                            messageAtArray: atList,
+                            cloudCustomData: replyMsgContent,
+                            callback: sendMsgSuccessCallback
+                        });
+                        const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, repliedMsg, groupSenderProfile, replyMsgContent) as State.message;
+                        dispatch(updateMessages({
+                            convId,
+                            message: templateElement
+                        })); 
+                    } else {
+                        const { data: messageId } = await sendMsg({
+                            convId,
+                            convType,
+                            messageElementArray: [repliedMsg],
+                            userId,
+                            cloudCustomData: replyMsgContent,
+                            callback: sendMsgSuccessCallback
+                        });
+    
+                        const templateElement = await generateTemplateElement(convId, convType, userProfile, messageId, repliedMsg, groupSenderProfile, replyMsgContent) as State.message;
+                        dispatch(updateMessages({
+                            convId,
+                            message: templateElement
+                        })); 
+                    }
+
+                    const normalMsgList = replyMsgList.splice(1);
+                    for(let i = 0; i < normalMsgList.length; i ++) {
+                        sendNormalMsgCallback(normalMsgList[i]); 
+                    }
+                } else {
+                    messageElementArray.map(sendNormalMsgCallback);
+                }
                 setEditorState(ContentUtils.clear(editorState));
             }
         } catch (e) {
@@ -197,7 +286,6 @@ export const MessageInput = (props: Props): JSX.Element => {
             const fileSize = file.size;
             const type = file.type;
             const size = file.size;
-            console.log('file',file)
             if(size === 0){
                 message.error({content: "文件大小异常"})
                 return
@@ -210,7 +298,7 @@ export const MessageInput = (props: Props): JSX.Element => {
                 if(fileSize > 100 * 1024 * 1024) return message.error({content: "video size can not exceed 100m"})
                 getVideoInfo(file.path)
                 setAnalysizeVideoInfoStatus(true);
-                setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
+                setEditorState( preEditorState =>  ContentUtils.insertAtomicBlock(preEditorState, 'block-video', true, {name: file.name, path: file.path, size: file.size}));
             } else {
                 if(fileSize > 100 * 1024 * 1024) return message.error({content: "file size can not exceed 100m"})
                 setEditorState( preEditorState => ContentUtils.insertAtomicBlock(preEditorState, 'block-file', true, {name: file.name, path: file.path, size: file.size}));
@@ -467,8 +555,8 @@ export const MessageInput = (props: Props): JSX.Element => {
     useEffect(() => {
         // setGroupSenderProfile(undefined);
         // convType === 2 && getGroupSenderProfile();
-        setEditorState(ContentUtils.clear(editorState))
         setAnalysizeVideoInfoStatus(false);
+        shouldInsertDraftMsg = true;
         const listener = (event, params) => {
             const { triggerType, data } = params;
             switch(triggerType) {
@@ -490,13 +578,118 @@ export const MessageInput = (props: Props): JSX.Element => {
             console.error('==========main process error===========', data);
         }
 
-        ipcRenderer.on('main-process-error', errorConsole)
-        ipcRenderer.on("GET_FILE_INFO_CALLBACK", listener)
+        ipcRenderer.on('main-process-error', errorConsole);
+        ipcRenderer.on("GET_FILE_INFO_CALLBACK", listener);
         return () => {
+            const rawData = editorStateCatch?.toRAW();
+            if(rawData) {
+                const messageElementArray = getMessageElemArray(rawData, videoInfos);
+                if(messageElementArray.length !== 0) {
+                    setConvDraft({
+                        convId,
+                        convType,
+                        draftParam: {
+                            "draft_edit_time" : new Date().getSeconds(),
+                            "draft_msg" : {
+                                "message_elem_array" : messageElementArray
+                            }, 
+                            "draft_user_define" :  currenctReplyMsgCatch ? JSON.stringify(currenctReplyMsgCatch) : JSON.stringify({})
+                        }
+                    });
+                }
+                setEditorState(ContentUtils.clear(editorState));
+            }
             ipcRenderer.off("GET_FILE_INFO_CALLBACK", listener)
             ipcRenderer.off('main-process-error', errorConsole)
         }
-    }, [convId, convType])
+    }, [convId, convType]);
+
+    useEffect(() => {
+        const insertDraftMsg = async () => {
+            const { draft_msg, draft_user_define } = draftMsg;
+            const messageElementArray = draft_msg.message_elem_array;
+            if (draft_user_define !== "" && Object.keys(JSON.parse(draft_user_define)).length > 0) {
+                dispatch(setReplyMsg({
+                    message: JSON.parse(draft_user_define)
+                }));
+                // setEditorState( ContentUtils.insertAtomicBlock(editorState, 'block-reply-msg', true, { replyMsg: JSON.parse(draft_user_define as string)}));
+            }
+            setTimeout(async () => {
+                for(let i = 0; i < messageElementArray.length; i ++) {
+                    const messageItem = messageElementArray[i];
+                    switch(messageItem.elem_type) {
+                        // 文本消息
+                        case 0:
+                            setEditorState(prevEditorState => ContentUtils.insertText(prevEditorState, messageItem.text_elem_content));
+                            break;
+                        default:
+                            const filePath = messageItem.video_elem_video_path || messageItem.file_elem_file_path || messageItem.image_elem_orig_path;
+                            const file = await getFileByPath(filePath);
+                            await setFile(file as any);
+                            break;
+                    }
+                }
+            }, 0)
+        };
+
+        const elemArray = getMessageElemArray(editorState.toRAW(), videoInfos);
+        if(elemArray.length == 0) {
+            if (shouldInsertDraftMsg) {
+                draftMsg && insertDraftMsg();
+                draftMsg && deleteConvDraft({
+                    convId,
+                    convType
+                });
+            }
+
+            if (currenctReplyMsg != null) {
+                dispatch(setReplyMsg({
+                    message: null
+                }));
+            }
+        }
+        shouldInsertDraftMsg = false;
+    }, [editorState]);
+
+
+    useEffect(() => {
+        if(currenctReplyMsg != null) {
+            const insert = async () => {
+                const oldEditorState = editorInstance.getValue();
+                const emptyEditorState = ContentUtils.clear(editorState);
+                let newEditorState = ContentUtils.insertAtomicBlock(emptyEditorState, 'block-reply-msg', true, { replyMsg: currenctReplyMsg});
+                const messageELemArray = getMessageElemArray(oldEditorState.toRAW(), videoInfos);
+            
+                for(let i = 0; i < messageELemArray.length; i ++) {
+                    const messageItem = messageELemArray[i];
+                    switch(messageItem.elem_type) {
+                        // 文本消息
+                        case 0:
+                            newEditorState = ContentUtils.insertText(newEditorState, messageItem.text_elem_content);
+                            break;
+                        case 9:
+                            const { video_elem_video_path } = messageItem;
+                            const file = await getFileByPath(video_elem_video_path);
+                            newEditorState = ContentUtils.insertAtomicBlock(newEditorState, 'block-video', true, {name: file.name, path: file.path, size: file.size})
+                            break;
+                        case 4:
+                            const { file_elem_file_path, file_elem_file_name,  file_elem_file_size} = messageItem;
+                            newEditorState = ContentUtils.insertAtomicBlock(newEditorState, 'block-file', true, {name: file_elem_file_name, path: file_elem_file_path, size: file_elem_file_size})
+                            break;
+                        case 1:
+                            const { image_elem_orig_path } = messageItem;
+                            const img = await getFileByPath(image_elem_orig_path);
+                            const imageUrl = bufferToBase64Url(img.fileContent as unknown as string, img.type);
+                            newEditorState = ContentUtils.insertAtomicBlock(newEditorState, 'block-image', true, {name: img.name, path: img.path, size: imageUrl, base64URL: imageUrl})
+                            break;
+                    }
+                }
+                setEditorState(newEditorState);
+            }
+
+            insert();
+        }
+    }, [currenctReplyMsg]);
 
     const shutUpStyle = isShutUpAll ? 'disabled-style' : '';
     const dragEnterStyle = isDraging ? 'draging-style' : '';

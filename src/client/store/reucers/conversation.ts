@@ -7,8 +7,11 @@ const initState = {
     isLoading: true
 }
 const getTime = (item) => {
-    const { message_server_time, message_client_time } = item;
-    return message_server_time === 0 ? message_client_time : message_server_time;
+    if (item ) {
+        const { message_server_time, message_client_time } = item;
+        return message_server_time === 0 ? message_client_time : message_server_time;
+    }
+    return 0;
 }
 
 

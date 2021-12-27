@@ -34,8 +34,10 @@ import formateTime, { _formatDate} from '../../../utils/timeFormat';
 import { addTimeDivider } from '../../../utils/addTimeDivider';
 import { HISTORY_MESSAGE_COUNT } from '../../../constants';
 import GroupSysElm from '../messageElemTyps/groupSystemElem';
-import { setCurrentReplyUser } from '../../../store/actions/message'
+import { setReplyMsg } from '../../../store/actions/message'
 import timRenderInstance from '../../../utils/timRenderInstance';
+import ReplyElem from '../messageElemTyps/replyElem';
+import useDynamicRef from '../../../utils/react-use/useDynamicRef';
 
 
 const MESSAGE_MENU_ID = 'MESSAGE_MENU_ID';
@@ -58,10 +60,10 @@ const RIGHT_CLICK_MENU_LIST = [{
     id: 'transimit',
     text: '转发'
 },
-// {
-//     id: 'reply',
-//     text: '回复'
-// },
+{
+    id: 'reply',
+    text: '回复'
+},
 {
     id: 'multiSelect',
     text: '多选'
@@ -136,7 +138,8 @@ export const MessageView = (props: Props): JSX.Element => {
     const [seletedMessage, setSeletedMessage] = useState<State.message[]>([]);
     const [noMore,setNoMore] = useState(messageList.length < HISTORY_MESSAGE_COUNT ? true : false)
     const dispatch = useDispatch();
-    const [anchor , setAnchor] = useState('')
+    const [anchor , setAnchor] = useState('');
+    const [setRef, getRef] = useDynamicRef<HTMLDivElement>();
 
     const [rightClickMenuList, setRightClickMenuList] = useState(RIGHT_CLICK_MENU_LIST);
     
@@ -194,10 +197,9 @@ export const MessageView = (props: Props): JSX.Element => {
 
     const handleReplyMsg = (params) => {
         const { message } = params;
-        const { message_sender, message_sender_profile } = message
-        dispatch(setCurrentReplyUser({
-            profile: message_sender_profile
-        }))
+        dispatch(setReplyMsg({
+            message: message
+        }));
     }
 
     const handleForwardPopupSuccess = async (convItemGroup) => {
@@ -335,12 +337,16 @@ export const MessageView = (props: Props): JSX.Element => {
         const isAvaChatRoom = groupType === 4;
         let formatedList = RIGHT_CLICK_MENU_LIST;
 
+        if (elem_type === 3) {
+            formatedList = formatedList.filter(item => item.id !== 'reply');
+        }
+
         if(!message_is_from_self ||  currServerTime - message_server_time > 120) {
             formatedList = formatedList.filter(item => item.id !== 'revoke');
         }
 
         if(isTips) {
-            formatedList = formatedList.filter(item => item.id !== 'transimite' && item.id !== 'multiSelect'); //群系统消息 和 tips消息 不可转发
+            formatedList = formatedList.filter(item => item.id !== 'reply' && item.id !== 'transimite' && item.id !== 'multiSelect'); //群系统消息 和 tips消息 不可转发
         } else if(isAvaChatRoom) {
             formatedList = formatedList.filter(item => item.id  !== 'multiSelect'); // 互动直播群不进行多选
         }
@@ -447,7 +453,7 @@ export const MessageView = (props: Props): JSX.Element => {
                             <div key={`${item.time}-${index}` } className="message-view__item--time-divider">{formateTime(item.time * 1000, true)}</div>
                         )
                     }
-                    const { message_elem_array, message_client_time, message_sender_profile, message_is_from_self ,message_status, message_is_peer_read, message_conv_type } = item;
+                    const { message_elem_array, message_client_time, message_sender_profile, message_msg_id, message_is_from_self ,message_status, message_is_peer_read, message_conv_type, message_conv_id } = item;
                     const { user_profile_face_url, user_profile_role, user_profile_nick_name, user_profile_add_permission, user_profile_identifier, user_profile_gender, user_profile_self_signature } = message_sender_profile;
                     const revokedPerson = message_is_from_self ? '你' : user_profile_nick_name;
                     const isMessageSendFailed = message_status === 3 && message_is_from_self;
@@ -480,7 +486,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                         { `${revokedPerson} 撤回了一条消息` }
                                     </div>
                                 ) :
-                                    <div key={index} onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
+                                    <div key={index}  onClick={() => handleSelectMessage(item)} className={`message-view__item ${message_is_from_self ? 'is-self' : ''}`} >
                                         { isMultiSelect && isNotGroupSysAndGroupTipsMessage && (seleted ? 
                                             <Icon className="message-view__item--icon" type="success" /> : 
                                             <i className="message-view__item--icon-normal" ></i>)
@@ -503,7 +509,11 @@ export const MessageView = (props: Props): JSX.Element => {
                                                 {
                                                     message_elem_array && message_elem_array.length && message_elem_array.map((elment, index) => {
                                                         return (
-                                                            <div className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item, elment) }}>
+                                                            <div ref={setRef(message_msg_id)} className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item, elment) }}>
+                                                                {
+                                                                    //@ts-ignore
+                                                                    item.message_cloud_custom_str !== "" && item.message_cloud_custom_str.includes("messageReply") && <ReplyElem convId={message_conv_id} convType={message_conv_type} originalMsg={ JSON.parse(item.message_cloud_custom_str)} getRef={getRef} />
+                                                                }
                                                                 {
                                                                     displayDiffMessage(item, elment, index)
                                                                 }

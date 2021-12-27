@@ -19,7 +19,8 @@ export enum ActionTypeEnum {
     UPDATE_MESSAGE_ELEM_PROGRESS = "UPDATE_MESSAGE_ELEM_PROGRESS",
     SET_CURRENT_REPLY_USER = "SET_CURRENT_REPLY_USER",
     CLEAR_HISTORY = 'CLEAR_HISTORY',
-    INIT_MESSAGES = 'INIT_MESSAGES'
+    INIT_MESSAGES = 'INIT_MESSAGES',
+    SET_CURRENT_REPLY_MSG = "SET_CURRENT_REPLY_MSG"
 }
 
 export type Action = {
@@ -69,6 +70,10 @@ type MarkeMessageAsReadedPayload = {
 
 type SetCurrentReplyUserPayload = {
     profile: State.userProfile
+}
+
+type SetCurrentReplyMsgPayload = {
+    message: State.message
 }
 
 type InitHistoryMessagePayload = {
@@ -126,5 +131,10 @@ export const clearHistory = () => ({
 
 export const initHistoryMessage = (payload: InitHistoryMessagePayload): State.actcionType<InitHistoryMessagePayload> => ({
     type: ActionTypeEnum.INIT_MESSAGES,
+    payload
+})
+
+export const setReplyMsg = (payload: SetCurrentReplyMsgPayload) : State.actcionType<SetCurrentReplyMsgPayload> => ({
+    type: ActionTypeEnum.SET_CURRENT_REPLY_MSG,
     payload
 })

@@ -37,6 +37,7 @@ declare namespace State {
         historyMessageList:Map<string, Array<message>>
         uploadProgressList:Map<string, any>
         currentReplyUser: userProfile
+        currentReplyMsg: State.message
     }
     export type conversation = {
         unreadCount: number,
@@ -153,6 +154,11 @@ declare namespace State {
         conv_type: number
         conv_unread_num: number,
         conv_group_at_info_array: Array<any>
+        conv_draft: {
+            draft_msg: message,
+            draft_user_define: String,
+            draft_edit_time: number,
+        }
     }
 
     export type MessageReceipt = {

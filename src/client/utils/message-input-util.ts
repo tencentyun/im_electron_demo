@@ -15,7 +15,7 @@ export const getNameByLink = (link: string) => {
   return decodeURIComponent(name);
 };
 
-export const generateTemplateElement = async (convId, convType, userProfile, messageId, element, groupMemberProfile?) => {
+export const generateTemplateElement = async (convId, convType, userProfile, messageId, element, groupMemberProfile?, replyMsg?) => {
   let formatedElement;
   if(element.elem_type === 1) {
     const base64Url = await localFileToBase64(element.image_elem_orig_path);
@@ -30,6 +30,7 @@ export const generateTemplateElement = async (convId, convType, userProfile, mes
     message_client_time:Math.round(new Date().getTime() /  1000),
     message_is_peer_read: false,
     message_status: 1,
+    message_cloud_custom_str: replyMsg ?? "",
     message_conv_type: convType,
     message_conv_id: convId,
     message_is_from_self: true,
@@ -92,6 +93,11 @@ const getMessageElemItem = (
         image_elem_orig_path: data.path,
         image_elem_level: 0,
       };
+    }
+    case "block-reply-msg": {
+      return {
+        elem_type: 999
+      }
     }
   }
 };
@@ -226,4 +232,18 @@ export const localFileToBase64 = (url) => {
       }
     })
   });
+}
+
+export const getFileByPath = async (filePath) => {
+  const size = fs.statSync(filePath).size;
+  const name = path.parse(filePath).base;
+  const type = name.split('.')[1];
+  const fileContent = await fs.readFileSync(filePath);
+  return {
+    path: filePath,
+    size,
+    name,
+    type,
+    fileContent
+  }
 }
