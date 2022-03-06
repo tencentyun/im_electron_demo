@@ -440,6 +440,16 @@ export const MessageView = (props: Props): JSX.Element => {
             canLoadData && getMoreMsg();
         }
     };
+    const tryparse = (e)=>{
+        let data = false;
+        try {
+            JSON.parse(e);
+            data = true;
+        } catch (error) {
+            
+        }
+        return data
+    }
     return (
         <div className="message-view" ref={messageViewRef} onScroll={throttle(onScroll, 300)}>
             {
@@ -512,7 +522,7 @@ export const MessageView = (props: Props): JSX.Element => {
                                                             <div ref={setRef(message_msg_id)} className="message-view__item--element" key={index} onContextMenu={(e) => { handleContextMenuEvent(e, item, elment) }}>
                                                                 {
                                                                     //@ts-ignore
-                                                                    item.message_cloud_custom_str !== "" && item.message_cloud_custom_str.includes("messageReply") && <ReplyElem convId={message_conv_id} convType={message_conv_type} originalMsg={ JSON.parse(item.message_cloud_custom_str)} getRef={getRef} />
+                                                                    item.message_cloud_custom_str !== "" && item.message_cloud_custom_str.includes("messageReply") && tryparse(item.message_cloud_custom_str) && <ReplyElem convId={message_conv_id} convType={message_conv_type} originalMsg={ JSON.parse(item.message_cloud_custom_str)} getRef={getRef} />
                                                                 }
                                                                 {
                                                                     displayDiffMessage(item, elment, index)
