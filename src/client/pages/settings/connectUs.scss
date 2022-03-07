@@ -22,10 +22,20 @@
         }
    }
    .connet-section {
-       padding-left: 14%;
-       padding-top: 10%;
+       padding: 20px;
        flex: 1;
        background: url('../../assets/icon/bg.png') 100% 100% no-repeat;
+       .info-panel{
+           padding: 20px;
+           display: flex;
+           .info-avatar{
+               width: 60px;
+           }
+           .info-name {
+            width: 200px;
+            line-height: 40px;
+           }
+       }
    }
 
     .connect-section--title{

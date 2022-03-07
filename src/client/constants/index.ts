@@ -10,8 +10,8 @@ export const LOGINSMS = 'https://demos.trtc.tencent-cloud.com/prod/base/v1/auth_
 
 export const APASSSERVERBASE = 'https://demos.trtc.tencent-cloud.com/prod/base/v1'
 
-// xingchenhe公有云 测试
-export const DEFAULT_SDKAPPID = ''; //公有云SDK app id
+
+export const DEFAULT_SDKAPPID = ''; // SDK app id
 export const DEFAULT_USERID = '';
 export const DEFAULT_USER_SIG = '';
 export const HISTORY_MESSAGE_COUNT = 50;
