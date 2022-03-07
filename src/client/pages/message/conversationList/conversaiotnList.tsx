@@ -11,12 +11,13 @@ import {
     animation
 } from 'react-contexify';
 import 'react-contexify/dist/ReactContexify.min.css';
-import { getConversionList, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage, TIMMsgSetC2CReceiveMessageOpt, TIMMsgSetGroupReceiveMessageOpt } from "../../../api";
+import { getConversionList, markMessageAsRead, TIMConvDelete, TIMConvPinConversation, TIMMsgClearHistoryMessage, TIMMsgSetC2CReceiveMessageOpt, TIMMsgSetGroupReceiveMessageOpt } from "../../../api";
 import useDynamicRef from "../../../utils/react-use/useDynamicRef";
 import { addMessage } from "../../../store/actions/message";
 import { replaceConversaionList, updateCurrentSelectedConversation, updateLoadingConversation } from "../../../store/actions/conversation";
 import { Myloader } from "../../../components/skeleton";
 import { replaceRouter } from "../../../store/actions/ui";
+import timRenderInstance from "../../../utils/timRenderInstance";
 
 export const ConversationList = (): JSX.Element => {
     const convMenuID = "CONV_HANDLE"
@@ -32,6 +33,10 @@ export const ConversationList = (): JSX.Element => {
         {
             id: "disable",
             text: "消息免打扰"
+        },
+        {
+            id: "mark",
+            text: "标记为已读"
         },
         {
             id: "undisable",
@@ -133,6 +138,13 @@ export const ConversationList = (): JSX.Element => {
         </React.Fragment>;
     };
 
+   const markMessageAsRead = (data:State.conversationItem)=>{
+    const { conv_id, conv_type } = data;
+        timRenderInstance.TIMMsgReportReaded({
+            conv_id,
+            conv_type,
+        })
+    }
     const handleClickMenuItem = (e, id) => {
         const { data } = e.props;
         switch (id) {
@@ -153,6 +165,9 @@ export const ConversationList = (): JSX.Element => {
                 break;
             case 'undisable':
                 disableRecMsg(data, false);
+                break;
+            case 'mark':
+                markMessageAsRead(data);
                 break;
 
         }

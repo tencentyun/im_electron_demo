@@ -25,6 +25,7 @@ interface CreateGroupFormProps {
   onSuccess?: () => void;
   onError?: () => void;
   onClose?: () => void;
+  data?: any
 }
 
 export const CreateGroupForm = (props: CreateGroupFormProps): JSX.Element => {

@@ -8,6 +8,7 @@ import { ConnectUs } from './ConnectUs';
 
 import './setting.scss';
 import { SearchBox } from '../../components/searchBox/SearchBox';
+import { Icon } from 'tea-component';
 
 
 type Props = RouteComponentProps

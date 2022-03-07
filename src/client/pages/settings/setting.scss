@@ -48,6 +48,10 @@
     .settings-search {
         margin: 12px;
         margin-bottom: 13px;
+        display: flex;
+        .add-icon{
+            width: 40px;
+        }
     }
 
     .settings-content {
