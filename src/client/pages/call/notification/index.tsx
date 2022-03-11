@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import './notification.scss';
 import { eventListiner } from '../callIpc';
 import event from '../event';
-import { remote } from 'electron';
+import { getCurrentWindow } from '@electron/remote';
 export const Notification = (props) => {
     const { convInfo: { nickName, faceUrl, convType}, callType, inviteID } = props;
     const isVoiceCall = callType === 1;
@@ -16,7 +16,7 @@ export const Notification = (props) => {
 
     const closeCallWIndow = () => {
         eventListiner.cancelCall(null, 0);
-        const win = remote.getCurrentWindow();
+        const win =getCurrentWindow();
         win.close();
     }
 

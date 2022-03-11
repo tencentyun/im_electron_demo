@@ -67,13 +67,13 @@ const createWindow = () => {
       contextIsolation: false,
     }
   });
-
+  mainInstance.enable(mainWindow.webContents)
   global.WIN = mainWindow;
 
   mainWindow.on('ready-to-show',() => {
     mainWindow.show();
     if(!ipc) ipc = new IPC(mainWindow);
-    if(!callWindowIpc) callWindowIpc = new CallWindowIpc();
+    if(!callWindowIpc) callWindowIpc = new CallWindowIpc(mainInstance);
   });
   mainWindow.on('close', () => {
     mainWindow.webContents.send('updateHistoryMessage');

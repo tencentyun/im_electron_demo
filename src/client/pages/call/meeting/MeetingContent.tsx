@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { remote } from 'electron';
+import { getCurrentWindow } from '@electron/remote';
 import {
     TRTCAppScene, 
     TRTCParams, 
@@ -31,7 +31,7 @@ export const MeetingContent = (props: Props) => {
     }, [userId]);
 
     const onExitRoom = () => {
-        const win = remote.getCurrentWindow();
+        const win = getCurrentWindow();
         win.close();
     }
 

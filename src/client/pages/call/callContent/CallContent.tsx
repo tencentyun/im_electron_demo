@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { remote } from 'electron';
+import { getCurrentWindow } from '@electron/remote';
 import {
     TRTCAppScene, 
     TRTCParams, 
@@ -30,7 +30,7 @@ export const CallContent = ({ userId, convInfo, roomId, inviteID, inviteList, us
     const isVideoCall = callType === 2; // 1: 语音通话, 2: 视频通话
 
     const onExitRoom = () => {
-        const win = remote.getCurrentWindow();
+        const win = getCurrentWindow();
         win.close();
         isClosedWindow = true;
     }

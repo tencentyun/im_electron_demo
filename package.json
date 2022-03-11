@@ -92,13 +92,14 @@
   "devDependencies": {
     "concurrently": "^6.2.0",
     "cross-env": "^7.0.3",
-    "electron": "^13.6.3",
+    "electron": "^17.1.2",
     "electron-builder": "^22.11.7",
     "i18n-helper-cli": "^0.1.6",
     "native-ext-loader": "^2.3.0",
     "node-gyp": "^7.1.2"
   },
   "dependencies": {
+    "@electron/remote": "^2.0.7",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "electron-store": "^8.0.0",
     "ffmpeg-extract-frame": "^1.0.2",
@@ -107,7 +108,7 @@
     "file-type": "^16.5.2",
     "fluent-ffmpeg": "^2.1.2",
     "get-video-duration": "^3.1.0",
-    "im_electron_sdk": "^1.4.5",
+    "im_electron_sdk": "^1.4.8",
     "image-size": "^1.0.0",
     "install": "^0.13.0",
     "node-fetch": "^2.6.1",

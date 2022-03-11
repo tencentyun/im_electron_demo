@@ -1,9 +1,9 @@
 import { CLOSE, DOWNLOADFILE, MAXSIZEWIN, MINSIZEWIN, RENDERPROCESSCALL, SHOWDIALOG, CHECK_FILE_EXIST, OPEN_CALL_WINDOW, CALL_WINDOW_CLOSE_REPLY, CLOSE_CALL_WINDOW, SELECT_FILES, GET_VIDEO_INFO } from "../../app/const/const";
 
-import  { ipcRenderer, remote } from 'electron';
+import  { ipcRenderer } from 'electron';
 import { v4 as uuidv4 } from 'uuid';
-const dialog = remote.dialog;
-const WIN = remote.getCurrentWindow();
+import { getCurrentWindow } from '@electron/remote';
+const WIN = getCurrentWindow();
 const SUPPORT_IMAGE_TYPE = ['png', 'jpg', 'gif', 'PNG', 'JPG', 'GIF','jpeg'];
 const SUPPORT_VIDEO_TYPE = ['MP4', 'MOV', 'mp4', 'mov'];
 const isWin = () => {

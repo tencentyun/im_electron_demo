@@ -1,4 +1,4 @@
-import { remote } from 'electron';
+import { getCurrentWindow } from '@electron/remote';
 import timRenderInstance from "../../utils/timRenderInstance";
 import initListeners from "../../imLiseners";
 import store from "../../store";
@@ -46,7 +46,7 @@ const getLoginInfo = () => getState().login;
 
 const dispatch = store.dispatch;
 
-const currentWindow = remote.getCurrentWindow();
+const currentWindow = getCurrentWindow();
 
 let shouldShowNotify = true;
 

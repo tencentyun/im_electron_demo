@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { remote } from 'electron';
 import {
     TRTCVideoFillMode,
     TRTCVideoRotation,

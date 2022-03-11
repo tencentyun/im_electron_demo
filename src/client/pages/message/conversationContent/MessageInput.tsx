@@ -11,12 +11,12 @@ import BraftEditor, { EditorState } from 'braft-editor'
 import { ContentUtils } from 'braft-utils'
 import 'braft-editor/dist/index.css'
 import '../scss/message-input.scss';
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer } from 'electron';
 import { SUPPORT_IMAGE_TYPE } from '../../../../app/const/const';
 import { blockRendererFn, blockExportFn } from './CustomBlock';
 import { bufferToBase64Url, fileImgToBase64Url, getMessageElemArray, getPasteText, fileReaderAsBuffer, generateTemplateElement, getFileByPath } from '../../../utils/message-input-util';
 import { SUPPORT_VIDEO_TYPE,getVideoInfo, selectImageMessage, selectFileMessage, selectVideoMessage } from '../../../utils/tools';
-  
+import { getGlobal } from '@electron/remote'
 type Props = {
     convId: string,
     convType: number,
@@ -344,7 +344,7 @@ export const MessageInput = (props: Props): JSX.Element => {
         setShowCallMenu(true);
     }
     const handleScreenShot = () => {
-        const captureView = remote.getGlobal('captureView');
+        const captureView = getGlobal('captureView');
         captureView.open();
         console.log('========screenshot====')
     };

@@ -15,8 +15,9 @@ class CallWindowIpc {
     callWindow = null;
     imWindow = global.WIN;
     readyToShowWindow = false;
-
-    constructor() {
+    timMianInstance = null;
+    constructor(timInstance) {
+        this.timMianInstance = timInstance;
         this.mount();
     }
 
@@ -49,6 +50,7 @@ class CallWindowIpc {
                 contextIsolation: false,
             },
         });
+        this.timMianInstance.enable(callWindow.webContents)
         callWindow.removeMenu();
         if (isDev) {
             callWindow.loadURL(`http://localhost:3000/call.html`);
