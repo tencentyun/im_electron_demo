@@ -21,7 +21,7 @@ export const Avatar:FC<AvatarProps> = ( { size='default',url:avatar,extralClass 
     const [groupID,setGroupID] = useState(gid)
     const displayInfo = (info:string)=>{
         if(!info){
-            return "未知"
+            return "unknown"
         }
         return info.slice(0, 2).toUpperCase()
     }

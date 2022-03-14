@@ -55,7 +55,7 @@ class CallWindowIpc {
         if (isDev) {
             callWindow.loadURL(`http://localhost:3000/call.html`);
         } else {
-            //callWindow.webContents.openDevTools(); //正式生产不需要开启
+            //callWindow.webContents.openDevTools(); // Formal production does not need to be turned on
             callWindow.loadURL(
                 url.format({
                     pathname: path.join(__dirname, `../../bundle/call.html`),
@@ -78,9 +78,9 @@ class CallWindowIpc {
         const { NODE_ENV } = process.env;
         const isDev = NODE_ENV?.trim() === 'development';
         const screenSize = getSrceenSize();
-        // 当作为接收方，接受电话后，更改窗口尺寸。
+        // As the recipient, after accepting the call, change the window size.
         ipcMain.on('change-window-size', (event, acceptParams) => {
-            // 向聊天窗口通信
+            // Communicate to the chat window
             const { isVoiceCall } = acceptParams;
             const windowWidth = isVoiceCall ? 400 : 800;
             const windowHeight = isVoiceCall ? 650 : 600;
@@ -97,14 +97,14 @@ class CallWindowIpc {
             this.imWindow.webContents.send('accept-call-reply', inviteID);
         })
 
-        // 当作为接收方，挂断电话，关闭窗口
+        // As the receiver, hang up and close the window
         ipcMain.on('refuse-call', (event, inviteID) => {
             this.callWindow.close();
-            // 向聊天窗口通信
+            // Communicate to the chat window
             this.imWindow.webContents.send('refuse-call-reply', inviteID);
         });
 
-        // 当接受方拒绝通话后，调用该方法可关闭窗口，并退出房间
+        // When the recipient rejects the call, call this method to close the window and exit the room
         ipcMain.on(CLOSE_CALL_WINDOW, () => {
             this.callWindow.webContents.send('exit-room');
         });
@@ -112,22 +112,22 @@ class CallWindowIpc {
         ipcMain.on(END_CALL_WINDOW, () => {
             this.callWindow.close()
         })
-        // 远端用户进入
+        // remote user access
         ipcMain.on('remote-user-join', (event, userId) => {
             this.imWindow.webContents.send('remote-user-join-reply', userId)
         });
 
-        // 远端用户离开
+        // Remote user leaves
         ipcMain.on('remote-user-exit', (event, userId) => {
             this.imWindow.webContents.send('remote-user-exit-reply', userId)
         });
 
-        // 取消通话邀请
+        // Cancel call invitation
         ipcMain.on('cancel-call-invite', (event, data) => {
             this.imWindow.webContents.send('cancel-call-invite-reply', data);
         });
 
-        // 更新邀请列表(当用户拒绝邀请后，需通知通话窗口)
+        // Update the invitation list (when the user rejects the invitation, the call window needs to be notified)
         ipcMain.on('update-invite-list', (event, inviteList) => {
             this.callWindow.webContents.send('update-invite-list', inviteList);
         });
@@ -201,23 +201,23 @@ class CallWindowIpc {
 
         ipcMain.removeAllListeners('accept-call')
 
-        // 当作为接收方，挂断电话，关闭窗口
+        // As the receiver, hang up and close the window
         ipcMain.removeAllListeners('refuse-call');
 
-        // 当接受方拒绝通话后，调用该方法可关闭窗口，并退出房间
+        // When the recipient rejects the call, call this method to close the window and exit the room
         ipcMain.removeAllListeners(CLOSE_CALL_WINDOW);
 
         ipcMain.removeAllListeners(END_CALL_WINDOW)
-        // 远端用户进入
+        // remote user access
         ipcMain.removeAllListeners('remote-user-join');
 
-        // 远端用户离开
+        // Remote user leaves
         ipcMain.removeAllListeners('remote-user-exit');
 
-        // 取消通话邀请
+        // Cancel call invitation
         ipcMain.removeAllListeners('cancel-call-invite');
 
-        // 更新邀请列表(当用户拒绝邀请后，需通知通话窗口)
+        // Update the invitation list (when the user rejects the invitation, the call window needs to be notified)
         ipcMain.removeAllListeners('update-invite-list');
     }
 };

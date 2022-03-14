@@ -120,7 +120,7 @@ function setScreenInfo(displays) {
 
 function createCaptureWins() {
   if (captureWins.length) {
-    console.log('截图窗口已存在,不重新创建');
+    console.log('The screenshot window already exists and will not be recreated');
     return;
   }
   const {
@@ -131,7 +131,7 @@ function createCaptureWins() {
   if (platform !== 'darwin' || !captureView.multiScreen) {
     captureWins[0] = createCaptureBrowserWindow()
     setScreenInfo(displays)
-    console.log('不开启扩展屏截图')
+    console.log('Do not turn on extended screenshots')
   } else {
     setScreenInfo(displays)
     captureWins = displays.map((display) => {

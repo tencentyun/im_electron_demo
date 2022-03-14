@@ -99,7 +99,7 @@ const createWindow = () => {
     Mosaic: false,
     Text: false,
     onShow: () => {
-      console.log('启动截图')
+      console.log('start screenshot')
     },
     onClose: () => {
     //  const png = clipboard.readImage().toBitmap();
@@ -107,7 +107,7 @@ const createWindow = () => {
       // console.log('结束截图', fileExample);
     },
     onShowByShortCut: () => {
-      console.log('快捷键启动截图')
+      console.log('shortcut key to start screenshot')
     }
   });
   capture.setMultiScreen(true);

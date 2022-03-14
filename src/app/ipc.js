@@ -24,7 +24,7 @@ class IPC {
     win = null;
     constructor(win) {
         const env = process.env?.NODE_ENV?.trim();
-        this.mkDownloadDic(); //创建download 文件目录
+        this.mkDownloadDic(); // Create download file directory
         const isDev = env === 'development';
         setPath(isDev);
         this.win = win;
@@ -79,49 +79,49 @@ class IPC {
             const file_path_temp = `${file_path}.tmp`
             if (!fs.existsSync(file_path)) {
 
-                //创建写入流
+                // Create write stream 
                 const fileStream = fs.createWriteStream(file_path_temp).on('error', function (e) {
                     console.error('error==>', e)
                 }).on('ready', function () {
-                    console.log("开始下载:", file_url);
+                    console.log("start download :", file_url);
                 }).on('finish', function () {
                     try {
-                        //下载完成后重命名文件
+                        // Rename the file after the download is complete
                         fs.renameSync(file_path_temp, file_path);
-                        console.log('文件下载完成:', file_path);
+                        console.log('file download complete :', file_path);
                     } catch (err) {
 
                     }
                 });
-                //请求文件
+                // request file
                 fetch(file_url, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/octet-stream' },
                 }).then(res => {
-                    //获取请求头中的文件大小数据
+                    // Get the file size data in the request header
                     let fsize = res.headers.get("content-length");
-                    //创建进度
+                    // Create progress
                     let str = progressStream({
                         length: fsize,
                         time: 100 /* ms */
                     });
-                    // 下载进度 
+                    // Download progress 
                     str.on('progress', function (progressData) {
-                        //不换行输出
+                        // output without wrapping
                         let percentage = Math.round(progressData.percentage) + '%';
                         console.log(percentage);
                     });
                     res.body.pipe(str).pipe(fileStream);
                 }).catch(e => {
-                    //自定义异常处理
+                    // Custom exception handling
                     console.log(e);
                 });
             } else {
-                // 已存在
-                console.log(path.resolve(downloadDicPath, file_name), '已存在，不下载')
+                // existed
+                console.log(path.resolve(downloadDicPath, file_name), 'already exists, do not download')
             }
         } catch (err) {
-            console.log('下载文件失败，请稍后重试。', err)
+            console.log('Failed to download file, please try again later.', err)
         }
     }
     async _getVideoInfo(event, filePath) {
